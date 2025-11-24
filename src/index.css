@@ -57,6 +57,22 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
     
+    /* High Contrast Alert Colors for Accessibility (WCAG AAA) */
+    --alert-warning-bg: 42 96% 89%;      /* #FEF3C7 - Yellow very light */
+    --alert-warning-text: 25 95% 27%;    /* #92400E - Brown dark */
+    --alert-warning-border: 38 92% 50%;  /* #F59E0B - Orange */
+    --alert-warning-icon: 32 95% 44%;    /* #D97706 - Orange darker */
+    
+    --alert-info-bg: 214 95% 93%;        /* #DBEAFE - Blue very light */
+    --alert-info-text: 221 83% 33%;      /* #1E3A8A - Blue very dark */
+    --alert-info-border: 217 91% 60%;    /* #3B82F6 - Blue medium */
+    --alert-info-icon: 217 91% 54%;      /* #2563EB - Blue darker */
+    
+    --alert-critical-bg: 0 86% 94%;      /* #FEE2E2 - Red very light */
+    --alert-critical-text: 0 70% 35%;    /* #991B1B - Red very dark */
+    --alert-critical-border: 0 72% 60%;  /* #EF4444 - Red medium */
+    --alert-critical-icon: 0 73% 50%;    /* #DC2626 - Red darker */
+    
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--sesi-blue)) 0%, hsl(217 90% 45%) 100%);
     --gradient-secondary: linear-gradient(135deg, hsl(var(--sesi-red)) 0%, hsl(356 88% 55%) 100%);
