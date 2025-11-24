@@ -1,0 +1,204 @@
+import { AlertTriangle, Clock, Calendar, User, Bell, FileText, Phone, ClipboardCheck, GraduationCap } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+interface Alert {
+  id: string;
+  type: 'critical' | 'warning' | 'info';
+  title: string;
+  description: string;
+  details: string[];
+  actions: { label: string; icon: React.ReactNode }[];
+}
+
+const AlertsPanel = () => {
+  const alerts: Alert[] = [
+    {
+      id: '1',
+      type: 'critical',
+      title: 'PEI de João Silva não atualizado há 120 dias',
+      description: 'Ação Imediata Necessária',
+      details: [
+        '⏱️ Vencido há: 30 dias',
+        '📅 Última revisão: 15/07/2024',
+        '👤 Responsável: Prof. Ana Santos'
+      ],
+      actions: [
+        { label: 'Agendar Revisão Urgente', icon: <Calendar className="h-4 w-4" /> },
+        { label: 'Ver PEI', icon: <FileText className="h-4 w-4" /> },
+        { label: 'Notificar', icon: <Bell className="h-4 w-4" /> }
+      ]
+    },
+    {
+      id: '2',
+      type: 'critical',
+      title: 'Maria Oliveira: Frequência abaixo de 60%',
+      description: 'Intervenção Necessária',
+      details: [
+        '📊 Presença: 58% (12 faltas no mês)',
+        '📅 Última presença: 18/11/2024',
+        '⚠️ Risco de retenção por falta'
+      ],
+      actions: [
+        { label: 'Contatar Família', icon: <Phone className="h-4 w-4" /> },
+        { label: 'Ver Histórico', icon: <FileText className="h-4 w-4" /> },
+        { label: 'Plano de Ação', icon: <ClipboardCheck className="h-4 w-4" /> }
+      ]
+    },
+    {
+      id: '3',
+      type: 'warning',
+      title: 'Pedro Costa: Sem progresso há 8 semanas',
+      description: 'Monitoramento Necessário',
+      details: [
+        '📊 Objetivos estagnados: 4 de 7',
+        '📈 Última evolução: Set/2024',
+        '💡 Sugestão: Revisão de estratégias'
+      ],
+      actions: [
+        { label: 'Revisar Estratégias', icon: <ClipboardCheck className="h-4 w-4" /> },
+        { label: 'Consultar Especialista', icon: <User className="h-4 w-4" /> }
+      ]
+    },
+    {
+      id: '4',
+      type: 'warning',
+      title: 'Turma 3º B: Necessita profissional de apoio',
+      description: 'Recurso Insuficiente',
+      details: [
+        '👥 Alunos com PEI: 6',
+        '🔴 Apoio disponível: 1 (insuficiente)',
+        '📊 Recomendado: 2 profissionais'
+      ],
+      actions: [
+        { label: 'Solicitar Contratação', icon: <User className="h-4 w-4" /> },
+        { label: 'Redistribuir Equipe', icon: <ClipboardCheck className="h-4 w-4" /> }
+      ]
+    },
+    {
+      id: '5',
+      type: 'info',
+      title: 'Nova formação sobre TEA disponível',
+      description: 'Para Conhecimento',
+      details: [
+        '📅 Data: 05/12/2024 às 14h',
+        '👥 Vagas: 30 (18 disponíveis)',
+        '🎓 Certificação: 8 horas'
+      ],
+      actions: [
+        { label: 'Inscrever-se', icon: <GraduationCap className="h-4 w-4" /> },
+        { label: 'Ver Programa', icon: <FileText className="h-4 w-4" /> },
+        { label: 'Compartilhar', icon: <Bell className="h-4 w-4" /> }
+      ]
+    }
+  ];
+
+  const criticalAlerts = alerts.filter(a => a.type === 'critical');
+  const warningAlerts = alerts.filter(a => a.type === 'warning');
+  const infoAlerts = alerts.filter(a => a.type === 'info');
+
+  const renderAlert = (alert: Alert) => {
+    const bgColors = {
+      critical: 'bg-destructive/10 border-destructive',
+      warning: 'bg-warning/10 border-warning',
+      info: 'bg-primary/10 border-primary'
+    };
+
+    const icons = {
+      critical: '🔴',
+      warning: '🟡',
+      info: '🔵'
+    };
+
+    const titles = {
+      critical: 'CRÍTICO',
+      warning: 'ATENÇÃO',
+      info: 'INFORMAÇÃO'
+    };
+
+    return (
+      <Card key={alert.id} className={`${bgColors[alert.type]} border-2 mb-4`}>
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3 mb-3">
+            <span className="text-2xl">{icons[alert.type]}</span>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="outline" className="font-bold">
+                  {titles[alert.type]}
+                </Badge>
+                <span className="text-xs text-muted-foreground">- {alert.description}</span>
+              </div>
+              <h3 className="font-semibold text-foreground mb-2">{alert.title}</h3>
+              <div className="space-y-1 text-sm text-muted-foreground mb-3">
+                {alert.details.map((detail, idx) => (
+                  <div key={idx}>{detail}</div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {alert.actions.map((action, idx) => (
+                  <Button key={idx} variant="outline" size="sm">
+                    {action.icon}
+                    <span className="ml-2">{action.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <Card className="shadow-lg">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <AlertTriangle className="h-6 w-6 text-destructive" />
+          ALERTAS E AÇÕES PRIORITÁRIAS
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
+            <TabsTrigger value="all">
+              Todos ({alerts.length})
+            </TabsTrigger>
+            <TabsTrigger value="critical">
+              🔴 Críticos ({criticalAlerts.length})
+            </TabsTrigger>
+            <TabsTrigger value="warning">
+              🟡 Atenção ({warningAlerts.length})
+            </TabsTrigger>
+            <TabsTrigger value="info">
+              🔵 Info ({infoAlerts.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all">
+            {alerts.map(renderAlert)}
+          </TabsContent>
+
+          <TabsContent value="critical">
+            {criticalAlerts.map(renderAlert)}
+          </TabsContent>
+
+          <TabsContent value="warning">
+            {warningAlerts.map(renderAlert)}
+          </TabsContent>
+
+          <TabsContent value="info">
+            {infoAlerts.map(renderAlert)}
+          </TabsContent>
+        </Tabs>
+
+        <Button variant="outline" className="w-full mt-4">
+          Ver Todos os Alertas (25)
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default AlertsPanel;
