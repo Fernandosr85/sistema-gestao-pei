@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area } from 'recharts';
-import { TrendingUp, TrendingDown, Minus, Lightbulb } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, LineChart } from 'recharts';
+import { TrendingUp, TrendingDown, Minus, Lightbulb, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const data = [
   { mes: 'Jan', progresso_real: 2, meta_esperada: 1 },
@@ -17,6 +19,89 @@ const data = [
   { mes: 'Nov', progresso_real: 10, meta_esperada: 11 },
   { mes: 'Dez', progresso_real: 10, meta_esperada: 12 },
 ];
+
+const dadosPorArea = {
+  comunicacao: {
+    nome: 'Comunicação',
+    dados: [
+      { mes: 'Jan', valor: 3, meta: 2 },
+      { mes: 'Fev', valor: 4, meta: 3 },
+      { mes: 'Mar', valor: 5, meta: 4 },
+      { mes: 'Abr', valor: 6, meta: 5 },
+      { mes: 'Mai', valor: 7, meta: 6 },
+      { mes: 'Jun', valor: 7, meta: 6 },
+    ],
+    atual: 7,
+    total: 10,
+    meta: 6,
+    cor: 'hsl(var(--chart-2))',
+    status: 'excelente'
+  },
+  alfabetizacao: {
+    nome: 'Alfabetização',
+    dados: [
+      { mes: 'Jan', valor: 1, meta: 2 },
+      { mes: 'Fev', valor: 1, meta: 3 },
+      { mes: 'Mar', valor: 2, meta: 4 },
+      { mes: 'Abr', valor: 2, meta: 5 },
+      { mes: 'Mai', valor: 3, meta: 5 },
+      { mes: 'Jun', valor: 3, meta: 5 },
+    ],
+    atual: 3,
+    total: 8,
+    meta: 5,
+    cor: 'hsl(var(--destructive))',
+    status: 'atencao'
+  },
+  matematica: {
+    nome: 'Matemática',
+    dados: [
+      { mes: 'Jan', valor: 2, meta: 2 },
+      { mes: 'Fev', valor: 3, meta: 3 },
+      { mes: 'Mar', valor: 4, meta: 4 },
+      { mes: 'Abr', valor: 4, meta: 5 },
+      { mes: 'Mai', valor: 5, meta: 5 },
+      { mes: 'Jun', valor: 5, meta: 5 },
+    ],
+    atual: 5,
+    total: 9,
+    meta: 5,
+    cor: 'hsl(var(--primary))',
+    status: 'adequado'
+  },
+  socializacao: {
+    nome: 'Socialização',
+    dados: [
+      { mes: 'Jan', valor: 1, meta: 1 },
+      { mes: 'Fev', valor: 2, meta: 2 },
+      { mes: 'Mar', valor: 2, meta: 3 },
+      { mes: 'Abr', valor: 3, meta: 3 },
+      { mes: 'Mai', valor: 4, meta: 4 },
+      { mes: 'Jun', valor: 4, meta: 4 },
+    ],
+    atual: 4,
+    total: 7,
+    meta: 4,
+    cor: 'hsl(var(--chart-4))',
+    status: 'adequado'
+  },
+  autonomia: {
+    nome: 'Autonomia',
+    dados: [
+      { mes: 'Jan', valor: 4, meta: 3 },
+      { mes: 'Fev', valor: 5, meta: 4 },
+      { mes: 'Mar', valor: 6, meta: 5 },
+      { mes: 'Abr', valor: 7, meta: 6 },
+      { mes: 'Mai', valor: 8, meta: 6 },
+      { mes: 'Jun', valor: 8, meta: 6 },
+    ],
+    atual: 8,
+    total: 10,
+    meta: 6,
+    cor: 'hsl(var(--chart-3))',
+    status: 'excelente'
+  }
+};
 
 // Calcular status do mês atual (Junho neste exemplo)
 const mesAtual = 'Jun';
@@ -47,6 +132,8 @@ const status = getStatus();
 const StatusIcon = status.icon;
 
 const ProgressChart = () => {
+  const [areaSelecionada, setAreaSelecionada] = useState<string | null>(null);
+
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -54,7 +141,7 @@ const ProgressChart = () => {
           <div>
             <CardTitle className="text-xl">PROGRESSO GERAL</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Objetivos do PEI alcançados ao longo do ano letivo
+              Acompanhamento dos objetivos do PEI ao longo do ano letivo
             </p>
           </div>
           
@@ -67,6 +154,14 @@ const ProgressChart = () => {
       </CardHeader>
       
       <CardContent>
+        <Tabs defaultValue="geral" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="geral">📊 Visão Geral</TabsTrigger>
+            <TabsTrigger value="areas">📈 Por Áreas</TabsTrigger>
+          </TabsList>
+
+          {/* TAB 1: VISÃO GERAL */}
+          <TabsContent value="geral">
         <ResponsiveContainer width="100%" height={350}>
           <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
@@ -196,9 +291,217 @@ const ProgressChart = () => {
             </div>
           </div>
         </div>
+          </TabsContent>
+
+          {/* TAB 2: POR ÁREAS */}
+          <TabsContent value="areas">
+            {/* Grid de mini-cards */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {Object.entries(dadosPorArea).map(([key, area]) => (
+                <MiniCardArea
+                  key={key}
+                  area={area}
+                  onClick={() => setAreaSelecionada(key)}
+                  ativo={areaSelecionada === key}
+                />
+              ))}
+            </div>
+
+            {/* Gráfico detalhado da área selecionada */}
+            {areaSelecionada && (
+              <div className="mt-6 p-6 bg-accent rounded-lg border-2 border-primary/20">
+                <GraficoAreaDetalhado 
+                  area={dadosPorArea[areaSelecionada as keyof typeof dadosPorArea]} 
+                />
+              </div>
+            )}
+
+            {!areaSelecionada && (
+              <div className="text-center py-12 text-muted-foreground">
+                <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Clique em uma área acima para ver os detalhes</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
 };
+
+// ==================== COMPONENTES AUXILIARES ====================
+
+function MiniCardArea({ area, onClick, ativo }: any) {
+  const getStatusIcon = () => {
+    if (area.status === 'excelente') return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+    if (area.status === 'atencao') return <AlertCircle className="w-4 h-4 text-red-600" />;
+    return <TrendingUp className="w-4 h-4 text-primary" />;
+  };
+
+  const getStatusBadge = () => {
+    if (area.status === 'excelente') return <Badge className="bg-green-600 hover:bg-green-700">🎯 Excelente</Badge>;
+    if (area.status === 'atencao') return <Badge variant="destructive">⚠️ Atenção</Badge>;
+    return <Badge className="bg-primary hover:bg-primary/90">✓ Adequado</Badge>;
+  };
+
+  const percentual = Math.round((area.atual / area.total) * 100);
+
+  return (
+    <div 
+      className={`
+        p-4 rounded-lg border-2 cursor-pointer transition-all
+        hover:shadow-lg hover:scale-105
+        ${ativo ? 'border-primary bg-accent shadow-md' : 'border-border bg-card'}
+      `}
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="font-semibold text-sm text-foreground">{area.nome}</h4>
+        {getStatusIcon()}
+      </div>
+
+      {/* Mini sparkline */}
+      <div className="h-12 mb-3">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={area.dados}>
+            <Line 
+              type="monotone" 
+              dataKey="valor" 
+              stroke={area.cor} 
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Estatísticas */}
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-2xl font-bold" style={{ color: area.cor }}>
+          {area.atual}/{area.total}
+        </span>
+        <span className="text-sm text-muted-foreground">{percentual}%</span>
+      </div>
+
+      {getStatusBadge()}
+    </div>
+  );
+}
+
+function GraficoAreaDetalhado({ area }: any) {
+  const percentual = Math.round((area.atual / area.total) * 100);
+  const diferenca = area.atual - area.meta;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-xl font-bold text-foreground">{area.nome}</h3>
+          <p className="text-sm text-muted-foreground">Análise detalhada de progresso</p>
+        </div>
+        <div className="text-right">
+          <p className="text-4xl font-bold" style={{ color: area.cor }}>
+            {percentual}%
+          </p>
+          <p className="text-sm text-muted-foreground">de conclusão</p>
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={300}>
+        <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id={`gradient-${area.nome}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={area.cor} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={area.cor} stopOpacity={0.05}/>
+            </linearGradient>
+          </defs>
+          
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+          <XAxis 
+            dataKey="mes" 
+            stroke="hsl(var(--muted-foreground))"
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+          />
+          <YAxis 
+            domain={[0, area.total]}
+            stroke="hsl(var(--muted-foreground))"
+            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'hsl(var(--card))', 
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '8px'
+            }}
+          />
+          
+          <Area
+            type="monotone"
+            dataKey="valor"
+            fill={`url(#gradient-${area.nome})`}
+            stroke="none"
+          />
+          
+          <Line
+            type="monotone"
+            dataKey="meta"
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={false}
+            name="Meta"
+          />
+          
+          <Line 
+            type="monotone" 
+            dataKey="valor" 
+            stroke={area.cor} 
+            strokeWidth={3}
+            dot={{ fill: area.cor, r: 4 }}
+            name="Progresso"
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      {/* Métricas detalhadas */}
+      <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-border">
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1">Objetivos totais</p>
+          <p className="text-2xl font-bold text-foreground">{area.total}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1">Alcançados</p>
+          <p className="text-2xl font-bold" style={{ color: area.cor }}>
+            {area.atual}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1">Meta atual</p>
+          <p className="text-2xl font-bold text-muted-foreground">{area.meta}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground mb-1">Diferença</p>
+          <p className={`text-2xl font-bold ${diferenca >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {diferenca >= 0 ? '+' : ''}{diferenca}
+          </p>
+        </div>
+      </div>
+
+      {/* Insights */}
+      <div className="mt-6 p-4 bg-card rounded-lg border border-border">
+        <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+          <Lightbulb className="w-5 h-5 text-primary" />
+          Insights da IA
+        </h4>
+        <p className="text-sm text-muted-foreground">
+          {diferenca >= 0 
+            ? `Parabéns! O aluno está ${Math.abs(diferenca)} objetivo(s) acima da meta em ${area.nome}. Continue com as estratégias atuais.`
+            : `O aluno está ${Math.abs(diferenca)} objetivo(s) abaixo da meta em ${area.nome}. Considere intensificar as intervenções nesta área.`
+          }
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default ProgressChart;
