@@ -309,11 +309,9 @@ const ProgressChart = () => {
 
             {/* Gráfico detalhado da área selecionada */}
             {areaSelecionada && (
-              <div className="mt-6 p-6 bg-accent rounded-lg border-2 border-primary/20">
-                <GraficoAreaDetalhado 
-                  area={dadosPorArea[areaSelecionada as keyof typeof dadosPorArea]} 
-                />
-              </div>
+              <GraficoAreaDetalhado 
+                area={dadosPorArea[areaSelecionada as keyof typeof dadosPorArea]} 
+              />
             )}
 
             {!areaSelecionada && (
@@ -393,107 +391,130 @@ function GraficoAreaDetalhado({ area }: any) {
   const diferenca = area.atual - area.meta;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h3 className="text-xl font-bold text-foreground">{area.nome}</h3>
-          <p className="text-sm text-muted-foreground">Análise detalhada de progresso</p>
-        </div>
-        <div className="text-right">
-          <p className="text-4xl font-bold" style={{ color: area.cor }}>
-            {percentual}%
-          </p>
-          <p className="text-sm text-muted-foreground">de conclusão</p>
+    <div 
+      className="mt-6 bg-white rounded-lg shadow-md overflow-hidden"
+      style={{ borderLeft: `8px solid ${area.cor}` }}
+    >
+      {/* Header com gradiente sutil */}
+      <div 
+        className="p-6 pb-4"
+        style={{ 
+          background: `linear-gradient(to right, ${area.cor}08, transparent)` 
+        }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">{area.nome}</h3>
+            <p className="text-sm text-gray-600">Análise detalhada de progresso</p>
+          </div>
+          <div className="text-right">
+            <p className="text-4xl font-bold" style={{ color: area.cor }}>
+              {percentual}%
+            </p>
+            <p className="text-sm text-gray-600">de conclusão</p>
+          </div>
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <defs>
-            <linearGradient id={`gradient-${area.nome}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={area.cor} stopOpacity={0.3}/>
-              <stop offset="95%" stopColor={area.cor} stopOpacity={0.05}/>
-            </linearGradient>
-          </defs>
-          
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-          <XAxis 
-            dataKey="mes" 
-            stroke="hsl(var(--muted-foreground))"
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-          />
-          <YAxis 
-            domain={[0, area.total]}
-            stroke="hsl(var(--muted-foreground))"
-            tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-          />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: 'hsl(var(--card))', 
-              border: '1px solid hsl(var(--border))',
-              borderRadius: '8px'
-            }}
-          />
-          
-          <Area
-            type="monotone"
-            dataKey="valor"
-            fill={`url(#gradient-${area.nome})`}
-            stroke="none"
-          />
-          
-          <Line
-            type="monotone"
-            dataKey="meta"
-            stroke="hsl(var(--muted-foreground))"
-            strokeWidth={2}
-            strokeDasharray="5 5"
-            dot={false}
-            name="Meta"
-          />
-          
-          <Line 
-            type="monotone" 
-            dataKey="valor" 
-            stroke={area.cor} 
-            strokeWidth={3}
-            dot={{ fill: area.cor, r: 4 }}
-            name="Progresso"
-          />
-        </ComposedChart>
-      </ResponsiveContainer>
+      {/* Gráfico */}
+      <div className="px-6 pb-4">
+
+        <ResponsiveContainer width="100%" height={300}>
+          <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id={`gradient-${area.nome}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={area.cor} stopOpacity={0.4}/>
+                <stop offset="95%" stopColor={area.cor} stopOpacity={0.05}/>
+              </linearGradient>
+            </defs>
+            
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis 
+              dataKey="mes" 
+              stroke="#6B7280"
+              tick={{ fill: '#6B7280', fontSize: 12 }}
+            />
+            <YAxis 
+              domain={[0, area.total]}
+              stroke="#6B7280"
+              tick={{ fill: '#6B7280', fontSize: 12 }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: '#FFFFFF', 
+                border: '1px solid #E5E7EB',
+                borderRadius: '8px'
+              }}
+            />
+            
+            <Area
+              type="monotone"
+              dataKey="valor"
+              fill={`url(#gradient-${area.nome})`}
+              stroke="none"
+            />
+            
+            <Line
+              type="monotone"
+              dataKey="meta"
+              stroke="#9CA3AF"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={false}
+              name="Meta"
+            />
+            
+            <Line 
+              type="monotone" 
+              dataKey="valor" 
+              stroke={area.cor} 
+              strokeWidth={3}
+              dot={{ fill: area.cor, r: 4 }}
+              name="Progresso"
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Métricas detalhadas */}
-      <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t border-border">
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">Objetivos totais</p>
-          <p className="text-2xl font-bold text-foreground">{area.total}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">Alcançados</p>
-          <p className="text-2xl font-bold" style={{ color: area.cor }}>
-            {area.atual}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">Meta atual</p>
-          <p className="text-2xl font-bold text-muted-foreground">{area.meta}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-xs text-muted-foreground mb-1">Diferença</p>
-          <p className={`text-2xl font-bold ${diferenca >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {diferenca >= 0 ? '+' : ''}{diferenca}
-          </p>
+      <div className="px-6 pb-4">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-600 mb-1">Objetivos totais</p>
+            <p className="text-2xl font-bold text-gray-900">{area.total}</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-600 mb-1">Alcançados</p>
+            <p className="text-2xl font-bold" style={{ color: area.cor }}>
+              {area.atual}
+            </p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-600 mb-1">Meta atual</p>
+            <p className="text-2xl font-bold text-gray-700">{area.meta}</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-600 mb-1">Diferença</p>
+            <p className={`text-2xl font-bold ${diferenca >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {diferenca >= 0 ? '+' : ''}{diferenca}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Insights */}
-      <div className="mt-6 p-4 bg-card rounded-lg border border-border">
-        <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-          <Lightbulb className="w-5 h-5 text-primary" />
+      <div 
+        className="mx-6 mb-6 p-4 rounded-lg border"
+        style={{ 
+          backgroundColor: `${area.cor}08`,
+          borderColor: `${area.cor}40`
+        }}
+      >
+        <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+          <Lightbulb className="w-5 h-5" style={{ color: area.cor }} />
           Insights da IA
         </h4>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-700">
           {diferenca >= 0 
             ? `Parabéns! O aluno está ${Math.abs(diferenca)} objetivo(s) acima da meta em ${area.nome}. Continue com as estratégias atuais.`
             : `O aluno está ${Math.abs(diferenca)} objetivo(s) abaixo da meta em ${area.nome}. Considere intensificar as intervenções nesta área.`
