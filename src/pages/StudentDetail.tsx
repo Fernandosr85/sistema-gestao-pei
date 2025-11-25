@@ -5,6 +5,9 @@ import {
   Edit, FileCheck, Clipboard, BarChart3, Lock, Shield, GraduationCap,
   Heart, BookOpen, Users, AlertCircle, Clock, CheckCircle, School
 } from 'lucide-react';
+import { StudentPerformanceDialog } from '@/components/StudentPerformanceDialog';
+import { StudentHistoryDialog } from '@/components/StudentHistoryDialog';
+import { PresentationModeDialog } from '@/components/PresentationModeDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -353,29 +356,32 @@ const StudentDetail = () => {
                 <CardTitle className="text-lg">Ações Rápidas</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm">
-                  <Lock className="h-4 w-4" />
-                  Segurança/Permissões
-                </Button>
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm" onClick={() => setEditDialogOpen(true)}>
-                  <Edit className="h-4 w-4" />
-                  Editar informações
-                </Button>
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm">
-                  <GraduationCap className="h-4 w-4" />
-                  Histórico acadêmico
-                </Button>
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-2" 
+                  size="sm"
+                  onClick={() => setReportDialogOpen(true)}
+                >
                   <BarChart3 className="h-4 w-4" />
-                  Ver desempenho
+                  Ver Desempenho Completo
                 </Button>
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm">
-                  <Shield className="h-4 w-4" />
-                  Dados protegidos
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-2" 
+                  size="sm"
+                  onClick={() => setPeiDialogOpen(true)}
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Histórico Acadêmico
                 </Button>
-                <Button variant="outline" className="w-full justify-start gap-2" size="sm">
-                  <Shield className="h-4 w-4" />
-                  Conformidade LGPD
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start gap-2" 
+                  size="sm"
+                  onClick={() => setEditDialogOpen(true)}
+                >
+                  <FileText className="h-4 w-4" />
+                  Modo Apresentação/Reunião
                 </Button>
               </CardContent>
             </Card>
@@ -475,6 +481,23 @@ const StudentDetail = () => {
           </p>
         </div>
       </div>
+
+      {/* Dialogs */}
+      <StudentPerformanceDialog
+        open={reportDialogOpen}
+        onOpenChange={setReportDialogOpen}
+        studentName={student.nomeCompleto}
+      />
+      <StudentHistoryDialog
+        open={peiDialogOpen}
+        onOpenChange={setPeiDialogOpen}
+        studentName={student.nomeCompleto}
+      />
+      <PresentationModeDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        studentName={student.nomeCompleto}
+      />
     </div>
   );
 };
