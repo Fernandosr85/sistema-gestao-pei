@@ -8,6 +8,10 @@ import {
 import { StudentPerformanceDialog } from '@/components/StudentPerformanceDialog';
 import { StudentHistoryDialog } from '@/components/StudentHistoryDialog';
 import { PresentationModeDialog } from '@/components/PresentationModeDialog';
+import { EditarCadastroDialog } from '@/components/EditarCadastroDialog';
+import { VerPEIDialog } from '@/components/VerPEIDialog';
+import { AnexosDialog } from '@/components/AnexosDialog';
+import { NovaObservacaoDialog } from '@/components/NovaObservacaoDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,9 +24,13 @@ import { mockStudents } from '@/data/mockData';
 const StudentDetail = () => {
   const { id } = useParams();
   const student = mockStudents.find((s) => s.id === id);
+  const [performanceDialogOpen, setPerformanceDialogOpen] = useState(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [presentationDialogOpen, setPresentationDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [peiDialogOpen, setPeiDialogOpen] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [anexosDialogOpen, setAnexosDialogOpen] = useState(false);
+  const [observacaoDialogOpen, setObservacaoDialogOpen] = useState(false);
 
   if (!student) {
     return (
@@ -360,7 +368,7 @@ const StudentDetail = () => {
                   variant="outline" 
                   className="w-full justify-start gap-2" 
                   size="sm"
-                  onClick={() => setReportDialogOpen(true)}
+                  onClick={() => setPerformanceDialogOpen(true)}
                 >
                   <BarChart3 className="h-4 w-4" />
                   Ver Desempenho Completo
@@ -369,7 +377,7 @@ const StudentDetail = () => {
                   variant="outline" 
                   className="w-full justify-start gap-2" 
                   size="sm"
-                  onClick={() => setPeiDialogOpen(true)}
+                  onClick={() => setHistoryDialogOpen(true)}
                 >
                   <GraduationCap className="h-4 w-4" />
                   Histórico Acadêmico
@@ -378,7 +386,7 @@ const StudentDetail = () => {
                   variant="outline" 
                   className="w-full justify-start gap-2" 
                   size="sm"
-                  onClick={() => setEditDialogOpen(true)}
+                  onClick={() => setPresentationDialogOpen(true)}
                 >
                   <FileText className="h-4 w-4" />
                   Modo Apresentação/Reunião
@@ -388,84 +396,41 @@ const StudentDetail = () => {
           </div>
         </div>
 
-        {/* Barra de Botões Inferiores */}
+        {/* Barra de Botões Principais de Ação */}
         <div className="mt-8 flex flex-wrap gap-3 justify-center md:justify-start">
-          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
-                <Edit className="mr-2 h-4 w-4" />
-                Editar Cadastro
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Editar Cadastro do Aluno</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                <p className="text-muted-foreground">Formulário de edição será implementado aqui.</p>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Badge className="flex items-center justify-center h-10 px-4 bg-success hover:bg-success/90 text-lg">
-            21
-          </Badge>
-
-          <Dialog open={peiDialogOpen} onOpenChange={setPeiDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-warning hover:bg-warning/90">
-                <FileText className="mr-2 h-4 w-4" />
-                Ver PEI Ativo
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>Plano Educacional Individualizado (PEI)</DialogTitle>
-              </DialogHeader>
-              <div className="py-4">
-                <p className="text-muted-foreground">Visualização do PEI será implementada aqui.</p>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-            <DialogTrigger asChild>
-              <Button style={{ backgroundColor: 'hsl(var(--info))' }} className="hover:opacity-90">
-                <BarChart3 className="mr-2 h-4 w-4" />
-                Gerar Relatório
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Gerar Relatório</DialogTitle>
-              </DialogHeader>
-              <div className="py-4 space-y-3">
-                <p className="text-muted-foreground">Selecione o tipo de relatório:</p>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    Relatório completo do aluno
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Relatório de saúde
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Relatório pedagógico
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    Histórico de progressão
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Button variant="outline">
-            <Clipboard className="h-4 w-4" />
+          <Button 
+            className="bg-primary hover:bg-primary/90"
+            onClick={() => setEditDialogOpen(true)}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Editar Cadastro
           </Button>
 
-          <Button variant="outline">
+          <Button 
+            className="bg-destructive hover:bg-destructive/90"
+            onClick={() => setPeiDialogOpen(true)}
+          >
             <FileText className="mr-2 h-4 w-4" />
-            Observações
+            Ver PEI Ativo
+          </Button>
+
+          <Button 
+            className="bg-success hover:bg-success/90 gap-2"
+            onClick={() => setAnexosDialogOpen(true)}
+          >
+            <Badge className="bg-white text-success text-lg font-bold px-3 py-1">
+              21
+            </Badge>
+            Anexos
+          </Button>
+
+          <Button 
+            style={{ backgroundColor: 'hsl(var(--info))' }}
+            className="hover:opacity-90"
+            onClick={() => setObservacaoDialogOpen(true)}
+          >
+            <Clipboard className="mr-2 h-4 w-4" />
+            Nova Observação
           </Button>
         </div>
 
@@ -484,18 +449,39 @@ const StudentDetail = () => {
 
       {/* Dialogs */}
       <StudentPerformanceDialog
-        open={reportDialogOpen}
-        onOpenChange={setReportDialogOpen}
+        open={performanceDialogOpen}
+        onOpenChange={setPerformanceDialogOpen}
         studentName={student.nomeCompleto}
       />
       <StudentHistoryDialog
+        open={historyDialogOpen}
+        onOpenChange={setHistoryDialogOpen}
+        studentName={student.nomeCompleto}
+      />
+      <PresentationModeDialog
+        open={presentationDialogOpen}
+        onOpenChange={setPresentationDialogOpen}
+        studentName={student.nomeCompleto}
+      />
+      <EditarCadastroDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        studentName={student.nomeCompleto}
+      />
+      <VerPEIDialog
         open={peiDialogOpen}
         onOpenChange={setPeiDialogOpen}
         studentName={student.nomeCompleto}
       />
-      <PresentationModeDialog
-        open={editDialogOpen}
-        onOpenChange={setEditDialogOpen}
+      <AnexosDialog
+        open={anexosDialogOpen}
+        onOpenChange={setAnexosDialogOpen}
+        studentName={student.nomeCompleto}
+        totalAnexos={21}
+      />
+      <NovaObservacaoDialog
+        open={observacaoDialogOpen}
+        onOpenChange={setObservacaoDialogOpen}
         studentName={student.nomeCompleto}
       />
     </div>
