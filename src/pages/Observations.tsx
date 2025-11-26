@@ -6,9 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { mockObservations } from '@/data/mockData';
 import { Link } from 'react-router-dom';
+import { ObservationDetailDialog } from '@/components/ObservationDetailDialog';
+import { Observation } from '@/types';
 
 const Observations = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedObservation, setSelectedObservation] = useState<Observation | null>(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   const filteredObservations = mockObservations.filter((obs) =>
     obs.studentName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -71,11 +75,16 @@ const Observations = () => {
                       <Badge variant="outline">{observation.duracao} min</Badge>
                     </div>
                   </div>
-                  <Link to={`/observacoes/${observation.id}`}>
-                    <Button variant="outline" size="sm">
-                      Ver Detalhes
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setSelectedObservation(observation);
+                      setDetailDialogOpen(true);
+                    }}
+                  >
+                    Ver Detalhes
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -125,6 +134,13 @@ const Observations = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Detail Dialog */}
+      <ObservationDetailDialog
+        open={detailDialogOpen}
+        onOpenChange={setDetailDialogOpen}
+        observation={selectedObservation}
+      />
     </div>
   );
 };
