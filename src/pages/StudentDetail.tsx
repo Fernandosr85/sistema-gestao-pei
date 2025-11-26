@@ -12,6 +12,7 @@ import { EditarCadastroDialog } from '@/components/EditarCadastroDialog';
 import { VerPEIDialog } from '@/components/VerPEIDialog';
 import { AnexosDialog } from '@/components/AnexosDialog';
 import { NovaObservacaoDialog } from '@/components/NovaObservacaoDialog';
+import { BenchmarkingPanel } from '@/components/BenchmarkingPanel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -325,6 +326,13 @@ const StudentDetail = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Benchmarking Panel */}
+            <BenchmarkingPanel 
+              studentName={student.nomeCompleto}
+              diagnosis={student.diagnostico}
+              diagnosisLevel={student.nivelSuporte}
+            />
           </div>
 
           {/* Coluna Direita - Timeline e Ícones de Ação */}
