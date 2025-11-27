@@ -366,6 +366,91 @@ const AgendaAtendimentos = () => {
         </TabsContent>
 
         <TabsContent value="dia" className="space-y-4">
+          {/* Resumo Estatístico do Dia */}
+          {(() => {
+            const selectedDay = format(currentDate, 'yyyy-MM-dd');
+            const atendimentosDoDia = filteredAtendimentos.filter(a => a.data === selectedDay);
+            
+            const totalAtendimentos = atendimentosDoDia.length;
+            
+            // Calcular duração média
+            const duracaoTotal = atendimentosDoDia.reduce((acc, a) => {
+              const [startHour, startMin] = a.horarioInicio.split(':').map(Number);
+              const [endHour, endMin] = a.horarioFim.split(':').map(Number);
+              const duracao = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+              return acc + duracao;
+            }, 0);
+            const duracaoMedia = totalAtendimentos > 0 ? Math.round(duracaoTotal / totalAtendimentos) : 0;
+            
+            // Distribuição por tipo
+            const distribuicaoPorTipo = atendimentosDoDia.reduce((acc, a) => {
+              acc[a.tipo] = (acc[a.tipo] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>);
+
+            return totalAtendimentos > 0 ? (
+              <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <CalendarCheck className="h-5 w-5" />
+                    Resumo de {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                      <div className="text-sm text-muted-foreground mb-1">Total de Atendimentos</div>
+                      <div className="text-2xl font-bold">{totalAtendimentos}</div>
+                    </div>
+                    <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                      <div className="text-sm text-muted-foreground mb-1">Duração Média</div>
+                      <div className="text-2xl font-bold">
+                        {Math.floor(duracaoMedia / 60)}h {duracaoMedia % 60}min
+                      </div>
+                    </div>
+                    <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                      <div className="text-sm text-muted-foreground mb-1">Período de Atendimento</div>
+                      <div className="text-2xl font-bold">
+                        {atendimentosDoDia.length > 0 ? (
+                          <>
+                            {atendimentosDoDia.reduce((earliest, a) => 
+                              a.horarioInicio < earliest ? a.horarioInicio : earliest, 
+                              atendimentosDoDia[0].horarioInicio
+                            )}
+                            {' - '}
+                            {atendimentosDoDia.reduce((latest, a) => 
+                              a.horarioFim > latest ? a.horarioFim : latest, 
+                              atendimentosDoDia[0].horarioFim
+                            )}
+                          </>
+                        ) : '-'}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                    <div className="text-sm font-medium mb-3">Distribuição por Tipo</div>
+                    <div className="flex flex-wrap gap-2">
+                      {Object.entries(distribuicaoPorTipo).map(([tipo, count]) => (
+                        <Badge
+                          key={tipo}
+                          variant="secondary"
+                          className="text-xs px-3 py-1"
+                          style={{
+                            backgroundColor: tipoColors[tipo as keyof typeof tipoColors].replace('bg-', '').replace('-500', ''),
+                            color: 'white',
+                          }}
+                        >
+                          {tipo}: {count}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null;
+          })()}
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <CardTitle className="text-base font-medium">Selecionar Data</CardTitle>
