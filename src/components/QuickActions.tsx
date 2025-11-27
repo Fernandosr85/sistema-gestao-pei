@@ -1,12 +1,10 @@
-import { FileText, ClipboardCheck, CalendarClock } from 'lucide-react';
+import { Users, ClipboardList, ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { GenerateReportDialog } from './GenerateReportDialog';
 import { NewAssessmentDialog } from './NewAssessmentDialog';
 import { useNavigate } from 'react-router-dom';
 
 const QuickActions = () => {
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [assessmentDialogOpen, setAssessmentDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -15,13 +13,22 @@ const QuickActions = () => {
       <div className="space-y-4">
         <h2 className="text-2xl font-bold text-foreground">Ações Rápidas</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Gerar Relatório */}
+          {/* Novo Cadastro */}
           <Button
-            onClick={() => setReportDialogOpen(true)}
-            className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
+            onClick={() => navigate('/alunos/novo')}
+            className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
           >
-            <FileText className="h-12 w-12" />
-            <span className="text-lg font-semibold">Gerar Relatório</span>
+            <Users className="h-12 w-12" />
+            <span className="text-lg font-semibold">Novo Cadastro</span>
+          </Button>
+
+          {/* Nova Observação */}
+          <Button
+            onClick={() => navigate('/observacoes/nova')}
+            className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
+          >
+            <ClipboardList className="h-12 w-12" />
+            <span className="text-lg font-semibold">Nova Observação</span>
           </Button>
 
           {/* Nova Avaliação */}
@@ -32,19 +39,9 @@ const QuickActions = () => {
             <ClipboardCheck className="h-12 w-12" />
             <span className="text-lg font-semibold">Nova Avaliação</span>
           </Button>
-
-          {/* Agenda de Atendimentos */}
-          <Button
-            onClick={() => navigate('/agenda-atendimentos')}
-            className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
-          >
-            <CalendarClock className="h-12 w-12" />
-            <span className="text-lg font-semibold">Agenda de Atendimentos</span>
-          </Button>
         </div>
       </div>
 
-      <GenerateReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
       <NewAssessmentDialog open={assessmentDialogOpen} onOpenChange={setAssessmentDialogOpen} />
     </>
   );
