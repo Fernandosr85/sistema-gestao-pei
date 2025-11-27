@@ -14,6 +14,7 @@ import ComplexityAnalysis from "./pages/ComplexityAnalysis";
 import Legislation from "./pages/Legislation";
 import Manual from "./pages/Manual";
 import ResourceLibrary from "./pages/ResourceLibrary";
+import AgendaAtendimentos from "./pages/AgendaAtendimentos";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 
@@ -39,6 +40,7 @@ const App = () => (
             <Route path="/legislacao" element={<Legislation />} />
             <Route path="/manual" element={<Manual />} />
             <Route path="/biblioteca-recursos" element={<ResourceLibrary />} />
+            <Route path="/agenda-atendimentos" element={<AgendaAtendimentos />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
