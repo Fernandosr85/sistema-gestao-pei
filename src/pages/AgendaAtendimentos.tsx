@@ -14,6 +14,7 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import StatCard from '@/components/StatCard';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
@@ -89,6 +90,14 @@ const tipoColors = {
   'Atendimento Família': 'bg-orange-500',
   'Multidisciplinar': 'bg-purple-500',
   'Outros': 'bg-gray-500',
+};
+
+const tipoColorsPie = {
+  'Reunião Pedagógica': '#3B82F6',
+  'Avaliação': '#10B981',
+  'Atendimento Família': '#F59E0B',
+  'Multidisciplinar': '#8B5CF6',
+  'Outros': '#6B7280',
 };
 
 const statusBadgeVariant = {
@@ -430,20 +439,59 @@ const AgendaAtendimentos = () => {
                   
                   <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
                     <div className="text-sm font-medium mb-3">Distribuição por Tipo</div>
-                    <div className="flex flex-wrap gap-2">
-                      {Object.entries(distribuicaoPorTipo).map(([tipo, count]) => (
-                        <Badge
-                          key={tipo}
-                          variant="secondary"
-                          className="text-xs px-3 py-1"
-                          style={{
-                            backgroundColor: tipoColors[tipo as keyof typeof tipoColors].replace('bg-', '').replace('-500', ''),
-                            color: 'white',
-                          }}
-                        >
-                          {tipo}: {count}
-                        </Badge>
-                      ))}
+                    <div className="grid md:grid-cols-2 gap-6">
+                      {/* Badges */}
+                      <div className="flex flex-col gap-2 justify-center">
+                        {Object.entries(distribuicaoPorTipo).map(([tipo, count]) => (
+                          <div key={tipo} className="flex items-center gap-2">
+                            <div 
+                              className="w-3 h-3 rounded-full"
+                              style={{
+                                backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
+                              }}
+                            />
+                            <span className="text-sm flex-1">{tipo}</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {count} ({Math.round((count / totalAtendimentos) * 100)}%)
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Gráfico de Donut */}
+                      <div className="h-[200px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={Object.entries(distribuicaoPorTipo).map(([tipo, count]) => ({
+                                name: tipo,
+                                value: count,
+                              }))}
+                              cx="50%"
+                              cy="50%"
+                              innerRadius={50}
+                              outerRadius={80}
+                              paddingAngle={2}
+                              dataKey="value"
+                              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                            >
+                              {Object.keys(distribuicaoPorTipo).map((tipo) => (
+                                <Cell 
+                                  key={tipo} 
+                                  fill={tipoColorsPie[tipo as keyof typeof tipoColorsPie]} 
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: 'hsl(var(--popover))',
+                                border: '1px solid hsl(var(--border))',
+                                borderRadius: '6px',
+                              }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
