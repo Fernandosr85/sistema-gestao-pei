@@ -1,14 +1,14 @@
-import { FileText, ClipboardCheck, BarChart3 } from 'lucide-react';
+import { FileText, ClipboardCheck, CalendarClock } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { GenerateReportDialog } from './GenerateReportDialog';
 import { NewAssessmentDialog } from './NewAssessmentDialog';
-import { CoordinationDashboard } from './CoordinationDashboard';
+import { useNavigate } from 'react-router-dom';
 
 const QuickActions = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [assessmentDialogOpen, setAssessmentDialogOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -33,20 +33,19 @@ const QuickActions = () => {
             <span className="text-lg font-semibold">Nova Avaliação</span>
           </Button>
 
-          {/* Dashboard Coordenação */}
+          {/* Agenda de Atendimentos */}
           <Button
-            onClick={() => setDashboardOpen(true)}
+            onClick={() => navigate('/agenda-atendimentos')}
             className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
           >
-            <BarChart3 className="h-12 w-12" />
-            <span className="text-lg font-semibold">Dashboard Coordenação</span>
+            <CalendarClock className="h-12 w-12" />
+            <span className="text-lg font-semibold">Agenda de Atendimentos</span>
           </Button>
         </div>
       </div>
 
       <GenerateReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
       <NewAssessmentDialog open={assessmentDialogOpen} onOpenChange={setAssessmentDialogOpen} />
-      <CoordinationDashboard open={dashboardOpen} onOpenChange={setDashboardOpen} />
     </>
   );
 };
