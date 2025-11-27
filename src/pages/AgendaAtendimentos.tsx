@@ -1,5 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange } from 'lucide-react';
+import { Calendar as BigCalendar, momentLocalizer, View } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'moment/locale/pt-br';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +93,9 @@ const statusBadgeVariant = {
   remarcado: 'outline',
 } as const;
 
+moment.locale('pt-br');
+const localizer = momentLocalizer(moment);
+
 const AgendaAtendimentos = () => {
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
   const [detalhesOpen, setDetalhesOpen] = useState(false);
@@ -96,6 +103,8 @@ const AgendaAtendimentos = () => {
   const [filtroAluno, setFiltroAluno] = useState('todos');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [filtroStatus, setFiltroStatus] = useState('todos');
+  const [currentView, setCurrentView] = useState<View>('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const handleAtendimentoClick = (atendimento: any) => {
     setSelectedAtendimento(atendimento);
@@ -120,6 +129,40 @@ const AgendaAtendimentos = () => {
     if (filtroStatus !== 'todos' && atendimento.status !== filtroStatus) return false;
     return true;
   });
+
+  const calendarEvents = useMemo(() => {
+    return filteredAtendimentos.map(atendimento => {
+      const [year, month, day] = atendimento.data.split('-').map(Number);
+      const [startHour, startMinute] = atendimento.horarioInicio.split(':').map(Number);
+      const [endHour, endMinute] = atendimento.horarioFim.split(':').map(Number);
+      
+      return {
+        id: atendimento.id,
+        title: atendimento.aluno,
+        start: new Date(year, month - 1, day, startHour, startMinute),
+        end: new Date(year, month - 1, day, endHour, endMinute),
+        resource: atendimento,
+      };
+    });
+  }, [filteredAtendimentos]);
+
+  const eventStyleGetter = (event: any) => {
+    const tipo = event.resource.tipo;
+    const color = tipoColors[tipo as keyof typeof tipoColors];
+    
+    return {
+      style: {
+        backgroundColor: color.replace('bg-', '').replace('-500', ''),
+        borderRadius: '4px',
+        opacity: 0.9,
+        color: 'white',
+        border: '0px',
+        display: 'block',
+        fontSize: '0.85rem',
+        padding: '2px 5px',
+      }
+    };
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6 animate-fade-in">
@@ -243,10 +286,35 @@ const AgendaAtendimentos = () => {
         <TabsContent value="mes" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-              <div className="text-center text-muted-foreground py-12">
-                <Calendar className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Visualização de calendário mensal em desenvolvimento</p>
-                <p className="text-sm mt-2">Use a visualização em Lista para ver todos os atendimentos</p>
+              <div style={{ height: '700px' }} className="calendar-container">
+                <BigCalendar
+                  localizer={localizer}
+                  events={calendarEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: '100%' }}
+                  views={['month']}
+                  view={currentView}
+                  onView={setCurrentView}
+                  date={currentDate}
+                  onNavigate={setCurrentDate}
+                  onSelectEvent={(event) => handleAtendimentoClick(event.resource)}
+                  eventPropGetter={eventStyleGetter}
+                  messages={{
+                    next: 'Próximo',
+                    previous: 'Anterior',
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia',
+                    agenda: 'Agenda',
+                    date: 'Data',
+                    time: 'Hora',
+                    event: 'Evento',
+                    noEventsInRange: 'Não há atendimentos neste período',
+                    showMore: (total) => `+ ${total} mais`,
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
@@ -255,10 +323,34 @@ const AgendaAtendimentos = () => {
         <TabsContent value="semana" className="space-y-4">
           <Card>
             <CardContent className="p-6">
-              <div className="text-center text-muted-foreground py-12">
-                <CalendarDays className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Visualização de calendário semanal em desenvolvimento</p>
-                <p className="text-sm mt-2">Use a visualização em Lista para ver todos os atendimentos</p>
+              <div style={{ height: '700px' }} className="calendar-container">
+                <BigCalendar
+                  localizer={localizer}
+                  events={calendarEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: '100%' }}
+                  views={['week']}
+                  view="week"
+                  date={currentDate}
+                  onNavigate={setCurrentDate}
+                  onSelectEvent={(event) => handleAtendimentoClick(event.resource)}
+                  eventPropGetter={eventStyleGetter}
+                  messages={{
+                    next: 'Próximo',
+                    previous: 'Anterior',
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia',
+                    agenda: 'Agenda',
+                    date: 'Data',
+                    time: 'Hora',
+                    event: 'Evento',
+                    noEventsInRange: 'Não há atendimentos neste período',
+                    showMore: (total) => `+ ${total} mais`,
+                  }}
+                />
               </div>
             </CardContent>
           </Card>
