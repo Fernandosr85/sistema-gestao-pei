@@ -1,7 +1,288 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Construction } from 'lucide-react';
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { AlertTriangle, TrendingUp, Shield, ChevronDown, ChevronUp, Plus, Download, Presentation } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface Risco {
+  id: string;
+  titulo: string;
+  categoria: 'Gestão de Pessoas' | 'Conformidade' | 'Financeiro' | 'Operacional';
+  probabilidade: number; // 0-100
+  impacto: 'Baixo' | 'Médio' | 'Alto';
+  descricao: string;
+  impactosDetalhados: string[];
+  mitigacoesPropostas: string[];
+  custoMitigacao: number;
+  custoNaoMitigar: number;
+  status: 'Identificado' | 'Em monitoramento' | 'Em mitigação' | 'Resolvido' | 'Aceito';
+  responsavel: string;
+  prazo: string;
+  atualizado: string;
+}
+
+const mockRiscos: Risco[] = [
+  {
+    id: 'R1',
+    titulo: 'Alta Rotatividade Prof. de Apoio',
+    categoria: 'Gestão de Pessoas',
+    probabilidade: 85,
+    impacto: 'Alto',
+    descricao: '2 dos 3 contratos vencem em Janeiro/2025. Histórico: 60% não renovam (salário baixo)',
+    impactosDetalhados: [
+      'Interrupção atendimento de 8 alunos',
+      'Sobrecarga professores regulares (+40%)',
+      'Queda qualidade ensino',
+      'Insatisfação famílias'
+    ],
+    mitigacoesPropostas: [
+      'Iniciar processo seletivo AGORA',
+      'Negociar aumento salarial 10-15%',
+      'Oferecer plano de carreira claro',
+      'Melhorar condições de trabalho'
+    ],
+    custoMitigacao: 18000,
+    custoNaoMitigar: 60000,
+    status: 'Em monitoramento',
+    responsavel: 'Diretora Paula',
+    prazo: '31/12/2024',
+    atualizado: '25/11/2024 às 08:30'
+  },
+  {
+    id: 'R2',
+    titulo: 'Não Conformidade BNCC-EE',
+    categoria: 'Conformidade',
+    probabilidade: 65,
+    impacto: 'Alto',
+    descricao: 'Adaptações curriculares de 4 alunos não seguem 100% as diretrizes da Base Nacional Comum Curricular para Educação Especial',
+    impactosDetalhados: [
+      'Multa de R$ 50.000 se auditoria detectar',
+      'Descredenciamento temporário do programa',
+      'Perda de reputação institucional',
+      'Prejuízo pedagógico aos alunos'
+    ],
+    mitigacoesPropostas: [
+      'Revisar todos os PEIs em 30 dias',
+      'Contratar consultoria especializada BNCC-EE',
+      'Capacitar equipe em normativas atuais',
+      'Implementar checklist de conformidade mensal'
+    ],
+    custoMitigacao: 12000,
+    custoNaoMitigar: 50000,
+    status: 'Identificado',
+    responsavel: 'Coord. Pedagógica',
+    prazo: '15/01/2025',
+    atualizado: '23/11/2024 às 14:20'
+  },
+  {
+    id: 'R3',
+    titulo: 'Sobrecarga Equipe Pedagógica',
+    categoria: 'Gestão de Pessoas',
+    probabilidade: 75,
+    impacto: 'Médio',
+    descricao: '2 professoras estão com carga de trabalho acima de 90%. Histórico de afastamentos por estresse em março/2024',
+    impactosDetalhados: [
+      'Afastamentos médicos (histórico comprovado)',
+      'Queda na qualidade do atendimento',
+      'Aumento de turnover',
+      'Custos com substituições emergenciais'
+    ],
+    mitigacoesPropostas: [
+      'Redistribuir 2 alunos PEI entre equipe',
+      'Contratar professor de apoio adicional',
+      'Liberar de tarefas administrativas',
+      'Oferecer suporte psicológico'
+    ],
+    custoMitigacao: 8000,
+    custoNaoMitigar: 25000,
+    status: 'Em mitigação',
+    responsavel: 'RH + Coordenação',
+    prazo: '10/12/2024',
+    atualizado: '24/11/2024 às 16:45'
+  },
+  {
+    id: 'R4',
+    titulo: 'Equipamentos TEA Obsoletos',
+    categoria: 'Operacional',
+    probabilidade: 50,
+    impacto: 'Médio',
+    descricao: 'Tablets e softwares de comunicação aumentativa com 3+ anos de uso. Lentidão prejudica terapias',
+    impactosDetalhados: [
+      'Frustração dos alunos TEA',
+      'Redução da eficácia terapêutica',
+      'Reclamações das famílias',
+      'Perda de dados por falhas técnicas'
+    ],
+    mitigacoesPropostas: [
+      'Orçar renovação completa (5 tablets + 3 softwares)',
+      'Solicitar verba extraordinária',
+      'Considerar locação ao invés de compra',
+      'Implementar plano de renovação tecnológica trienal'
+    ],
+    custoMitigacao: 15000,
+    custoNaoMitigar: 5000,
+    status: 'Em monitoramento',
+    responsavel: 'Coord. Tecnologia',
+    prazo: '28/02/2025',
+    atualizado: '20/11/2024 às 10:15'
+  },
+  {
+    id: 'R5',
+    titulo: 'Orçamento 2025 Insuficiente',
+    categoria: 'Financeiro',
+    probabilidade: 40,
+    impacto: 'Médio',
+    descricao: 'Proposta de orçamento 2025 (R$ 145k) pode ser cortada em 20% pela diretoria regional devido a contenção de custos',
+    impactosDetalhados: [
+      'Impossibilidade de contratar novo prof. apoio',
+      'Cancelamento de formações planejadas',
+      'Redução na compra de materiais adaptados',
+      'Comprometimento da qualidade do programa'
+    ],
+    mitigacoesPropostas: [
+      'Preparar justificativa técnica robusta',
+      'Apresentar ROI do programa PEI',
+      'Buscar parcerias/doações para materiais',
+      'Priorizar gastos essenciais vs. desejáveis'
+    ],
+    custoMitigacao: 3000,
+    custoNaoMitigar: 29000,
+    status: 'Em monitoramento',
+    responsavel: 'Diretora Paula',
+    prazo: '30/11/2024',
+    atualizado: '22/11/2024 às 09:00'
+  },
+  {
+    id: 'R6',
+    titulo: 'Falta de Materiais Adaptados',
+    categoria: 'Operacional',
+    probabilidade: 25,
+    impacto: 'Baixo',
+    descricao: 'Estoque de materiais sensoriais e adaptados está 70% completo, mas há risco de falta se houver aumento de matrículas TEA no 1º semestre',
+    impactosDetalhados: [
+      'Atraso no início de atendimentos',
+      'Improvisação pedagógica',
+      'Experiência subótima para novos alunos'
+    ],
+    mitigacoesPropostas: [
+      'Manter estoque de segurança de 3 meses',
+      'Estabelecer fornecedor alternativo',
+      'Criar lista de materiais de baixo custo DIY'
+    ],
+    custoMitigacao: 2500,
+    custoNaoMitigar: 1500,
+    status: 'Aceito',
+    responsavel: 'Coord. Materiais',
+    prazo: '31/03/2025',
+    atualizado: '18/11/2024 às 13:30'
+  }
+];
 
 const AlertasRiscosContent = () => {
+  const [expandedRisks, setExpandedRisks] = useState<string[]>([]);
+
+  const toggleRisk = (riskId: string) => {
+    setExpandedRisks(prev =>
+      prev.includes(riskId) ? prev.filter(id => id !== riskId) : [...prev, riskId]
+    );
+  };
+
+  const getSeverityLevel = (probabilidade: number, impacto: string): 'critical' | 'high' | 'medium' | 'low' => {
+    const impactoScore = impacto === 'Alto' ? 3 : impacto === 'Médio' ? 2 : 1;
+    const probScore = probabilidade >= 70 ? 3 : probabilidade >= 40 ? 2 : 1;
+    const total = impactoScore + probScore;
+    
+    if (total >= 6) return 'critical';
+    if (total >= 5) return 'high';
+    if (total >= 3) return 'medium';
+    return 'low';
+  };
+
+  const getSeverityColor = (severity: 'critical' | 'high' | 'medium' | 'low') => {
+    switch (severity) {
+      case 'critical': return 'bg-red-500/10 text-red-600 border-red-500/30';
+      case 'high': return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
+      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
+      case 'low': return 'bg-green-500/10 text-green-600 border-green-500/30';
+    }
+  };
+
+  const getSeverityIcon = (severity: 'critical' | 'high' | 'medium' | 'low') => {
+    switch (severity) {
+      case 'critical': return '🔴';
+      case 'high': return '🟡';
+      case 'medium': return '⚠️';
+      case 'low': return '✅';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Identificado': return 'bg-red-500/10 text-red-600 border-red-500/30';
+      case 'Em monitoramento': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
+      case 'Em mitigação': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+      case 'Resolvido': return 'bg-green-500/10 text-green-600 border-green-500/30';
+      case 'Aceito': return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+      default: return '';
+    }
+  };
+
+  const getCategoriaColor = (categoria: string) => {
+    switch (categoria) {
+      case 'Gestão de Pessoas': return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
+      case 'Conformidade': return 'bg-red-500/10 text-red-600 border-red-500/30';
+      case 'Financeiro': return 'bg-green-500/10 text-green-600 border-green-500/30';
+      case 'Operacional': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+      default: return '';
+    }
+  };
+
+  const getRisksByPosition = () => {
+    const positions = {
+      alto_alto: [] as Risco[],
+      alto_medio: [] as Risco[],
+      alto_baixo: [] as Risco[],
+      medio_alto: [] as Risco[],
+      medio_medio: [] as Risco[],
+      medio_baixo: [] as Risco[],
+      baixo_alto: [] as Risco[],
+      baixo_medio: [] as Risco[],
+      baixo_baixo: [] as Risco[]
+    };
+
+    mockRiscos.forEach(risco => {
+      const probNivel = risco.probabilidade >= 70 ? 'alto' : risco.probabilidade >= 40 ? 'medio' : 'baixo';
+      const impactoNivel = risco.impacto === 'Alto' ? 'alto' : risco.impacto === 'Médio' ? 'medio' : 'baixo';
+      const key = `${probNivel}_${impactoNivel}` as keyof typeof positions;
+      positions[key].push(risco);
+    });
+
+    return positions;
+  };
+
+  const positions = getRisksByPosition();
+
+  const riscosSorted = [...mockRiscos].sort((a, b) => {
+    const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+    const severityA = getSeverityLevel(a.probabilidade, a.impacto);
+    const severityB = getSeverityLevel(b.probabilidade, b.impacto);
+    return severityOrder[severityA] - severityOrder[severityB];
+  });
+
+  const countBySeverity = {
+    critical: riscosSorted.filter(r => getSeverityLevel(r.probabilidade, r.impacto) === 'critical').length,
+    high: riscosSorted.filter(r => getSeverityLevel(r.probabilidade, r.impacto) === 'high').length,
+    medium: riscosSorted.filter(r => getSeverityLevel(r.probabilidade, r.impacto) === 'medium').length,
+    low: riscosSorted.filter(r => getSeverityLevel(r.probabilidade, r.impacto) === 'low').length,
+  };
+
+  const acoesImediatas = riscosSorted.filter(r => 
+    getSeverityLevel(r.probabilidade, r.impacto) === 'critical' || 
+    getSeverityLevel(r.probabilidade, r.impacto) === 'high'
+  ).length;
+
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
@@ -9,25 +290,277 @@ const AlertasRiscosContent = () => {
         Gestão &gt; Alertas e Riscos
       </div>
 
+      {/* Resumo de Riscos */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Construction className="h-5 w-5" />
-            Sistema de Alertas e Riscos em Desenvolvimento
+            <AlertTriangle className="h-5 w-5" />
+            Resumo de Riscos
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Esta seção irá conter:
-          </p>
-          <ul className="list-disc list-inside mt-4 space-y-2 text-muted-foreground">
-            <li>Matriz de Riscos (Grid 3x3 com eixos Probabilidade x Impacto)</li>
-            <li>Detalhamento de Riscos (Cards expansíveis com descrição, impactos, mitigações)</li>
-            <li>Resumo de Riscos (Estatísticas e contadores por severidade)</li>
-            <li>Ferramentas de gestão de riscos institucionais</li>
-          </ul>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="text-center p-4 rounded-lg bg-red-500/10 border border-red-500/30">
+              <div className="text-3xl font-bold text-red-600">{countBySeverity.critical}</div>
+              <div className="text-sm text-red-600">Críticos 🔴</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
+              <div className="text-3xl font-bold text-orange-600">{countBySeverity.high}</div>
+              <div className="text-sm text-orange-600">Altos 🟡</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
+              <div className="text-3xl font-bold text-yellow-700">{countBySeverity.medium}</div>
+              <div className="text-sm text-yellow-700">Médios ⚠️</div>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+              <div className="text-3xl font-bold text-green-600">{countBySeverity.low}</div>
+              <div className="text-sm text-green-600">Baixos ✅</div>
+            </div>
+          </div>
+          <div className="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
+            <p className="text-sm font-semibold text-red-600">
+              AÇÕES IMEDIATAS NECESSÁRIAS: {acoesImediatas}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Button variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar novo risco
+            </Button>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Exportar relatório
+            </Button>
+            <Button variant="outline" size="sm">
+              <Presentation className="h-4 w-4 mr-2" />
+              Apresentar ao conselho
+            </Button>
+          </div>
         </CardContent>
       </Card>
+
+      {/* Matriz de Riscos */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Matriz de Riscos (Probabilidade × Impacto)</CardTitle>
+          <CardDescription>Distribuição visual dos riscos identificados</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full">
+              {/* Cabeçalho da matriz */}
+              <div className="grid grid-cols-4 gap-2 mb-2">
+                <div className="text-sm font-semibold text-muted-foreground"></div>
+                <div className="text-center text-sm font-semibold text-muted-foreground">Baixo</div>
+                <div className="text-center text-sm font-semibold text-muted-foreground">Médio</div>
+                <div className="text-center text-sm font-semibold text-muted-foreground">Alto</div>
+              </div>
+
+              {/* Linha Alto */}
+              <div className="grid grid-cols-4 gap-2 mb-2">
+                <div className="flex items-center text-sm font-semibold text-muted-foreground">Alto</div>
+                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.alto_baixo.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.alto_medio.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-red-500/30 bg-red-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.alto_alto.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Linha Médio */}
+              <div className="grid grid-cols-4 gap-2 mb-2">
+                <div className="flex items-center text-sm font-semibold text-muted-foreground">Médio</div>
+                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.medio_baixo.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.medio_medio.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.medio_alto.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* Linha Baixo */}
+              <div className="grid grid-cols-4 gap-2">
+                <div className="flex items-center text-sm font-semibold text-muted-foreground">Baixo</div>
+                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.baixo_baixo.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.baixo_medio.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {positions.baixo_alto.map(r => (
+                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
+                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-4 text-sm text-muted-foreground">
+                <p className="font-semibold mb-1">Legenda:</p>
+                <p>Clique nos badges para expandir os detalhes do risco</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Detalhamento de Riscos */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Detalhamento de Riscos</h3>
+        {riscosSorted.map(risco => {
+          const severity = getSeverityLevel(risco.probabilidade, risco.impacto);
+          const isExpanded = expandedRisks.includes(risco.id);
+
+          return (
+            <Card key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
+              <Collapsible open={isExpanded} onOpenChange={() => toggleRisk(risco.id)}>
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{getSeverityIcon(severity)}</span>
+                        <CardTitle className="text-lg">
+                          RISCO {risco.id}: {risco.titulo.toUpperCase()}
+                        </CardTitle>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <Badge variant="secondary" className={getCategoriaColor(risco.categoria)}>
+                          {risco.categoria}
+                        </Badge>
+                        <Badge variant="secondary" className={getStatusColor(risco.status)}>
+                          {risco.status}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Probabilidade: {risco.probabilidade}% | Impacto: {risco.impacto}
+                      </div>
+                    </div>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
+                  </div>
+                </CardHeader>
+
+                <CollapsibleContent>
+                  <CardContent className="space-y-4">
+                    {/* Descrição */}
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">📝 DESCRIÇÃO:</h4>
+                      <p className="text-sm text-muted-foreground">{risco.descricao}</p>
+                    </div>
+
+                    {/* Impactos */}
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">⚡ IMPACTO SE OCORRER:</h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {risco.impactosDetalhados.map((impacto, idx) => (
+                          <li key={idx} className="text-sm text-muted-foreground">{impacto}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Mitigações */}
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">🛡️ MITIGAÇÃO RECOMENDADA:</h4>
+                      <ol className="list-decimal list-inside space-y-1">
+                        {risco.mitigacoesPropostas.map((mitigacao, idx) => (
+                          <li key={idx} className="text-sm text-muted-foreground">{mitigacao}</li>
+                        ))}
+                      </ol>
+                    </div>
+
+                    {/* Custos */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="text-sm font-semibold mb-1">💰 Custo de Mitigação:</p>
+                        <p className="text-lg font-bold text-green-600">
+                          R$ {risco.custoMitigacao.toLocaleString('pt-BR')}/ano
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold mb-1">💸 Custo se Não Mitigar:</p>
+                        <p className="text-lg font-bold text-red-600">
+                          R$ {risco.custoNaoMitigar.toLocaleString('pt-BR')}+
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Responsável e prazo */}
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <div>
+                        <span className="font-semibold">Responsável:</span>{' '}
+                        <span className="text-muted-foreground">{risco.responsavel}</span>
+                      </div>
+                      <div>
+                        <span className="font-semibold">Prazo:</span>{' '}
+                        <span className="text-muted-foreground">{risco.prazo}</span>
+                      </div>
+                    </div>
+
+                    {/* Status e última atualização */}
+                    <div className="flex items-center justify-between pt-4 border-t">
+                      <div className="flex gap-2">
+                        <Button variant="default" size="sm">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Iniciar plano
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <TrendingUp className="h-4 w-4 mr-2" />
+                          Monitorar
+                        </Button>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Atualizado em: {risco.atualizado}
+                      </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 };
