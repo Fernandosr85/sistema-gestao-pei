@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Bell, User, LayoutDashboard, Users, ClipboardList, FileText, Calendar, Settings, Scale, BookOpen, Library } from 'lucide-react';
+import { GraduationCap, Bell, User, LayoutDashboard, Users, ClipboardList, Settings2, Calendar, Settings, Scale, BookOpen, Library } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,14 +12,22 @@ import { Badge } from '@/components/ui/badge';
 const Header = () => {
   const location = useLocation();
   
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === '/gestao') {
+      // Gestão está ativa se a rota for /gestao ou se for redirecionamento de análise/relatórios
+      return location.pathname === '/gestao' || 
+             location.pathname === '/analise-complexidade' || 
+             location.pathname === '/relatorios' ||
+             location.pathname === '/analise';
+    }
+    return location.pathname === path;
+  };
   
   const navItems = [
     { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/alunos', icon: Users, label: 'Alunos' },
     { path: '/observacoes', icon: ClipboardList, label: 'Observações' },
-    { path: '/relatorios', icon: FileText, label: 'Relatórios' },
-    { path: '/analise-complexidade', icon: Calendar, label: 'Análise' },
+    { path: '/gestao', icon: Settings2, label: 'Gestão' },
     { path: '/legislacao', icon: Scale, label: 'Legislação' },
     { path: '/manual', icon: BookOpen, label: 'Manual' },
     { path: '/biblioteca-recursos', icon: Library, label: 'Biblioteca' },
