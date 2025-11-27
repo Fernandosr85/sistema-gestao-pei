@@ -1,7 +1,9 @@
 import { Users, ClipboardList, FileText, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
 import StatCard from '@/components/StatCard';
 import StudentCard from '@/components/StudentCard';
 import QuickActions from '@/components/QuickActions';
+import { GenerateReportDialog } from '@/components/GenerateReportDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +11,8 @@ import { mockStudents, mockMeetings, mockObservations } from '@/data/mockData';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  
   const totalStudents = mockStudents.length;
   const activeStudents = mockStudents.filter(s => s.status === 'ativo').length;
   const totalObservations = mockObservations.length;
@@ -29,16 +33,19 @@ const Dashboard = () => {
             Plano Educacional Individualizado - SESI SP
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link to="/alunos/novo">
-              <Button size="lg" variant="secondary">
-                <Users className="mr-2 h-5 w-5" />
-                Novo Cadastro
-              </Button>
-            </Link>
-            <Link to="/observacoes/nova">
+            <Button 
+              size="lg" 
+              variant="secondary"
+              onClick={() => setReportDialogOpen(true)}
+              data-report-dialog
+            >
+              <FileText className="mr-2 h-5 w-5" />
+              Gerar Relatório
+            </Button>
+            <Link to="/agenda-atendimentos">
               <Button size="lg" variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-                <ClipboardList className="mr-2 h-5 w-5" />
-                Nova Observação
+                <Calendar className="mr-2 h-5 w-5" />
+                Agenda de Atendimentos
               </Button>
             </Link>
           </div>
@@ -145,6 +152,8 @@ const Dashboard = () => {
 
         </aside>
       </div>
+      
+      <GenerateReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </div>
   );
 };
