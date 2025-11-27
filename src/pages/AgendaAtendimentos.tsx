@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange, CalendarCheck } from 'lucide-react';
+import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange, CalendarCheck, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Calendar as BigCalendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -397,105 +397,239 @@ const AgendaAtendimentos = () => {
               return acc;
             }, {} as Record<string, number>);
 
+            // Cálculo para semana atual e anterior
+            const selectedDate = new Date(currentDate);
+            const dayOfWeek = selectedDate.getDay();
+            const startOfWeek = new Date(selectedDate);
+            startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+            const startOfPreviousWeek = new Date(startOfWeek);
+            startOfPreviousWeek.setDate(startOfWeek.getDate() - 7);
+            const endOfPreviousWeek = new Date(startOfPreviousWeek);
+            endOfPreviousWeek.setDate(startOfPreviousWeek.getDate() + 6);
+
+            const atendimentosSemanaAtual = filteredAtendimentos.filter(a => {
+              const dataAtendimento = new Date(a.data);
+              return dataAtendimento >= startOfWeek && dataAtendimento <= endOfWeek;
+            });
+
+            const atendimentosSemanaAnterior = filteredAtendimentos.filter(a => {
+              const dataAtendimento = new Date(a.data);
+              return dataAtendimento >= startOfPreviousWeek && dataAtendimento <= endOfPreviousWeek;
+            });
+
+            const distribuicaoSemanaAtual = atendimentosSemanaAtual.reduce((acc, a) => {
+              acc[a.tipo] = (acc[a.tipo] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>);
+
+            const distribuicaoSemanaAnterior = atendimentosSemanaAnterior.reduce((acc, a) => {
+              acc[a.tipo] = (acc[a.tipo] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>);
+
+            const tiposUnicos = new Set([
+              ...Object.keys(distribuicaoSemanaAtual),
+              ...Object.keys(distribuicaoSemanaAnterior)
+            ]);
+
+            const comparacoes = Array.from(tiposUnicos).map(tipo => {
+              const atual = distribuicaoSemanaAtual[tipo] || 0;
+              const anterior = distribuicaoSemanaAnterior[tipo] || 0;
+              const variacao = anterior === 0 
+                ? (atual > 0 ? 100 : 0) 
+                : Math.round(((atual - anterior) / anterior) * 100);
+              
+              return { tipo, atual, anterior, variacao };
+            }).sort((a, b) => Math.abs(b.variacao) - Math.abs(a.variacao));
+
             return totalAtendimentos > 0 ? (
-              <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <CalendarCheck className="h-5 w-5" />
-                    Resumo de {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
-                      <div className="text-sm text-muted-foreground mb-1">Total de Atendimentos</div>
-                      <div className="text-2xl font-bold">{totalAtendimentos}</div>
-                    </div>
-                    <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
-                      <div className="text-sm text-muted-foreground mb-1">Duração Média</div>
-                      <div className="text-2xl font-bold">
-                        {Math.floor(duracaoMedia / 60)}h {duracaoMedia % 60}min
+              <>
+                <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <CalendarCheck className="h-5 w-5" />
+                      Resumo de {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                        <div className="text-sm text-muted-foreground mb-1">Total de Atendimentos</div>
+                        <div className="text-2xl font-bold">{totalAtendimentos}</div>
+                      </div>
+                      <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                        <div className="text-sm text-muted-foreground mb-1">Duração Média</div>
+                        <div className="text-2xl font-bold">
+                          {Math.floor(duracaoMedia / 60)}h {duracaoMedia % 60}min
+                        </div>
+                      </div>
+                      <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
+                        <div className="text-sm text-muted-foreground mb-1">Período de Atendimento</div>
+                        <div className="text-2xl font-bold">
+                          {atendimentosDoDia.length > 0 ? (
+                            <>
+                              {atendimentosDoDia.reduce((earliest, a) => 
+                                a.horarioInicio < earliest ? a.horarioInicio : earliest, 
+                                atendimentosDoDia[0].horarioInicio
+                              )}
+                              {' - '}
+                              {atendimentosDoDia.reduce((latest, a) => 
+                                a.horarioFim > latest ? a.horarioFim : latest, 
+                                atendimentosDoDia[0].horarioFim
+                              )}
+                            </>
+                          ) : '-'}
+                        </div>
                       </div>
                     </div>
+                    
                     <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
-                      <div className="text-sm text-muted-foreground mb-1">Período de Atendimento</div>
-                      <div className="text-2xl font-bold">
-                        {atendimentosDoDia.length > 0 ? (
-                          <>
-                            {atendimentosDoDia.reduce((earliest, a) => 
-                              a.horarioInicio < earliest ? a.horarioInicio : earliest, 
-                              atendimentosDoDia[0].horarioInicio
-                            )}
-                            {' - '}
-                            {atendimentosDoDia.reduce((latest, a) => 
-                              a.horarioFim > latest ? a.horarioFim : latest, 
-                              atendimentosDoDia[0].horarioFim
-                            )}
-                          </>
-                        ) : '-'}
+                      <div className="text-sm font-medium mb-3">Distribuição por Tipo</div>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        {/* Badges */}
+                        <div className="flex flex-col gap-2 justify-center">
+                          {Object.entries(distribuicaoPorTipo).map(([tipo, count]) => (
+                            <div key={tipo} className="flex items-center gap-2">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{
+                                  backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
+                                }}
+                              />
+                              <span className="text-sm flex-1">{tipo}</span>
+                              <Badge variant="secondary" className="text-xs">
+                                {count} ({Math.round((count / totalAtendimentos) * 100)}%)
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Gráfico de Donut */}
+                        <div className="h-[200px]">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={Object.entries(distribuicaoPorTipo).map(([tipo, count]) => ({
+                                  name: tipo,
+                                  value: count,
+                                }))}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={50}
+                                outerRadius={80}
+                                paddingAngle={2}
+                                dataKey="value"
+                                label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                              >
+                                {Object.keys(distribuicaoPorTipo).map((tipo) => (
+                                  <Cell 
+                                    key={tipo} 
+                                    fill={tipoColorsPie[tipo as keyof typeof tipoColorsPie]} 
+                                  />
+                                ))}
+                              </Pie>
+                              <Tooltip 
+                                contentStyle={{
+                                  backgroundColor: 'hsl(var(--popover))',
+                                  border: '1px solid hsl(var(--border))',
+                                  borderRadius: '6px',
+                                }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="bg-background/60 backdrop-blur p-4 rounded-lg border">
-                    <div className="text-sm font-medium mb-3">Distribuição por Tipo</div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      {/* Badges */}
-                      <div className="flex flex-col gap-2 justify-center">
-                        {Object.entries(distribuicaoPorTipo).map(([tipo, count]) => (
-                          <div key={tipo} className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{
-                                backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
-                              }}
-                            />
-                            <span className="text-sm flex-1">{tipo}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {count} ({Math.round((count / totalAtendimentos) * 100)}%)
-                            </Badge>
+                  </CardContent>
+                </Card>
+
+                {/* Comparação com Semana Anterior */}
+                {atendimentosSemanaAtual.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Comparação: Semana Atual vs. Semana Anterior
+                      </CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        Semana atual: {format(startOfWeek, "dd/MM")} - {format(endOfWeek, "dd/MM")} | 
+                        Semana anterior: {format(startOfPreviousWeek, "dd/MM")} - {format(endOfPreviousWeek, "dd/MM")}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {/* Total Geral */}
+                        <div className="bg-muted/50 p-4 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold">Total Geral</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-muted-foreground">
+                                {atendimentosSemanaAnterior.length} → {atendimentosSemanaAtual.length}
+                              </span>
+                              {(() => {
+                                const variacaoTotal = atendimentosSemanaAnterior.length === 0 
+                                  ? 100 
+                                  : Math.round(((atendimentosSemanaAtual.length - atendimentosSemanaAnterior.length) / atendimentosSemanaAnterior.length) * 100);
+                                return (
+                                  <Badge 
+                                    variant={variacaoTotal > 0 ? "default" : variacaoTotal < 0 ? "destructive" : "secondary"}
+                                    className="gap-1"
+                                  >
+                                    {variacaoTotal > 0 ? (
+                                      <TrendingUp className="h-3 w-3" />
+                                    ) : variacaoTotal < 0 ? (
+                                      <TrendingDown className="h-3 w-3" />
+                                    ) : (
+                                      <Minus className="h-3 w-3" />
+                                    )}
+                                    {variacaoTotal > 0 ? '+' : ''}{variacaoTotal}%
+                                  </Badge>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Por Tipo */}
+                        {comparacoes.map(({ tipo, atual, anterior, variacao }) => (
+                          <div key={tipo} className="flex items-center justify-between p-3 bg-background border rounded-lg">
+                            <div className="flex items-center gap-3 flex-1">
+                              <div 
+                                className="w-3 h-3 rounded-full"
+                                style={{
+                                  backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
+                                }}
+                              />
+                              <span className="text-sm font-medium">{tipo}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-muted-foreground">
+                                {anterior} → {atual}
+                              </span>
+                              <Badge 
+                                variant={variacao > 0 ? "default" : variacao < 0 ? "destructive" : "secondary"}
+                                className="gap-1 min-w-[70px] justify-center"
+                              >
+                                {variacao > 0 ? (
+                                  <TrendingUp className="h-3 w-3" />
+                                ) : variacao < 0 ? (
+                                  <TrendingDown className="h-3 w-3" />
+                                ) : (
+                                  <Minus className="h-3 w-3" />
+                                )}
+                                {variacao > 0 ? '+' : ''}{variacao}%
+                              </Badge>
+                            </div>
                           </div>
                         ))}
                       </div>
-                      
-                      {/* Gráfico de Donut */}
-                      <div className="h-[200px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={Object.entries(distribuicaoPorTipo).map(([tipo, count]) => ({
-                                name: tipo,
-                                value: count,
-                              }))}
-                              cx="50%"
-                              cy="50%"
-                              innerRadius={50}
-                              outerRadius={80}
-                              paddingAngle={2}
-                              dataKey="value"
-                              label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                            >
-                              {Object.keys(distribuicaoPorTipo).map((tipo) => (
-                                <Cell 
-                                  key={tipo} 
-                                  fill={tipoColorsPie[tipo as keyof typeof tipoColorsPie]} 
-                                />
-                              ))}
-                            </Pie>
-                            <Tooltip 
-                              contentStyle={{
-                                backgroundColor: 'hsl(var(--popover))',
-                                border: '1px solid hsl(var(--border))',
-                                borderRadius: '6px',
-                              }}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
             ) : null;
           })()}
 
