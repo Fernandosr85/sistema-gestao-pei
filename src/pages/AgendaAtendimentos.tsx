@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange } from 'lucide-react';
+import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange, CalendarCheck } from 'lucide-react';
 import { Calendar as BigCalendar, momentLocalizer, View } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -268,7 +268,7 @@ const AgendaAtendimentos = () => {
 
       {/* Calendar/List View */}
       <Tabs defaultValue="lista" className="w-full">
-        <TabsList className="grid w-full md:w-auto grid-cols-3 mb-4">
+        <TabsList className="grid w-full md:w-auto grid-cols-4 mb-4">
           <TabsTrigger value="mes" className="gap-2">
             <Calendar className="h-4 w-4" />
             Mês
@@ -276,6 +276,10 @@ const AgendaAtendimentos = () => {
           <TabsTrigger value="semana" className="gap-2">
             <CalendarDays className="h-4 w-4" />
             Semana
+          </TabsTrigger>
+          <TabsTrigger value="dia" className="gap-2">
+            <CalendarCheck className="h-4 w-4" />
+            Dia
           </TabsTrigger>
           <TabsTrigger value="lista" className="gap-2">
             <List className="h-4 w-4" />
@@ -349,6 +353,73 @@ const AgendaAtendimentos = () => {
                     event: 'Evento',
                     noEventsInRange: 'Não há atendimentos neste período',
                     showMore: (total) => `+ ${total} mais`,
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="dia" className="space-y-4">
+          <Card>
+            <CardContent className="p-6">
+              <div style={{ height: '700px' }} className="calendar-container">
+                <BigCalendar
+                  localizer={localizer}
+                  events={calendarEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: '100%' }}
+                  views={['agenda']}
+                  view="agenda"
+                  date={currentDate}
+                  onNavigate={setCurrentDate}
+                  onSelectEvent={(event) => handleAtendimentoClick(event.resource)}
+                  length={1}
+                  messages={{
+                    next: 'Próximo',
+                    previous: 'Anterior',
+                    today: 'Hoje',
+                    month: 'Mês',
+                    week: 'Semana',
+                    day: 'Dia',
+                    agenda: 'Agenda',
+                    date: 'Data',
+                    time: 'Hora',
+                    event: 'Evento',
+                    noEventsInRange: 'Não há atendimentos neste dia',
+                    showMore: (total) => `+ ${total} mais`,
+                  }}
+                  components={{
+                    event: ({ event }) => (
+                      <div className="flex items-center gap-3">
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs"
+                          style={{
+                            backgroundColor: tipoColors[event.resource.tipo as keyof typeof tipoColors].replace('bg-', '').replace('-500', ''),
+                            color: 'white',
+                            borderColor: 'transparent'
+                          }}
+                        >
+                          {event.resource.tipo}
+                        </Badge>
+                        <div className="flex-1">
+                          <div className="font-semibold">{event.title}</div>
+                          <div className="text-sm text-muted-foreground">{event.resource.objetivos}</div>
+                          <div className="flex gap-2 mt-1 flex-wrap">
+                            {event.resource.profissionais.slice(0, 3).map((prof: string, idx: number) => (
+                              <Badge key={idx} variant="secondary" className="text-xs">
+                                {prof}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <Badge variant={statusBadgeVariant[event.resource.status as keyof typeof statusBadgeVariant]}>
+                          {event.resource.status}
+                        </Badge>
+                      </div>
+                    ),
                   }}
                 />
               </div>
