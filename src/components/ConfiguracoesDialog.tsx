@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { CalendarIntegrations } from '@/components/CalendarIntegrations';
 
 interface ConfiguracoesDialogProps {
   open: boolean;
@@ -380,6 +381,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
           {/* INTEGRAÇÕES */}
           <TabsContent value="integracoes" className="space-y-6">
+            <CalendarIntegrations />
             <Card>
               <CardHeader>
                 <CardTitle>Calendário</CardTitle>

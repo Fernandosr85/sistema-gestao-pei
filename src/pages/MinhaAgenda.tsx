@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, Users, Plus, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, MapPin, Users, Plus, FileText, ChevronLeft, ChevronRight, CheckCircle2, RefreshCw } from 'lucide-react';
+import { useCalendarSync } from '@/hooks/useCalendarSync';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +20,8 @@ const MinhaAgenda = () => {
   const [currentMonth, setCurrentMonth] = useState('Novembro 2024');
   const [selectedView, setSelectedView] = useState('semana');
   const [isNewEventDialogOpen, setIsNewEventDialogOpen] = useState(false);
+  
+  const { connections, syncStatus, triggerSync } = useCalendarSync();
 
   const weekEvents = {
     seg: [
@@ -375,24 +380,92 @@ const MinhaAgenda = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>🔗 Integrações</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <RefreshCw className={`h-5 w-5 ${syncStatus.inProgress ? 'animate-spin' : ''}`} />
+                Integrações e Sincronização
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Badge variant="default" className="bg-green-500 mb-1">Sincronizado</Badge>
-                  <p className="text-sm">Google Calendar</p>
-                  <p className="text-xs text-muted-foreground">Última sync: há 2 minutos</p>
+            <CardContent className="space-y-4">
+              {/* Google Calendar Status */}
+              {connections.google.connected && (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <Badge variant="default" className="bg-green-500">Sincronizado</Badge>
+                    </div>
+                    <p className="text-sm font-medium">Google Calendar</p>
+                    <p className="text-xs text-muted-foreground">
+                      {connections.google.email}
+                    </p>
+                    {connections.google.lastSync && (
+                      <p className="text-xs text-muted-foreground">
+                        Última sync: {formatDistanceToNow(new Date(connections.google.lastSync), { 
+                          addSuffix: true, 
+                          locale: ptBR 
+                        })}
+                      </p>
+                    )}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={triggerSync}
+                    disabled={syncStatus.inProgress}
+                    className="gap-2"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${syncStatus.inProgress ? 'animate-spin' : ''}`} />
+                    Sincronizar
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm">Forçar sincronização</Button>
-              </div>
+              )}
+
+              {/* Outlook Status */}
+              {connections.outlook.connected && (
+                <div className="flex items-center justify-between pt-3 border-t">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <Badge variant="default" className="bg-blue-500">Sincronizado</Badge>
+                    </div>
+                    <p className="text-sm font-medium">Outlook / Microsoft 365</p>
+                    <p className="text-xs text-muted-foreground">
+                      {connections.outlook.email}
+                    </p>
+                    {connections.outlook.lastSync && (
+                      <p className="text-xs text-muted-foreground">
+                        Última sync: {formatDistanceToNow(new Date(connections.outlook.lastSync), { 
+                          addSuffix: true, 
+                          locale: ptBR 
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Sync Status */}
+              {syncStatus.inProgress && (
+                <div className="flex items-center gap-2 text-blue-600 text-sm pt-3 border-t">
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span>Sincronizando calendários...</span>
+                </div>
+              )}
+
+              {/* Reminder Settings */}
               <div className="pt-3 border-t">
                 <p className="text-sm font-medium mb-2">📧 Lembretes configurados:</p>
-                <p className="text-xs">• Email: 1 dia antes</p>
-                <p className="text-xs">• Push: 30 min antes</p>
-                <p className="text-xs">• SMS: Apenas urgentes</p>
+                <div className="space-y-1 text-xs text-muted-foreground">
+                  <p>• Email: 1 dia antes</p>
+                  <p>• Push: 30 min antes</p>
+                  <p>• SMS: Apenas urgentes</p>
+                </div>
               </div>
-              <Button variant="link" className="p-0 h-auto">⚙️ Configurar integrações</Button>
+
+              {/* Settings Link */}
+              <Button variant="link" className="p-0 h-auto text-sm">
+                ⚙️ Configurar integrações e sincronização
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>
