@@ -16,6 +16,7 @@ import Manual from "./pages/Manual";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import AgendaAtendimentos from "./pages/AgendaAtendimentos";
 import Gestao from "./pages/Gestao";
+import MinhaAgenda from "./pages/MinhaAgenda";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/manual" element={<Manual />} />
             <Route path="/biblioteca-recursos" element={<ResourceLibrary />} />
             <Route path="/agenda-atendimentos" element={<AgendaAtendimentos />} />
+            <Route path="/minha-agenda" element={<MinhaAgenda />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

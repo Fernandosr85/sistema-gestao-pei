@@ -1,4 +1,5 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GraduationCap, Bell, User, LayoutDashboard, Users, ClipboardList, Settings2, Calendar, Settings, Scale, BookOpen, Library } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,8 +9,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import MeuPerfilDialog from '@/components/MeuPerfilDialog';
+import ConfiguracoesDialog from '@/components/ConfiguracoesDialog';
 
 const Header = () => {
+  const [isPerfilOpen, setIsPerfilOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const navigate = useNavigate();
   const location = useLocation();
   
   const isActive = (path: string) => {
@@ -103,15 +109,15 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsPerfilOpen(true)}>
                   <User className="mr-2 h-4 w-4" />
                   Meu Perfil
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsConfigOpen(true)}>
                   <Settings className="mr-2 h-4 w-4" />
                   Configurações
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/minha-agenda')}>
                   <Calendar className="mr-2 h-4 w-4" />
                   Minha Agenda
                 </DropdownMenuItem>
@@ -120,6 +126,9 @@ const Header = () => {
           </div>
         </div>
       </nav>
+
+      <MeuPerfilDialog open={isPerfilOpen} onOpenChange={setIsPerfilOpen} />
+      <ConfiguracoesDialog open={isConfigOpen} onOpenChange={setIsConfigOpen} />
     </header>
   );
 };
