@@ -25,6 +25,7 @@
 - [Estrutura do Projeto](#-estrutura-do-projeto)
 - [Deploy](#-deploy)
 - [Contribuindo](#-contribuindo)
+- [Documentação Técnica](#-documentação-técnica)
 - [Licença](#-licença)
 - [Contato](#-contato)
 
@@ -39,8 +40,10 @@ O **Sistema de Gestão PEI** é uma plataforma web desenvolvida para o SESI São
 - ✅ Acompanhamento sistemático de observações e avaliações
 - ✅ Gestão de agenda de atendimentos multidisciplinares
 - ✅ Geração automatizada de relatórios e análises
-- ✅ Compliance com legislação brasileira de educação inclusiva
+- ✅ Compliance com legislação brasileira de educação inclusiva (LBI 13.146/2015)
 - ✅ Análise de complexidade e distribuição de carga de trabalho
+- ✅ Biblioteca de recursos pedagógicos adaptados
+- ✅ Manual de procedimentos SESI integrado
 
 ---
 
@@ -59,6 +62,7 @@ O **Sistema de Gestão PEI** é uma plataforma web desenvolvida para o SESI São
 - **Dashboard de desempenho** com 5 abas de análise
 - **Modo apresentação** para reuniões com famílias
 - **Benchmarking** anônimo com a rede SESI
+- **Filtros avançados** por diagnóstico (TEA, TDAH, Dislexia, Discalculia, Deficiência Intelectual, Síndrome de Down, Deficiência Visual, Deficiência Auditiva, Paralisia Cerebral)
 
 ### 📋 Sistema de Observações
 - Registro estruturado por áreas (comunicação, social, comportamento)
@@ -85,16 +89,83 @@ O **Sistema de Gestão PEI** é uma plataforma web desenvolvida para o SESI São
 - **Configurações** - 6 abas incluindo notificações, aparência, privacidade
 - **Minha Agenda** pessoal com sincronização de calendários
 
-### 📚 Recursos Educacionais
-- **Biblioteca de recursos** filtrada por diagnóstico e componente curricular
-- **Sistema de contribuição** com gamificação
-- **Legislação** e documentos normativos
-- **Manual** completo do sistema
+### 📚 Biblioteca de Recursos para Educação Inclusiva
+
+**Sistema completo de recursos pedagógicos adaptados:**
+
+#### 🔍 Busca e Filtros Avançados
+- **Por Diagnóstico**: TEA, TDAH, Dislexia, Discalculia, Deficiência Intelectual, Síndrome de Down, Deficiência Visual, Deficiência Auditiva, Paralisia Cerebral
+- **Por Componente Curricular**: Matemática, Português, Ciências, História, Geografia, etc.
+- **Por Tipo de Recurso**: Material Impresso, Jogo, Roteiro Visual, Atividade Digital, Vídeo, Áudio
+- **Por Avaliação**: Recursos mais bem avaliados pela comunidade
+
+#### 📦 Catálogo de Recursos
+Exemplos de recursos disponíveis:
+- **Atividade de Leitura com Pictogramas** - Material adaptado para desenvolvimento de leitura
+- **Jogo de Memória Matemático Adaptado** - Jogo com números e operações básicas
+- **Rotina Visual para Sala de Aula** - Sequência visual da rotina escolar com pictogramas editáveis
+
+#### 🎮 Sistema de Gamificação
+- **Rankings de Colaboradores** - Professores que mais contribuem
+- **Badges e Conquistas** - Sistema de reconhecimento
+- **Estatísticas de Contribuição** - "Meus Recursos" com métricas pessoais
+
+#### ➕ Contribuição da Comunidade
+- **Upload de Recursos**: Professores podem compartilhar materiais próprios
+- **Sistema de Avaliação**: Estrelas e feedback da comunidade
+- **Tags de Destaque**: Recursos populares marcados automaticamente
+
+### ⚖️ Marco Legal da Educação Inclusiva
+
+**Documentação legal integrada ao sistema:**
+
+#### 📜 Legislação Federal
+- **Lei nº 9.394/96 - LDB** (Lei de Diretrizes e Bases da Educação Nacional)
+- **Lei nº 13.146/2015 - LBI** (Lei Brasileira de Inclusão - Estatuto da Pessoa com Deficiência) ⭐
+- **Decreto nº 10.502/2020** (Suspenso) ⚠️
+- **Lei nº 12.764/2012** - Política Nacional de Proteção dos Direitos da Pessoa com TEA
+- **Decreto nº 7.611/2011** - Educação Especial e Atendimento Educacional Especializado
+
+#### 📋 Tags de Referência Legal
+- **LBI Lei 13.146/2015** - Principal marco regulatório
+- **Desenho Universal (DUA)** - Princípios de acessibilidade
+- **Teoria de Piaget** - Fundamentação pedagógica
+- **Práticas Baseadas em Evidências** - Abordagem científica
+
+### 📖 Manual de Procedimentos SESI para Inclusão
+
+**Guia completo de práticas e procedimentos:**
+
+#### 📑 Estrutura do Manual
+5 seções principais organizadas em abas:
+
+1. **Identificação** - Matrícula e acolhimento inicial
+   - 1.1 Matrícula e Anamnese Inicial
+   - 1.2 Avaliação Diagnóstica Pedagógica
+
+2. **PEI** - Plano Educacional Individualizado
+   - Elaboração e acompanhamento
+
+3. **Equipe** - Gestão de equipe multidisciplinar
+   - Papéis e responsabilidades
+
+4. **Protocolos** - Procedimentos operacionais
+   - Rotinas e fluxos de trabalho
+
+5. **Avaliação** - Monitoramento e ajustes
+   - Indicadores de progresso
+
+#### 🔗 Recursos Complementares
+**Plataformas e Materiais SESI:**
+- Portal de Educação Inclusiva SESI
+- Banco de materiais adaptados
+- Biblioteca de CAA (Comunicação Alternativa e Aumentativa)
 
 ### 🔔 Sistema de Notificações
 - Notificações em tempo real (reuniões, observações, relatórios)
-- Badge contador no header
+- Badge contador no header (3 notificações pendentes visíveis nas screenshots)
 - Integração com email e push notifications
+- Dropdown de acesso rápido às notificações
 
 ---
 
@@ -198,13 +269,25 @@ from-files-create/
 │   │   ├── ui/         # Componentes Shadcn/ui
 │   │   └── ...         # Componentes personalizados
 │   ├── pages/          # Páginas/rotas da aplicação
+│   │   ├── Dashboard.tsx
+│   │   ├── Alunos.tsx
+│   │   ├── Observacoes.tsx
+│   │   ├── AgendaAtendimentos.tsx
+│   │   ├── Gestao.tsx
+│   │   ├── BibliotecaRecursos.tsx
+│   │   ├── Legislacao.tsx
+│   │   └── Manual.tsx
 │   ├── hooks/          # Custom React hooks
 │   ├── lib/            # Utilitários e helpers
 │   ├── types/          # Definições TypeScript
 │   ├── styles/         # Estilos globais
 │   ├── App.tsx         # Componente raiz
 │   └── main.tsx        # Entry point
-├── docs/               # Documentação
+├── docs/               # Documentação técnica
+│   ├── ARCHITECTURE.md
+│   ├── API.md
+│   ├── COMPONENTS.md
+│   └── CONTRIBUTING.md
 ├── .gitignore
 ├── package.json
 ├── tsconfig.json
@@ -262,6 +345,17 @@ Contribuições são muito bem-vindas! Siga os passos:
 
 ---
 
+## 📚 Documentação Técnica
+
+Para desenvolvedores, consulte a documentação técnica completa:
+
+- **[Arquitetura do Sistema](docs/ARCHITECTURE.md)** - Visão geral da arquitetura e padrões
+- **[Guia de Componentes](docs/COMPONENTS.md)** - Documentação de componentes React
+- **[API Reference](docs/API.md)** - Endpoints e integrações
+- **[Guia de Contribuição](docs/CONTRIBUTING.md)** - Boas práticas e workflow
+
+---
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
@@ -284,6 +378,6 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **⭐ Se este projeto foi útil, considere dar uma estrela!**
 
-Desenvolvido com ❤️ para educação inclusiva
+Desenvolvido com ❤️ para educação inclusiva no Brasil
 
 </div>
