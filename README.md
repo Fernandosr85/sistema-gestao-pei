@@ -1,73 +1,289 @@
-# Welcome to your Lovable project
+# 📊 Sistema de Gestão PEI - SESI SP
 
-## Project info
+<div align="center">
 
-**URL**: https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2
+![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-## How can I edit this code?
+**Plataforma completa de gestão de Plano Educacional Individualizado (PEI) para educação inclusiva**
 
-There are several ways of editing your application.
+[🚀 Demo](https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2) • [📖 Documentação](#funcionalidades) • [🐛 Reportar Bug](../../issues) • [✨ Solicitar Feature](../../issues)
 
-**Use Lovable**
+</div>
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📋 Índice
 
-**Use your preferred IDE**
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Começando](#-começando)
+- [Como Usar](#-como-usar)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Deploy](#-deploy)
+- [Contribuindo](#-contribuindo)
+- [Licença](#-licença)
+- [Contato](#-contato)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🎯 Sobre o Projeto
 
-Follow these steps:
+O **Sistema de Gestão PEI** é uma plataforma web desenvolvida para o SESI São Paulo, focada na gestão eficiente de educação inclusiva. O sistema permite o acompanhamento completo de estudantes com necessidades educacionais especiais, desde o cadastro até análises avançadas de desempenho e compliance com a legislação brasileira.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Problema que resolve:
+- ✅ Centralização de informações de estudantes com necessidades especiais
+- ✅ Acompanhamento sistemático de observações e avaliações
+- ✅ Gestão de agenda de atendimentos multidisciplinares
+- ✅ Geração automatizada de relatórios e análises
+- ✅ Compliance com legislação brasileira de educação inclusiva
+- ✅ Análise de complexidade e distribuição de carga de trabalho
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
+## ✨ Funcionalidades
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 🏠 Dashboard Principal
+- Cards de estatísticas em tempo real (alunos ativos, observações, reuniões)
+- Ações rápidas para cadastros e registros
+- Visualização de alunos recentes e próximas reuniões
+- Acesso direto a geração de relatórios
+
+### 👥 Gestão de Alunos
+- **Cadastro completo** com informações acadêmicas, de saúde e familiares
+- **Perfil detalhado** com avatar, matrícula, diagnósticos e medicações
+- **Timeline de eventos** e histórico acadêmico
+- **Dashboard de desempenho** com 5 abas de análise
+- **Modo apresentação** para reuniões com famílias
+- **Benchmarking** anônimo com a rede SESI
+
+### 📋 Sistema de Observações
+- Registro estruturado por áreas (comunicação, social, comportamento)
+- Visualização cronológica e filtros avançados
+- Anexação de documentos e evidências
+
+### 📅 Agenda de Atendimentos
+- **Calendário interativo** com visualizações (Mês/Semana/Dia/Lista)
+- **Tipos de atendimento** categorizados e codificados por cor
+- **Integração híbrida** com Google Calendar e Outlook
+- **Estatísticas** de compromissos e alertas de pendências
+
+### 🏫 Painel de Gestão
+**6 módulos especializados:**
+1. **Visão Geral** - KPIs, alertas críticos e prioridades
+2. **Alertas e Riscos** - Matriz 3x3 com mitigações
+3. **Análise de Complexidade** - Distribuição por diagnóstico e suporte
+4. **Relatórios** - Geração em PDF/Excel/Word
+5. **Equipe** - Carga de trabalho e simulador de redistribuição
+6. **Orçamento** - Execução, tendências e planejamento 2025
+
+### 👤 Área do Usuário
+- **Perfil completo** com formação, estatísticas e gamificação (XP, badges)
+- **Configurações** - 6 abas incluindo notificações, aparência, privacidade
+- **Minha Agenda** pessoal com sincronização de calendários
+
+### 📚 Recursos Educacionais
+- **Biblioteca de recursos** filtrada por diagnóstico e componente curricular
+- **Sistema de contribuição** com gamificação
+- **Legislação** e documentos normativos
+- **Manual** completo do sistema
+
+### 🔔 Sistema de Notificações
+- Notificações em tempo real (reuniões, observações, relatórios)
+- Badge contador no header
+- Integração com email e push notifications
+
+---
+
+## 🛠️ Tecnologias
+
+### Core
+- **[React 18](https://react.dev/)** - Biblioteca para interfaces de usuário
+- **[TypeScript](https://www.typescriptlang.org/)** - Superset tipado do JavaScript
+- **[Vite](https://vitejs.dev/)** - Build tool e dev server ultrarrápido
+
+### UI/UX
+- **[Tailwind CSS](https://tailwindcss.com/)** - Framework CSS utility-first
+- **[Shadcn/ui](https://ui.shadcn.com/)** - Componentes reutilizáveis (Radix UI)
+- **[Lucide React](https://lucide.dev/)** - Ícones modernos
+
+### Gráficos e Calendário
+- **[Recharts](https://recharts.org/)** - Biblioteca de gráficos para React
+- **[React Big Calendar](https://github.com/jquense/react-big-calendar)** - Componente de calendário
+
+### Roteamento e Estado
+- **[React Router DOM](https://reactrouter.com/)** - Roteamento client-side
+- **[TanStack Query](https://tanstack.com/query)** - Gerenciamento de estado assíncrono
+
+### Formulários e Validação
+- **[React Hook Form](https://react-hook-form.com/)** - Gerenciamento de formulários
+- **[Zod](https://zod.dev/)** - Validação de schemas TypeScript-first
+
+---
+
+## 🚀 Começando
+
+### Pré-requisitos
+
+- **Node.js** 18+ e **npm** (recomendado: [instalar com nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
+- Git
+
+### Instalação
+```bash
+# 1. Clone o repositório
+git clone https://github.com/Fernandosr85/from-files-create.git
+
+# 2. Entre no diretório do projeto
+cd from-files-create
+
+# 3. Instale as dependências
+npm install
+
+# 4. Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+A aplicação estará disponível em `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Variáveis de Ambiente
 
-**Use GitHub Codespaces**
+Crie um arquivo `.env` na raiz do projeto (se necessário):
+```env
+VITE_API_URL=sua_url_api
+VITE_GOOGLE_CALENDAR_CLIENT_ID=seu_client_id
+VITE_OUTLOOK_CLIENT_ID=seu_client_id
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 💻 Como Usar
 
-This project is built with:
+### Desenvolvimento Local
+```bash
+# Servidor de desenvolvimento com hot-reload
+npm run dev
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Build para produção
+npm run build
 
-## How can I deploy this project?
+# Preview do build de produção
+npm run preview
 
-Simply open [Lovable](https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2) and click on Share -> Publish.
+# Linting
+npm run lint
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Editar via Lovable
 
-Yes, you can!
+Visite o [Projeto Lovable](https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2) e faça alterações por prompts. Mudanças serão commitadas automaticamente.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### GitHub Codespaces
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1. Clique no botão "Code" (verde)
+2. Selecione a aba "Codespaces"
+3. Clique em "New codespace"
+4. Edite e faça commit diretamente
+
+---
+
+## 📁 Estrutura do Projeto
+```
+from-files-create/
+├── public/              # Arquivos estáticos
+├── src/
+│   ├── components/      # Componentes React reutilizáveis
+│   │   ├── ui/         # Componentes Shadcn/ui
+│   │   └── ...         # Componentes personalizados
+│   ├── pages/          # Páginas/rotas da aplicação
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Utilitários e helpers
+│   ├── types/          # Definições TypeScript
+│   ├── styles/         # Estilos globais
+│   ├── App.tsx         # Componente raiz
+│   └── main.tsx        # Entry point
+├── docs/               # Documentação
+├── .gitignore
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+└── README.md
+```
+
+---
+
+## 🌐 Deploy
+
+### Via Lovable (Recomendado)
+
+1. Abra o [projeto no Lovable](https://lovable.dev/projects/e6a3ad60-70a3-49dd-996f-7dfa53ad9ab2)
+2. Clique em **Share → Publish**
+3. Seu projeto estará no ar! 🎉
+
+### Domínio Customizado
+
+Conecte seu próprio domínio em **Project > Settings > Domains**.
+
+📖 [Guia: Configurando domínio customizado](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+### Deploy Manual (Vercel/Netlify)
+```bash
+# Build do projeto
+npm run build
+
+# A pasta 'dist' conterá os arquivos estáticos
+```
+
+Configure seu provedor para servir a pasta `dist`.
+
+---
+
+## 🤝 Contribuindo
+
+Contribuições são muito bem-vindas! Siga os passos:
+
+1. Faça um Fork do projeto
+2. Crie sua Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add: nova funcionalidade incrível'`)
+4. Push para a Branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+### Convenção de Commits
+
+- `Add:` Nova funcionalidade
+- `Fix:` Correção de bug
+- `Update:` Atualização de código
+- `Docs:` Documentação
+- `Style:` Formatação, ponto e vírgula, etc
+- `Refactor:` Refatoração de código
+- `Test:` Adição de testes
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+## 📞 Contato
+
+**Fernando SR** - Administrador & Entusiasta de AI/Data
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/seu-perfil)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Fernandosr85)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:seu-email@exemplo.com)
+
+**Link do Projeto:** [https://github.com/Fernandosr85/from-files-create](https://github.com/Fernandosr85/from-files-create)
+
+---
+
+<div align="center">
+
+**⭐ Se este projeto foi útil, considere dar uma estrela!**
+
+Desenvolvido com ❤️ para educação inclusiva
+
+</div>
