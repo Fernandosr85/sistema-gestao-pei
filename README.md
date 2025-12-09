@@ -15,6 +15,17 @@
 
 ---
 
+## 📊 Recursos do Projeto
+
+<div align="center">
+
+### 📥 [**Baixar Apresentação Institucional (PowerPoint)**](./Sistema%20PEI%20SESI%20SP_%20Gestão%20Inclusiva.pptx)
+*Apresentação completa do Sistema de Gestão PEI - SESI SP*
+
+</div>
+
+---
+
 ## 📋 Índice
 
 - [Sobre o Projeto](#-sobre-o-projeto)
@@ -381,3 +392,5 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 Desenvolvido com ❤️ para educação inclusiva no Brasil
 
 </div>
+
+---
