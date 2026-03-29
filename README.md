@@ -360,10 +360,10 @@ Contribuições são muito bem-vindas! Siga os passos:
 
 Para desenvolvedores, consulte a documentação técnica completa:
 
-- **[Arquitetura do Sistema](docs/ARCHITECTURE.md)** - Visão geral da arquitetura e padrões
-- **[Guia de Componentes](docs/COMPONENTS.md)** - Documentação de componentes React
-- **[API Reference](docs/API.md)** - Endpoints e integrações
-- **[Guia de Contribuição](docs/CONTRIBUTING.md)** - Boas práticas e workflow
+- **[Arquitetura do Sistema](docs/ARQUITETURA_DO_SISTEMA.md)** - Visão geral da arquitetura e padrões
+- **[Guia de Componentes](docs/GUIA_DE_COMPONENTES.md)** - Documentação de componentes React
+- **[API Reference](docs/API_REFERENCE.md)** - Endpoints e integrações
+- **[Guia de Contribuição](docs/GUIA_DE_CONTRIBUICAO.md)** - Boas práticas e workflow
 
 ---
 
