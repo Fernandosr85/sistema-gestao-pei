@@ -1,4 +1,4 @@
-# 📊 Sistema de Gestão PEI - SESI SP
+# 📊 Sistema de Gestão PEI 
 
 <div align="center">
 
