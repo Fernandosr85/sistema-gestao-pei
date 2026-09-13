@@ -11,7 +11,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import MeuPerfilDialog from '@/components/MeuPerfilDialog';
 import ConfiguracoesDialog from '@/components/ConfiguracoesDialog';
-import { institution } from '@/config/institution';
+import { DEMO_USER_NAME, institution } from '@/config/institution';
 
 const Header = () => {
   const [isPerfilOpen, setIsPerfilOpen] = useState(false);
@@ -118,7 +118,7 @@ const Header = () => {
                     <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
                       <User className="h-5 w-5" />
                     </div>
-                    <span className="hidden md:inline">Usuário de demonstração</span>
+                    <span className="hidden md:inline">{DEMO_USER_NAME}</span>
                   </div>
                 </Button>
               </DropdownMenuTrigger>

@@ -38,6 +38,11 @@ export const institution = {
 
 /**
  * Demo mode. While true, the UI must label every dataset as fictional and no
- * screen may present mock numbers as measured evidence.
+ * screen may present mock numbers as measured evidence, and records created in
+ * the UI are kept in this browser's localStorage. While false, the demo store
+ * runs in memory only and never touches localStorage.
  */
 export const DEMO_MODE = true;
+
+/** Name shown for the person using the prototype while there is no authentication. */
+export const DEMO_USER_NAME = "Usuário de demonstração";

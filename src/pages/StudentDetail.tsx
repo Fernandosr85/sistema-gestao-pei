@@ -1,4 +1,4 @@
-import { calculateAge } from '@/lib/date';
+import { calculateAge, formatLocalDate } from '@/lib/date';
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -21,12 +21,14 @@ import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { mockStudents } from '@/data/mockData';
 import { institution } from '@/config/institution';
+import StudentObservationsCard from '@/components/StudentObservationsCard';
+import { useDemoStore } from '@/store/useDemoStore';
 
 const StudentDetail = () => {
   const { id } = useParams();
-  const student = mockStudents.find((s) => s.id === id);
+  const { state } = useDemoStore();
+  const student = state.students.find((s) => s.id === id);
   const [performanceDialogOpen, setPerformanceDialogOpen] = useState(false);
   const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
   const [presentationDialogOpen, setPresentationDialogOpen] = useState(false);
@@ -54,7 +56,7 @@ const StudentDetail = () => {
     nomeCompleto: student.nomeCompleto,
     matricula: student.matricula,
     serieTurma: `${student.serie} - Turma ${student.turma}`,
-    dataNascimento: new Date(student.dataNascimento).toLocaleDateString('pt-BR'),
+    dataNascimento: formatLocalDate(student.dataNascimento),
     idade: calculateAge(student.dataNascimento),
     status: student.status,
     informacoesAcademicas: {
@@ -163,45 +165,51 @@ const StudentDetail = () => {
 
                 <Separator />
 
-                {/* Indicador de Status */}
-                <div className="flex items-center gap-2 text-success text-sm">
-                  <CheckCircle className="h-4 w-4" />
-                  <span className="font-medium">Desempenho em dia</span>
-                </div>
-
-                {/* Círculo de Progresso */}
-                <div className="flex flex-col items-center py-4">
-                  <div className="relative w-32 h-32">
-                    <svg className="w-32 h-32 transform -rotate-90">
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="hsl(var(--muted))"
-                        strokeWidth="8"
-                        fill="none"
-                      />
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray={`${2 * Math.PI * 56}`}
-                        strokeDashoffset={`${2 * Math.PI * 56 * (1 - alunoCompleto.documentacaoEmDia / 100)}`}
-                        className="transition-all duration-1000"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-3xl font-bold text-primary">{alunoCompleto.documentacaoEmDia}%</span>
+                {alunoCompleto.documentacaoEmDia === undefined ? (
+                  <p className="py-4 text-center text-sm text-muted-foreground">Sem avaliação registrada</p>
+                ) : (
+                  <>
+                    {/* Indicador de Status */}
+                    <div className="flex items-center gap-2 text-success text-sm">
+                      <CheckCircle className="h-4 w-4" />
+                      <span className="font-medium">Desempenho em dia</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 mt-3 text-success text-sm">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">Documentação em dia</span>
-                  </div>
-                </div>
+
+                    {/* Círculo de Progresso */}
+                    <div className="flex flex-col items-center py-4">
+                      <div className="relative w-32 h-32">
+                        <svg className="w-32 h-32 transform -rotate-90">
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke="hsl(var(--muted))"
+                            strokeWidth="8"
+                            fill="none"
+                          />
+                          <circle
+                            cx="64"
+                            cy="64"
+                            r="56"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth="8"
+                            fill="none"
+                            strokeDasharray={`${2 * Math.PI * 56}`}
+                            strokeDashoffset={`${2 * Math.PI * 56 * (1 - alunoCompleto.documentacaoEmDia / 100)}`}
+                            className="transition-all duration-1000"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-3xl font-bold text-primary">{alunoCompleto.documentacaoEmDia}%</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-3 text-success text-sm">
+                        <CheckCircle className="h-4 w-4" />
+                        <span className="font-medium">Documentação em dia</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -328,6 +336,8 @@ const StudentDetail = () => {
                 </CardContent>
               </Card>
             </div>
+
+            <StudentObservationsCard studentId={student.id} />
 
             {/* Benchmarking Panel */}
             <BenchmarkingPanel 
@@ -492,6 +502,7 @@ const StudentDetail = () => {
       <NovaObservacaoDialog
         open={observacaoDialogOpen}
         onOpenChange={setObservacaoDialogOpen}
+        studentId={student.id}
         studentName={student.nomeCompleto}
       />
     </div>

@@ -79,9 +79,13 @@ const StudentCard = ({ student }: StudentCardProps) => {
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Progresso</span>
-            <span className="font-semibold">{student.progresso}%</span>
+            {student.progresso === undefined ? (
+              <span className="text-muted-foreground">Sem avaliação registrada</span>
+            ) : (
+              <span className="font-semibold">{student.progresso}%</span>
+            )}
           </div>
-          <Progress value={student.progresso} className="h-2" />
+          {student.progresso !== undefined && <Progress value={student.progresso} className="h-2" />}
         </div>
 
         <div className="pt-4 border-t">

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { mockStudents } from '@/data/mockData';
+import { useDemoStore } from '@/store/useDemoStore';
 import { Link } from 'react-router-dom';
 
 const Students = () => {
@@ -18,7 +18,8 @@ const Students = () => {
   const [selectedSerie, setSelectedSerie] = useState('all');
   const [selectedSupport, setSelectedSupport] = useState('all');
 
-  const filteredStudents = mockStudents.filter((student) => {
+  const { state } = useDemoStore();
+  const filteredStudents = state.students.filter((student) => {
     const matchesSearch = student.nomeCompleto.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          student.matricula.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSerie = selectedSerie === 'all' || student.serie === selectedSerie;
@@ -97,7 +98,7 @@ const Students = () => {
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           Mostrando <span className="font-semibold">{filteredStudents.length}</span> de{' '}
-          <span className="font-semibold">{mockStudents.length}</span> alunos
+          <span className="font-semibold">{state.students.length}</span> alunos
         </p>
       </div>
 

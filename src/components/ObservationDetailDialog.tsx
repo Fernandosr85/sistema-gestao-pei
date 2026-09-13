@@ -9,12 +9,12 @@ import {
   AlertCircle, Camera, Video, FileIcon, Bell,
   Edit, FileDown, Mail, Trash2
 } from 'lucide-react';
-import { Observation } from '@/types';
+import { StructuredObservation } from '@/types';
 
 interface ObservationDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  observation: Observation | null;
+  observation: StructuredObservation | null;
 }
 
 export function ObservationDetailDialog({ open, onOpenChange, observation }: ObservationDetailDialogProps) {

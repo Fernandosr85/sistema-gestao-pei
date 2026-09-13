@@ -6,7 +6,8 @@ Instruções permanentes para trabalho neste repositório. Leia antes de qualque
 
 Protótipo de frontend para gestão de Planos Educacionais Individualizados (PEI) na
 educação inclusiva brasileira. React 18 + TypeScript + Vite + Tailwind + shadcn/ui.
-Sem backend, sem autenticação, sem persistência. Todos os dados vêm de `src/data/`.
+Sem backend e sem autenticação. Os dados iniciais vêm de `src/data/`; em modo demonstração
+(`DEMO_MODE`), o que é cadastrado na interface fica no localStorage via `src/store/`.
 
 O sistema lida com um domínio sensível: crianças e adolescentes com deficiência,
 diagnósticos e dados de saúde. Isso governa várias regras abaixo.

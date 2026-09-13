@@ -11,9 +11,10 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 
 > ## ⚠️ Estado do projeto: protótipo de interface
 >
-> Este repositório contém **apenas o frontend**, operando sobre dados fictícios estáticos
-> (`src/data/`). Não há backend, banco de dados, autenticação, controle de acesso nem
-> persistência: **nada do que você preencher na interface é salvo**.
+> Este repositório contém **apenas o frontend**, operando sobre dados fictícios
+> (`src/data/`). Não há backend, banco de dados, autenticação nem controle de acesso. Em
+> modo demonstração, alunos e observações cadastrados ficam **só no localStorage do
+> navegador em uso**, sem criptografia; os demais formulários ainda não salvam nada.
 >
 > Os indicadores, projeções, comparativos e valores orçamentários exibidos são **exemplos
 > ilustrativos fixos no código**. Nenhum modelo estatístico ou de machine learning é
@@ -119,7 +120,10 @@ foram escolhidos para atingir contraste **≥ 4,5:1 com texto branco (WCAG 2.1 A
 trocá-los pelas cores da sua instituição, verifique o contraste novamente.
 
 `DEMO_MODE` (no mesmo arquivo) controla os avisos de "dados fictícios" exibidos nas telas
-analíticas. Ele só deve ser desligado quando as telas passarem a consumir dados reais.
+analíticas **e** a gravação local. Ligado, alunos e observações cadastrados ficam no
+localStorage do navegador, com aviso permanente e o botão "Restaurar dados de
+demonstração". Desligado, o store roda só em memória e não toca no localStorage. Ele só
+deve ser desligado quando as telas passarem a consumir dados reais de um backend.
 
 ---
 
@@ -128,9 +132,9 @@ analíticas. Ele só deve ser desligado quando as telas passarem a consumir dado
 | Área | Situação |
 |---|---|
 | Navegação e layout | ✅ Funcional |
-| Listagens, filtros e busca de alunos | ✅ Funcional (sobre dados fictícios) |
-| Formulários com validação (Zod) | ⚠️ Validam, mas **descartam** o resultado |
-| Cadastro/edição persistente | ❌ Não implementado |
+| Listagens, filtros e busca de alunos | ✅ Funcional (dados fictícios e cadastros locais) |
+| Cadastro de aluno e de observações (página e registro rápido na ficha do aluno) | ⚠️ Grava só no localStorage do navegador, em modo demonstração; sem edição nem exclusão |
+| Demais formulários (avaliação, atendimento, recursos, edição de cadastro) | ⚠️ Validam, mas **descartam** o resultado |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação PDF/Excel/Word | ❌ Não implementado |
@@ -163,6 +167,10 @@ Nenhum registro real deve ser inserido antes de, no mínimo:
 Os dados de demonstração usam nomes fictícios, o domínio reservado `example.org` e números
 de telefone não discáveis. **Não versione dados reais neste repositório.**
 
+O armazenamento local do modo demonstração **não atende a nenhum desses requisitos**: os
+registros ficam em texto puro no localStorage, legíveis por qualquer pessoa com acesso ao
+navegador, e somem quando os dados do site são limpos.
+
 ---
 
 ## Estrutura do projeto
@@ -183,6 +191,7 @@ sistema-gestao-pei/
 │   ├── pages/              # Dashboard, Students, Observations, Gestao,
 │   │                       # ResourceLibrary, Legislation, Manual,
 │   │                       # AgendaAtendimentos, MinhaAgenda, NotFound
+│   ├── store/              # Store de demonstração (reducer + localStorage em DEMO_MODE)
 │   ├── types/
 │   ├── App.tsx
 │   └── main.tsx

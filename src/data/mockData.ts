@@ -94,6 +94,7 @@ export const mockStudents: Student[] = [
 
 export const mockObservations: Observation[] = [
   {
+    kind: 'structured',
     id: 'obs-1',
     studentId: '1',
     studentName: 'Maria Silva Santos',

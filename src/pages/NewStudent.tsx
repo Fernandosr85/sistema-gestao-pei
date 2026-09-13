@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,6 +24,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { todayLocalISO } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { Student } from '@/types';
 
 const studentSchema = z.object({
   nomeCompleto: z.string().min(3, 'Nome completo é obrigatório'),
@@ -56,7 +60,7 @@ type StudentForm = z.infer<typeof studentSchema>;
 const NewStudent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { dispatch } = useDemoStore();
 
   const form = useForm<StudentForm>({
     resolver: zodResolver(studentSchema),
@@ -86,18 +90,65 @@ const NewStudent = () => {
     },
   });
 
-  const onSubmit = async (data: StudentForm) => {
-    setIsSubmitting(true);
-    
-    // Simular salvamento
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+  const onSubmit = (data: StudentForm) => {
+    const hasAny = (...values: Array<string | undefined>) => values.some((value) => value?.trim());
+
+    const student: Student = {
+      id: createId('student'),
+      nomeCompleto: data.nomeCompleto.trim(),
+      dataNascimento: data.dataNascimento,
+      matricula: data.matricula.trim(),
+      serie: data.serie,
+      turma: data.turma.trim(),
+      diagnostico: data.diagnostico.trim(),
+      nivelSuporte: data.nivelSuporte,
+      professorResponsavel: data.professorResponsavel.trim(),
+      status: 'ativo',
+      dataCadastro: todayLocalISO(),
+      responsavel: {
+        nome: data.responsavelNome.trim(),
+        parentesco: data.responsavelParentesco.trim(),
+        telefone: data.responsavelTelefone.trim(),
+        email: data.responsavelEmail.trim(),
+      },
+    };
+
+    if (hasAny(data.compreensaoFala, data.palavrasConhecidas)) {
+      student.comunicacao = {
+        compreensaoFala: data.compreensaoFala ?? '',
+        palavrasConhecidas: data.palavrasConhecidas ?? '',
+      };
+    }
+    if (hasAny(data.comportamentosDesafiadores, data.estrategiasAcalmar, data.situacoesEstresse)) {
+      student.comportamento = {
+        comportamentosDesafiadores: data.comportamentosDesafiadores ?? '',
+        estratégiasAcalmar: data.estrategiasAcalmar ?? '',
+        situacoesEstresse: data.situacoesEstresse ?? '',
+      };
+    }
+    if (
+      hasAny(
+        data.horarioAcordar,
+        data.horarioDormir,
+        data.comeSozinha,
+        data.usaBanheiroSozinha,
+        data.atividadesPreferidas,
+      )
+    ) {
+      student.rotina = {
+        horarioAcordar: data.horarioAcordar ?? '',
+        horarioDormir: data.horarioDormir ?? '',
+        comeSozinha: data.comeSozinha ?? '',
+        usaBanheiroSozinha: data.usaBanheiroSozinha ?? '',
+        atividadesPreferidas: data.atividadesPreferidas ?? '',
+      };
+    }
+
+    const result = dispatch({ type: 'student/add', student });
     toast({
       title: 'Aluno cadastrado com sucesso!',
-      description: `${data.nomeCompleto} foi adicionado ao sistema.`,
+      description: `${student.nomeCompleto} foi adicionado à lista de alunos. ${describeSaveLocation(result)}`,
     });
-    
-    setIsSubmitting(false);
     navigate('/alunos');
   };
 
@@ -537,13 +588,12 @@ const NewStudent = () => {
               type="button"
               variant="outline"
               onClick={() => navigate('/alunos')}
-              disabled={isSubmitting}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit">
               <Save className="mr-2 h-4 w-4" />
-              {isSubmitting ? 'Salvando...' : 'Salvar Aluno'}
+              Salvar Aluno
             </Button>
           </div>
         </form>

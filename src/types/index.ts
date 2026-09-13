@@ -8,7 +8,7 @@ export interface Student {
   diagnostico: string;
   nivelSuporte: 'baixo' | 'medio' | 'alto';
   professorResponsavel: string;
-  progresso: number;
+  progresso?: number;
   status: 'ativo' | 'inativo';
   dataCadastro: string;
   responsavel: {
@@ -35,14 +35,18 @@ export interface Student {
   };
 }
 
-export interface Observation {
+interface ObservationBase {
   id: string;
   studentId: string;
   studentName: string;
   data: string;
+  observador: string;
+}
+
+export interface StructuredObservation extends ObservationBase {
+  kind: 'structured';
   periodo: 'manha' | 'tarde';
   duracao: number;
-  observador: string;
   comunicacao: {
     situacoes: Array<{
       contexto: string;
@@ -65,6 +69,23 @@ export interface Observation {
     ajustesNecessarios: string;
   };
 }
+
+export type QuickObservationContext = 'classroom' | 'recess' | 'aee' | 'physicalEducation' | 'other';
+
+export type QuickObservationTopic = 'peiGoal' | 'behavior' | 'learning' | 'socialization' | 'communication';
+
+export type QuickObservationTone = 'positive' | 'neutral' | 'attention';
+
+export interface QuickObservation extends ObservationBase {
+  kind: 'quick';
+  time: string;
+  context: QuickObservationContext;
+  topics: QuickObservationTopic[];
+  tone: QuickObservationTone;
+  description: string;
+}
+
+export type Observation = StructuredObservation | QuickObservation;
 
 export interface Assessment {
   id: string;
