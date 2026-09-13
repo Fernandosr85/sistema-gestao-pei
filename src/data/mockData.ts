@@ -26,7 +26,7 @@ export const mockStudents: Student[] = [
     },
     comportamento: {
       comportamentosDesafiadores: 'Dificuldade em aguardar sua vez, pode se frustrar facilmente',
-      estratégiasAcalmar: 'Contagem regressiva, uso de cartões de comunicação, música calma',
+      estrategiasAcalmar: 'Contagem regressiva, uso de cartões de comunicação, música calma',
       situacoesEstresse: 'Mudanças na rotina, ambientes barulhentos',
     },
   },

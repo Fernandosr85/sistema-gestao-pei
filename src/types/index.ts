@@ -23,7 +23,7 @@ export interface Student {
   };
   comportamento?: {
     comportamentosDesafiadores: string;
-    estratégiasAcalmar: string;
+    estrategiasAcalmar: string;
     situacoesEstresse: string;
   };
   rotina?: {

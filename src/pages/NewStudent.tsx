@@ -122,7 +122,7 @@ const NewStudent = () => {
     if (hasAny(data.comportamentosDesafiadores, data.estrategiasAcalmar, data.situacoesEstresse)) {
       student.comportamento = {
         comportamentosDesafiadores: data.comportamentosDesafiadores ?? '',
-        estratégiasAcalmar: data.estrategiasAcalmar ?? '',
+        estrategiasAcalmar: data.estrategiasAcalmar ?? '',
         situacoesEstresse: data.situacoesEstresse ?? '',
       };
     }
