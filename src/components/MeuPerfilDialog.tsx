@@ -523,7 +523,6 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <p className="text-sm text-muted-foreground mb-1">Tempo médio por observação</p>
                     <p className="text-2xl font-bold mb-1">8 minutos</p>
                     <p className="text-sm text-muted-foreground">Rede: 12 minutos</p>
-                    <Badge variant="default" className="bg-green-500 mt-2">Você é 33% mais eficiente! 💪</Badge>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">PEIs elaborados</p>

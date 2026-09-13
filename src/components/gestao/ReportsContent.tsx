@@ -33,10 +33,10 @@ const ReportsContent = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-1">
-              Relatórios Inteligentes
+              Relatórios
             </h2>
             <p className="text-sm text-muted-foreground">
-              Decisões Baseadas em Dados
+              Painéis de acompanhamento do PEI com dados de demonstração
             </p>
           </div>
           
@@ -127,46 +127,6 @@ const ReportsContent = () => {
         </div>
       </div>
 
-      {/* Rodapé - Métricas de Desempenho */}
-      <div className="bg-gradient-to-b from-muted/50 to-muted rounded-lg p-8 mt-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card rounded-xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <div className="text-4xl">⏱️</div>
-              <div>
-                <div className="text-3xl font-bold text-primary">70%</div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  Economia de tempo na elaboração de relatórios
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card rounded-xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <div className="text-4xl">📈</div>
-              <div>
-                <div className="text-3xl font-bold text-success">45%</div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  Aumento de assertividade das intervenções
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card rounded-xl p-6 shadow-lg">
-            <div className="flex items-start gap-4">
-              <div className="text-4xl">✅</div>
-              <div>
-                <div className="text-3xl font-bold text-success">100%</div>
-                <div className="text-sm text-muted-foreground mt-1">
-                  Conformidade com prazos legais
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

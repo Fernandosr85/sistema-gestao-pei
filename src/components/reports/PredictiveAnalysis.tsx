@@ -90,6 +90,12 @@ const PredictiveAnalysis = () => {
       </CardHeader>
 
       <CardContent className="p-6">
+        <DemoDataNotice
+          className="mb-6"
+          subject="As projeções, cenários e percentuais de confiança"
+          detail="Nenhum modelo estatístico ou de machine learning é executado nesta tela, e nenhuma inferência sobre um aluno individual pode ser tirada dela."
+        />
+
         {/* Resumo - Sempre visível */}
         <div className="mb-6">
           <p className="text-foreground mb-4">
@@ -112,7 +118,7 @@ const PredictiveAnalysis = () => {
               tendencia="positiva"
             />
             <MiniGrafico 
-              titulo="Confiança IA"
+              titulo="Índice ilustrativo"
               valor="87%"
               tendencia="positiva"
             />
@@ -244,7 +250,7 @@ function ProjecaoDetalhada() {
             </p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-1">Confiança IA</p>
+            <p className="text-sm text-muted-foreground mb-1">Índice ilustrativo</p>
             <p className="text-3xl font-bold text-primary">87%</p>
             <p className="text-xs text-muted-foreground">baseado em 156 casos</p>
           </div>
