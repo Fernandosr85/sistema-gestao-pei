@@ -29,7 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 const studentSchema = z.object({
   nomeCompleto: z.string().min(3, 'Nome completo é obrigatório'),
   dataNascimento: z.string().min(1, 'Data de nascimento é obrigatória'),
-  matriculaSESI: z.string().min(1, 'Matrícula SESI é obrigatória'),
+  matricula: z.string().min(1, 'Matrícula é obrigatória'),
   serie: z.string().min(1, 'Série é obrigatória'),
   turma: z.string().min(1, 'Turma é obrigatória'),
   diagnostico: z.string().min(1, 'Diagnóstico é obrigatório'),
@@ -63,7 +63,7 @@ const NewStudent = () => {
     defaultValues: {
       nomeCompleto: '',
       dataNascimento: '',
-      matriculaSESI: '',
+      matricula: '',
       serie: '',
       turma: '',
       diagnostico: '',
@@ -162,12 +162,12 @@ const NewStudent = () => {
 
                     <FormField
                       control={form.control}
-                      name="matriculaSESI"
+                      name="matricula"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Matrícula SESI *</FormLabel>
+                          <FormLabel>Matrícula *</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ex: SESI2024001" {...field} />
+                            <Input placeholder="Ex: MAT-2024-001" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -321,7 +321,7 @@ const NewStudent = () => {
                         <FormItem>
                           <FormLabel>Email *</FormLabel>
                           <FormControl>
-                            <Input type="email" placeholder="email@exemplo.com" {...field} />
+                            <Input type="email" placeholder="usuario@example.org" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

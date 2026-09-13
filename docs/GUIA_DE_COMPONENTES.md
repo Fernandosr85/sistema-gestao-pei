@@ -105,7 +105,7 @@ type StatCardProps = {
 ### BenchmarkingPanel
 
 **Tipo:** Análise  
-**Descrição:** Painel de benchmarking anônimo com a rede SESI.
+**Descrição:** Painel de comparativo ilustrativo com a rede. Os números são fixos no código e não representam uma coorte real.
 
 #### Finalidade
 - Comparação anonimizada

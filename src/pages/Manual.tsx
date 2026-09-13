@@ -12,7 +12,7 @@ const Manual = () => {
       <div className="space-y-2">
         <div className="flex items-center gap-3">
           <BookOpen className="h-8 w-8 text-primary" />
-          <h1 className="text-4xl font-bold">Manual de Procedimentos SESI para Inclusão</h1>
+          <h1 className="text-4xl font-bold">Manual de Procedimentos para Inclusão</h1>
         </div>
         <p className="text-muted-foreground text-lg">
           Guia completo de práticas e procedimentos para educação inclusiva
@@ -89,7 +89,7 @@ const Manual = () => {
                 2. Plano Educacional Individualizado (PEI)
               </CardTitle>
               <CardDescription>
-                Estrutura completa do PEI SESI
+                Estrutura completa do PEI
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -585,7 +585,7 @@ const Manual = () => {
                     <ul className="list-disc list-inside space-y-2 text-muted-foreground">
                       <li>Orientação vocacional adaptada</li>
                       <li>Desenvolvimento de habilidades para vida independente</li>
-                      <li>Articulação com cursos técnicos do SESI</li>
+                      <li>Articulação com cursos técnicos e profissionalizantes</li>
                       <li>Preparação para mundo do trabalho</li>
                     </ul>
                   </AccordionContent>
@@ -603,9 +603,9 @@ const Manual = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <p className="font-semibold mb-2">Plataformas e Materiais SESI:</p>
+            <p className="font-semibold mb-2">Plataformas e Materiais:</p>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Portal de Educação Inclusiva SESI</li>
+              <li>Portal de Educação Inclusiva da instituição</li>
               <li>Banco de materiais adaptados</li>
               <li>Biblioteca de CAA</li>
               <li>Repositório de boas práticas</li>
@@ -629,7 +629,7 @@ const Manual = () => {
           <p className="text-sm text-muted-foreground text-center">
             Este manual deve ser revisado anualmente e está alinhado com: Diretrizes da LBI (Lei 13.146/2015), 
             Princípios de Desenho Universal para Aprendizagem (DUA), Teoria de Desenvolvimento Cognitivo de Piaget, 
-            Práticas baseadas em evidências científicas e Valores do Sistema SESI de Educação.
+            Práticas baseadas em evidências científicas e valores institucionais de educação inclusiva.
           </p>
         </CardContent>
       </Card>

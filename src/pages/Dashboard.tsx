@@ -24,13 +24,13 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
       {/* Hero Section */}
-      <section className="sesi-gradient rounded-2xl p-8 text-white">
+      <section className="brand-gradient rounded-2xl p-8 text-white">
         <div className="max-w-3xl">
           <h1 className="text-4xl font-bold mb-3">
             Sistema de Gestão PEI
           </h1>
           <p className="text-lg opacity-90 mb-6">
-            Plano Educacional Individualizado - SESI SP
+            Plano Educacional Individualizado
           </p>
           <div className="flex flex-wrap gap-3">
             <Button 
@@ -142,7 +142,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               ))}
-              <Link to="/reunioes">
+              <Link to="/agenda-atendimentos">
                 <Button variant="outline" size="sm" className="w-full">
                   Ver Todas as Reuniões
                 </Button>

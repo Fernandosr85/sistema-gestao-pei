@@ -245,7 +245,7 @@ export const CalendarIntegrations = () => {
               <p className="font-medium">Gmail</p>
               <p className="text-sm text-muted-foreground flex items-center gap-1">
                 <CheckCircle2 className="h-3 w-3 text-green-600" />
-                patricia.cecy@gmail.com
+                professor.demo@example.org
               </p>
             </div>
             <Button variant="outline" size="sm">

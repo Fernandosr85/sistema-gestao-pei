@@ -14,7 +14,7 @@ Atualmente, a aplicação opera com **mock data** e com interfaces prontas para 
 
 ## Integrações Planejadas
 
-### Lovable Cloud / Supabase
+### Backend de persistência (ex.: Supabase, PostgreSQL + API própria)
 
 **Status:** Planejado
 

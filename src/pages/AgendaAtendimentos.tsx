@@ -1,3 +1,4 @@
+import type { Atendimento, AtendimentoEvent } from '@/types';
 import { useState, useMemo } from 'react';
 import { Calendar, CalendarDays, List, Plus, Filter, CalendarClock, FileWarning, CalendarRange, CalendarCheck, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { Calendar as BigCalendar, momentLocalizer, View } from 'react-big-calendar';
@@ -113,14 +114,14 @@ const localizer = momentLocalizer(moment);
 const AgendaAtendimentos = () => {
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
   const [detalhesOpen, setDetalhesOpen] = useState(false);
-  const [selectedAtendimento, setSelectedAtendimento] = useState<any>(null);
+  const [selectedAtendimento, setSelectedAtendimento] = useState<Atendimento | null>(null);
   const [filtroAluno, setFiltroAluno] = useState('todos');
   const [filtroTipo, setFiltroTipo] = useState('todos');
   const [filtroStatus, setFiltroStatus] = useState('todos');
   const [currentView, setCurrentView] = useState<View>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const handleAtendimentoClick = (atendimento: any) => {
+  const handleAtendimentoClick = (atendimento: Atendimento) => {
     setSelectedAtendimento(atendimento);
     setDetalhesOpen(true);
   };
@@ -160,7 +161,7 @@ const AgendaAtendimentos = () => {
     });
   }, [filteredAtendimentos]);
 
-  const eventStyleGetter = (event: any) => {
+  const eventStyleGetter = (event: AtendimentoEvent) => {
     const tipo = event.resource.tipo;
     const color = tipoColors[tipo as keyof typeof tipoColors];
     

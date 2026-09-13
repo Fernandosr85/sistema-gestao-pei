@@ -21,7 +21,7 @@ export const useCalendarSync = () => {
     google: {
       provider: 'google',
       connected: true,
-      email: 'patricia.cecy@gmail.com',
+      email: 'professor.demo@example.org',
       lastSync: new Date().toISOString(),
       syncEnabled: true,
       syncSettings: {
@@ -80,7 +80,7 @@ export const useCalendarSync = () => {
         [provider]: {
           ...prev[provider],
           connected: true,
-          email: provider === 'google' ? 'patricia.cecy@gmail.com' : 'patricia.cecy@outlook.com',
+          email: provider === 'google' ? 'professor.demo@example.org' : 'professor.demo@example.org',
           lastSync: new Date().toISOString(),
         },
       }));

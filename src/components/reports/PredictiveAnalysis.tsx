@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Brain, ChevronDown, ChevronUp, TrendingUp, Users, Lightbulb, AlertCircle, AlertTriangle } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 const projectionData = [
   { month: 'Jan', historico: 2, projecao: null },
@@ -62,9 +63,9 @@ const PredictiveAnalysis = () => {
               <Brain className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-xl">ANÁLISE PREDITIVA</CardTitle>
+              <CardTitle className="text-xl">PROJEÇÃO ILUSTRATIVA</CardTitle>
               <p className="text-primary-foreground/90 text-sm mt-1">
-                Inteligência Artificial • Baseada em 2.847 casos similares do SESI
+                Maquete de interface • Nenhum modelo preditivo é executado
               </p>
             </div>
           </div>
@@ -407,7 +408,7 @@ function CasosSimilaresDetalhado() {
     <div className="space-y-4">
       <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
         <p className="text-sm text-foreground">
-          📊 Encontramos <strong>156 casos similares</strong> na rede SESI (2021-2024) 
+          📊 Encontramos <strong>156 casos similares</strong> na rede (dados fictícios) (2021-2024) 
           com perfil próximo ao de João Silva. Veja os 3 casos mais relevantes:
         </p>
       </div>
@@ -421,7 +422,7 @@ function CasosSimilaresDetalhado() {
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
-                <h5 className="font-bold text-foreground">Caso #{num} - SESI Osasco</h5>
+                <h5 className="font-bold text-foreground">Caso #{num} - Escola Exemplo A</h5>
                 {num === 1 && (
                   <Badge className="bg-primary">⭐ Mais similar</Badge>
                 )}
@@ -528,7 +529,7 @@ function EstrategiasIA() {
               <p className="font-semibold text-sm text-foreground">Baixo</p>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">Casos SESI</p>
+              <p className="text-xs text-muted-foreground">Casos na rede</p>
               <p className="font-semibold text-sm text-foreground">67 escolas</p>
             </div>
           </div>

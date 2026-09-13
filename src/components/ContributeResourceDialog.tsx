@@ -274,7 +274,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                       <div className="flex items-center space-x-2">
                         <Checkbox id="usage" />
                         <Label htmlFor="usage" className="font-normal cursor-pointer text-sm">
-                          Autorizo o uso deste recurso por outros professores do SESI para fins educacionais
+                          Autorizo o uso deste recurso por outros professores da instituição para fins educacionais
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">

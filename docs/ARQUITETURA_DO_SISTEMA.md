@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O **Sistema de Gestão PEI** é uma aplicação web voltada para a gestão de educação inclusiva no **SESI São Paulo**. A solução centraliza informações de estudantes com necessidades educacionais especiais, permitindo acompanhamento pedagógico, registros de observações, agenda de atendimentos, relatórios e apoio à conformidade legal.
+O **Sistema de Gestão PEI** é uma aplicação web voltada para a gestão de educação inclusiva em qualquer instituição de ensino. A instituição é configurada em `src/config/institution.ts`. A solução centraliza informações de estudantes com necessidades educacionais especiais, permitindo acompanhamento pedagógico, registros de observações, agenda de atendimentos, relatórios e apoio à conformidade legal.
 
 ## Objetivos do Sistema
 
@@ -34,7 +34,7 @@ O **Sistema de Gestão PEI** é uma aplicação web voltada para a gestão de ed
 ## Padrão Arquitetural
 
 A aplicação segue o modelo **SPA (Single Page Application)** com **roteamento client-side**.  
-No estado atual, os dados são fornecidos por **mock data**, mas a interface foi preparada para futura integração com backend real, com destaque para **Supabase / Lovable Cloud**.
+No estado atual, os dados são fornecidos por **mock data**, mas a interface foi preparada para futura integração com backend real, sem dependência de um provedor específico.
 
 ## Estrutura de Diretórios
 
@@ -81,7 +81,7 @@ docs/                     # Documentação complementar
 | `/relatorios` | Reports | Relatórios inteligentes |
 | `/recursos` | ResourceLibrary | Biblioteca pedagógica |
 | `/legislacao` | Legislation | Marco legal |
-| `/manual` | Manual | Procedimentos SESI |
+| `/manual` | Manual | Procedimentos de inclusão |
 | `/minha-agenda` | MinhaAgenda | Agenda pessoal |
 | `/complexidade` | ComplexityAnalysis | Análise de complexidade |
 
@@ -103,7 +103,7 @@ As principais entidades do sistema incluem:
 
 | Integração | Status | Descrição |
 |---|---|---|
-| Lovable Cloud / Supabase | Planejado | Banco, autenticação e storage |
+| Backend de persistência | Planejado | Banco, autenticação e storage |
 | Google Calendar | UI pronta | Sincronização bidirecional |
 | Microsoft Outlook | UI pronta | Sincronização bidirecional |
 | Geração de PDF | Planejado | Exportação de relatórios |
@@ -125,7 +125,7 @@ As principais entidades do sistema incluem:
 ### Fase 3
 - Análise preditiva com IA
 - App mobile (PWA)
-- Integração com sistemas SESI
+- Integração com sistemas acadêmicos da instituição
 
 ## Observações
 

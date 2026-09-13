@@ -20,7 +20,7 @@ const Students = () => {
 
   const filteredStudents = mockStudents.filter((student) => {
     const matchesSearch = student.nomeCompleto.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.matriculaSESI.toLowerCase().includes(searchTerm.toLowerCase());
+                         student.matricula.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSerie = selectedSerie === 'all' || student.serie === selectedSerie;
     const matchesSupport = selectedSupport === 'all' || student.nivelSuporte === selectedSupport;
     

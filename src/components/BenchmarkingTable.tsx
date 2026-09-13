@@ -1,3 +1,4 @@
+import DemoDataNotice from '@/components/DemoDataNotice';
 import { BarChart3, Award, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -96,6 +97,11 @@ const BenchmarkingTable = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <DemoDataNotice
+          subject="Os indicadores comparativos e o ranking"
+          detail="Nenhuma escola real foi medida ou classificada."
+          className="mb-6"
+        />
         <div className="flex items-center gap-2 mb-6">
           <span className="text-sm text-muted-foreground">Comparar com:</span>
           <Button variant="outline" size="sm">
@@ -105,7 +111,7 @@ const BenchmarkingTable = () => {
             🌆 Regional SP
           </Button>
           <Button variant="outline" size="sm">
-            🌍 Rede SESI
+            🌍 Rede
           </Button>
         </div>
 
@@ -116,7 +122,7 @@ const BenchmarkingTable = () => {
                 <TableHead className="font-bold">INDICADOR</TableHead>
                 <TableHead className="text-center font-bold">Escola</TableHead>
                 <TableHead className="text-center font-bold">Region.</TableHead>
-                <TableHead className="text-center font-bold">Rede SESI</TableHead>
+                <TableHead className="text-center font-bold">Rede</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -168,7 +174,7 @@ const BenchmarkingTable = () => {
                     <Award className="h-4 w-4 text-warning mt-0.5" />
                     <div className="text-xs">
                       <span className="font-medium">🎯 Recomendação:</span>
-                      <span className="text-muted-foreground"> Implementar boas práticas da SESI Campinas (líder em inclusão social: 89%)</span>
+                      <span className="text-muted-foreground"> Implementar boas práticas da Escola Exemplo B (líder em inclusão social: 89%)</span>
                     </div>
                   </div>
                 </div>

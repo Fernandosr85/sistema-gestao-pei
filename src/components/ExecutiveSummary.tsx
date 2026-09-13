@@ -1,6 +1,7 @@
 import { Users, FileText, GraduationCap, TrendingUp, Target, AlertTriangle, Heart, BarChart3, RefreshCw, Download, Mail } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -125,6 +126,11 @@ const ExecutiveSummary = () => {
   return (
     <Card className="bg-card/50 border-2 border-primary/20 shadow-lg mb-8">
       <CardContent className="p-6">
+        <DemoDataNotice
+          subject="Os indicadores deste resumo"
+          detail="Eles não derivam dos alunos cadastrados no sistema."
+          className="mb-6"
+        />
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">

@@ -30,7 +30,7 @@ const Gestao = () => {
       <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border-b">
         <div className="container mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-3xl font-bold text-foreground">🏫 Painel de Gestão - SESI SP</h1>
+            <h1 className="text-3xl font-bold text-foreground">🏫 Painel de Gestão</h1>
             <div className="text-sm text-muted-foreground">
               {new Date().toLocaleDateString('pt-BR', { 
                 weekday: 'long', 

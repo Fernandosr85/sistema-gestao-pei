@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -59,14 +60,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sesi: {
-          blue: "hsl(var(--sesi-blue))",
-          red: "hsl(var(--sesi-red))",
-          lightblue: "hsl(var(--sesi-light-blue))",
-          green: "hsl(var(--sesi-green))",
-          orange: "hsl(var(--sesi-orange))",
-          yellow: "hsl(var(--sesi-yellow))",
-          gray: "hsl(var(--sesi-gray))",
+        brand: {
+          blue: "hsl(var(--brand-blue))",
+          red: "hsl(var(--brand-red))",
+          lightblue: "hsl(var(--brand-light-blue))",
+          green: "hsl(var(--brand-green))",
+          orange: "hsl(var(--brand-orange))",
+          yellow: "hsl(var(--brand-yellow))",
+          gray: "hsl(var(--brand-gray))",
         },
       },
       borderRadius: {
@@ -98,5 +99,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

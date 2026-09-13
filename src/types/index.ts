@@ -2,8 +2,7 @@ export interface Student {
   id: string;
   nomeCompleto: string;
   dataNascimento: string;
-  idade: number;
-  matriculaSESI: string;
+  matricula: string;
   serie: string;
   turma: string;
   diagnostico: string;
@@ -117,4 +116,25 @@ export interface Professional {
   tipo: 'professor' | 'psicologo' | 'terapeuta' | 'fonoaudiologo' | 'coordenador';
   especialidade?: string;
   estudantes: string[];
+}
+
+export interface Atendimento {
+  id: number;
+  aluno: string;
+  tipo: string;
+  data: string;
+  horarioInicio: string;
+  horarioFim: string;
+  status: 'agendado' | 'realizado' | 'cancelado';
+  profissionais: string[];
+  local: string;
+  objetivos: string;
+}
+
+export interface AtendimentoEvent {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: Atendimento;
 }

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, AlertTriangle, Target, Users, CheckCircle2 } from "lucide-react";
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface BenchmarkingPanelProps {
   studentName: string;
@@ -75,15 +76,19 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
       <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
         <CardTitle className="flex items-center gap-2 text-lg">
           <Users className="h-5 w-5 text-primary" />
-          Insights Baseados em Dados
+          Comparativo ilustrativo
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
+        <DemoDataNotice
+          subject="A coorte, as taxas de eficácia e as probabilidades"
+          detail="Os números são fixos no código e não mudam conforme o aluno exibido."
+        />
         {/* Network Analysis */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Target className="h-4 w-4" />
-            ANÁLISE: Alunos com {diagnosis} {diagnosisLevel} na Rede SESI ({networkSize} alunos)
+            ANÁLISE: Alunos com {diagnosis} {diagnosisLevel} na rede ({networkSize} alunos)
           </div>
 
           {/* Strategies with Highest Success */}
@@ -159,7 +164,7 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
             BENCHMARKING:
           </h4>
           <p className="text-xs text-muted-foreground">
-            {firstName} vs. Média SESI ({diagnosis} {diagnosisLevel}):
+            {firstName} vs. Média da rede ({diagnosis} {diagnosisLevel}):
           </p>
 
           <div className="space-y-4">
@@ -202,15 +207,17 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
           </Card>
         </div>
 
-        {/* Ethics Notice */}
+        {/* Requirements for a real implementation */}
         <div className="pt-4 border-t">
           <div className="text-xs text-muted-foreground space-y-1">
-            <p className="font-medium">Ética e Privacidade:</p>
+            <p className="font-medium">
+              Requisitos para um benchmarking real (ainda não implementados):
+            </p>
             <ul className="space-y-0.5 ml-4 list-disc">
-              <li>Dados 100% anonimizados</li>
-              <li>Apenas estatísticas agregadas</li>
-              <li>Consentimento explícito para participar</li>
-              <li>Opt-out a qualquer momento</li>
+              <li>Base de dados governada, com coorte e período definidos</li>
+              <li>Anonimização verificável e controle de divulgação estatística</li>
+              <li>Base legal registrada por operação de tratamento (LGPD)</li>
+              <li>Tamanho mínimo de grupo antes de exibir qualquer comparação</li>
             </ul>
           </div>
         </div>
