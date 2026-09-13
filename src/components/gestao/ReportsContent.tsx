@@ -8,6 +8,7 @@ import PredictiveAnalysis from '@/components/reports/PredictiveAnalysis';
 import PEIRadarChart from '@/components/reports/PEIRadarChart';
 import InterventionDonut from '@/components/reports/InterventionDonut';
 import ActionPanel from '@/components/reports/ActionPanel';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 const ReportsContent = () => {
   const [periodo, setPeriodo] = useState('anual');
@@ -21,6 +22,11 @@ const ReportsContent = () => {
       <div className="text-sm text-muted-foreground">
         Gestão &gt; Relatórios
       </div>
+
+      <DemoDataNotice
+        subject="Os indicadores, gráficos, projeções e percentuais desta tela"
+        detail="As leituras e recomendações exibidas são montadas por regras fixas; nenhum modelo é executado."
+      />
 
       {/* Header com filtros */}
       <div className="bg-card rounded-lg border p-6 shadow-sm">
