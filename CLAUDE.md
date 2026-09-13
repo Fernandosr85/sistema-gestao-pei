@@ -96,8 +96,9 @@ dados reais.
 - Sem acentos em chaves de objeto.
 - Valores derivados se calculam, não se armazenam. Idade vem de
   `calculateAge(dataNascimento)` em `src/lib/date.ts` — nunca de um campo salvo.
-- Um componente por arquivo; arquivos acima de ~400 linhas devem ser quebrados quando
-  você mexer neles.
+- Um componente por arquivo.
+- Arquivos acima de ~400 linhas devem ser quebrados em commits de refatoração dedicados,
+  nunca junto de mudança de comportamento.
 - Nada de `any`. Se o tipo não existe, crie em `src/types/`.
 - Sem dependência de plataforma de hospedagem específica. `npm run build` gera estático.
 

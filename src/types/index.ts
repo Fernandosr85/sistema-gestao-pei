@@ -129,6 +129,7 @@ export interface Atendimento {
   profissionais: string[];
   local: string;
   objetivos: string;
+  ata?: string;
 }
 
 export interface AtendimentoEvent {

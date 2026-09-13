@@ -329,13 +329,20 @@ const ProgressChart = () => {
 
 // ==================== COMPONENTES AUXILIARES ====================
 
+interface AreaDataPoint {
+  mes: string;
+  valor: number;
+  meta: number;
+}
+
 interface AreaData {
   nome: string;
+  dados: AreaDataPoint[];
   atual: number;
   meta: number;
   total: number;
+  cor: string;
   status: string;
-  [key: string]: unknown;
 }
 
 function MiniCardArea({

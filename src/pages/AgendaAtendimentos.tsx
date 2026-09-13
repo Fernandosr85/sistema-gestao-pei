@@ -21,7 +21,7 @@ import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
 
 // Mock data
-const mockAtendimentos = [
+const mockAtendimentos: Atendimento[] = [
   {
     id: 1,
     aluno: 'Ana Carolina Souza',
