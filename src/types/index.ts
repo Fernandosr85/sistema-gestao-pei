@@ -87,48 +87,42 @@ export interface QuickObservation extends ObservationBase {
 
 export type Observation = StructuredObservation | QuickObservation;
 
+export type AssessmentKind = 'diagnostic' | 'formative' | 'quarterly' | 'socioemotional' | 'accessibility';
+
+export type AssessmentObjectiveStatus = 'achieved' | 'inProgress' | 'notStarted' | 'needsReview';
+
+export type PerformanceLevel = 1 | 2 | 3 | 4 | 5;
+
 export interface Assessment {
   id: string;
   studentId: string;
   studentName: string;
-  data: string;
-  avaliador: string;
-  tipo: 'inicial' | 'trimestral' | 'semestral' | 'final';
-  areas: {
-    comunicacao: {
-      receptiva: number;
-      expressiva: number;
-      observacoes: string;
-    };
-    social: {
-      interacaoAdultos: number;
-      interacaoPares: number;
-      observacoes: string;
-    };
-    comportamento: {
-      autorregulacao: number;
-      adaptabilidade: number;
-      observacoes: string;
-    };
-    academico: {
-      atencao: number;
-      participacao: number;
-      observacoes: string;
-    };
+  date: string;
+  assessor: string;
+  kind: AssessmentKind;
+  quarter?: 1 | 2 | 3 | 4;
+  objectives: Array<{
+    title: string;
+    status: AssessmentObjectiveStatus;
+    progress: number;
+    notes: string;
+  }>;
+  languageArts: {
+    reading: PerformanceLevel;
+    writing: PerformanceLevel;
+    speaking: PerformanceLevel;
+    notes: string;
   };
-  mediaGeral: number;
-}
-
-export interface Meeting {
-  id: string;
-  data: string;
-  hora: string;
-  studentId: string;
-  studentName: string;
-  participantes: string[];
-  tipo: 'rotina' | 'urgente' | 'planejamento';
-  status: 'agendada' | 'realizada' | 'cancelada';
-  observacoes?: string;
+  socioEmotional: {
+    recognizesEmotions: boolean;
+    managesFrustration: boolean;
+    asksForHelp: boolean;
+  };
+  summary: {
+    achievements: string;
+    challenges: string;
+    nextSteps: string;
+  };
 }
 
 export interface Professional {
@@ -139,10 +133,13 @@ export interface Professional {
   estudantes: string[];
 }
 
+export type AppointmentType = 'Reunião Pedagógica' | 'Avaliação' | 'Atendimento Família' | 'Multidisciplinar' | 'Outros';
+
 export interface Atendimento {
-  id: number;
+  id: string;
+  studentId: string;
   aluno: string;
-  tipo: string;
+  tipo: AppointmentType;
   data: string;
   horarioInicio: string;
   horarioFim: string;
@@ -150,11 +147,12 @@ export interface Atendimento {
   profissionais: string[];
   local: string;
   objetivos: string;
+  observacoes?: string;
   ata?: string;
 }
 
 export interface AtendimentoEvent {
-  id: number;
+  id: string;
   title: string;
   start: Date;
   end: Date;

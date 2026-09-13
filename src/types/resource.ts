@@ -68,6 +68,8 @@ export interface Resource {
   objectives?: string[];
   materials?: string[];
   tips?: string[];
+  /** Added in this browser through the contribution form: no moderation and no file. */
+  isLocalContribution?: boolean;
 }
 
 export interface ResourceReview {

@@ -19,23 +19,32 @@ export const calculateAge = (birthDate: string, reference: Date = new Date()): n
 
 const pad = (value: number): string => String(value).padStart(2, '0');
 
+/** Calendar date of `date` as YYYY-MM-DD, in local time. */
+export const toLocalISODate = (date: Date): string =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
 /**
  * Local calendar date as YYYY-MM-DD. `toISOString()` is UTC, which in Brazil
  * already reads as tomorrow after 21:00.
  */
-export const todayLocalISO = (reference: Date = new Date()): string =>
-  `${reference.getFullYear()}-${pad(reference.getMonth() + 1)}-${pad(reference.getDate())}`;
+export const todayLocalISO = (reference: Date = new Date()): string => toLocalISODate(reference);
 
 /** Local time as HH:mm. */
 export const currentLocalTime = (reference: Date = new Date()): string =>
   `${pad(reference.getHours())}:${pad(reference.getMinutes())}`;
 
 /**
- * Displays a YYYY-MM-DD date. `new Date('2025-11-19')` is parsed as UTC
- * midnight and renders as the previous day in Brazil, so build it in local time.
+ * Parses YYYY-MM-DD as a local calendar date. `new Date('2025-11-19')` is UTC
+ * midnight and renders as the previous day in Brazil.
  */
-export const formatLocalDate = (isoDate: string): string => {
+export const parseLocalDate = (isoDate: string): Date | null => {
   const [year, month, day] = isoDate.split('-').map(Number);
-  if (!year || !month || !day) return isoDate;
-  return new Date(year, month - 1, day).toLocaleDateString(institution.locale);
+  if (!year || !month || !day) return null;
+  return new Date(year, month - 1, day);
+};
+
+/** Displays a YYYY-MM-DD date in the institution locale. */
+export const formatLocalDate = (isoDate: string, options?: Intl.DateTimeFormatOptions): string => {
+  const date = parseLocalDate(isoDate);
+  return date ? date.toLocaleDateString(institution.locale, options) : isoDate;
 };

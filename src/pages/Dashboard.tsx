@@ -7,19 +7,28 @@ import { GenerateReportDialog } from '@/components/GenerateReportDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { mockStudents, mockMeetings, mockObservations } from '@/data/mockData';
 import { Link } from 'react-router-dom';
+import { formatLocalDate, todayLocalISO, toLocalISODate } from '@/lib/date';
+import { useDemoStore } from '@/store/useDemoStore';
 
 const Dashboard = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  
-  const totalStudents = mockStudents.length;
-  const activeStudents = mockStudents.filter(s => s.status === 'ativo').length;
-  const totalObservations = mockObservations.length;
-  const upcomingMeetings = mockMeetings.filter(m => m.status === 'agendada').length;
+  const { state } = useDemoStore();
 
-  const recentStudents = mockStudents.slice(0, 3);
-  const recentMeetings = mockMeetings.slice(0, 3);
+  const totalStudents = state.students.length;
+  const activeStudents = state.students.filter(s => s.status === 'ativo').length;
+  const totalObservations = state.observations.length;
+
+  const today = todayLocalISO();
+  const now = new Date();
+  const sevenDaysAhead = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
+  const upcomingAppointments = state.appointments
+    .filter((appointment) => appointment.status === 'agendado' && appointment.data >= today)
+    .sort((a, b) => `${a.data} ${a.horarioInicio}`.localeCompare(`${b.data} ${b.horarioInicio}`));
+  const appointmentsNextSevenDays = upcomingAppointments.filter((appointment) => appointment.data <= sevenDaysAhead).length;
+
+  const recentStudents = state.students.slice(0, 3);
+  const nextAppointments = upcomingAppointments.slice(0, 3);
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
@@ -33,8 +42,8 @@ const Dashboard = () => {
             Plano Educacional Individualizado
           </p>
           <div className="flex flex-wrap gap-3">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="secondary"
               onClick={() => setReportDialogOpen(true)}
               data-report-dialog
@@ -71,8 +80,8 @@ const Dashboard = () => {
           variant="success"
         />
         <StatCard
-          title="Reuniões Agendadas"
-          value={upcomingMeetings}
+          title="Atendimentos Agendados"
+          value={appointmentsNextSevenDays}
           icon={Calendar}
           description="Próximos 7 dias"
           variant="warning"
@@ -111,40 +120,45 @@ const Dashboard = () => {
 
         {/* Sidebar */}
         <aside className="space-y-6">
-          {/* Upcoming Meetings */}
+          {/* Upcoming Appointments */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-primary" />
-                Próximas Reuniões
+                Próximos Atendimentos
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {recentMeetings.map((meeting) => (
-                <div key={meeting.id} className="pb-4 border-b last:border-0 last:pb-0">
+              {nextAppointments.length === 0 && (
+                <p className="text-sm text-muted-foreground">Nenhum atendimento agendado a partir de hoje.</p>
+              )}
+              {nextAppointments.map((appointment) => (
+                <div key={appointment.id} className="pb-4 border-b last:border-0 last:pb-0">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="font-semibold text-sm">{meeting.studentName}</p>
+                      <p className="font-semibold text-sm">{appointment.aluno}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(meeting.data).toLocaleDateString('pt-BR')} às {meeting.hora}
+                        {formatLocalDate(appointment.data)} às {appointment.horarioInicio}
                       </p>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {meeting.tipo}
+                      {appointment.tipo}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {meeting.participantes.map((participante, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-xs">
-                        {participante}
-                      </Badge>
-                    ))}
-                  </div>
+                  {appointment.profissionais.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {appointment.profissionais.map((profissional) => (
+                        <Badge key={profissional} variant="secondary" className="text-xs">
+                          {profissional}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               <Link to="/agenda-atendimentos">
                 <Button variant="outline" size="sm" className="w-full">
-                  Ver Todas as Reuniões
+                  Ver agenda completa
                 </Button>
               </Link>
             </CardContent>
@@ -152,7 +166,7 @@ const Dashboard = () => {
 
         </aside>
       </div>
-      
+
       <GenerateReportDialog open={reportDialogOpen} onOpenChange={setReportDialogOpen} />
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,24 +9,107 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { DEMO_USER_NAME, institution } from '@/config/institution';
+import { todayLocalISO } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { DiagnosisType, EducationLevel, Resource, ResourceType, SubjectType } from '@/types/resource';
 
 interface ContributeResourceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+const FULL_DESCRIPTION_MIN_LENGTH = 200;
+
+const typeOptions: Array<{ label: string; value: ResourceType }> = [
+  { label: 'Material Impresso (PDF/DOC)', value: 'material-impresso' },
+  { label: 'Vídeo Tutorial', value: 'video' },
+  { label: 'Jogo Educacional', value: 'jogo' },
+  { label: 'Aplicativo/Software', value: 'aplicativo' },
+  { label: 'Prancha de CAA', value: 'prancha-caa' },
+  { label: 'Sequência Didática', value: 'sequencia-didatica' },
+  { label: 'Avaliação Adaptada', value: 'avaliacao-adaptada' },
+  { label: 'Roteiro Visual', value: 'roteiro-visual' },
+  { label: 'História Social', value: 'historia-social' },
+  { label: 'Outro', value: 'outro' },
+];
+
+const ALL_DIAGNOSES: DiagnosisType[] = [
+  'TEA',
+  'TDAH',
+  'Dislexia',
+  'Discalculia',
+  'Deficiência Intelectual',
+  'Síndrome de Down',
+  'Deficiência Visual',
+  'Deficiência Auditiva',
+  'Paralisia Cerebral',
+  'Superdotação',
+  'Outros',
+];
+
+const diagnosisOptions: Array<{ label: string; values: DiagnosisType[] }> = [
+  { label: 'TEA', values: ['TEA'] },
+  { label: 'TDAH', values: ['TDAH'] },
+  { label: 'Dislexia', values: ['Dislexia'] },
+  { label: 'Discalculia', values: ['Discalculia'] },
+  { label: 'Deficiência Intelectual', values: ['Deficiência Intelectual'] },
+  { label: 'Síndrome de Down', values: ['Síndrome de Down'] },
+  { label: 'Deficiência Visual', values: ['Deficiência Visual'] },
+  { label: 'Deficiência Auditiva', values: ['Deficiência Auditiva'] },
+  { label: 'Todos (recurso universal)', values: ALL_DIAGNOSES },
+];
+
+const subjectOptions: Array<{ label: string; value: SubjectType }> = [
+  { label: 'Língua Portuguesa', value: 'Língua Portuguesa' },
+  { label: 'Matemática', value: 'Matemática' },
+  { label: 'Ciências', value: 'Ciências da Natureza' },
+  { label: 'Geografia', value: 'Geografia' },
+  { label: 'História', value: 'História' },
+  { label: 'Arte', value: 'Arte' },
+  { label: 'Educação Física', value: 'Educação Física' },
+  { label: 'Habilidades Socioemocionais', value: 'Habilidades Socioemocionais' },
+];
+
+const levelOptions: Array<{ label: string; value: EducationLevel }> = [
+  { label: 'Educação Infantil', value: 'Educação Infantil' },
+  { label: 'Fund. 1 - 1º ano', value: 'Fundamental 1' },
+  { label: 'Fund. 1 - 2º ano', value: 'Fundamental 1' },
+  { label: 'Fund. 1 - 3º ano', value: 'Fundamental 1' },
+  { label: 'Fund. 1 - 4º ano', value: 'Fundamental 1' },
+  { label: 'Fund. 1 - 5º ano', value: 'Fundamental 1' },
+  { label: 'Fund. 2', value: 'Fundamental 2' },
+  { label: 'Ensino Médio', value: 'Ensino Médio' },
+];
+
+const EMPTY_FORM = {
+  title: '',
+  shortDescription: '',
+  fullDescription: '',
+  type: '',
+  diagnoses: [] as string[],
+  subjects: [] as string[],
+  educationLevels: [] as string[],
+  acceptTerms: false,
+};
+
+const unique = <T,>(values: T[]): T[] => Array.from(new Set(values));
+
 export function ContributeResourceDialog({ open, onOpenChange }: ContributeResourceDialogProps) {
+  const { dispatch } = useDemoStore();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    title: '',
-    shortDescription: '',
-    fullDescription: '',
-    type: '',
-    diagnoses: [] as string[],
-    subjects: [] as string[],
-    educationLevels: [] as string[],
-    acceptTerms: false
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Each opening starts a fresh contribution.
+  useEffect(() => {
+    if (!open) return;
+    setStep(1);
+    setFormData(EMPTY_FORM);
+    setErrors([]);
+  }, [open]);
 
   const handleNext = () => {
     if (step < 4) setStep(step + 1);
@@ -37,13 +120,64 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
   };
 
   const handleSubmit = () => {
-    if (!formData.acceptTerms) {
-      toast.error('Por favor, aceite os termos e condições');
+    const type = typeOptions.find((option) => option.label === formData.type)?.value;
+    const diagnoses = unique(
+      diagnosisOptions.filter((option) => formData.diagnoses.includes(option.label)).flatMap((option) => option.values),
+    );
+    const subjects = unique(
+      subjectOptions.filter((option) => formData.subjects.includes(option.label)).map((option) => option.value),
+    );
+    const educationLevels = unique(
+      levelOptions.filter((option) => formData.educationLevels.includes(option.label)).map((option) => option.value),
+    );
+    const fullDescriptionLength = formData.fullDescription.trim().length;
+
+    const problems: string[] = [];
+    if (!formData.title.trim()) problems.push('Etapa 1: informe o título do recurso.');
+    if (!formData.shortDescription.trim()) problems.push('Etapa 1: informe a descrição breve.');
+    if (fullDescriptionLength < FULL_DESCRIPTION_MIN_LENGTH) {
+      problems.push(
+        `Etapa 1: a descrição completa pede no mínimo ${FULL_DESCRIPTION_MIN_LENGTH} caracteres (há ${fullDescriptionLength}).`,
+      );
+    }
+    if (!type) problems.push('Etapa 2: escolha o tipo de recurso.');
+    if (diagnoses.length === 0) problems.push('Etapa 2: marque ao menos um diagnóstico.');
+    if (subjects.length === 0) problems.push('Etapa 2: marque ao menos um componente curricular.');
+    if (educationLevels.length === 0) problems.push('Etapa 2: marque ao menos um nível de ensino.');
+    if (!formData.acceptTerms) problems.push('Etapa 4: aceite os Termos de Uso da Biblioteca.');
+
+    if (problems.length > 0 || !type) {
+      setErrors(problems);
       return;
     }
-    toast.success('Recurso enviado para moderação!');
+
+    const resource: Resource = {
+      id: createId('res'),
+      title: formData.title.trim(),
+      description: formData.shortDescription.trim(),
+      fullDescription: formData.fullDescription.trim(),
+      type,
+      thumbnailUrl: '/placeholder.svg',
+      fileUrl: '',
+      diagnoses,
+      subjects,
+      educationLevels,
+      rating: 0,
+      reviewCount: 0,
+      downloadCount: 0,
+      favoriteCount: 0,
+      author: { name: DEMO_USER_NAME, school: institution.name },
+      createdAt: todayLocalISO(),
+      isNew: true,
+      isFeatured: false,
+      tags: [...diagnoses.slice(0, 2), ...subjects.slice(0, 1)],
+      isLocalContribution: true,
+    };
+    const result = dispatch({ type: 'resource/add', resource });
+    toast.success('Recurso adicionado à biblioteca', {
+      description: `Contribuição local, sem moderação e sem arquivo. ${describeSaveLocation(result)}`,
+    });
     onOpenChange(false);
-    setStep(1);
   };
 
   const toggleDiagnosis = (diagnosis: string) => {
@@ -75,7 +209,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
         <ScrollArea className="h-full">
           <div className="p-6">
             <DialogHeader>
@@ -127,7 +261,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                       onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Mínimo 200 caracteres
+                      Mínimo {FULL_DESCRIPTION_MIN_LENGTH} caracteres ({formData.fullDescription.trim().length} até agora)
                     </p>
                   </div>
                 </div>
@@ -142,11 +276,11 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                       onValueChange={(value) => setFormData({ ...formData, type: value })}
                       className="mt-2"
                     >
-                      {['Material Impresso (PDF/DOC)', 'Vídeo Tutorial', 'Jogo Educacional', 'Aplicativo/Software', 'Prancha de CAA', 'Sequência Didática', 'Avaliação Adaptada', 'Roteiro Visual', 'História Social', 'Outro'].map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <RadioGroupItem value={type} id={type} />
-                          <Label htmlFor={type} className="font-normal cursor-pointer">
-                            {type}
+                      {typeOptions.map(({ label }) => (
+                        <div key={label} className="flex items-center space-x-2">
+                          <RadioGroupItem value={label} id={label} />
+                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                            {label}
                           </Label>
                         </div>
                       ))}
@@ -156,15 +290,15 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>📋 Diagnósticos Aplicáveis *</Label>
                     <div className="mt-2 space-y-2">
-                      {['TEA', 'TDAH', 'Dislexia', 'Discalculia', 'Deficiência Intelectual', 'Síndrome de Down', 'Deficiência Visual', 'Deficiência Auditiva', 'Todos (recurso universal)'].map((diagnosis) => (
-                        <div key={diagnosis} className="flex items-center space-x-2">
+                      {diagnosisOptions.map(({ label }) => (
+                        <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={diagnosis}
-                            checked={formData.diagnoses.includes(diagnosis)}
-                            onCheckedChange={() => toggleDiagnosis(diagnosis)}
+                            id={label}
+                            checked={formData.diagnoses.includes(label)}
+                            onCheckedChange={() => toggleDiagnosis(label)}
                           />
-                          <Label htmlFor={diagnosis} className="font-normal cursor-pointer">
-                            {diagnosis}
+                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                            {label}
                           </Label>
                         </div>
                       ))}
@@ -174,15 +308,15 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>📚 Componentes Curriculares *</Label>
                     <div className="mt-2 space-y-2">
-                      {['Língua Portuguesa', 'Matemática', 'Ciências', 'Geografia', 'História', 'Arte', 'Educação Física', 'Habilidades Socioemocionais'].map((subject) => (
-                        <div key={subject} className="flex items-center space-x-2">
+                      {subjectOptions.map(({ label }) => (
+                        <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={subject}
-                            checked={formData.subjects.includes(subject)}
-                            onCheckedChange={() => toggleSubject(subject)}
+                            id={label}
+                            checked={formData.subjects.includes(label)}
+                            onCheckedChange={() => toggleSubject(label)}
                           />
-                          <Label htmlFor={subject} className="font-normal cursor-pointer">
-                            {subject}
+                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                            {label}
                           </Label>
                         </div>
                       ))}
@@ -192,15 +326,15 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>🎓 Nível de Ensino *</Label>
                     <div className="mt-2 space-y-2">
-                      {['Educação Infantil', 'Fund. 1 - 1º ano', 'Fund. 1 - 2º ano', 'Fund. 1 - 3º ano', 'Fund. 1 - 4º ano', 'Fund. 1 - 5º ano', 'Fund. 2', 'Ensino Médio'].map((level) => (
-                        <div key={level} className="flex items-center space-x-2">
+                      {levelOptions.map(({ label }) => (
+                        <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={level}
-                            checked={formData.educationLevels.includes(level)}
-                            onCheckedChange={() => toggleEducationLevel(level)}
+                            id={label}
+                            checked={formData.educationLevels.includes(label)}
+                            onCheckedChange={() => toggleEducationLevel(label)}
                           />
-                          <Label htmlFor={level} className="font-normal cursor-pointer">
-                            {level}
+                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                            {label}
                           </Label>
                         </div>
                       ))}
@@ -211,6 +345,10 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
 
               {step === 3 && (
                 <div className="space-y-4">
+                  <p className="rounded-md border p-3 text-sm text-muted-foreground">
+                    O envio de arquivos ainda não está disponível nesta versão: o recurso é salvo sem arquivo.
+                  </p>
+
                   <div>
                     <Label>📁 Arquivo Principal *</Label>
                     <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
@@ -280,14 +418,14 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                       <div className="flex items-center space-x-2">
                         <Checkbox id="moderation" />
                         <Label htmlFor="moderation" className="font-normal cursor-pointer text-sm">
-                          Compreendo que o material passará por moderação antes da publicação
+                          Compreendo que, nesta versão de demonstração, o recurso vai direto para a biblioteca deste navegador, sem moderação
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="accept"
                           checked={formData.acceptTerms}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             setFormData({ ...formData, acceptTerms: checked as boolean })
                           }
                         />
@@ -299,17 +437,25 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
-                    <h4 className="font-semibold text-sm mb-2">💡 Após a submissão:</h4>
+                    <h4 className="font-semibold text-sm mb-2">💡 Nesta versão de demonstração:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Seu recurso será analisado pela equipe de moderação (prazo: até 5 dias úteis)</li>
-                      <li>• Você receberá notificação por email</li>
-                      <li>• Se aprovado, aparecerá na biblioteca</li>
-                      <li>• Você poderá acompanhar estatísticas de uso</li>
+                      <li>• O recurso aparece na biblioteca deste navegador, marcado como contribuição local</li>
+                      <li>• Não há moderação, envio de arquivos nem notificação por e-mail</li>
                     </ul>
                   </div>
                 </div>
               )}
             </div>
+
+            {errors.length > 0 && (
+              <div role="alert" className="mt-6 rounded-md border border-destructive/50 p-3 text-sm text-destructive">
+                <ul className="list-disc space-y-1 pl-5">
+                  {errors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="flex justify-between mt-8 pt-6 border-t">
               <Button
@@ -325,7 +471,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                 </Button>
               ) : (
                 <Button onClick={handleSubmit}>
-                  🚀 Enviar para Moderação
+                  Adicionar à biblioteca (local)
                 </Button>
               )}
             </div>

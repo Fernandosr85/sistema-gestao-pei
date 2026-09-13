@@ -13,8 +13,9 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 >
 > Este repositório contém **apenas o frontend**, operando sobre dados fictícios
 > (`src/data/`). Não há backend, banco de dados, autenticação nem controle de acesso. Em
-> modo demonstração, alunos e observações cadastrados ficam **só no localStorage do
-> navegador em uso**, sem criptografia; os demais formulários ainda não salvam nada.
+> modo demonstração, o que é cadastrado na interface (alunos, observações, atendimentos,
+> avaliações e recursos) fica **só no localStorage do navegador em uso**, sem
+> criptografia. Edição de cadastro e vários outros controles ainda não salvam nada.
 >
 > Os indicadores, projeções, comparativos e valores orçamentários exibidos são **exemplos
 > ilustrativos fixos no código**. Nenhum modelo estatístico ou de machine learning é
@@ -120,10 +121,14 @@ foram escolhidos para atingir contraste **≥ 4,5:1 com texto branco (WCAG 2.1 A
 trocá-los pelas cores da sua instituição, verifique o contraste novamente.
 
 `DEMO_MODE` (no mesmo arquivo) controla os avisos de "dados fictícios" exibidos nas telas
-analíticas **e** a gravação local. Ligado, alunos e observações cadastrados ficam no
+analíticas **e** a gravação local. Ligado, os registros criados na interface ficam no
 localStorage do navegador, com aviso permanente e o botão "Restaurar dados de
 demonstração". Desligado, o store roda só em memória e não toca no localStorage. Ele só
 deve ser desligado quando as telas passarem a consumir dados reais de um backend.
+
+O formato gravado é versionado (`src/store/persistence.ts`). Dados da versão anterior são
+migrados na primeira leitura, sem perda; dados de versão desconhecida ou ilegíveis são
+descartados, com aviso na tela.
 
 ---
 
@@ -133,8 +138,8 @@ deve ser desligado quando as telas passarem a consumir dados reais de um backend
 |---|---|
 | Navegação e layout | ✅ Funcional |
 | Listagens, filtros e busca de alunos | ✅ Funcional (dados fictícios e cadastros locais) |
-| Cadastro de aluno e de observações (página e registro rápido na ficha do aluno) | ⚠️ Grava só no localStorage do navegador, em modo demonstração; sem edição nem exclusão |
-| Demais formulários (avaliação, atendimento, recursos, edição de cadastro) | ⚠️ Validam, mas **descartam** o resultado |
+| Cadastro de alunos e registro de observações, atendimentos, avaliações pedagógicas, recursos da biblioteca e comentários de recursos | ⚠️ Grava só no localStorage do navegador, em modo demonstração; sem edição nem exclusão (a exceção é marcar um atendimento como realizado e salvar a ata) |
+| Edição de cadastro e demais formulários | ⚠️ Validam, mas **descartam** o resultado |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação PDF/Excel/Word | ❌ Não implementado |

@@ -15,7 +15,9 @@ const createInitialSnapshot = (persist: boolean): DemoStoreSnapshot => {
 
   const loaded = loadState();
   if (loaded.status === 'loaded') {
-    return { state: loaded.state, persistence: 'browser', discardedStoredData: false };
+    // A migrated record is written back right away, so storage holds the current version.
+    const persisted = loaded.migratedFrom === undefined || saveState(loaded.state);
+    return { state: loaded.state, persistence: persisted ? 'browser' : 'memoryOnly', discardedStoredData: false };
   }
   if (loaded.status === 'discarded') {
     return {

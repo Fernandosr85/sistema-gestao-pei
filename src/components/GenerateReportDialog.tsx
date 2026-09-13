@@ -17,7 +17,7 @@ import { format as formatDate } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { mockStudents } from '@/data/mockData';
+import { useDemoStore } from '@/store/useDemoStore';
 
 interface GenerateReportDialogProps {
   open: boolean;
@@ -25,6 +25,7 @@ interface GenerateReportDialogProps {
 }
 
 export function GenerateReportDialog({ open, onOpenChange }: GenerateReportDialogProps) {
+  const { state } = useDemoStore();
   const [reportType, setReportType] = useState('individual');
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
@@ -165,7 +166,7 @@ export function GenerateReportDialog({ open, onOpenChange }: GenerateReportDialo
                   <SelectValue placeholder="Selecione um estudante" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockStudents.map((student) => (
+                  {state.students.map((student) => (
                     <SelectItem key={student.id} value={student.id}>
                       {student.nomeCompleto}
                     </SelectItem>

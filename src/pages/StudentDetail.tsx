@@ -23,6 +23,7 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { institution } from '@/config/institution';
 import StudentObservationsCard from '@/components/StudentObservationsCard';
+import StudentAssessmentsCard from '@/components/StudentAssessmentsCard';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const StudentDetail = () => {
@@ -338,6 +339,8 @@ const StudentDetail = () => {
             </div>
 
             <StudentObservationsCard studentId={student.id} />
+
+            <StudentAssessmentsCard studentId={student.id} />
 
             {/* Benchmarking Panel */}
             <BenchmarkingPanel 
