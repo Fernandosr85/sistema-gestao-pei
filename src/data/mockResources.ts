@@ -30,7 +30,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 67,
     author: {
       name: 'Prof. Ana Silva',
-      school: 'SESI - SP'
+      school: 'Escola Exemplo A'
     },
     createdAt: '2024-11-15',
     isNew: true,
@@ -69,7 +69,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 98,
     author: {
       name: 'Prof. Carlos Mendes',
-      school: 'SESI - RJ'
+      school: 'Escola Exemplo B'
     },
     createdAt: '2024-11-10',
     isNew: true,
@@ -103,7 +103,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 134,
     author: {
       name: 'Prof. Marina Costa',
-      school: 'SESI - MG'
+      school: 'Escola Exemplo C'
     },
     createdAt: '2024-11-05',
     isNew: false,
@@ -132,7 +132,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 45,
     author: {
       name: 'Prof. Juliana Freitas',
-      school: 'SESI - BA'
+      school: 'Escola Exemplo D'
     },
     createdAt: '2024-10-28',
     isNew: false,
@@ -156,7 +156,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 38,
     author: {
       name: 'Prof. Roberto Lima',
-      school: 'SESI - PR'
+      school: 'Escola Exemplo E'
     },
     createdAt: '2024-10-20',
     isNew: false,
@@ -180,7 +180,7 @@ export const mockResources: Resource[] = [
     favoriteCount: 76,
     author: {
       name: 'Prof. Patricia Santos',
-      school: 'SESI - SC'
+      school: 'Escola Exemplo F'
     },
     createdAt: '2024-10-15',
     isNew: false,

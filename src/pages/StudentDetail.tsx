@@ -1,3 +1,4 @@
+import { calculateAge } from '@/lib/date';
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -21,6 +22,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { mockStudents } from '@/data/mockData';
+import { institution } from '@/config/institution';
 
 const StudentDetail = () => {
   const { id } = useParams();
@@ -50,10 +52,10 @@ const StudentDetail = () => {
 
   const alunoCompleto = {
     nomeCompleto: student.nomeCompleto,
-    matricula: student.matriculaSESI,
+    matricula: student.matricula,
     serieTurma: `${student.serie} - Turma ${student.turma}`,
     dataNascimento: new Date(student.dataNascimento).toLocaleDateString('pt-BR'),
-    idade: student.idade,
+    idade: calculateAge(student.dataNascimento),
     status: student.status,
     informacoesAcademicas: {
       anoLetivo: 2024,
@@ -79,7 +81,7 @@ const StudentDetail = () => {
     },
     timeline: [
       { tipo: "pendencia", texto: "Pendências: 1", icone: AlertCircle, cor: "text-warning" },
-      { tipo: "ingresso", texto: "Ingresso no SESI", data: "2020", icone: School, cor: "text-primary" },
+      { tipo: "ingresso", texto: "Ingresso na instituição", data: "2020", icone: School, cor: "text-primary" },
       { tipo: "pei", texto: "Primeiro PEI elaborado", data: "2023", icone: FileText, cor: "text-success" },
       { tipo: "revisao", texto: "Revisões realizadas: 3", icone: TrendingUp, cor: "text-info" },
       { tipo: "progressao", texto: "Progressões/retenções: Nenhuma", icone: CheckCircle, cor: "text-success" },
@@ -93,7 +95,7 @@ const StudentDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Cabeçalho Azul */}
-      <div className="bg-sesi-blue text-white p-6">
+      <div className="bg-brand-blue text-white p-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/alunos">
@@ -445,8 +447,8 @@ const StudentDetail = () => {
         {/* Rodapé */}
         <div className="mt-12 pt-6 border-t flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 bg-sesi-blue rounded flex items-center justify-center text-white font-bold text-xl">
-              SESI
+            <div className="w-16 h-16 bg-brand-blue rounded flex items-center justify-center text-white font-bold text-xl">
+              {institution.shortName}
             </div>
           </div>
           <p className="text-sm text-muted-foreground">

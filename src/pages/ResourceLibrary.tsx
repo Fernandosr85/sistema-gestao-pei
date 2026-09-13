@@ -1,3 +1,4 @@
+import type { DiagnosisType, SubjectType } from '@/types/resource';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,8 +63,8 @@ export default function ResourceLibrary() {
 
   const filteredResources = mockResources.filter(resource => {
     if (searchQuery && !resource.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    if (selectedDiagnoses.length > 0 && !selectedDiagnoses.some(d => resource.diagnoses.includes(d as any))) return false;
-    if (selectedSubjects.length > 0 && !selectedSubjects.some(s => resource.subjects.includes(s as any))) return false;
+    if (selectedDiagnoses.length > 0 && !selectedDiagnoses.some(d => resource.diagnoses.includes(d as DiagnosisType))) return false;
+    if (selectedSubjects.length > 0 && !selectedSubjects.some(s => resource.subjects.includes(s as SubjectType))) return false;
     if (minRating > 0 && resource.rating < minRating) return false;
     return true;
   });

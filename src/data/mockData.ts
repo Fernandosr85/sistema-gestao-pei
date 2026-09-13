@@ -5,8 +5,7 @@ export const mockStudents: Student[] = [
     id: '1',
     nomeCompleto: 'Maria Silva Santos',
     dataNascimento: '2016-03-15',
-    idade: 8,
-    matriculaSESI: 'SESI2024001',
+    matricula: 'MAT-2024-001',
     serie: '3º Ano EF',
     turma: 'A',
     diagnostico: 'TEA - Nível 1',
@@ -18,8 +17,8 @@ export const mockStudents: Student[] = [
     responsavel: {
       nome: 'Joana Silva',
       parentesco: 'Mãe',
-      telefone: '(11) 98765-4321',
-      email: 'joana.silva@email.com',
+      telefone: '(11) 90000-0001',
+      email: 'responsavel1@example.org',
     },
     comunicacao: {
       compreensaoFala: 'sim-comandos-simples',
@@ -35,8 +34,7 @@ export const mockStudents: Student[] = [
     id: '2',
     nomeCompleto: 'Pedro Oliveira Costa',
     dataNascimento: '2015-08-22',
-    idade: 9,
-    matriculaSESI: 'SESI2024002',
+    matricula: 'MAT-2024-002',
     serie: '4º Ano EF',
     turma: 'B',
     diagnostico: 'TEA - Nível 2',
@@ -48,16 +46,15 @@ export const mockStudents: Student[] = [
     responsavel: {
       nome: 'Carlos Oliveira',
       parentesco: 'Pai',
-      telefone: '(11) 97654-3210',
-      email: 'carlos.oliveira@email.com',
+      telefone: '(11) 90000-0002',
+      email: 'responsavel2@example.org',
     },
   },
   {
     id: '3',
     nomeCompleto: 'Ana Carolina Souza',
     dataNascimento: '2016-11-10',
-    idade: 8,
-    matriculaSESI: 'SESI2024003',
+    matricula: 'MAT-2024-003',
     serie: '2º Ano EF',
     turma: 'C',
     diagnostico: 'TEA - Nível 1',
@@ -69,16 +66,15 @@ export const mockStudents: Student[] = [
     responsavel: {
       nome: 'Mariana Souza',
       parentesco: 'Mãe',
-      telefone: '(11) 96543-2109',
-      email: 'mariana.souza@email.com',
+      telefone: '(11) 90000-0003',
+      email: 'responsavel3@example.org',
     },
   },
   {
     id: '4',
     nomeCompleto: 'Lucas Ferreira Lima',
     dataNascimento: '2014-05-18',
-    idade: 10,
-    matriculaSESI: 'SESI2024004',
+    matricula: 'MAT-2024-004',
     serie: '5º Ano EF',
     turma: 'A',
     diagnostico: 'TEA - Nível 1',
@@ -90,8 +86,8 @@ export const mockStudents: Student[] = [
     responsavel: {
       nome: 'Patricia Ferreira',
       parentesco: 'Mãe',
-      telefone: '(11) 95432-1098',
-      email: 'patricia.ferreira@email.com',
+      telefone: '(11) 90000-0004',
+      email: 'responsavel4@example.org',
     },
   },
 ];
@@ -219,7 +215,6 @@ export const dadosAnalisePreditiva = {
   aluno: {
     id: 'aluno-123',
     nome: 'João Silva',
-    idade: 9,
     diagnostico: 'TEA Nível 2',
     ano_escolar: '4º ano'
   },
@@ -297,7 +292,7 @@ export const dadosAnalisePreditiva = {
     {
       id: 1,
       similaridade: 94,
-      escola: 'SESI Osasco',
+      escola: 'Escola Exemplo A',
       ano_letivo: 2023,
       resultado: {
         objetivos_alcancados: 11,
@@ -314,7 +309,7 @@ export const dadosAnalisePreditiva = {
     {
       id: 2,
       similaridade: 92,
-      escola: 'SESI Campinas',
+      escola: 'Escola Exemplo B',
       ano_letivo: 2023,
       resultado: {
         objetivos_alcancados: 10,
@@ -331,7 +326,7 @@ export const dadosAnalisePreditiva = {
     {
       id: 3,
       similaridade: 91,
-      escola: 'SESI São Paulo',
+      escola: 'Escola Exemplo C',
       ano_letivo: 2022,
       resultado: {
         objetivos_alcancados: 11,

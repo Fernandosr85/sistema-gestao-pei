@@ -224,8 +224,8 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
 
                       <div className="border-t pt-6 mt-6 space-y-2 text-center">
                         <p className="text-muted-foreground">📅 Próxima reunião: Fevereiro de 2025</p>
-                        <p className="text-muted-foreground">📧 marina.santos@sesi.org.br</p>
-                        <p className="text-muted-foreground">📱 WhatsApp: (11) 98765-4321</p>
+                        <p className="text-muted-foreground">📧 coordenacao.demo@example.org</p>
+                        <p className="text-muted-foreground">📱 WhatsApp: (11) 90000-0001</p>
                       </div>
                     </CardContent>
                   </Card>

@@ -1,3 +1,4 @@
+import { calculateAge } from '@/lib/date';
 import { Student } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -47,7 +48,7 @@ const StudentCard = ({ student }: StudentCardProps) => {
             </div>
             <div>
               <h3 className="font-semibold text-lg">{student.nomeCompleto}</h3>
-              <p className="text-sm text-muted-foreground">{student.matriculaSESI}</p>
+              <p className="text-sm text-muted-foreground">{student.matricula}</p>
             </div>
           </div>
           <Badge className={getSupportLevelColor(student.nivelSuporte)}>
@@ -65,7 +66,7 @@ const StudentCard = ({ student }: StudentCardProps) => {
           <div className="flex items-center gap-2 text-sm">
             <Calendar className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Idade:</span>
-            <span className="font-medium">{student.idade} anos</span>
+            <span className="font-medium">{calculateAge(student.dataNascimento)} anos</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">

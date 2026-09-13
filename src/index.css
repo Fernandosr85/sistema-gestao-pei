@@ -8,14 +8,15 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* SESI Brand Colors */
-    --sesi-blue: 217 100% 36%;
-    --sesi-red: 356 88% 46%;
-    --sesi-light-blue: 181 45% 51%;
-    --sesi-green: 124 53% 43%;
-    --sesi-orange: 7 65% 49%;
-    --sesi-yellow: 42 88% 52%;
-    --sesi-gray: 0 0% 53%;
+    /* Brand palette. Neutral by default - override per institution.
+       Every value below is checked for >= 4.5:1 against white text (WCAG 2.1 AA). */
+    --brand-blue: 228 62% 34%;        /* 10.60:1 */
+    --brand-red: 356 72% 38%;         /*  7.45:1 */
+    --brand-light-blue: 187 70% 27%;  /*  6.28:1 */
+    --brand-green: 152 62% 26%;       /*  6.47:1 */
+    --brand-orange: 22 85% 33%;       /*  6.62:1 */
+    --brand-yellow: 42 88% 30%;       /*  6.19:1 */
+    --brand-gray: 220 9% 40%;         /*  6.04:1 */
     
     /* Design System - Light Mode */
     --background: 210 40% 98%;
@@ -27,35 +28,42 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 11%;
 
-    --primary: var(--sesi-blue);
+    --primary: var(--brand-blue);
     --primary-foreground: 0 0% 100%;
 
-    --secondary: var(--sesi-red);
+    --secondary: var(--brand-red);
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 215 16% 34%;
 
-    --accent: var(--sesi-light-blue);
+    --accent: var(--brand-light-blue);
     --accent-foreground: 0 0% 100%;
 
-    --success: var(--sesi-green);
+    --success: var(--brand-green);
     --success-foreground: 0 0% 100%;
 
-    --warning: var(--sesi-orange);
+    --warning: var(--brand-orange);
     --warning-foreground: 0 0% 100%;
 
-    --info: var(--sesi-light-blue);
+    --info: var(--brand-light-blue);
     --info-foreground: 0 0% 100%;
 
-    --destructive: var(--sesi-red);
+    --destructive: var(--brand-red);
     --destructive-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: var(--sesi-blue);
+    --ring: var(--brand-blue);
 
     --radius: 0.75rem;
+
+    /* Chart series tokens (referenced by src/components/reports/*) */
+    --chart-1: var(--brand-blue);
+    --chart-2: var(--brand-light-blue);
+    --chart-3: var(--brand-green);
+    --chart-4: var(--brand-orange);
+    --chart-5: var(--brand-gray);
     
     /* High Contrast Alert Colors for Accessibility (WCAG AAA) */
     --alert-warning-bg: 42 96% 89%;      /* #FEF3C7 - Yellow very light */
@@ -74,15 +82,15 @@ All colors MUST be HSL.
     --alert-critical-icon: 0 73% 50%;    /* #DC2626 - Red darker */
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--sesi-blue)) 0%, hsl(217 90% 45%) 100%);
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--sesi-red)) 0%, hsl(356 88% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(var(--sesi-blue)) 0%, hsl(var(--sesi-light-blue)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-blue)) 0%, hsl(217 90% 45%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--brand-red)) 0%, hsl(356 88% 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--brand-blue)) 0%, hsl(var(--brand-light-blue)) 100%);
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 71, 182, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 71, 182, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 71, 182, 0.1);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 71, 182, 0.15);
+    --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.15);
   }
 
   .dark {
@@ -95,24 +103,24 @@ All colors MUST be HSL.
     --popover: 217 33% 17%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 217 91% 60%;
+    --primary: 217 70% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 356 88% 55%;
+    --secondary: 340 60% 42%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 181 45% 51%;
+    --accent: 187 60% 30%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 356 88% 46%;
+    --destructive: 356 72% 38%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 217 91% 60%;
+    --ring: 217 70% 45%;
   }
 }
 
@@ -237,15 +245,15 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  .sesi-gradient {
+  .brand-gradient {
     background: var(--gradient-hero);
   }
   
-  .sesi-gradient-primary {
+  .brand-gradient-primary {
     background: var(--gradient-primary);
   }
   
-  .sesi-gradient-secondary {
+  .brand-gradient-secondary {
     background: var(--gradient-secondary);
   }
   

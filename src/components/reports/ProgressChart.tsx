@@ -199,7 +199,7 @@ const ProgressChart = () => {
                 borderRadius: '8px',
                 padding: '12px'
               }}
-              formatter={(value: any, name: string) => {
+              formatter={(value: number | string, name: string) => {
                 if (name === 'progresso_real') return [value, 'Progresso real'];
                 if (name === 'meta_esperada') return [value, 'Meta esperada'];
                 return [value, name];
@@ -329,7 +329,31 @@ const ProgressChart = () => {
 
 // ==================== COMPONENTES AUXILIARES ====================
 
-function MiniCardArea({ area, onClick, ativo }: any) {
+interface AreaDataPoint {
+  mes: string;
+  valor: number;
+  meta: number;
+}
+
+interface AreaData {
+  nome: string;
+  dados: AreaDataPoint[];
+  atual: number;
+  meta: number;
+  total: number;
+  cor: string;
+  status: string;
+}
+
+function MiniCardArea({
+  area,
+  onClick,
+  ativo,
+}: {
+  area: AreaData;
+  onClick: () => void;
+  ativo: boolean;
+}) {
   const getStatusIcon = () => {
     if (area.status === 'excelente') return <CheckCircle2 className="w-4 h-4 text-green-600" />;
     if (area.status === 'atencao') return <AlertCircle className="w-4 h-4 text-red-600" />;
@@ -386,7 +410,7 @@ function MiniCardArea({ area, onClick, ativo }: any) {
   );
 }
 
-function GraficoAreaDetalhado({ area }: any) {
+function GraficoAreaDetalhado({ area }: { area: AreaData }) {
   const percentual = Math.round((area.atual / area.total) * 100);
   const diferenca = area.atual - area.meta;
 

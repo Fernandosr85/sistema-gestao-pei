@@ -34,7 +34,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Student Info */}
           <div className="p-4 bg-muted/50 rounded-lg">
             <h2 className="text-xl font-bold">{observation.studentName}</h2>
-            <p className="text-sm text-muted-foreground">2º Ano EF - Turma C | Matrícula: SESI2024003</p>
+            <p className="text-sm text-muted-foreground">2º Ano EF - Turma C | Matrícula: MAT-2024-003</p>
           </div>
 
           {/* General Information */}

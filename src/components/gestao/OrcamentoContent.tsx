@@ -25,6 +25,7 @@ import {
   Download
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface BudgetCategory {
   categoria: string;
@@ -116,7 +117,7 @@ const OrcamentoContent = () => {
     { unidade: 'Unidade A (Nossa)', valor: 73.3, status: 'atual' },
     { unidade: 'Unidade B', valor: 68.5, status: 'normal' },
     { unidade: 'Unidade C', valor: 81.2, status: 'normal' },
-    { unidade: 'Média SESI SP', valor: 75.8, status: 'media' }
+    { unidade: 'Média da rede', valor: 75.8, status: 'media' }
   ];
 
   const getStatusColor = (status: string) => {
@@ -159,6 +160,11 @@ const OrcamentoContent = () => {
       <div className="text-sm text-muted-foreground">
         Gestão &gt; Orçamento
       </div>
+
+      <DemoDataNotice
+        subject="Os valores orçamentários, percentuais de execução e projeções"
+        detail="Não há razão contábil por trás destes números."
+      />
 
       {/* Annual Budget Summary */}
       <Card className={`border-2 ${getStatusBg(budgetSummary.status)}`}>
@@ -353,7 +359,7 @@ const OrcamentoContent = () => {
             ))}
             <Alert className="mt-4 border-blue-200 bg-blue-50">
               <AlertDescription className="text-blue-800 text-sm">
-                Nossa unidade está 2.5 pontos percentuais abaixo da média SESI SP. Considerar aceleração de execução no 4º trimestre.
+                Nossa unidade está 2.5 pontos percentuais abaixo da média da rede. Considerar aceleração de execução no 4º trimestre.
               </AlertDescription>
             </Alert>
           </CardContent>

@@ -49,7 +49,7 @@ export function EditarCadastroDialog({ open, onOpenChange, studentName }: Editar
 
             <div className="space-y-2">
               <Label htmlFor="matricula">Matrícula</Label>
-              <Input id="matricula" defaultValue="SESI2024003" />
+              <Input id="matricula" defaultValue="MAT-2024-003" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -157,11 +157,11 @@ export function EditarCadastroDialog({ open, onOpenChange, studentName }: Editar
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="telefone">Telefone *</Label>
-                <Input id="telefone" defaultValue="(11) 98765-4321" />
+                <Input id="telefone" defaultValue="(11) 90000-0001" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
-                <Input id="email" type="email" defaultValue="maria.souza@email.com" />
+                <Input id="email" type="email" defaultValue="responsavel3@example.org" />
               </div>
             </div>
 

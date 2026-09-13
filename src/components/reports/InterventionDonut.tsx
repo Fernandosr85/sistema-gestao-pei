@@ -10,7 +10,17 @@ const data = [
   { name: 'Suporte Especializado', value: 14, color: 'hsl(0 0% 53%)' },
 ];
 
-const renderActiveShape = (props: any) => {
+interface ActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+}
+
+const renderActiveShape = (props: ActiveShapeProps) => {
   const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
   
   return (

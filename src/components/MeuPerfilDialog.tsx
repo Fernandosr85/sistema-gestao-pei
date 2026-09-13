@@ -151,20 +151,20 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <div>
                 <Label htmlFor="email-institucional">Email Institucional *</Label>
                 <div className="flex gap-2">
-                  <Input id="email-institucional" defaultValue="patricia.cecy@sp.sesi.org.br" />
+                  <Input id="email-institucional" defaultValue="professor.demo@example.org" />
                   <Badge variant="default" className="bg-green-500">Verificado</Badge>
                 </div>
               </div>
 
               <div>
                 <Label htmlFor="email-pessoal">Email Pessoal</Label>
-                <Input id="email-pessoal" defaultValue="patricia.cecy@gmail.com" />
+                <Input id="email-pessoal" defaultValue="professor.demo@example.org" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="telefone-celular">Telefone Celular</Label>
-                  <Input id="telefone-celular" defaultValue="(11) 98765-4321" />
+                  <Input id="telefone-celular" defaultValue="(11) 90000-0001" />
                 </div>
                 <div>
                   <Label htmlFor="telefone-comercial">Telefone Comercial</Label>
@@ -184,15 +184,15 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 </div>
 
                 <div>
-                  <Label htmlFor="unidade">Unidade SESI</Label>
-                  <Select defaultValue="sesi-sp-centro">
+                  <Label htmlFor="unidade">Unidade</Label>
+                  <Select defaultValue="unit-1">
                     <SelectTrigger id="unidade">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="sesi-sp-centro">SESI São Paulo - Centro</SelectItem>
-                      <SelectItem value="sesi-sp-norte">SESI São Paulo - Norte</SelectItem>
-                      <SelectItem value="sesi-sp-sul">SESI São Paulo - Sul</SelectItem>
+                      <SelectItem value="unit-1">Unidade 1</SelectItem>
+                      <SelectItem value="unit-2">Unidade 2</SelectItem>
+                      <SelectItem value="unit-3">Unidade 3</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -219,7 +219,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <div>
                     <Label htmlFor="admissao">Data de Admissão</Label>
                     <Input id="admissao" defaultValue="05/03/2015" disabled />
-                    <p className="text-sm text-muted-foreground mt-1">🎉 9 anos de SESI!</p>
+                    <p className="text-sm text-muted-foreground mt-1">🎉 9 anos na instituição!</p>
                   </div>
                 </div>
 
@@ -278,7 +278,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <Textarea
                 id="bio"
                 rows={6}
-                defaultValue="Sou professora há 9 anos no SESI e especializada em educação inclusiva. Tenho experiência com alunos TEA, TDAH e uso de comunicação alternativa. Acredito que cada criança tem seu próprio ritmo e que, com as estratégias certas, todos podem aprender e se desenvolver plenamente."
+                defaultValue="Sou professora há 9 anos na instituição e especializada em educação inclusiva. Tenho experiência com alunos TEA, TDAH e uso de comunicação alternativa. Acredito que cada criança tem seu próprio ritmo e que, com as estratégias certas, todos podem aprender e se desenvolver plenamente."
                 maxLength={500}
               />
               <p className="text-sm text-muted-foreground mt-1">0/500 caracteres</p>
@@ -387,7 +387,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <Card>
               <CardHeader>
                 <CardTitle>Certificações e Formações</CardTitle>
-                <Button variant="outline" size="sm">Sincronizar com Universidade SESI PEI</Button>
+                <Button variant="outline" size="sm">Sincronizar com Portal de formação</Button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -494,7 +494,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <p className="text-2xl font-bold">88%</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Média SESI SP</p>
+                    <p className="text-sm text-muted-foreground">Média da rede</p>
                     <p className="text-2xl font-bold">74%</p>
                   </div>
                   <div>
@@ -522,7 +522,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Tempo médio por observação</p>
                     <p className="text-2xl font-bold mb-1">8 minutos</p>
-                    <p className="text-sm text-muted-foreground">Rede SESI SP: 12 minutos</p>
+                    <p className="text-sm text-muted-foreground">Rede: 12 minutos</p>
                     <Badge variant="default" className="bg-green-500 mt-2">Você é 33% mais eficiente! 💪</Badge>
                   </div>
                   <div>
@@ -577,7 +577,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <div>
                     <p className="text-sm text-muted-foreground">Média geral</p>
                     <p className="text-2xl font-bold">4.8/5.0 ⭐</p>
-                    <p className="text-sm text-muted-foreground">Rede SESI SP: 4.5/5.0</p>
+                    <p className="text-sm text-muted-foreground">Rede: 4.5/5.0</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Comentários positivos</p>

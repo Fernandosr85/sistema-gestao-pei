@@ -64,7 +64,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
             <Card>
               <CardHeader>
                 <CardTitle>Notificações por Email</CardTitle>
-                <CardDescription>Enviar para: patricia.cecy@sp.sesi.org.br</CardDescription>
+                <CardDescription>Enviar para: professor.demo@example.org</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -89,7 +89,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox id="email6" />
-                  <label htmlFor="email6" className="text-sm">Newsletter semanal SESI PEI</label>
+                  <label htmlFor="email6" className="text-sm">Newsletter semanal</label>
                 </div>
 
                 <div className="pt-4">
@@ -216,7 +216,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 <RadioGroup defaultValue="azul">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="azul" id="color1" />
-                    <label htmlFor="color1" className="text-sm">Azul SESI (padrão)</label>
+                    <label htmlFor="color1" className="text-sm">Azul institucional (padrão)</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="verde" id="color2" />
@@ -393,7 +393,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                       <Badge variant="default" className="bg-green-500">Conectado</Badge>
                       <p className="font-medium">Google Calendar</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">Conta: patricia.cecy@gmail.com</p>
+                    <p className="text-sm text-muted-foreground">Conta: professor.demo@example.org</p>
                   </div>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm">Desconectar</Button>
@@ -443,7 +443,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                       <Badge variant="default" className="bg-green-500">Conectado</Badge>
                       <p className="font-medium">Gmail</p>
                     </div>
-                    <p className="text-sm text-muted-foreground">patricia.cecy@gmail.com</p>
+                    <p className="text-sm text-muted-foreground">professor.demo@example.org</p>
                   </div>
                   <Button variant="outline" size="sm">Desconectar</Button>
                 </div>

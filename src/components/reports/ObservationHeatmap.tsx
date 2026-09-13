@@ -1,19 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-const generateCalendarData = () => {
-  const data = [];
-  const startDate = new Date(2024, 10, 1); // November 2024
-  
-  for (let i = 0; i < 30; i++) {
-    const count = Math.floor(Math.random() * 6); // 0-5 observações
-    data.push({
-      date: new Date(2024, 10, i + 1),
-      count,
-    });
-  }
-  return data;
-};
+/**
+ * Fixed illustrative series. Previously this used Math.random(), so the chart
+ * showed different numbers on every render - the same day could report 0 and 5
+ * observations seconds apart. Replace with counts derived from real
+ * observations once persistence exists.
+ */
+const DEMO_COUNTS = [
+  0, 2, 3, 1, 0, 0, 4, 2, 1, 5,
+  3, 0, 0, 2, 4, 1, 3, 2, 0, 0,
+  1, 5, 3, 2, 4, 0, 0, 1, 2, 3,
+];
+
+const generateCalendarData = () =>
+  DEMO_COUNTS.map((count, i) => ({
+    date: new Date(2024, 10, i + 1),
+    count,
+  }));
 
 const getColorForCount = (count: number) => {
   if (count === 0) return 'bg-muted';
