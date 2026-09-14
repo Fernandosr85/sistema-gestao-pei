@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { FileText, FolderOpen, Share2, Download, Printer, Lock, Plus } from 'lucide-react';
+import { FileText, FolderOpen, Share2, Download, Printer, Plus } from 'lucide-react';
 
 const ActionPanel = () => {
   return (
@@ -80,19 +80,6 @@ const ActionPanel = () => {
             <Share2 className="h-4 w-4" />
             Compartilhados comigo
           </Button>
-        </CardContent>
-      </Card>
-
-      {/* Segurança */}
-      <Card className="shadow-lg bg-muted/50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <Lock className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Todos os relatórios são protegidos com assinatura digital e timestamp 
-              para garantir conformidade legal.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

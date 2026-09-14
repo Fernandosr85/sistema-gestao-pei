@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { CalendarIntegrations } from '@/components/CalendarIntegrations';
+import { DEMO_USER_NAME } from '@/config/institution';
 
 interface ConfiguracoesDialogProps {
   open: boolean;
@@ -27,7 +28,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Settings className="h-6 w-6" />
-            Configurações - Profª. Patrícia Cecy
+            Configurações - {DEMO_USER_NAME}
           </DialogTitle>
         </DialogHeader>
 

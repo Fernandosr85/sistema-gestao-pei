@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertTriangle, TrendingUp, Shield, ChevronDown, ChevronUp, Plus, Download, Presentation } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface Risco {
   id: string;
@@ -289,6 +290,11 @@ const AlertasRiscosContent = () => {
       <div className="text-sm text-muted-foreground">
         Gestão &gt; Alertas e Riscos
       </div>
+
+      <DemoDataNotice
+        subject="Os riscos, probabilidades, impactos e planos de mitigação"
+        detail="Nenhuma avaliação de risco é calculada a partir dos registros do sistema."
+      />
 
       {/* Resumo de Riscos */}
       <Card>

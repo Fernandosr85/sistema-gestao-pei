@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
+import { DEMO_USER_NAME } from '@/config/institution';
 
 interface MeuPerfilDialogProps {
   open: boolean;
@@ -89,7 +90,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <User className="h-6 w-6" />
-            Meu Perfil - Profª. Patrícia Cecy
+            Meu Perfil - {DEMO_USER_NAME}
           </DialogTitle>
         </DialogHeader>
 
@@ -122,7 +123,9 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <div className="flex flex-col items-center gap-4">
               <Avatar className="h-32 w-32">
                 <AvatarImage src="" />
-                <AvatarFallback className="text-4xl">PC</AvatarFallback>
+                <AvatarFallback>
+                  <User className="h-16 w-16" aria-hidden="true" />
+                </AvatarFallback>
               </Avatar>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
@@ -139,12 +142,12 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="nome-completo">Nome Completo *</Label>
-                <Input id="nome-completo" defaultValue="Patrícia Cecy Silva Santos" />
+                <Input id="nome-completo" defaultValue={DEMO_USER_NAME} />
               </div>
 
               <div>
                 <Label htmlFor="nome-exibicao">Nome de Exibição</Label>
-                <Input id="nome-exibicao" defaultValue="Profª. Patrícia Cecy" />
+                <Input id="nome-exibicao" defaultValue={DEMO_USER_NAME} />
                 <p className="text-sm text-muted-foreground mt-1">Como você aparece no sistema</p>
               </div>
 

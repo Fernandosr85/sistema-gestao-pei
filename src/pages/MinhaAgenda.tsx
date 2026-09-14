@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
+import { DEMO_USER_NAME } from '@/config/institution';
 
 const MinhaAgenda = () => {
   const [currentMonth, setCurrentMonth] = useState('Novembro 2024');
@@ -59,7 +60,7 @@ const MinhaAgenda = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">📅 Minha Agenda</h1>
-          <p className="text-muted-foreground">Profª. Patrícia Cecy</p>
+          <p className="text-muted-foreground">{DEMO_USER_NAME}</p>
         </div>
         <Dialog open={isNewEventDialogOpen} onOpenChange={setIsNewEventDialogOpen}>
           <DialogTrigger asChild>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import { 
   AlertTriangle, 
   Users, 
@@ -47,6 +48,11 @@ const VisaoGeralContent = () => {
       <div className="text-sm text-muted-foreground">
         Gestão &gt; Visão Geral
       </div>
+
+      <DemoDataNotice
+        subject="Os alertas, prioridades, indicadores e notificações desta visão geral"
+        detail="Os nomes citados não correspondem aos alunos cadastrados no sistema."
+      />
 
       {/* Alertas Críticos */}
       <Card className="border-destructive/50 bg-destructive/5">

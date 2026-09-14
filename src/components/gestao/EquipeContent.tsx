@@ -22,6 +22,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockProfessionals } from '@/data/mockData';
 import { useDemoStore } from '@/store/useDemoStore';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface TeamMember {
   id: string;
@@ -198,6 +199,8 @@ const EquipeContent = () => {
       <div className="text-sm text-muted-foreground">
         Gestão &gt; Equipe
       </div>
+
+      <DemoDataNotice subject="Os profissionais, cargas de trabalho, contratos, afastamentos e simulações desta aba" />
 
       {/* Team Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">

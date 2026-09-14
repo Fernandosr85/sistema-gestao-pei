@@ -111,7 +111,7 @@ const ComplexityAnalysis = () => {
             Análise de Complexidade Integrada
           </h1>
           <p className="text-sm text-muted-foreground">
-            Atualizado em tempo real
+            Dados fixos de demonstração
           </p>
         </div>
 
