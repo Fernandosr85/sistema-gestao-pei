@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { AlertTriangle, TrendingUp, Shield, ChevronDown, ChevronUp, Plus, Download, Presentation } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
@@ -328,20 +328,6 @@ const AlertasRiscosContent = () => {
               AÇÕES IMEDIATAS NECESSÁRIAS: {acoesImediatas}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Button variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Adicionar novo risco
-            </Button>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar relatório
-            </Button>
-            <Button variant="outline" size="sm">
-              <Presentation className="h-4 w-4 mr-2" />
-              Apresentar ao conselho
-            </Button>
-          </div>
         </CardContent>
       </Card>
 
@@ -545,17 +531,7 @@ const AlertasRiscosContent = () => {
                     </div>
 
                     {/* Status e última atualização */}
-                    <div className="flex items-center justify-between pt-4 border-t">
-                      <div className="flex gap-2">
-                        <Button variant="default" size="sm">
-                          <Shield className="h-4 w-4 mr-2" />
-                          Iniciar plano
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <TrendingUp className="h-4 w-4 mr-2" />
-                          Monitorar
-                        </Button>
-                      </div>
+                    <div className="flex items-center justify-end pt-4 border-t">
                       <div className="text-xs text-muted-foreground">
                         Atualizado em: {risco.atualizado}
                       </div>

@@ -7,7 +7,6 @@ import AlertsCard from '@/components/reports/AlertsCard';
 import PredictiveAnalysis from '@/components/reports/PredictiveAnalysis';
 import PEIRadarChart from '@/components/reports/PEIRadarChart';
 import InterventionDonut from '@/components/reports/InterventionDonut';
-import ActionPanel from '@/components/reports/ActionPanel';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 const ReportsContent = () => {
@@ -96,34 +95,26 @@ const ReportsContent = () => {
       </div>
 
       {/* Grid Principal */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Coluna Esquerda + Central (70%) */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* Progresso Geral */}
-          <ProgressChart />
+      <div className="space-y-6">
+        {/* Progresso Geral */}
+        <ProgressChart />
 
-          {/* Frequência de Observações */}
-          <ObservationHeatmap />
+        {/* Frequência de Observações */}
+        <ObservationHeatmap />
 
-          {/* Marcos Alcançados */}
-          <MilestonesCard />
+        {/* Marcos Alcançados */}
+        <MilestonesCard />
 
-          {/* Alertas e Recomendações */}
-          <AlertsCard />
+        {/* Alertas e Recomendações */}
+        <AlertsCard />
 
-          {/* Análise Preditiva */}
-          <PredictiveAnalysis />
+        {/* Análise Preditiva */}
+        <PredictiveAnalysis />
 
-          {/* Grid de 2 colunas para Radar e Donut */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PEIRadarChart />
-            <InterventionDonut />
-          </div>
-        </div>
-
-        {/* Coluna Direita (30%) */}
-        <div className="lg:col-span-4">
-          <ActionPanel />
+        {/* Grid de 2 colunas para Radar e Donut */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PEIRadarChart />
+          <InterventionDonut />
         </div>
       </div>
 

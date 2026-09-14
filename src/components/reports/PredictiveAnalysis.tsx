@@ -462,21 +462,8 @@ function CasosSimilaresDetalhado() {
               <Badge variant="outline" className="bg-success/10">Parceria família</Badge>
             </div>
           </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1">
-              Ver PEI completo
-            </Button>
-            <Button size="sm" className="flex-1 bg-primary">
-              Aplicar estratégias
-            </Button>
-          </div>
         </div>
       ))}
-
-      <Button variant="outline" className="w-full">
-        Ver todos os 156 casos similares
-      </Button>
     </div>
   );
 }
@@ -539,15 +526,6 @@ function EstrategiasIA() {
               <p className="font-semibold text-sm text-foreground">67 escolas</p>
             </div>
           </div>
-
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="flex-1">
-              Ver guia completo
-            </Button>
-            <Button size="sm" className="flex-1 bg-primary">
-              Adicionar ao PEI
-            </Button>
-          </div>
         </div>
       ))}
     </div>
@@ -590,21 +568,16 @@ function AlertasIA() {
 
             <div className="space-y-2">
               <p className="text-xs font-semibold text-[hsl(var(--alert-critical-text))]">Ações recomendadas:</p>
-              {[
-                "Implementar método fônico intensivo",
-                "Agendar reunião com coordenação",
-                "Solicitar avaliação fonoaudiológica"
-              ].map((acao, idx) => (
-                <label key={idx} className="flex items-center gap-3 p-2 bg-card rounded hover:bg-muted/50 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4" />
-                  <span className="text-sm text-foreground">{acao}</span>
-                </label>
-              ))}
+              <ul className="list-disc list-inside space-y-1 text-sm text-foreground">
+                {[
+                  "Implementar método fônico intensivo",
+                  "Agendar reunião com coordenação",
+                  "Solicitar avaliação fonoaudiológica"
+                ].map((acao) => (
+                  <li key={acao}>{acao}</li>
+                ))}
+              </ul>
             </div>
-
-            <Button className="w-full mt-4 bg-[hsl(var(--alert-critical-icon))] hover:bg-[hsl(var(--alert-critical-border))] text-white">
-              Criar plano de intervenção
-            </Button>
           </div>
         </div>
       </div>
@@ -627,9 +600,6 @@ function AlertasIA() {
               Redução de 30% no tempo de interação nas últimas 3 semanas. 
               Investigar possíveis causas.
             </p>
-            <Button variant="outline" className="w-full border-[hsl(var(--alert-warning-border))]">
-              Ver detalhes e ações
-            </Button>
           </div>
         </div>
       </div>
@@ -652,9 +622,6 @@ function AlertasIA() {
               João superou expectativas em autonomia (+15%). Considere aumentar 
               complexidade dos objetivos.
             </p>
-            <Button variant="outline" className="w-full">
-              Revisar objetivos
-            </Button>
           </div>
         </div>
       </div>

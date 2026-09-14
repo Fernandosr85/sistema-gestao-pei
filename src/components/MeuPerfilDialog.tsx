@@ -153,10 +153,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
               <div>
                 <Label htmlFor="email-institucional">Email Institucional *</Label>
-                <div className="flex gap-2">
-                  <Input id="email-institucional" defaultValue="professor.demo@example.org" />
-                  <Badge variant="default" className="bg-green-500">Verificado</Badge>
-                </div>
+                <Input id="email-institucional" defaultValue="professor.demo@example.org" />
               </div>
 
               <div>
@@ -287,30 +284,10 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <p className="text-sm text-muted-foreground mt-1">0/500 caracteres</p>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Segurança</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Senha</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input type="password" value="••••••••••" disabled />
-                    <Button variant="outline">Alterar senha</Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Última alteração: 15/08/2024</p>
-                </div>
-
-                <div>
-                  <Label>Autenticação de dois fatores (2FA)</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="default" className="bg-green-500">Ativada via SMS (11) 98765-****</Badge>
-                    <Button variant="outline" size="sm">Configurar</Button>
-                    <Button variant="outline" size="sm">Desativar</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <p className="text-sm text-muted-foreground">
+              Este protótipo não tem contas de usuário nem autenticação: não há senha, verificação
+              de e-mail nem autenticação em dois fatores para configurar.
+            </p>
 
             <Card>
               <CardHeader>
@@ -390,7 +367,12 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <Card>
               <CardHeader>
                 <CardTitle>Certificações e Formações</CardTitle>
-                <Button variant="outline" size="sm">Sincronizar com Portal de formação</Button>
+                <Button variant="outline" size="sm" disabled aria-describedby="portal-formacao-indisponivel">
+                  Sincronizar com Portal de formação
+                </Button>
+                <p id="portal-formacao-indisponivel" className="text-sm text-muted-foreground">
+                  Indisponível: não há integração com portal de formação.
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">

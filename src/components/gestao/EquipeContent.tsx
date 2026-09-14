@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
@@ -13,15 +12,11 @@ import {
   AlertTriangle, 
   TrendingUp,
   Calendar,
-  DollarSign,
-  ArrowRightLeft,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockProfessionals } from '@/data/mockData';
-import { useDemoStore } from '@/store/useDemoStore';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface TeamMember {
@@ -56,12 +51,7 @@ interface Absence {
 }
 
 const EquipeContent = () => {
-  const { state } = useDemoStore();
   const [expandedTeacher, setExpandedTeacher] = useState<string | null>(null);
-  const [simulatorOpen, setSimulatorOpen] = useState(false);
-  const [selectedTeacher, setSelectedTeacher] = useState<string>('');
-  const [selectedStudent, setSelectedStudent] = useState<string>('');
-  const [targetTeacher, setTargetTeacher] = useState<string>('');
 
   // Mock team data with workload details
   const teamMembers: TeamMember[] = [
@@ -175,24 +165,6 @@ const EquipeContent = () => {
     }
   };
 
-  const calculateNewUtilization = () => {
-    if (!selectedTeacher || !targetTeacher) return null;
-    
-    const source = teamMembers.find(t => t.id === selectedTeacher);
-    const target = teamMembers.find(t => t.id === targetTeacher);
-    
-    if (!source || !target) return null;
-
-    return {
-      sourceOld: source.utilizacao,
-      sourceNew: source.utilizacao - 5,
-      targetOld: target.utilizacao,
-      targetNew: target.utilizacao + 5
-    };
-  };
-
-  const simulationResult = calculateNewUtilization();
-
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
@@ -200,7 +172,7 @@ const EquipeContent = () => {
         Gestão &gt; Equipe
       </div>
 
-      <DemoDataNotice subject="Os profissionais, cargas de trabalho, contratos, afastamentos e simulações desta aba" />
+      <DemoDataNotice subject="Os profissionais, cargas de trabalho, contratos e afastamentos desta aba" />
 
       {/* Team Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -359,129 +331,6 @@ const EquipeContent = () => {
         </CardContent>
       </Card>
 
-      {/* Redistribution Simulator */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ArrowRightLeft className="h-5 w-5" />
-            Simulador de Redistribuição
-          </CardTitle>
-          <CardDescription>
-            Simule o impacto de reatribuir estudantes entre profissionais
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Collapsible open={simulatorOpen} onOpenChange={setSimulatorOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="outline" className="w-full">
-                {simulatorOpen ? 'Fechar Simulador' : 'Abrir Simulador'}
-              </Button>
-            </CollapsibleTrigger>
-
-            <CollapsibleContent>
-              <div className="mt-4 space-y-4 p-4 border rounded-lg bg-muted/50">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Profissional Origem</label>
-                    <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {teamMembers.map((member) => (
-                          <SelectItem key={member.id} value={member.id}>
-                            {member.nome} ({member.utilizacao}%)
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Estudante</label>
-                    <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {state.students.slice(0, 3).map((student) => (
-                          <SelectItem key={student.id} value={student.id}>
-                            {student.nomeCompleto}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Profissional Destino</label>
-                    <Select value={targetTeacher} onValueChange={setTargetTeacher}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {teamMembers
-                          .filter(m => m.id !== selectedTeacher)
-                          .map((member) => (
-                            <SelectItem key={member.id} value={member.id}>
-                              {member.nome} ({member.utilizacao}%)
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {simulationResult && (
-                  <div className="mt-6 p-4 border rounded-lg bg-background">
-                    <h4 className="font-semibold mb-4 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Resultado da Simulação
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Profissional Origem</p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Atual:</span>
-                          <Badge className={getUtilizacaoBg(simulationResult.sourceOld)}>
-                            {simulationResult.sourceOld}%
-                          </Badge>
-                          <span>→</span>
-                          <Badge className={getUtilizacaoBg(simulationResult.sourceNew)}>
-                            {simulationResult.sourceNew}%
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">Profissional Destino</p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Atual:</span>
-                          <Badge className={getUtilizacaoBg(simulationResult.targetOld)}>
-                            {simulationResult.targetOld}%
-                          </Badge>
-                          <span>→</span>
-                          <Badge className={getUtilizacaoBg(simulationResult.targetNew)}>
-                            {simulationResult.targetNew}%
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mt-4 flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded">
-                      <DollarSign className="h-4 w-4 text-blue-600 mt-0.5" />
-                      <div className="text-sm">
-                        <p className="font-medium text-blue-900">Impacto Orçamentário</p>
-                        <p className="text-blue-700">Estimativa: R$ 0,00 (mesma categoria de profissional)</p>
-                      </div>
-                    </div>
-                    <Button className="w-full mt-4">Aplicar Redistribuição</Button>
-                  </div>
-                )}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Contract Renewals */}
         <Card>
@@ -508,9 +357,6 @@ const EquipeContent = () => {
                 </div>
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
-              Ver Todos os Contratos
-            </Button>
           </CardContent>
         </Card>
 
@@ -546,9 +392,6 @@ const EquipeContent = () => {
                 </div>
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
-              Ver Histórico Completo
-            </Button>
           </CardContent>
         </Card>
       </div>

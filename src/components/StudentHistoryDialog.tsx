@@ -31,7 +31,6 @@ const timelineEvents = [
         bgColor: 'bg-success/10',
         title: 'Avaliação trimestral do PEI realizada',
         description: 'Progresso geral: 85%',
-        hasLink: true,
       },
       {
         date: '05/11',
@@ -57,7 +56,6 @@ const timelineEvents = [
         bgColor: 'bg-info/10',
         title: 'PEI revisado e atualizado',
         description: 'Novos objetivos adicionados',
-        hasLink: true,
       },
       {
         date: '18/10',
@@ -67,7 +65,6 @@ const timelineEvents = [
         bgColor: 'bg-accent/10',
         title: 'Reunião com família realizada',
         description: 'Pauta: Progressos em matemática\nParticipantes: Mãe, Prof. Marina, Coord.',
-        hasLink: true,
       },
       {
         date: '10/10',
@@ -77,7 +74,6 @@ const timelineEvents = [
         bgColor: 'bg-secondary/10',
         title: 'Laudo médico atualizado (TEA Nível 1)',
         description: 'Médica: Dra. Ana Paulita',
-        hasLink: true,
       },
     ],
   },
@@ -104,7 +100,6 @@ const timelineEvents = [
         bgColor: 'bg-success/10',
         title: 'Avaliação de Matemática adaptada',
         description: 'Nota: 8.5/10 ✅',
-        hasLink: true,
       },
       {
         date: '05/09',
@@ -130,7 +125,6 @@ const timelineEvents = [
         bgColor: 'bg-info/10',
         title: 'Primeiro PEI elaborado',
         description: '15 objetivos definidos',
-        hasLink: true,
       },
     ],
   },
@@ -147,7 +141,6 @@ const timelineEvents = [
         bgColor: 'bg-primary/10',
         title: 'Ingresso na instituição',
         description: 'Matrícula: MAT-2024-003\nTurma: 2º Ano EF - Turma C',
-        hasLink: true,
       },
     ],
   },
@@ -250,13 +243,8 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
                               <event.icon className={`h-5 w-5 ${event.color}`} />
                             </div>
                             <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
+                              <div className="mb-1">
                                 <span className="text-xs font-semibold text-muted-foreground">{event.date}</span>
-                                {event.hasLink && (
-                                  <Button variant="link" size="sm" className="h-auto p-0 text-xs">
-                                    Ver detalhes →
-                                  </Button>
-                                )}
                               </div>
                               <h5 className="font-semibold text-sm mb-1">{event.title}</h5>
                               {event.description && (
@@ -281,10 +269,6 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
               </div>
             </div>
           ))}
-
-          <div className="text-center py-4">
-            <Button variant="outline">Carregar mais...</Button>
-          </div>
         </div>
 
         {/* Estatísticas */}

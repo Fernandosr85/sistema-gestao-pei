@@ -387,10 +387,6 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               Editar Observação
             </Button>
             <Button variant="outline" size="sm">
-              <FileText className="h-4 w-4 mr-2" />
-              Adicionar Follow-up
-            </Button>
-            <Button variant="outline" size="sm">
               <FileDown className="h-4 w-4 mr-2" />
               Exportar PDF
             </Button>

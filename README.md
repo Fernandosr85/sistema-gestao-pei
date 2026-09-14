@@ -143,7 +143,7 @@ descartados, com aviso na tela.
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação PDF/Excel/Word | ❌ Não implementado |
-| Sincronização Google Calendar / Outlook | ❌ Apenas a interface; o OAuth é simulado |
+| Sincronização Google Calendar / Outlook | ❌ Não implementada; os controles aparecem desabilitados, com o motivo |
 | Notificações | ❌ Apenas a interface |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
 | Testes automatizados | ❌ Não implementados |

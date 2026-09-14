@@ -2,6 +2,7 @@ import { Users, Laptop, BookOpen, School } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const ResourcesPanel = () => {
   const resources = [
@@ -15,7 +16,6 @@ const ResourcesPanel = () => {
         { label: 'Necessário', value: '+3' }
       ],
       coverage: 85,
-      action: 'Ver escalas →'
     },
     {
       icon: <Laptop className="h-6 w-6 text-primary" />,
@@ -28,7 +28,6 @@ const ResourcesPanel = () => {
         { label: 'Outros', value: 5 }
       ],
       coverage: 78,
-      action: 'Ver inventário →'
     },
     {
       icon: <BookOpen className="h-6 w-6 text-primary" />,
@@ -42,7 +41,7 @@ const ResourcesPanel = () => {
       ],
       coverage: null,
       additionalInfo: 'Compartilhados na biblioteca: 156',
-      action: 'Ver catálogo →'
+      link: { label: 'Ir para a Biblioteca de Recursos', to: '/biblioteca-recursos' }
     },
     {
       icon: <School className="h-6 w-6 text-primary" />,
@@ -55,7 +54,7 @@ const ResourcesPanel = () => {
       ],
       coverage: 92,
       additionalInfo: 'Necessário: +2 salas (previsão)',
-      action: 'Ver agenda →'
+      link: { label: 'Ir para a Agenda de Atendimentos', to: '/agenda-atendimentos' }
     }
   ];
 
@@ -111,9 +110,11 @@ const ResourcesPanel = () => {
                   </div>
                 )}
 
-                <Button variant="link" size="sm" className="p-0 h-auto text-primary">
-                  {resource.action}
-                </Button>
+                {resource.link && (
+                  <Button variant="link" size="sm" className="p-0 h-auto text-primary" asChild>
+                    <Link to={resource.link.to}>{resource.link.label} →</Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

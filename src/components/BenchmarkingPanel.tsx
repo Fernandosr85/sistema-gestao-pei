@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, AlertTriangle, Target, Users, CheckCircle2 } from "lucide-react";
@@ -117,13 +116,6 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
                     <TrendingUp className="h-3 w-3 text-green-600" />
                     <span>Melhoria média: +{strategy.improvement}%</span>
                   </div>
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="h-auto p-0 text-xs"
-                  >
-                    {strategy.implemented ? "Ver implementação" : "Ver casos de sucesso"} →
-                  </Button>
                 </div>
               ))}
             </CardContent>
@@ -143,13 +135,6 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
                     <p className="text-sm text-muted-foreground">
                       Baseado em {similarCases} casos similares, há {notImplementedStrategy.effectiveness}% de chance de melhoria.
                     </p>
-                    <Button 
-                      size="sm" 
-                      className="mt-2"
-                      variant="default"
-                    >
-                      Implementar {notImplementedStrategy.name}
-                    </Button>
                   </div>
                 </div>
               </CardContent>

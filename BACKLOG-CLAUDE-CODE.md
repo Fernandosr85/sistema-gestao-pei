@@ -83,8 +83,10 @@ depois painéis de gestão.
   `sortBy` nunca ordena.
 - `Reports` / `ReportsContent`: quatro filtros que nenhum gráfico consome.
 - `AnexosDialog`: busca que não filtra; `currentMonth` com setter nunca chamado.
-- `useCalendarSync`: começa com uma conta Google "conectada" fictícia — deve iniciar
-  desconectado e rotular os controles como simulação.
+- `useCalendarSync`: começava com uma conta Google "conectada" fictícia e simulava conexão
+  e sincronização com toasts de sucesso. Deve iniciar desconectado e sem nenhum sucesso
+  simulado: conectar e sincronizar ficam desabilitados, com o motivo visível. Um toast como
+  "Outlook conectado!" viola a invariante 3 mesmo com rótulo de simulação.
 
 **Critério de aceite:** varredura de `<Button` sem `onClick` que não seja trigger de
 Radix nem esteja dentro de `<Link>`; cada ocorrência restante justificada.

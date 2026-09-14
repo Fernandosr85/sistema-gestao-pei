@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { GraduationCap, Bell, User, LayoutDashboard, Users, ClipboardList, Settings2, Calendar, Settings, Scale, BookOpen, Library, Menu } from 'lucide-react';
+import { GraduationCap, User, LayoutDashboard, Users, ClipboardList, Settings2, Calendar, Settings, Scale, BookOpen, Library, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import MeuPerfilDialog from '@/components/MeuPerfilDialog';
 import ConfiguracoesDialog from '@/components/ConfiguracoesDialog';
 import { DEMO_USER_NAME, institution } from '@/config/institution';
@@ -80,36 +79,6 @@ const Header = () => {
             >
               <Menu className="h-5 w-5" aria-hidden="true" />
             </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative text-white hover:bg-white/20" aria-label="Notificações (3 não lidas)">
-                  <Bell className="h-5 w-5" aria-hidden="true" />
-                  <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                    3
-                  </Badge>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="p-2">
-                  <p className="text-sm font-semibold mb-2">Notificações</p>
-                  <div className="space-y-2">
-                    <div className="p-2 rounded hover:bg-muted cursor-pointer">
-                      <p className="text-sm">Reunião agendada com os pais de Maria Silva</p>
-                      <p className="text-xs text-muted-foreground">Hoje, 14:00</p>
-                    </div>
-                    <div className="p-2 rounded hover:bg-muted cursor-pointer">
-                      <p className="text-sm">Nova observação pendente de revisão</p>
-                      <p className="text-xs text-muted-foreground">Há 2 horas</p>
-                    </div>
-                    <div className="p-2 rounded hover:bg-muted cursor-pointer">
-                      <p className="text-sm">Relatório trimestral disponível</p>
-                      <p className="text-xs text-muted-foreground">Ontem</p>
-                    </div>
-                  </div>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

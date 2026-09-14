@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { 
@@ -22,19 +21,15 @@ import {
 } from 'lucide-react';
 
 const VisaoGeralContent = () => {
-  const [priorities, setPriorities] = useState([
-    { id: 1, text: 'Resolver 3 PEIs vencidos', deadline: 'hoje', urgency: 'URGENTE', completed: false },
-    { id: 2, text: 'Reunião mensal coordenadores', deadline: 'quarta, 14h', urgency: 'ALTA', completed: false },
-    { id: 3, text: 'Aprovar orçamento 2025', deadline: 'vence sexta', urgency: 'ALTA', completed: false },
-    { id: 4, text: 'Visita Secretaria de Educação', deadline: 'sexta, 10h', urgency: 'MÉDIA', completed: false },
-    { id: 5, text: 'Planejar formação dez/jan', deadline: '8 novos professores', urgency: 'MÉDIA', completed: false },
-  ]);
+  const [, setSearchParams] = useSearchParams();
 
-  const togglePriority = (id: number) => {
-    setPriorities(priorities.map(p => 
-      p.id === id ? { ...p, completed: !p.completed } : p
-    ));
-  };
+  const priorities = [
+    { id: 1, text: 'Resolver 3 PEIs vencidos', deadline: 'hoje', urgency: 'URGENTE' },
+    { id: 2, text: 'Reunião mensal coordenadores', deadline: 'quarta, 14h', urgency: 'ALTA' },
+    { id: 3, text: 'Aprovar orçamento 2025', deadline: 'vence sexta', urgency: 'ALTA' },
+    { id: 4, text: 'Visita Secretaria de Educação', deadline: 'sexta, 10h', urgency: 'MÉDIA' },
+    { id: 5, text: 'Planejar formação dez/jan', deadline: '8 novos professores', urgency: 'MÉDIA' },
+  ];
 
   const urgencyColors = {
     URGENTE: 'bg-destructive text-destructive-foreground',
@@ -76,10 +71,6 @@ const VisaoGeralContent = () => {
                     <li>• Maria Costa - 5 dias de atraso</li>
                   </ul>
                 </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="destructive">Ver todos</Button>
-                  <Button size="sm" variant="outline">Acionar</Button>
-                </div>
               </div>
             </AlertDescription>
           </Alert>
@@ -99,7 +90,6 @@ const VisaoGeralContent = () => {
                     <li>• Prof. João Pereira - 87% de carga (Turma D)</li>
                   </ul>
                 </div>
-                <Button size="sm" variant="secondary">Conversar</Button>
               </div>
             </AlertDescription>
           </Alert>
@@ -115,10 +105,6 @@ const VisaoGeralContent = () => {
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">4</Badge>
                   </p>
                   <p className="text-sm">4 famílias sem contato há mais de 15 dias</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="secondary">Acionar AS</Button>
-                  <Button size="sm" variant="outline">Ver lista</Button>
                 </div>
               </div>
             </AlertDescription>
@@ -211,25 +197,17 @@ const VisaoGeralContent = () => {
                 <Target className="h-5 w-5" />
                 Prioridades da Semana
               </span>
-              <Button size="sm" variant="outline">+ Adicionar</Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {priorities.map((priority) => (
-                <div 
-                  key={priority.id} 
-                  className={`flex items-start gap-3 p-3 rounded-lg border ${
-                    priority.completed ? 'bg-muted/50' : 'bg-background'
-                  }`}
+                <div
+                  key={priority.id}
+                  className="flex items-start gap-3 p-3 rounded-lg border bg-background"
                 >
-                  <Checkbox 
-                    checked={priority.completed}
-                    onCheckedChange={() => togglePriority(priority.id)}
-                    className="mt-1"
-                  />
                   <div className="flex-1">
-                    <p className={`text-sm ${priority.completed ? 'line-through text-muted-foreground' : 'font-medium'}`}>
+                    <p className="text-sm font-medium">
                       {priority.text}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
@@ -293,7 +271,6 @@ const VisaoGeralContent = () => {
                 <Bell className="h-5 w-5" />
                 Notificações Recentes
               </span>
-              <Button size="sm" variant="ghost">Ver todas</Button>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -361,7 +338,7 @@ const VisaoGeralContent = () => {
               <p className="text-xs text-muted-foreground mt-1">Meta: 100%</p>
             </div>
 
-            <Button className="w-full mt-4" variant="outline">
+            <Button className="w-full mt-4" variant="outline" onClick={() => setSearchParams({ tab: 'analise' })}>
               Ver análise completa na aba Análise
             </Button>
           </CardContent>

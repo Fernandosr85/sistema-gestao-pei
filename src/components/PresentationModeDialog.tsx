@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  Play, Eye, X, ChevronLeft, ChevronRight, Home, 
-  Pause, Settings, FileText, Video 
+  Play, X, ChevronLeft, ChevronRight, Home,
+  Settings, FileText, Video
 } from 'lucide-react';
 
 interface PresentationModeDialogProps {
@@ -251,11 +251,6 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                   Anterior
                 </Button>
 
-                <Button variant="outline" size="lg">
-                  <Pause className="h-5 w-5 mr-2" />
-                  Pausar
-                </Button>
-
                 {currentSlide < totalSlides ? (
                   <Button
                     variant="default"
@@ -427,10 +422,6 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
-            </Button>
-            <Button variant="secondary">
-              <Eye className="h-4 w-4 mr-2" />
-              Ver Preview Completo
             </Button>
             <Button onClick={handleStartPresentation}>
               <Play className="h-4 w-4 mr-2" />

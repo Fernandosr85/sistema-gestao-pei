@@ -182,18 +182,6 @@ const BenchmarkingTable = () => {
             </div>
           </CardContent>
         </Card>
-
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1">
-            Ver Ranking Completo
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Boas Práticas
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Solicitar Consultoria
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

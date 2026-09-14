@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -21,8 +20,7 @@ import {
   XCircle,
   BarChart3,
   Calendar,
-  FileText,
-  Download
+  FileText
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DemoDataNotice from '@/components/DemoDataNotice';
@@ -325,9 +323,6 @@ const OrcamentoContent = () => {
                 </div>
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
-              Ver Todas as Despesas Programadas
-            </Button>
           </CardContent>
         </Card>
 
@@ -388,7 +383,6 @@ const OrcamentoContent = () => {
                 <TableHead>Data</TableHead>
                 <TableHead>Prioridade</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -410,18 +404,6 @@ const OrcamentoContent = () => {
                     <Badge variant="secondary" className="bg-gray-100 text-gray-800 border-gray-200">
                       {approval.status}
                     </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="h-8">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Aprovar
-                      </Button>
-                      <Button size="sm" variant="outline" className="h-8">
-                        <XCircle className="h-3 w-3 mr-1" />
-                        Negar
-                      </Button>
-                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -445,20 +427,6 @@ const OrcamentoContent = () => {
               O planejamento orçamentário para 2025 deve ser iniciado até 15/10/2024. Considere os dados históricos de execução para definir metas realistas.
             </AlertDescription>
           </Alert>
-          <div className="flex gap-3">
-            <Button>
-              <FileText className="h-4 w-4 mr-2" />
-              Iniciar Planejamento 2025
-            </Button>
-            <Button variant="outline">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar Dados 2024
-            </Button>
-            <Button variant="outline">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Ver Histórico Completo
-            </Button>
-          </div>
         </CardContent>
       </Card>
     </div>
