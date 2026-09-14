@@ -80,6 +80,10 @@ explicação visível, ou remova.
   para texto normal. Os valores atuais foram medidos e passam.
 - Hierarquia de headings sem pular níveis.
 - `lang="pt-BR"` no `index.html` — não alterar.
+- A ferramenta de navegador das sessões não ativa `<button>` nativo por Enter/Space, nem
+  botões com nome acessível. Ativação por teclado não pode ser verificada por ela — só a
+  árvore de acessibilidade (nome, papel, estado). Não registre falha de ativação por
+  teclado como defeito do app sem teste manual.
 
 ### 5. Nenhum dado real, nunca
 Não versione dados reais de estudantes, responsáveis ou profissionais. Não adicione
