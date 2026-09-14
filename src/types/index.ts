@@ -8,7 +8,7 @@ export interface Student {
   diagnostico: string;
   nivelSuporte: 'baixo' | 'medio' | 'alto';
   professorResponsavel: string;
-  progresso: number;
+  progresso?: number;
   status: 'ativo' | 'inativo';
   dataCadastro: string;
   responsavel: {
@@ -23,7 +23,7 @@ export interface Student {
   };
   comportamento?: {
     comportamentosDesafiadores: string;
-    estratégiasAcalmar: string;
+    estrategiasAcalmar: string;
     situacoesEstresse: string;
   };
   rotina?: {
@@ -35,14 +35,18 @@ export interface Student {
   };
 }
 
-export interface Observation {
+interface ObservationBase {
   id: string;
   studentId: string;
   studentName: string;
   data: string;
+  observador: string;
+}
+
+export interface StructuredObservation extends ObservationBase {
+  kind: 'structured';
   periodo: 'manha' | 'tarde';
   duracao: number;
-  observador: string;
   comunicacao: {
     situacoes: Array<{
       contexto: string;
@@ -66,48 +70,59 @@ export interface Observation {
   };
 }
 
+export type QuickObservationContext = 'classroom' | 'recess' | 'aee' | 'physicalEducation' | 'other';
+
+export type QuickObservationTopic = 'peiGoal' | 'behavior' | 'learning' | 'socialization' | 'communication';
+
+export type QuickObservationTone = 'positive' | 'neutral' | 'attention';
+
+export interface QuickObservation extends ObservationBase {
+  kind: 'quick';
+  time: string;
+  context: QuickObservationContext;
+  topics: QuickObservationTopic[];
+  tone: QuickObservationTone;
+  description: string;
+}
+
+export type Observation = StructuredObservation | QuickObservation;
+
+export type AssessmentKind = 'diagnostic' | 'formative' | 'quarterly' | 'socioemotional' | 'accessibility';
+
+export type AssessmentObjectiveStatus = 'achieved' | 'inProgress' | 'notStarted' | 'needsReview';
+
+export type PerformanceLevel = 1 | 2 | 3 | 4 | 5;
+
 export interface Assessment {
   id: string;
   studentId: string;
   studentName: string;
-  data: string;
-  avaliador: string;
-  tipo: 'inicial' | 'trimestral' | 'semestral' | 'final';
-  areas: {
-    comunicacao: {
-      receptiva: number;
-      expressiva: number;
-      observacoes: string;
-    };
-    social: {
-      interacaoAdultos: number;
-      interacaoPares: number;
-      observacoes: string;
-    };
-    comportamento: {
-      autorregulacao: number;
-      adaptabilidade: number;
-      observacoes: string;
-    };
-    academico: {
-      atencao: number;
-      participacao: number;
-      observacoes: string;
-    };
+  date: string;
+  assessor: string;
+  kind: AssessmentKind;
+  quarter?: 1 | 2 | 3 | 4;
+  objectives: Array<{
+    title: string;
+    status: AssessmentObjectiveStatus;
+    progress: number;
+    notes: string;
+  }>;
+  languageArts: {
+    reading: PerformanceLevel;
+    writing: PerformanceLevel;
+    speaking: PerformanceLevel;
+    notes: string;
   };
-  mediaGeral: number;
-}
-
-export interface Meeting {
-  id: string;
-  data: string;
-  hora: string;
-  studentId: string;
-  studentName: string;
-  participantes: string[];
-  tipo: 'rotina' | 'urgente' | 'planejamento';
-  status: 'agendada' | 'realizada' | 'cancelada';
-  observacoes?: string;
+  socioEmotional: {
+    recognizesEmotions: boolean;
+    managesFrustration: boolean;
+    asksForHelp: boolean;
+  };
+  summary: {
+    achievements: string;
+    challenges: string;
+    nextSteps: string;
+  };
 }
 
 export interface Professional {
@@ -118,10 +133,13 @@ export interface Professional {
   estudantes: string[];
 }
 
+export type AppointmentType = 'Reunião Pedagógica' | 'Avaliação' | 'Atendimento Família' | 'Multidisciplinar' | 'Outros';
+
 export interface Atendimento {
-  id: number;
+  id: string;
+  studentId: string;
   aluno: string;
-  tipo: string;
+  tipo: AppointmentType;
   data: string;
   horarioInicio: string;
   horarioFim: string;
@@ -129,11 +147,12 @@ export interface Atendimento {
   profissionais: string[];
   local: string;
   objetivos: string;
+  observacoes?: string;
   ata?: string;
 }
 
 export interface AtendimentoEvent {
-  id: number;
+  id: string;
   title: string;
   start: Date;
   end: Date;

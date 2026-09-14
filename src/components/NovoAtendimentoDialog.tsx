@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,27 +12,18 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { appointmentTypes } from '@/lib/appointment';
+import { toLocalISODate } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { AppointmentType, Atendimento } from '@/types';
 
 interface NovoAtendimentoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const mockAlunos = [
-  'Ana Carolina Souza',
-  'Pedro Henrique Silva',
-  'Maria Julia Santos',
-  'Lucas Martins Costa',
-];
-
-const tiposAtendimento = [
-  'Reunião Pedagógica',
-  'Avaliação Individual',
-  'Atendimento com Família',
-  'Reunião Multidisciplinar',
-  'Acompanhamento de Objetivos',
-  'Outros',
-];
 
 const profissionais = [
   'Professor regente',
@@ -45,9 +36,35 @@ const profissionais = [
 ];
 
 export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDialogProps) => {
+  const { state, dispatch } = useDemoStore();
+  const { toast } = useToast();
+  const [studentId, setStudentId] = useState('');
+  const [tipo, setTipo] = useState<AppointmentType | ''>('');
   const [date, setDate] = useState<Date>();
+  const [horarioInicio, setHorarioInicio] = useState('');
+  const [horarioFim, setHorarioFim] = useState('');
   const [selectedProfissionais, setSelectedProfissionais] = useState<string[]>([]);
+  const [local, setLocal] = useState('');
+  const [objetivos, setObjetivos] = useState('');
+  const [observacoes, setObservacoes] = useState('');
   const [lembretes, setLembretes] = useState<string[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Each opening starts an empty form.
+  useEffect(() => {
+    if (!open) return;
+    setStudentId('');
+    setTipo('');
+    setDate(undefined);
+    setHorarioInicio('');
+    setHorarioFim('');
+    setSelectedProfissionais([]);
+    setLocal('');
+    setObjetivos('');
+    setObservacoes('');
+    setLembretes([]);
+    setErrors([]);
+  }, [open]);
 
   const handleProfissionalToggle = (prof: string) => {
     setSelectedProfissionais(prev =>
@@ -62,8 +79,42 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
   };
 
   const handleSalvar = () => {
-    // Implementar lógica de salvamento
-    console.log('Salvando atendimento...');
+    const student = state.students.find((item) => item.id === studentId);
+    const problems: string[] = [];
+    if (!student) problems.push('Selecione o aluno.');
+    if (!tipo) problems.push('Selecione o tipo de atendimento.');
+    if (!date) problems.push('Selecione a data.');
+    if (!horarioInicio || !horarioFim) {
+      problems.push('Informe o horário de início e o de fim.');
+    } else if (horarioFim <= horarioInicio) {
+      problems.push('O horário de fim precisa ser depois do início.');
+    }
+    if (!objetivos.trim()) problems.push('Descreva os objetivos do atendimento.');
+
+    if (problems.length > 0 || !student || !tipo || !date) {
+      setErrors(problems);
+      return;
+    }
+
+    const appointment: Atendimento = {
+      id: createId('atd'),
+      studentId: student.id,
+      aluno: student.nomeCompleto,
+      tipo,
+      data: toLocalISODate(date),
+      horarioInicio,
+      horarioFim,
+      status: 'agendado',
+      profissionais: selectedProfissionais,
+      local: local.trim() || 'A definir',
+      objetivos: objetivos.trim(),
+      ...(observacoes.trim() ? { observacoes: observacoes.trim() } : {}),
+    };
+    const result = dispatch({ type: 'appointment/add', appointment });
+    toast({
+      title: 'Atendimento agendado',
+      description: `${student.nomeCompleto}, ${format(date, 'dd/MM/yyyy')} às ${horarioInicio}. ${describeSaveLocation(result)}`,
+    });
     onOpenChange(false);
   };
 
@@ -81,14 +132,14 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
           {/* Aluno */}
           <div className="space-y-2">
             <Label htmlFor="aluno">Aluno *</Label>
-            <Select>
+            <Select value={studentId} onValueChange={setStudentId}>
               <SelectTrigger id="aluno">
                 <SelectValue placeholder="Selecione um aluno" />
               </SelectTrigger>
               <SelectContent>
-                {mockAlunos.map((aluno) => (
-                  <SelectItem key={aluno} value={aluno}>
-                    {aluno}
+                {state.students.map((student) => (
+                  <SelectItem key={student.id} value={student.id}>
+                    {student.nomeCompleto}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -98,14 +149,14 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
           {/* Tipo de Atendimento */}
           <div className="space-y-2">
             <Label htmlFor="tipo">Tipo de Atendimento *</Label>
-            <Select>
+            <Select value={tipo} onValueChange={(value) => setTipo(value as AppointmentType)}>
               <SelectTrigger id="tipo">
                 <SelectValue placeholder="Selecione o tipo" />
               </SelectTrigger>
               <SelectContent>
-                {tiposAtendimento.map((tipo) => (
-                  <SelectItem key={tipo} value={tipo}>
-                    {tipo}
+                {appointmentTypes.map((appointmentType) => (
+                  <SelectItem key={appointmentType} value={appointmentType}>
+                    {appointmentType}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -144,11 +195,21 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="horario-inicio">Horário Início *</Label>
-              <Input id="horario-inicio" type="time" />
+              <Input
+                id="horario-inicio"
+                type="time"
+                value={horarioInicio}
+                onChange={(event) => setHorarioInicio(event.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="horario-fim">Horário Fim *</Label>
-              <Input id="horario-fim" type="time" />
+              <Input
+                id="horario-fim"
+                type="time"
+                value={horarioFim}
+                onChange={(event) => setHorarioFim(event.target.value)}
+              />
             </div>
           </div>
 
@@ -177,7 +238,12 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
           {/* Local */}
           <div className="space-y-2">
             <Label htmlFor="local">Local</Label>
-            <Input id="local" placeholder="Ex: Sala de coordenação, Online" />
+            <Input
+              id="local"
+              placeholder="Ex: Sala de coordenação, Online"
+              value={local}
+              onChange={(event) => setLocal(event.target.value)}
+            />
           </div>
 
           {/* Objetivos */}
@@ -187,6 +253,8 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
               id="objetivos"
               placeholder="Descreva os objetivos e pauta deste atendimento"
               className="min-h-24"
+              value={objetivos}
+              onChange={(event) => setObjetivos(event.target.value)}
             />
           </div>
 
@@ -197,6 +265,8 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
               id="observacoes"
               placeholder="Observações adicionais (opcional)"
               className="min-h-20"
+              value={observacoes}
+              onChange={(event) => setObservacoes(event.target.value)}
             />
           </div>
 
@@ -222,6 +292,16 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
             </div>
           </div>
         </div>
+
+        {errors.length > 0 && (
+          <div role="alert" className="rounded-md border border-destructive/50 p-3 text-sm text-destructive">
+            <ul className="list-disc space-y-1 pl-5">
+              {errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="flex justify-end gap-3">
           <Button variant="outline" onClick={() => onOpenChange(false)}>

@@ -8,6 +8,12 @@ import { Resource, ResourceReview } from '@/types/resource';
 import { Heart, Download, Star, ThumbsUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { DEMO_USER_NAME } from '@/config/institution';
+import { formatLocalDate, todayLocalISO } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
 
 interface ResourceDetailModalProps {
   resource: Resource | null;
@@ -26,21 +32,32 @@ export function ResourceDetailModal({
   onDownload,
   onFavorite
 }: ResourceDetailModalProps) {
+  const { dispatch } = useDemoStore();
   const [userRating, setUserRating] = useState(0);
   const [userComment, setUserComment] = useState('');
 
   if (!resource) return null;
 
   const handleSubmitReview = () => {
-    // Handle review submission
-    console.log('Review submitted:', { rating: userRating, comment: userComment });
+    if (userRating === 0) return;
+    const review: ResourceReview = {
+      id: createId('rev'),
+      resourceId: resource.id,
+      author: DEMO_USER_NAME,
+      rating: userRating,
+      comment: userComment.trim(),
+      date: todayLocalISO(),
+      helpfulCount: 0,
+    };
+    const result = dispatch({ type: 'review/add', review });
+    toast.success('Avaliação registrada', { description: describeSaveLocation(result) });
     setUserRating(0);
     setUserComment('');
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
         <ScrollArea className="h-full">
           <div className="p-6 space-y-6">
             <DialogHeader>
@@ -103,8 +120,12 @@ export function ResourceDetailModal({
 
               <div className="text-sm text-muted-foreground">
                 <p>👤 Criado por: {resource.author.name} ({resource.author.school})</p>
-                <p>📅 Publicado em: {new Date(resource.createdAt).toLocaleDateString('pt-BR')}</p>
-                <p>✅ Moderado e aprovado</p>
+                <p>📅 Publicado em: {formatLocalDate(resource.createdAt)}</p>
+                <p>
+                  {resource.isLocalContribution
+                    ? '📤 Contribuição local: sem moderação e sem arquivo'
+                    : '✅ Moderado e aprovado'}
+                </p>
               </div>
             </div>
 
@@ -182,7 +203,7 @@ export function ResourceDetailModal({
                       </div>
                       <span className="font-semibold">{review.author}</span>
                       <span className="text-sm text-muted-foreground">
-                        ({new Date(review.date).toLocaleDateString('pt-BR')})
+                        ({formatLocalDate(review.date)})
                       </span>
                     </div>
                     <p className="text-muted-foreground mb-2">{review.comment}</p>

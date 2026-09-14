@@ -19,71 +19,9 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import StatCard from '@/components/StatCard';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
-
-// Mock data
-const mockAtendimentos: Atendimento[] = [
-  {
-    id: 1,
-    aluno: 'Ana Carolina Souza',
-    tipo: 'Reunião Pedagógica',
-    data: '2025-11-28',
-    horarioInicio: '14:00',
-    horarioFim: '15:00',
-    status: 'agendado',
-    profissionais: ['Profª. Marina Santos', 'Coordenação'],
-    local: 'Sala de Coordenação',
-    objetivos: 'Discutir progresso do PEI e ajustes necessários',
-  },
-  {
-    id: 2,
-    aluno: 'Pedro Henrique Silva',
-    tipo: 'Avaliação',
-    data: '2025-11-29',
-    horarioInicio: '10:00',
-    horarioFim: '11:30',
-    status: 'agendado',
-    profissionais: ['Psicopedagogo', 'Prof. de Apoio'],
-    local: 'Sala AEE',
-    objetivos: 'Avaliação trimestral de objetivos do PEI',
-  },
-  {
-    id: 3,
-    aluno: 'Maria Julia Santos',
-    tipo: 'Atendimento Família',
-    data: '2025-11-30',
-    horarioInicio: '16:00',
-    horarioFim: '17:00',
-    status: 'agendado',
-    profissionais: ['Profª. Ana Beatriz', 'Família'],
-    local: 'Online',
-    objetivos: 'Alinhamento de estratégias casa-escola',
-  },
-  {
-    id: 4,
-    aluno: 'Lucas Martins Costa',
-    tipo: 'Multidisciplinar',
-    data: '2025-12-02',
-    horarioInicio: '13:00',
-    horarioFim: '14:30',
-    status: 'agendado',
-    profissionais: ['Coordenação', 'Professores', 'Psicopedagogo', 'Família'],
-    local: 'Sala de Reuniões',
-    objetivos: 'Revisão geral do caso e definição de novas metas',
-  },
-  {
-    id: 5,
-    aluno: 'Ana Carolina Souza',
-    tipo: 'Reunião Pedagógica',
-    data: '2025-11-25',
-    horarioInicio: '14:00',
-    horarioFim: '15:00',
-    status: 'realizado',
-    profissionais: ['Profª. Marina Santos', 'Coordenação'],
-    local: 'Sala de Coordenação',
-    objetivos: 'Discussão sobre transições',
-    ata: '',
-  },
-];
+import { appointmentTypes } from '@/lib/appointment';
+import { formatLocalDate } from '@/lib/date';
+import { useDemoStore } from '@/store/useDemoStore';
 
 const tipoColors = {
   'Reunião Pedagógica': 'bg-blue-500',
@@ -126,7 +64,10 @@ const AgendaAtendimentos = () => {
     setDetalhesOpen(true);
   };
 
-  const proximosSete = mockAtendimentos.filter(a => {
+  const { state } = useDemoStore();
+  const atendimentos = state.appointments;
+
+  const proximosSete = atendimentos.filter(a => {
     const today = new Date();
     const atendimentoDate = new Date(a.data);
     const diffTime = atendimentoDate.getTime() - today.getTime();
@@ -134,11 +75,11 @@ const AgendaAtendimentos = () => {
     return diffDays >= 0 && diffDays <= 7 && a.status === 'agendado';
   }).length;
 
-  const pendentesRegistro = mockAtendimentos.filter(a => 
+  const pendentesRegistro = atendimentos.filter(a => 
     a.status === 'realizado' && !a.ata
   ).length;
 
-  const filteredAtendimentos = mockAtendimentos.filter(atendimento => {
+  const filteredAtendimentos = atendimentos.filter(atendimento => {
     if (filtroAluno !== 'todos' && atendimento.aluno !== filtroAluno) return false;
     if (filtroTipo !== 'todos' && atendimento.tipo !== filtroTipo) return false;
     if (filtroStatus !== 'todos' && atendimento.status !== filtroStatus) return false;
@@ -206,7 +147,7 @@ const AgendaAtendimentos = () => {
         />
         <StatCard
           title="Este Mês"
-          value={mockAtendimentos.length}
+          value={atendimentos.length}
           icon={CalendarRange}
           description="+12% vs. mês anterior"
           trend={{ value: 12, isPositive: true }}
@@ -238,10 +179,11 @@ const AgendaAtendimentos = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os alunos</SelectItem>
-                <SelectItem value="Ana Carolina Souza">Ana Carolina Souza</SelectItem>
-                <SelectItem value="Pedro Henrique Silva">Pedro Henrique Silva</SelectItem>
-                <SelectItem value="Maria Julia Santos">Maria Julia Santos</SelectItem>
-                <SelectItem value="Lucas Martins Costa">Lucas Martins Costa</SelectItem>
+                {state.students.map((student) => (
+                  <SelectItem key={student.id} value={student.nomeCompleto}>
+                    {student.nomeCompleto}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -254,11 +196,11 @@ const AgendaAtendimentos = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os tipos</SelectItem>
-                <SelectItem value="Reunião Pedagógica">Reunião Pedagógica</SelectItem>
-                <SelectItem value="Avaliação">Avaliação</SelectItem>
-                <SelectItem value="Atendimento Família">Atendimento Família</SelectItem>
-                <SelectItem value="Multidisciplinar">Multidisciplinar</SelectItem>
-                <SelectItem value="Outros">Outros</SelectItem>
+                {appointmentTypes.map((appointmentType) => (
+                  <SelectItem key={appointmentType} value={appointmentType}>
+                    {appointmentType}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -755,7 +697,7 @@ const AgendaAtendimentos = () => {
                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
                             <Calendar className="h-4 w-4" />
-                            {new Date(atendimento.data).toLocaleDateString('pt-BR')}
+                            {formatLocalDate(atendimento.data)}
                           </div>
                           <div className="flex items-center gap-2">
                             <CalendarClock className="h-4 w-4" />
@@ -796,6 +738,7 @@ const AgendaAtendimentos = () => {
           open={detalhesOpen} 
           onOpenChange={setDetalhesOpen}
           atendimento={selectedAtendimento}
+          key={selectedAtendimento.id}
         />
       )}
     </div>

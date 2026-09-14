@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, Download, Eye, Star } from 'lucide-react';
 import { Resource } from '@/types/resource';
 import { cn } from '@/lib/utils';
+import { formatLocalDate } from '@/lib/date';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -57,6 +58,11 @@ export function ResourceCard({ resource, onView, onDownload, onFavorite }: Resou
             <Badge variant="default">Novo</Badge>
           </div>
         )}
+        {resource.isLocalContribution && (
+          <div className="absolute bottom-2 left-2">
+            <Badge variant="outline" className="bg-background">Contribuição local</Badge>
+          </div>
+        )}
         {resource.isFeatured && resource.rating > 4.5 && resource.downloadCount > 100 && (
           <div className="absolute top-10 right-2">
             <Badge className="bg-yellow-500 text-white">⭐ Destaque</Badge>
@@ -105,7 +111,7 @@ export function ResourceCard({ resource, onView, onDownload, onFavorite }: Resou
             <span>{resource.downloadCount} downloads</span>
           </div>
           <div>👤 Por: {resource.author.name}</div>
-          <div>📅 {new Date(resource.createdAt).toLocaleDateString('pt-BR')}</div>
+          <div>📅 {formatLocalDate(resource.createdAt)}</div>
         </div>
       </CardContent>
 

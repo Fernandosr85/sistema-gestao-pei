@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { mockProfessionals, mockStudents } from '@/data/mockData';
+import { mockProfessionals } from '@/data/mockData';
+import { useDemoStore } from '@/store/useDemoStore';
 
 interface TeamMember {
   id: string;
@@ -54,6 +55,7 @@ interface Absence {
 }
 
 const EquipeContent = () => {
+  const { state } = useDemoStore();
   const [expandedTeacher, setExpandedTeacher] = useState<string | null>(null);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<string>('');
@@ -399,7 +401,7 @@ const EquipeContent = () => {
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {mockStudents.slice(0, 3).map((student) => (
+                        {state.students.slice(0, 3).map((student) => (
                           <SelectItem key={student.id} value={student.id}>
                             {student.nomeCompleto}
                           </SelectItem>

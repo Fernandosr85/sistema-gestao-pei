@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,6 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,34 +22,173 @@ import { format as formatDate } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { mockStudents } from '@/data/mockData';
+import { DEMO_USER_NAME } from '@/config/institution';
+import {
+  assessmentKindOptions,
+  objectiveStatusOptions,
+  performanceLevelOptions,
+  READING_OBJECTIVE_TITLE,
+  SUMMARY_MIN_LENGTH,
+} from '@/lib/assessment';
+import { toLocalISODate } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { Assessment, AssessmentKind, AssessmentObjectiveStatus, PerformanceLevel } from '@/types';
 
 interface NewAssessmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogProps) {
-  const [assessmentType, setAssessmentType] = useState('trimestral');
-  const [selectedStudent, setSelectedStudent] = useState('');
-  const [assessmentDate, setAssessmentDate] = useState<Date>();
-  const [trimester, setTrimester] = useState('1');
-  const [progress, setProgress] = useState([50]);
+type Quarter = '1' | '2' | '3' | '4';
 
-  const handleSaveDraft = () => {
-    toast.success('Rascunho salvo com sucesso!');
+const QUARTERS: Quarter[] = ['1', '2', '3', '4'];
+
+const EMPTY_SOCIO_EMOTIONAL: Assessment['socioEmotional'] = {
+  recognizesEmotions: false,
+  managesFrustration: false,
+  asksForHelp: false,
+};
+
+export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogProps) {
+  const navigate = useNavigate();
+  const { state, dispatch } = useDemoStore();
+  const [kind, setKind] = useState<AssessmentKind>('quarterly');
+  const [studentId, setStudentId] = useState('');
+  const [assessmentDate, setAssessmentDate] = useState<Date>();
+  const [quarter, setQuarter] = useState<Quarter>('1');
+  const [objectiveStatus, setObjectiveStatus] = useState<AssessmentObjectiveStatus>('inProgress');
+  const [progress, setProgress] = useState([50]);
+  const [objectiveNotes, setObjectiveNotes] = useState('');
+  const [reading, setReading] = useState<PerformanceLevel>(3);
+  const [writing, setWriting] = useState<PerformanceLevel>(3);
+  const [speaking, setSpeaking] = useState<PerformanceLevel>(4);
+  const [languageNotes, setLanguageNotes] = useState('');
+  const [socioEmotional, setSocioEmotional] = useState(EMPTY_SOCIO_EMOTIONAL);
+  const [achievements, setAchievements] = useState('');
+  const [challenges, setChallenges] = useState('');
+  const [nextSteps, setNextSteps] = useState('');
+  const [errors, setErrors] = useState<string[]>([]);
+
+  // Each opening starts an empty assessment.
+  useEffect(() => {
+    if (!open) return;
+    setKind('quarterly');
+    setStudentId('');
+    setAssessmentDate(undefined);
+    setQuarter('1');
+    setObjectiveStatus('inProgress');
+    setProgress([50]);
+    setObjectiveNotes('');
+    setReading(3);
+    setWriting(3);
+    setSpeaking(4);
+    setLanguageNotes('');
+    setSocioEmotional(EMPTY_SOCIO_EMOTIONAL);
+    setAchievements('');
+    setChallenges('');
+    setNextSteps('');
+    setErrors([]);
+  }, [open]);
+
+  const toggleSocioEmotional = (key: keyof Assessment['socioEmotional']) => {
+    setSocioEmotional((current) => ({ ...current, [key]: !current[key] }));
   };
 
   const handleFinalize = () => {
-    if (!selectedStudent || !assessmentDate) {
-      toast.error('Por favor, preencha todos os campos obrigatórios');
+    const student = state.students.find((item) => item.id === studentId);
+    const problems: string[] = [];
+    if (!student) problems.push('Básicas: selecione o estudante.');
+    if (!assessmentDate) problems.push('Básicas: selecione a data da avaliação.');
+    const summaryFields: Array<[string, string]> = [
+      ['principais conquistas', achievements],
+      ['desafios persistentes', challenges],
+      ['próximos passos', nextSteps],
+    ];
+    for (const [label, value] of summaryFields) {
+      const length = value.trim().length;
+      if (length < SUMMARY_MIN_LENGTH) {
+        problems.push(`Síntese: ${label} pede no mínimo ${SUMMARY_MIN_LENGTH} caracteres (há ${length}).`);
+      }
+    }
+
+    if (problems.length > 0 || !student || !assessmentDate) {
+      setErrors(problems);
       return;
     }
-    toast.success('Avaliação finalizada!', {
-      description: 'Notificação enviada para coordenação'
+
+    const assessment: Assessment = {
+      id: createId('avl'),
+      studentId: student.id,
+      studentName: student.nomeCompleto,
+      date: toLocalISODate(assessmentDate),
+      assessor: DEMO_USER_NAME,
+      kind,
+      ...(kind === 'quarterly' ? { quarter: Number(quarter) as Assessment['quarter'] } : {}),
+      objectives: [
+        {
+          title: READING_OBJECTIVE_TITLE,
+          status: objectiveStatus,
+          progress: progress[0],
+          notes: objectiveNotes.trim(),
+        },
+      ],
+      languageArts: { reading, writing, speaking, notes: languageNotes.trim() },
+      socioEmotional,
+      summary: {
+        achievements: achievements.trim(),
+        challenges: challenges.trim(),
+        nextSteps: nextSteps.trim(),
+      },
+    };
+    const result = dispatch({ type: 'assessment/add', assessment });
+    toast.success('Avaliação finalizada', {
+      description: `${student.nomeCompleto}. ${describeSaveLocation(result)}`,
+      action: { label: 'Ver na ficha', onClick: () => navigate(`/alunos/${student.id}`) },
     });
     onOpenChange(false);
   };
+
+  const renderLevelSelect = (
+    id: string,
+    label: string,
+    value: PerformanceLevel,
+    onChange: (level: PerformanceLevel) => void,
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Select value={String(value)} onValueChange={(next) => onChange(Number(next) as PerformanceLevel)}>
+        <SelectTrigger id={id}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {performanceLevelOptions.map((option) => (
+            <SelectItem key={option.value} value={String(option.value)}>
+              {option.value} - {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  const renderSummaryField = (id: string, label: string, placeholder: string, value: string, onChange: (text: string) => void) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label} *</Label>
+      <Textarea
+        id={id}
+        placeholder={placeholder}
+        className="min-h-[100px]"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        aria-describedby={`${id}-contador`}
+      />
+      <p id={`${id}-contador`} className="text-xs text-muted-foreground text-right">
+        {value.trim().length}/{SUMMARY_MIN_LENGTH} caracteres mínimos
+      </p>
+    </div>
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -73,49 +212,27 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
           <TabsContent value="basic" className="space-y-4">
             <div className="space-y-3">
               <Label>Tipo de Avaliação</Label>
-              <RadioGroup value={assessmentType} onValueChange={setAssessmentType}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="diagnostica" id="diagnostica" />
-                  <Label htmlFor="diagnostica" className="font-normal cursor-pointer">
-                    Avaliação Diagnóstica Inicial
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="formativa" id="formativa" />
-                  <Label htmlFor="formativa" className="font-normal cursor-pointer">
-                    Avaliação Formativa (Processual)
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="trimestral" id="trimestral" />
-                  <Label htmlFor="trimestral" className="font-normal cursor-pointer">
-                    Avaliação Trimestral do PEI
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="socioemocional" id="socioemocional" />
-                  <Label htmlFor="socioemocional" className="font-normal cursor-pointer">
-                    Avaliação de Habilidades Socioemocionais
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="recursos" id="recursos" />
-                  <Label htmlFor="recursos" className="font-normal cursor-pointer">
-                    Avaliação de Recursos e Acessibilidade
-                  </Label>
-                </div>
+              <RadioGroup value={kind} onValueChange={(value) => setKind(value as AssessmentKind)}>
+                {assessmentKindOptions.map((option) => (
+                  <div key={option.value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option.value} id={`tipo-avaliacao-${option.value}`} />
+                    <Label htmlFor={`tipo-avaliacao-${option.value}`} className="font-normal cursor-pointer">
+                      {option.label}
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Estudante *</Label>
-                <Select value={selectedStudent} onValueChange={setSelectedStudent}>
-                  <SelectTrigger>
+                <Label htmlFor="avaliacao-estudante">Estudante *</Label>
+                <Select value={studentId} onValueChange={setStudentId}>
+                  <SelectTrigger id="avaliacao-estudante">
                     <SelectValue placeholder="Selecione um estudante" />
                   </SelectTrigger>
                   <SelectContent>
-                    {mockStudents.map((student) => (
+                    {state.students.map((student) => (
                       <SelectItem key={student.id} value={student.id}>
                         {student.nomeCompleto}
                       </SelectItem>
@@ -152,26 +269,16 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
               </div>
             </div>
 
-            {assessmentType === 'trimestral' && (
+            {kind === 'quarterly' && (
               <div className="space-y-2">
                 <Label>Trimestre</Label>
-                <RadioGroup value={trimester} onValueChange={setTrimester} className="flex gap-4">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1" id="tri1" />
-                    <Label htmlFor="tri1" className="font-normal cursor-pointer">1º</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="2" id="tri2" />
-                    <Label htmlFor="tri2" className="font-normal cursor-pointer">2º</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="3" id="tri3" />
-                    <Label htmlFor="tri3" className="font-normal cursor-pointer">3º</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="4" id="tri4" />
-                    <Label htmlFor="tri4" className="font-normal cursor-pointer">4º</Label>
-                  </div>
+                <RadioGroup value={quarter} onValueChange={(value) => setQuarter(value as Quarter)} className="flex gap-4">
+                  {QUARTERS.map((value) => (
+                    <div key={value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={value} id={`tri${value}`} />
+                      <Label htmlFor={`tri${value}`} className="font-normal cursor-pointer">{value}º</Label>
+                    </div>
+                  ))}
                 </RadioGroup>
               </div>
             )}
@@ -181,27 +288,22 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
           <TabsContent value="objectives" className="space-y-4">
             <div className="space-y-4">
               <div className="border rounded-lg p-4 space-y-3">
-                <h4 className="font-semibold">Objetivo 1: Desenvolver habilidades de leitura</h4>
-                
+                <h4 className="font-semibold">Objetivo 1: {READING_OBJECTIVE_TITLE}</h4>
+
                 <div className="space-y-2">
                   <Label>Status</Label>
-                  <RadioGroup defaultValue="progress">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="achieved" id="obj1-achieved" />
-                      <Label htmlFor="obj1-achieved" className="font-normal cursor-pointer">Alcançado</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="progress" id="obj1-progress" />
-                      <Label htmlFor="obj1-progress" className="font-normal cursor-pointer">Em progresso</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="notstarted" id="obj1-notstarted" />
-                      <Label htmlFor="obj1-notstarted" className="font-normal cursor-pointer">Não iniciado</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="revision" id="obj1-revision" />
-                      <Label htmlFor="obj1-revision" className="font-normal cursor-pointer">Precisa revisão</Label>
-                    </div>
+                  <RadioGroup
+                    value={objectiveStatus}
+                    onValueChange={(value) => setObjectiveStatus(value as AssessmentObjectiveStatus)}
+                  >
+                    {objectiveStatusOptions.map((option) => (
+                      <div key={option.value} className="flex items-center space-x-2">
+                        <RadioGroupItem value={option.value} id={`obj1-${option.value}`} />
+                        <Label htmlFor={`obj1-${option.value}`} className="font-normal cursor-pointer">
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
                   </RadioGroup>
                 </div>
 
@@ -217,8 +319,13 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Observações</Label>
-                  <Textarea placeholder="Descreva as observações sobre este objetivo" />
+                  <Label htmlFor="obj1-observacoes">Observações</Label>
+                  <Textarea
+                    id="obj1-observacoes"
+                    placeholder="Descreva as observações sobre este objetivo"
+                    value={objectiveNotes}
+                    onChange={(event) => setObjectiveNotes(event.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -230,55 +337,18 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
               <div className="border rounded-lg p-4 space-y-3">
                 <h4 className="font-semibold">Língua Portuguesa</h4>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Leitura</Label>
-                    <Select defaultValue="3">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 - Insuficiente</SelectItem>
-                        <SelectItem value="2">2 - Básico</SelectItem>
-                        <SelectItem value="3">3 - Adequado</SelectItem>
-                        <SelectItem value="4">4 - Bom</SelectItem>
-                        <SelectItem value="5">5 - Excelente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Escrita</Label>
-                    <Select defaultValue="3">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 - Insuficiente</SelectItem>
-                        <SelectItem value="2">2 - Básico</SelectItem>
-                        <SelectItem value="3">3 - Adequado</SelectItem>
-                        <SelectItem value="4">4 - Bom</SelectItem>
-                        <SelectItem value="5">5 - Excelente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Oralidade</Label>
-                    <Select defaultValue="4">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1 - Insuficiente</SelectItem>
-                        <SelectItem value="2">2 - Básico</SelectItem>
-                        <SelectItem value="3">3 - Adequado</SelectItem>
-                        <SelectItem value="4">4 - Bom</SelectItem>
-                        <SelectItem value="5">5 - Excelente</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {renderLevelSelect('nivel-leitura', 'Leitura', reading, setReading)}
+                  {renderLevelSelect('nivel-escrita', 'Escrita', writing, setWriting)}
+                  {renderLevelSelect('nivel-oralidade', 'Oralidade', speaking, setSpeaking)}
                 </div>
                 <div className="space-y-2">
-                  <Label>Observações</Label>
-                  <Textarea placeholder="Observações sobre Língua Portuguesa" />
+                  <Label htmlFor="portugues-observacoes">Observações</Label>
+                  <Textarea
+                    id="portugues-observacoes"
+                    placeholder="Observações sobre Língua Portuguesa"
+                    value={languageNotes}
+                    onChange={(event) => setLanguageNotes(event.target.value)}
+                  />
                 </div>
               </div>
 
@@ -289,19 +359,31 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
                     <Label className="mb-2 block">Autorregulação emocional</Label>
                     <div className="space-y-2 ml-4">
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="recognizes" />
+                        <Checkbox
+                          id="recognizes"
+                          checked={socioEmotional.recognizesEmotions}
+                          onCheckedChange={() => toggleSocioEmotional('recognizesEmotions')}
+                        />
                         <Label htmlFor="recognizes" className="font-normal cursor-pointer">
                           Reconhece emoções
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="manages" />
+                        <Checkbox
+                          id="manages"
+                          checked={socioEmotional.managesFrustration}
+                          onCheckedChange={() => toggleSocioEmotional('managesFrustration')}
+                        />
                         <Label htmlFor="manages" className="font-normal cursor-pointer">
                           Gerencia frustrações
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Checkbox id="asks-help" />
+                        <Checkbox
+                          id="asks-help"
+                          checked={socioEmotional.asksForHelp}
+                          onCheckedChange={() => toggleSocioEmotional('asksForHelp')}
+                        />
                         <Label htmlFor="asks-help" className="font-normal cursor-pointer">
                           Pede ajuda adequadamente
                         </Label>
@@ -316,38 +398,49 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
           {/* SEÇÃO 4: Síntese */}
           <TabsContent value="summary" className="space-y-4">
             <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Principais conquistas do trimestre *</Label>
-                <Textarea 
-                  placeholder="Descreva as principais conquistas (mínimo 100 caracteres)"
-                  className="min-h-[100px]"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Desafios persistentes *</Label>
-                <Textarea 
-                  placeholder="Descreva os desafios persistentes (mínimo 100 caracteres)"
-                  className="min-h-[100px]"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Próximos passos / Revisão do PEI *</Label>
-                <Textarea 
-                  placeholder="Descreva os próximos passos (mínimo 100 caracteres)"
-                  className="min-h-[100px]"
-                />
-              </div>
+              {renderSummaryField(
+                'sintese-conquistas',
+                'Principais conquistas do trimestre',
+                `Descreva as principais conquistas (mínimo ${SUMMARY_MIN_LENGTH} caracteres)`,
+                achievements,
+                setAchievements,
+              )}
+              {renderSummaryField(
+                'sintese-desafios',
+                'Desafios persistentes',
+                `Descreva os desafios persistentes (mínimo ${SUMMARY_MIN_LENGTH} caracteres)`,
+                challenges,
+                setChallenges,
+              )}
+              {renderSummaryField(
+                'sintese-proximos-passos',
+                'Próximos passos / Revisão do PEI',
+                `Descreva os próximos passos (mínimo ${SUMMARY_MIN_LENGTH} caracteres)`,
+                nextSteps,
+                setNextSteps,
+              )}
             </div>
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-3 pt-4 border-t">
+        {errors.length > 0 && (
+          <div role="alert" className="rounded-md border border-destructive/50 p-3 text-sm text-destructive">
+            <ul className="list-disc space-y-1 pl-5">
+              {errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t">
+          <p id="avaliacao-rascunho-indisponivel" className="mr-auto text-xs text-muted-foreground">
+            Rascunhos ainda não são gravados.
+          </p>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button variant="outline" onClick={handleSaveDraft} className="gap-2">
+          <Button variant="outline" disabled aria-describedby="avaliacao-rascunho-indisponivel" className="gap-2">
             <Save className="h-4 w-4" />
             Salvar Rascunho
           </Button>

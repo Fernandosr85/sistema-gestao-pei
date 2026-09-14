@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +23,11 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { mockStudents } from '@/data/mockData';
+import { todayLocalISO } from '@/lib/date';
+import { createId } from '@/lib/id';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { StructuredObservation } from '@/types';
 
 const observationSchema = z.object({
   studentId: z.string().min(1, 'Selecione um aluno'),
@@ -52,13 +55,13 @@ type ObservationForm = z.infer<typeof observationSchema>;
 const NewObservation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { state, dispatch } = useDemoStore();
 
   const form = useForm<ObservationForm>({
     resolver: zodResolver(observationSchema),
     defaultValues: {
       studentId: '',
-      data: new Date().toISOString().split('T')[0],
+      data: todayLocalISO(),
       periodo: 'manha',
       duracao: '',
       observador: '',
@@ -82,20 +85,50 @@ const NewObservation = () => {
     name: 'interacoes',
   });
 
-  const onSubmit = async (data: ObservationForm) => {
-    setIsSubmitting(true);
-    
-    // Simular salvamento
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const student = mockStudents.find(s => s.id === data.studentId);
-    
+  const onSubmit = (data: ObservationForm) => {
+    const student = state.students.find((s) => s.id === data.studentId);
+    if (!student) {
+      form.setError('studentId', { message: 'Aluno não encontrado. Selecione novamente.' });
+      return;
+    }
+
+    const splitList = (value: string) =>
+      value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+    const observation: StructuredObservation = {
+      kind: 'structured',
+      id: createId('obs'),
+      studentId: student.id,
+      studentName: student.nomeCompleto,
+      data: data.data,
+      periodo: data.periodo,
+      duracao: Number(data.duracao),
+      observador: data.observador.trim(),
+      comunicacao: {
+        situacoes: data.situacoes.map(({ contexto, resposta }) => ({ contexto, resposta })),
+      },
+      habilidadesSociais: {
+        interacoes: data.interacoes.map(({ tipo, descricao }) => ({ tipo, descricao })),
+      },
+      comportamento: {
+        positivos: splitList(data.comportamentosPositivos),
+        desafiadores: splitList(data.comportamentosDesafiadores),
+      },
+      resumo: {
+        pontoForte: data.pontoForte,
+        desafio: data.desafio,
+        ajustesNecessarios: data.ajustesNecessarios,
+      },
+    };
+
+    const result = dispatch({ type: 'observation/add', observation });
     toast({
       title: 'Observação registrada com sucesso!',
-      description: `Observação de ${student?.nomeCompleto} foi salva.`,
+      description: `Observação de ${student.nomeCompleto} adicionada à lista. ${describeSaveLocation(result)}`,
     });
-    
-    setIsSubmitting(false);
     navigate('/observacoes');
   };
 
@@ -135,7 +168,7 @@ const NewObservation = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {mockStudents.map((student) => (
+                          {state.students.map((student) => (
                             <SelectItem key={student.id} value={student.id}>
                               {student.nomeCompleto} - {student.serie}
                             </SelectItem>
@@ -457,13 +490,12 @@ const NewObservation = () => {
               type="button"
               variant="outline"
               onClick={() => navigate('/observacoes')}
-              disabled={isSubmitting}
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit">
               <Save className="mr-2 h-4 w-4" />
-              {isSubmitting ? 'Salvando...' : 'Salvar Observação'}
+              Salvar Observação
             </Button>
           </div>
         </form>

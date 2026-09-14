@@ -278,7 +278,14 @@ const MinhaAgenda = () => {
                   <li>• PEI de Maria vence sexta (2 dias!)</li>
                   <li>• Reunião Silva sem preparação agendada</li>
                 </ul>
-                <Button variant="link" className="mt-2 p-0">💡 Aplicar otimizações sugeridas pela IA</Button>
+                <div className="mt-2">
+                  <Button variant="link" className="p-0" disabled aria-describedby="sugestoes-exemplo-fixo">
+                    Sugestões de organização (exemplo fixo)
+                  </Button>
+                  <p id="sugestoes-exemplo-fixo" className="text-xs text-muted-foreground">
+                    Indisponível: os alertas acima são texto de exemplo e nenhuma sugestão é calculada.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

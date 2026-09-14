@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,14 +8,94 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { Camera, Video, FileText, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { DEMO_USER_NAME } from '@/config/institution';
+import { currentLocalTime, todayLocalISO } from '@/lib/date';
+import { createId } from '@/lib/id';
+import {
+  quickObservationContextOptions,
+  quickObservationToneOptions,
+  quickObservationTopicOptions,
+} from '@/lib/observation';
+import { describeSaveLocation } from '@/store/saveFeedback';
+import { useDemoStore } from '@/store/useDemoStore';
+import type {
+  QuickObservation,
+  QuickObservationContext,
+  QuickObservationTone,
+  QuickObservationTopic,
+} from '@/types';
+
+const DESCRIPTION_MAX_LENGTH = 500;
 
 interface NovaObservacaoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  studentId: string;
   studentName: string;
 }
 
-export function NovaObservacaoDialog({ open, onOpenChange, studentName }: NovaObservacaoDialogProps) {
+export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentName }: NovaObservacaoDialogProps) {
+  const { dispatch } = useDemoStore();
+  const { toast } = useToast();
+  const [date, setDate] = useState(todayLocalISO);
+  const [time, setTime] = useState(currentLocalTime);
+  const [context, setContext] = useState<QuickObservationContext>('classroom');
+  const [topics, setTopics] = useState<QuickObservationTopic[]>([]);
+  const [tone, setTone] = useState<QuickObservationTone>('positive');
+  const [description, setDescription] = useState('');
+  const [error, setError] = useState('');
+
+  // Each opening starts a fresh record with the current local date and time.
+  useEffect(() => {
+    if (!open) return;
+    setDate(todayLocalISO());
+    setTime(currentLocalTime());
+    setContext('classroom');
+    setTopics([]);
+    setTone('positive');
+    setDescription('');
+    setError('');
+  }, [open]);
+
+  const toggleTopic = (topic: QuickObservationTopic) => {
+    setTopics((current) =>
+      current.includes(topic) ? current.filter((item) => item !== topic) : [...current, topic]
+    );
+  };
+
+  const handlePublish = () => {
+    const trimmedDescription = description.trim();
+    if (!date || !time) {
+      setError('Informe a data e a hora da observação.');
+      return;
+    }
+    if (!trimmedDescription) {
+      setError('Descreva a observação antes de publicar.');
+      return;
+    }
+
+    const observation: QuickObservation = {
+      kind: 'quick',
+      id: createId('obs'),
+      studentId,
+      studentName,
+      data: date,
+      time,
+      observador: DEMO_USER_NAME,
+      context,
+      topics,
+      tone,
+      description: trimmedDescription,
+    };
+    const result = dispatch({ type: 'observation/add', observation });
+    toast({
+      title: 'Observação publicada',
+      description: `Registro de ${studentName} adicionado às observações. ${describeSaveLocation(result)}`,
+    });
+    onOpenChange(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -26,81 +107,53 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentName }: NovaOb
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="data">📅 Data</Label>
-              <Input id="data" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+              <Input id="data" type="date" value={date} onChange={(event) => setDate(event.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="hora">⏰ Hora</Label>
-              <Input id="hora" type="time" defaultValue={new Date().toTimeString().slice(0, 5)} />
+              <Input id="hora" type="time" value={time} onChange={(event) => setTime(event.target.value)} />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>📍 Local/Contexto</Label>
-            <RadioGroup defaultValue="sala">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="sala" id="sala" />
-                <Label htmlFor="sala">Sala de Aula</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="recreio" id="recreio" />
-                <Label htmlFor="recreio">Recreio</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="aee" id="aee" />
-                <Label htmlFor="aee">AEE</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="ed-fisica" id="ed-fisica" />
-                <Label htmlFor="ed-fisica">Educação Física</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="outro" id="outro" />
-                <Label htmlFor="outro">Outro</Label>
-              </div>
+            <RadioGroup value={context} onValueChange={(value) => setContext(value as QuickObservationContext)}>
+              {quickObservationContextOptions.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value} id={`contexto-${option.value}`} />
+                  <Label htmlFor={`contexto-${option.value}`}>{option.label}</Label>
+                </div>
+              ))}
             </RadioGroup>
           </div>
 
           <div className="space-y-2">
             <Label>🎯 Relacionado a</Label>
             <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Checkbox id="objetivo-pei" />
-                <Label htmlFor="objetivo-pei">Objetivo do PEI</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="comportamento" />
-                <Label htmlFor="comportamento">Comportamento</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="aprendizagem" />
-                <Label htmlFor="aprendizagem">Aprendizagem</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="socializacao" />
-                <Label htmlFor="socializacao">Socialização</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="comunicacao" />
-                <Label htmlFor="comunicacao">Comunicação</Label>
-              </div>
+              {quickObservationTopicOptions.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`tema-${option.value}`}
+                    checked={topics.includes(option.value)}
+                    onCheckedChange={() => toggleTopic(option.value)}
+                  />
+                  <Label htmlFor={`tema-${option.value}`}>{option.label}</Label>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>📝 Tipo de Observação</Label>
-            <RadioGroup defaultValue="positiva">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="positiva" id="positiva" />
-                <Label htmlFor="positiva">😊 Positiva</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="neutra" id="neutra" />
-                <Label htmlFor="neutra">ℹ️ Neutra/Informativa</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="atencao" id="atencao" />
-                <Label htmlFor="atencao">⚠️ Atenção necessária</Label>
-              </div>
+            <RadioGroup value={tone} onValueChange={(value) => setTone(value as QuickObservationTone)}>
+              {quickObservationToneOptions.map((option) => (
+                <div key={option.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={option.value} id={`tipo-${option.value}`} />
+                  <Label htmlFor={`tipo-${option.value}`}>
+                    {option.emoji} {option.label}
+                  </Label>
+                </div>
+              ))}
             </RadioGroup>
           </div>
 
@@ -110,9 +163,14 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentName }: NovaOb
               id="descricao"
               placeholder="Descreva a observação de forma clara e objetiva..."
               rows={6}
-              maxLength={500}
+              maxLength={DESCRIPTION_MAX_LENGTH}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              aria-describedby="descricao-contador"
             />
-            <p className="text-xs text-muted-foreground text-right">0/500 caracteres</p>
+            <p id="descricao-contador" className="text-xs text-muted-foreground text-right">
+              {description.length}/{DESCRIPTION_MAX_LENGTH} caracteres
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -168,14 +226,23 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentName }: NovaOb
           </Card>
         </div>
 
-        <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
+        {error && (
+          <p role="alert" className="mt-4 text-sm text-destructive">
+            {error}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center justify-end gap-3 mt-6 pt-6 border-t">
+          <p id="rascunho-indisponivel" className="mr-auto text-xs text-muted-foreground">
+            Rascunhos ainda não são gravados.
+          </p>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" disabled aria-describedby="rascunho-indisponivel">
             Salvar como Rascunho
           </Button>
-          <Button>
+          <Button onClick={handlePublish}>
             Publicar
           </Button>
         </div>

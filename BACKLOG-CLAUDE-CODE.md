@@ -107,8 +107,14 @@ Falta:
    customizada não focável.
 4. **Emoji com significado** (`BenchmarkingTable`, `ExecutiveSummary`, `VerPEIDialog`):
    `✅🟡🔴` carregam status sozinhos. Acrescentar texto; `aria-hidden` nos decorativos.
-5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:205-220`): cinco botões só com SVG,
+5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:225-242`): cinco botões só com SVG,
    sem nome nem estado. Virar radiogroup rotulado com valor textual visível.
+
+   Evidência de campo: durante o teste da Etapa 1, a árvore de acessibilidade do diálogo
+   expôs as cinco estrelas como botões sem nome e sem estado. Não foi possível identificar
+   qual estrela era qual, nem a nota selecionada, sem inspecionar o DOM. Confirma o defeito
+   na prática, não só na análise estática. A ativação por teclado não foi verificada: a
+   ferramenta de teste não ativa por Enter/Space nem botões com nome.
 6. **Diálogos**: `PresentationModeDialog` não tem `DialogTitle` no modo apresentação e
    não move foco nem anuncia troca de slide. Outros diálogos sem `DialogDescription`.
 7. **Hierarquia de headings**: `NewObservation` usa `<h4>` sob `<h1>`; `VisaoGeralContent`

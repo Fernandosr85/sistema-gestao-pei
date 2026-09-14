@@ -272,7 +272,7 @@ const ProgressChart = () => {
           </div>
         </div>
 
-        {/* Insights da IA */}
+        {/* Leitura ilustrativa: frase montada por regra fixa sobre os dados de exemplo */}
         <div className="mt-4 p-4 bg-accent rounded-lg border border-border">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
@@ -280,7 +280,7 @@ const ProgressChart = () => {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground mb-1">
-                💡 Insight da IA
+                💡 Leitura ilustrativa — regra fixa, nenhum modelo é executado
               </p>
               <p className="text-sm text-muted-foreground">
                 {diferencaPercentual >= 0 
@@ -536,7 +536,7 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
       >
         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
           <Lightbulb className="w-5 h-5" style={{ color: area.cor }} />
-          Insights da IA
+          Leitura ilustrativa — regra fixa, nenhum modelo é executado
         </h4>
         <p className="text-sm text-gray-700">
           {diferenca >= 0 

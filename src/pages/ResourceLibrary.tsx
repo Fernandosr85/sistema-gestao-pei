@@ -12,12 +12,14 @@ import { Separator } from '@/components/ui/separator';
 import { ResourceCard } from '@/components/ResourceCard';
 import { ResourceDetailModal } from '@/components/ResourceDetailModal';
 import { ContributeResourceDialog } from '@/components/ContributeResourceDialog';
-import { mockResources, mockReviews, mockBadges } from '@/data/mockResources';
+import { mockBadges } from '@/data/mockResources';
+import { useDemoStore } from '@/store/useDemoStore';
 import { Resource } from '@/types/resource';
 import { Search, Plus, Trophy, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ResourceLibrary() {
+  const { state } = useDemoStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDiagnoses, setSelectedDiagnoses] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -61,7 +63,7 @@ export default function ResourceLibrary() {
     toast.success(`${resource.title} adicionado aos favoritos!`);
   };
 
-  const filteredResources = mockResources.filter(resource => {
+  const filteredResources = state.resources.filter(resource => {
     if (searchQuery && !resource.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedDiagnoses.length > 0 && !selectedDiagnoses.some(d => resource.diagnoses.includes(d as DiagnosisType))) return false;
     if (selectedSubjects.length > 0 && !selectedSubjects.some(s => resource.subjects.includes(s as SubjectType))) return false;
@@ -338,7 +340,7 @@ export default function ResourceLibrary() {
       {/* Modals */}
       <ResourceDetailModal
         resource={selectedResource}
-        reviews={mockReviews.filter(r => r.resourceId === selectedResource?.id)}
+        reviews={state.reviews.filter(r => r.resourceId === selectedResource?.id)}
         open={detailModalOpen}
         onOpenChange={setDetailModalOpen}
         onDownload={handleDownload}

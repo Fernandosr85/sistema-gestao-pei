@@ -19,6 +19,7 @@ import Gestao from "./pages/Gestao";
 import MinhaAgenda from "./pages/MinhaAgenda";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
+import DemoStorageNotice from "./components/DemoStorageNotice";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
             Pular para o conteúdo
           </a>
           <Header />
+          <DemoStorageNotice />
           <main id="main-content" tabIndex={-1}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
