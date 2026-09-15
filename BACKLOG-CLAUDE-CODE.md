@@ -8,6 +8,63 @@ Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementa
 
 ---
 
+## Achados
+
+Defeitos cuja gravidade vai além do controle em que apareceram. É material para o artigo:
+cada item registra o que acontecia, como foi confirmado e o que ainda está aberto.
+
+### 1. Vazamento de dados de saúde entre estudantes (Etapa 2, commit `2fb404d`)
+
+**Qualificação:** o defeito não era um formulário mal inicializado, e sim a exibição dos
+dados de saúde de uma estudante na ficha de outros. Os dados eram fictícios. Com dados
+reais, seria incidente de segurança com dado pessoal sensível (LGPD, art. 5º, II) de
+crianças e adolescentes (art. 14), a ser comunicado à ANPD e aos titulares (art. 48).
+
+**Onde:**
+- **`EditarCadastroDialog`:** todos os campos eram `defaultValue` fixo de Ana Carolina
+  Souza. O título mostrava o nome do estudante aberto, mas os campos traziam os dados
+  dela: nome, nascimento, matrícula MAT-2024-003, médico responsável ("Dra. Ana Paulita")
+  e CID-10 F84.0.
+- **`StudentDetail`, card "Perfil de Saúde":** mostrava "Medicina: Ana Paulita",
+  "Restrições/Alergias: Nenhuma" e "Último Laudo: 01/02/2024" para todos os estudantes.
+  Essa segunda tela não constava de nenhum inventário, nem no do Codex nem no da Etapa 2;
+  apareceu durante a correção do diálogo.
+
+**Como foi confirmado:** no navegador, antes da correção, abri o diálogo em `/alunos/1`
+(Maria Silva Santos) e em `/alunos/2` (Pedro Oliveira Costa). Nos dois casos, ele trouxe
+matrícula, médico e CID de Ana Carolina. Depois da correção, cada diálogo abre com os dados
+do próprio estudante, sem nenhum campo de saúde fora do modelo.
+
+**Correção:**
+- **Formulário:** passou a ser controlado a partir do estudante da ficha, com chave nova a
+  cada abertura.
+- **Campos de saúde:** medicação, alergias, médico e CID saíram do formulário e da ficha,
+  por minimização. O modelo `Student` nunca teve esses campos; eles eram texto fixo na
+  interface.
+
+A remontagem a cada abertura importa. No teste, com o painel do navegador oculto, a
+animação de saída não terminou e o conteúdo fechado continuou montado. O diálogo reabriu
+com o estado anterior. Um formulário que depende da desmontagem para limpar o estado pode
+exibir dados de uma abertura na seguinte.
+
+**Ainda aberto:** o mesmo padrão continua em telas ilustrativas, com texto fixo de Ana
+Carolina exibido sob o nome de qualquer estudante:
+- **Histórico, laudo:** `StudentHistoryDialog.tsx:74-75` mostra "Laudo médico atualizado
+  (TEA Nível 1)" e "Médica: Dra. Ana Paulita" no histórico de todos. É dado de saúde, sem
+  aviso de exemplo.
+- **Histórico, demais eventos:** `StudentHistoryDialog.tsx:91` e `:142` mostram a
+  participação dela na feira de ciências, a matrícula e a turma.
+- **Ver PEI:** `VerPEIDialog.tsx:67` mostra o diagnóstico com CID (F84.0), sob aviso de PEI
+  de exemplo.
+- **Detalhe da observação:** `ObservationDetailDialog.tsx:40` e `:393` mostram a matrícula,
+  a turma e o nome da mãe dela em qualquer observação.
+- **Apresentação:** `PresentationModeDialog.tsx:57` e `:127` mostram a turma e uma conquista
+  dela na apresentação de qualquer estudante.
+- **Anexos:** `AnexosDialog.tsx:26` lista um laudo assinado pela mesma médica, sob aviso de
+  exemplo.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -162,6 +219,11 @@ telas diferentes.
    `PredictiveAnalysis.tsx` (~616), `AlertasRiscosContent.tsx` (~536).
 5. `QueryClientProvider` está montado sem nenhum `useQuery` — remover até existir API.
 6. `dadosAnalisePreditiva` em `mockData.ts:218` nunca é importado.
+7. Avaliar remoção de `studentName` dos registros vinculados, resolvendo pelo `studentId`
+   na exibição. Hoje o nome fica copiado em três coleções: `studentName` nas observações e
+   nas avaliações, e `aluno` nos atendimentos. O `student/update` (commit `2fb404d`)
+   propaga o nome editado para as três. Isso mantém a coerência, mas é justamente o dado
+   duplicado que gera divergência.
 
 **Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
 
