@@ -67,6 +67,12 @@ export default function ResourceLibrary() {
     return true;
   });
 
+  const sortedResources = [...filteredResources].sort((a, b) => {
+    if (sortBy === 'downloads') return b.downloadCount - a.downloadCount;
+    if (sortBy === 'rating') return b.rating - a.rating;
+    return b.createdAt.localeCompare(a.createdAt);
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -320,7 +326,7 @@ export default function ResourceLibrary() {
                   Baixar está indisponível: os recursos não têm arquivo neste protótipo.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredResources.map(resource => (
+                  {sortedResources.map(resource => (
                     <ResourceCard
                       key={resource.id}
                       resource={resource}

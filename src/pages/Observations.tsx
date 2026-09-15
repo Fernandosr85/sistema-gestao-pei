@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Plus, Calendar, Filter } from 'lucide-react';
+import { Search, Plus, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -57,10 +57,6 @@ const Observations = () => {
             />
           </div>
         </div>
-        <Button variant="outline">
-          <Filter className="mr-2 h-4 w-4" />
-          Filtros Avançados
-        </Button>
       </div>
 
       {/* Observations List */}

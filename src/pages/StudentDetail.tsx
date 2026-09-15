@@ -24,6 +24,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { institution } from '@/config/institution';
 import StudentObservationsCard from '@/components/StudentObservationsCard';
 import StudentAssessmentsCard from '@/components/StudentAssessmentsCard';
+import StudentProfileCard from '@/components/StudentProfileCard';
+import { studentStatusLabel } from '@/lib/student';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const StudentDetail = () => {
@@ -59,7 +61,7 @@ const StudentDetail = () => {
     serieTurma: `${student.serie} - Turma ${student.turma}`,
     dataNascimento: formatLocalDate(student.dataNascimento),
     idade: calculateAge(student.dataNascimento),
-    status: student.status,
+    status: studentStatusLabel(student.status),
     informacoesAcademicas: {
       anoLetivo: 2024,
       turma: "Manhã",
@@ -67,10 +69,7 @@ const StudentDetail = () => {
       professorApoio: "Professor(a) de Apoio F."
     },
     perfilSaude: {
-      diagnosticos: student.diagnostico,
-      medicina: "Ana Paulita",
-      restricoesAlergias: "Nenhuma",
-      ultimoLaudo: "01/02/2024"
+      diagnosticos: student.diagnostico
     },
     necessidadesEspecificas: {
       tipo: "Transtorno Global do Desenvolvimento",
@@ -137,7 +136,10 @@ const StudentDetail = () => {
                 {/* Nome e Badge */}
                 <div className="text-center space-y-2">
                   <h2 className="text-xl font-bold">{alunoCompleto.nomeCompleto}</h2>
-                  <Badge className="bg-success text-success-foreground">
+                  <Badge
+                    variant={student.status === 'ativo' ? 'default' : 'secondary'}
+                    className={student.status === 'ativo' ? 'bg-success text-success-foreground' : undefined}
+                  >
                     {alunoCompleto.status}
                   </Badge>
                 </div>
@@ -260,18 +262,9 @@ const StudentDetail = () => {
                     <p className="text-muted-foreground">Diagnósticos</p>
                     <p className="font-medium">{alunoCompleto.perfilSaude.diagnosticos}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Medicina</p>
-                    <p className="font-medium">{alunoCompleto.perfilSaude.medicina}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Restrições/Alergias</p>
-                    <p className="font-medium">{alunoCompleto.perfilSaude.restricoesAlergias}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Último Laudo</p>
-                    <p className="font-medium text-primary">{alunoCompleto.perfilSaude.ultimoLaudo}</p>
-                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Medicação, alergias e médico responsável não são registrados neste sistema.
+                  </p>
                 </CardContent>
               </Card>
 
@@ -337,6 +330,8 @@ const StudentDetail = () => {
                 </CardContent>
               </Card>
             </div>
+
+            <StudentProfileCard student={student} />
 
             <StudentObservationsCard studentId={student.id} />
 
@@ -489,7 +484,7 @@ const StudentDetail = () => {
       <EditarCadastroDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
-        studentName={student.nomeCompleto}
+        student={student}
       />
       <VerPEIDialog
         open={peiDialogOpen}

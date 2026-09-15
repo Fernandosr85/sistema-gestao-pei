@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -73,16 +73,37 @@ const subjectOptions: Array<{ label: string; value: SubjectType }> = [
   { label: 'Habilidades Socioemocionais', value: 'Habilidades Socioemocionais' },
 ];
 
+/** Only the levels the resource stores: a school year chosen here would be discarded on save. */
 const levelOptions: Array<{ label: string; value: EducationLevel }> = [
   { label: 'Educação Infantil', value: 'Educação Infantil' },
-  { label: 'Fund. 1 - 1º ano', value: 'Fundamental 1' },
-  { label: 'Fund. 1 - 2º ano', value: 'Fundamental 1' },
-  { label: 'Fund. 1 - 3º ano', value: 'Fundamental 1' },
-  { label: 'Fund. 1 - 4º ano', value: 'Fundamental 1' },
-  { label: 'Fund. 1 - 5º ano', value: 'Fundamental 1' },
-  { label: 'Fund. 2', value: 'Fundamental 2' },
+  { label: 'Fundamental 1', value: 'Fundamental 1' },
+  { label: 'Fundamental 2', value: 'Fundamental 2' },
   { label: 'Ensino Médio', value: 'Ensino Médio' },
+  { label: 'EJA', value: 'EJA' },
 ];
+
+const termOptions = [
+  {
+    key: 'confirmAuthorship',
+    label: 'Confirmo que sou o autor deste material ou tenho autorização para compartilhá-lo',
+    problem: 'Etapa 4: confirme que é o autor do material ou tem autorização para compartilhá-lo.',
+  },
+  {
+    key: 'allowUsage',
+    label: 'Autorizo o uso deste recurso por outros professores da instituição para fins educacionais',
+    problem: 'Etapa 4: autorize o uso do recurso por outros professores.',
+  },
+  {
+    key: 'acknowledgeNoModeration',
+    label: 'Compreendo que, nesta versão de demonstração, o recurso vai direto para a biblioteca deste navegador, sem moderação',
+    problem: 'Etapa 4: confirme que entendeu que o recurso não passa por moderação.',
+  },
+  {
+    key: 'acceptTerms',
+    label: 'Li e aceito os Termos de Uso da Biblioteca',
+    problem: 'Etapa 4: aceite os Termos de Uso da Biblioteca.',
+  },
+] as const;
 
 const EMPTY_FORM = {
   title: '',
@@ -92,6 +113,9 @@ const EMPTY_FORM = {
   diagnoses: [] as string[],
   subjects: [] as string[],
   educationLevels: [] as string[],
+  confirmAuthorship: false,
+  allowUsage: false,
+  acknowledgeNoModeration: false,
   acceptTerms: false,
 };
 
@@ -99,6 +123,8 @@ const unique = <T,>(values: T[]): T[] => Array.from(new Set(values));
 
 export function ContributeResourceDialog({ open, onOpenChange }: ContributeResourceDialogProps) {
   const { dispatch } = useDemoStore();
+  // Option names as ids would repeat the library filter ids behind the dialog, and a label click would reach the filter.
+  const fieldId = useId();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState<string[]>([]);
@@ -144,7 +170,9 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
     if (diagnoses.length === 0) problems.push('Etapa 2: marque ao menos um diagnóstico.');
     if (subjects.length === 0) problems.push('Etapa 2: marque ao menos um componente curricular.');
     if (educationLevels.length === 0) problems.push('Etapa 2: marque ao menos um nível de ensino.');
-    if (!formData.acceptTerms) problems.push('Etapa 4: aceite os Termos de Uso da Biblioteca.');
+    for (const term of termOptions) {
+      if (!formData[term.key]) problems.push(term.problem);
+    }
 
     if (problems.length > 0 || !type) {
       setErrors(problems);
@@ -276,10 +304,10 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                       onValueChange={(value) => setFormData({ ...formData, type: value })}
                       className="mt-2"
                     >
-                      {typeOptions.map(({ label }) => (
+                      {typeOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
-                          <RadioGroupItem value={label} id={label} />
-                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                          <RadioGroupItem value={label} id={`${fieldId}-type-${index}`} />
+                          <Label htmlFor={`${fieldId}-type-${index}`} className="font-normal cursor-pointer">
                             {label}
                           </Label>
                         </div>
@@ -290,14 +318,14 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>📋 Diagnósticos Aplicáveis *</Label>
                     <div className="mt-2 space-y-2">
-                      {diagnosisOptions.map(({ label }) => (
+                      {diagnosisOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={label}
+                            id={`${fieldId}-diagnosis-${index}`}
                             checked={formData.diagnoses.includes(label)}
                             onCheckedChange={() => toggleDiagnosis(label)}
                           />
-                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                          <Label htmlFor={`${fieldId}-diagnosis-${index}`} className="font-normal cursor-pointer">
                             {label}
                           </Label>
                         </div>
@@ -308,14 +336,14 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>📚 Componentes Curriculares *</Label>
                     <div className="mt-2 space-y-2">
-                      {subjectOptions.map(({ label }) => (
+                      {subjectOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={label}
+                            id={`${fieldId}-subject-${index}`}
                             checked={formData.subjects.includes(label)}
                             onCheckedChange={() => toggleSubject(label)}
                           />
-                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                          <Label htmlFor={`${fieldId}-subject-${index}`} className="font-normal cursor-pointer">
                             {label}
                           </Label>
                         </div>
@@ -326,14 +354,14 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>🎓 Nível de Ensino *</Label>
                     <div className="mt-2 space-y-2">
-                      {levelOptions.map(({ label }) => (
+                      {levelOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
                           <Checkbox
-                            id={label}
+                            id={`${fieldId}-level-${index}`}
                             checked={formData.educationLevels.includes(label)}
                             onCheckedChange={() => toggleEducationLevel(label)}
                           />
-                          <Label htmlFor={label} className="font-normal cursor-pointer">
+                          <Label htmlFor={`${fieldId}-level-${index}`} className="font-normal cursor-pointer">
                             {label}
                           </Label>
                         </div>
@@ -404,37 +432,22 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
 
                   <div className="space-y-3">
                     <h3 className="font-semibold">✅ Termos e Condições</h3>
+                    <p className="text-xs text-muted-foreground">Todos os itens são obrigatórios.</p>
                     <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <Label htmlFor="terms" className="font-normal cursor-pointer text-sm">
-                          Confirmo que sou o autor deste material ou tenho autorização para compartilhá-lo
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="usage" />
-                        <Label htmlFor="usage" className="font-normal cursor-pointer text-sm">
-                          Autorizo o uso deste recurso por outros professores da instituição para fins educacionais
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="moderation" />
-                        <Label htmlFor="moderation" className="font-normal cursor-pointer text-sm">
-                          Compreendo que, nesta versão de demonstração, o recurso vai direto para a biblioteca deste navegador, sem moderação
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="accept"
-                          checked={formData.acceptTerms}
-                          onCheckedChange={(checked) =>
-                            setFormData({ ...formData, acceptTerms: checked as boolean })
-                          }
-                        />
-                        <Label htmlFor="accept" className="font-normal cursor-pointer text-sm">
-                          Li e aceito os Termos de Uso da Biblioteca
-                        </Label>
-                      </div>
+                      {termOptions.map((term) => (
+                        <div key={term.key} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`${fieldId}-${term.key}`}
+                            checked={formData[term.key]}
+                            onCheckedChange={(checked) =>
+                              setFormData((prev) => ({ ...prev, [term.key]: checked === true }))
+                            }
+                          />
+                          <Label htmlFor={`${fieldId}-${term.key}`} className="font-normal cursor-pointer text-sm">
+                            {term.label}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
                   </div>
 

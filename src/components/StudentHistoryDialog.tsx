@@ -1,10 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
-  FileText, Award, Users, Activity, Calendar, 
+  FileText, Award, Users, Activity,
   Image, Video, Download, School, FileCheck, Stethoscope 
 } from 'lucide-react';
 
@@ -171,47 +170,6 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
             Anexos e exportação do histórico não estão disponíveis neste protótipo.
           </p>
         </DialogHeader>
-
-        {/* Filtros */}
-        <div className="flex gap-3 mb-6">
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <Calendar className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Ano" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os anos</SelectItem>
-              <SelectItem value="2024">2024</SelectItem>
-              <SelectItem value="2023">2023</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os períodos</SelectItem>
-              <SelectItem value="tri1">1º Trimestre</SelectItem>
-              <SelectItem value="tri2">2º Trimestre</SelectItem>
-              <SelectItem value="tri3">3º Trimestre</SelectItem>
-              <SelectItem value="tri4">4º Trimestre</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Tipo de Evento" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os tipos</SelectItem>
-              <SelectItem value="observation">Observações</SelectItem>
-              <SelectItem value="assessment">Avaliações</SelectItem>
-              <SelectItem value="meeting">Reuniões</SelectItem>
-              <SelectItem value="achievement">Conquistas</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
         {/* Timeline */}
         <div className="space-y-8">

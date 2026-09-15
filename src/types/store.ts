@@ -18,9 +18,12 @@ export interface DemoStateV1 {
 
 export type DemoAction =
   | { type: 'student/add'; student: Student }
+  | { type: 'student/update'; student: Student }
   | { type: 'observation/add'; observation: Observation }
   | { type: 'appointment/add'; appointment: Atendimento }
+  | { type: 'appointment/update'; appointment: Atendimento }
   | { type: 'appointment/markDone'; id: string }
+  | { type: 'appointment/cancel'; id: string }
   | { type: 'appointment/saveMinutes'; id: string; minutes: string }
   | { type: 'assessment/add'; assessment: Assessment }
   | { type: 'resource/add'; resource: Resource }

@@ -424,20 +424,6 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
           {/* ESTATÍSTICAS */}
           <TabsContent value="estatisticas" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Período de análise</h3>
-              <Select defaultValue="historico">
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="historico">Todo o histórico</SelectItem>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <Card>
               <CardHeader>
                 <CardTitle>Alunos Atendidos</CardTitle>

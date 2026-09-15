@@ -20,6 +20,9 @@ interface ObservationDetailDialogProps {
 export function ObservationDetailDialog({ open, onOpenChange, observation }: ObservationDetailDialogProps) {
   if (!observation) return null;
 
+  const situacoes = observation.comunicacao.situacoes.filter((item) => item.contexto.trim() || item.resposta.trim());
+  const interacoes = observation.habilidadesSociais.interacoes.filter((item) => item.tipo.trim() || item.descricao.trim());
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
@@ -79,6 +82,45 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                       <li>Objetivo PEI #7: Aumentar participação em atividades coletivas</li>
                     </ul>
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Communication and social skills, as recorded */}
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <h3 className="font-semibold text-lg">Comunicação e habilidades sociais registradas</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Situações de comunicação</h4>
+                  {situacoes.length === 0 ? (
+                    <p className="text-muted-foreground">Nenhuma situação registrada.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {situacoes.map((situacao, idx) => (
+                        <li key={idx} className="rounded-md border p-3">
+                          <p className="font-medium">{situacao.contexto}</p>
+                          <p className="text-muted-foreground">{situacao.resposta}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Interações sociais</h4>
+                  {interacoes.length === 0 ? (
+                    <p className="text-muted-foreground">Nenhuma interação registrada.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {interacoes.map((interacao, idx) => (
+                        <li key={idx} className="rounded-md border p-3">
+                          <p className="font-medium">{interacao.tipo}</p>
+                          <p className="text-muted-foreground">{interacao.descricao}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -382,7 +424,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-4 border-t">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <Edit className="h-4 w-4 mr-2" />
               Editar Observação
             </Button>
@@ -394,12 +436,19 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               <Mail className="h-4 w-4 mr-2" />
               Reenviar Notificação
             </Button>
-            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              disabled
+              aria-describedby="observacao-acoes-indisponiveis"
+            >
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
             </Button>
             <p id="observacao-acoes-indisponiveis" className="w-full text-xs text-muted-foreground">
-              Exportação e envio de notificações não estão implementados neste protótipo.
+              Editar, excluir, exportar e reenviar notificação não estão disponíveis neste protótipo. Nenhuma
+              observação é excluída.
             </p>
           </div>
         </div>

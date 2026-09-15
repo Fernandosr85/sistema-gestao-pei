@@ -1,12 +1,24 @@
 import type { Atendimento } from '@/types';
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Clock, MapPin, Users, Target, FileText, Edit, CheckCircle, Calendar as CalendarIcon, Trash2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Target, FileText, Edit, CheckCircle, Calendar as CalendarIcon, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { useToast } from '@/hooks/use-toast';
+import { isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
@@ -32,6 +44,14 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
   const [ata, setAta] = useState(current.ata || '');
   const [isEditingAta, setIsEditingAta] = useState(false);
   const [ataError, setAtaError] = useState('');
+  const [formOpen, setFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<'edit' | 'reschedule'>('edit');
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+
+  const openForm = (mode: 'edit' | 'reschedule') => {
+    setFormMode(mode);
+    setFormOpen(true);
+  };
 
   const handleMarcarRealizado = () => {
     const result = dispatch({ type: 'appointment/markDone', id: current.id });
@@ -52,6 +72,14 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
     toast({ title: 'Ata salva', description: describeSaveLocation(result) });
     setAtaError('');
     setIsEditingAta(false);
+  };
+
+  const handleCancelar = () => {
+    const result = dispatch({ type: 'appointment/cancel', id: current.id });
+    toast({
+      title: 'Atendimento cancelado',
+      description: `O registro continua na agenda. ${describeSaveLocation(result)}`,
+    });
   };
 
   return (
@@ -198,27 +226,60 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
 
         {/* Actions */}
         <div className="flex flex-wrap gap-3 pt-4 border-t">
-          {current.status === 'agendado' && (
+          {isOpenAppointment(current.status) && (
             <>
               <Button variant="default" onClick={handleMarcarRealizado}>
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Marcar como Realizado
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => openForm('reschedule')}>
                 <CalendarIcon className="h-4 w-4 mr-2" />
                 Remarcar
               </Button>
             </>
           )}
-          <Button variant="outline">
-            <Edit className="h-4 w-4 mr-2" />
-            Editar
-          </Button>
-          <Button variant="destructive" className="ml-auto">
-            <Trash2 className="h-4 w-4 mr-2" />
-            Cancelar
-          </Button>
+          {current.status === 'cancelado' ? (
+            <p className="text-sm text-muted-foreground">
+              Atendimento cancelado. O registro é mantido na agenda e não pode mais ser alterado.
+            </p>
+          ) : (
+            <Button variant="outline" onClick={() => openForm('edit')}>
+              <Edit className="h-4 w-4 mr-2" />
+              Editar
+            </Button>
+          )}
+          {isOpenAppointment(current.status) && (
+            <Button variant="destructive" className="ml-auto" onClick={() => setConfirmCancelOpen(true)}>
+              <XCircle className="h-4 w-4 mr-2" />
+              Cancelar atendimento
+            </Button>
+          )}
         </div>
+
+        <NovoAtendimentoDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          appointment={current}
+          mode={formMode}
+        />
+
+        <AlertDialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancelar este atendimento?</AlertDialogTitle>
+              <AlertDialogDescription>
+                {current.aluno}, {formatLocalDate(current.data)} às {current.horarioInicio}. O atendimento passa a
+                constar como cancelado; o registro não é excluído e continua na agenda.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Voltar</AlertDialogCancel>
+              <AlertDialogAction className={buttonVariants({ variant: 'destructive' })} onClick={handleCancelar}>
+                Cancelar atendimento
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DialogContent>
     </Dialog>
   );

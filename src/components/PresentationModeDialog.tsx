@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,21 +22,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
   const [currentSlide, setCurrentSlide] = useState(1);
   const totalSlides = 12;
 
-  const [config, setConfig] = useState({
-    period: 'trimestre',
-    includeOverview: true,
-    includePEI: true,
-    includeGraphs: true,
-    includeAchievements: true,
-    includeMedia: true,
-    includeRecommendations: true,
-    includeNextGoals: true,
-    includeComparison: false,
-    includeAttendance: false,
-    style: 'accessible',
-    language: 'pt',
-    format: 'interactive',
-  });
+  const [format, setFormat] = useState('interactive');
 
   const handleStartPresentation = () => {
     setIsPresenting(true);
@@ -305,83 +290,10 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
             <CardContent className="pt-6 space-y-6">
               <h3 className="font-semibold text-lg">⚙️ CONFIGURAÇÕES DA APRESENTAÇÃO</h3>
 
-              {/* Período */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">📅 Período a apresentar:</Label>
-                <RadioGroup value={config.period} onValueChange={(value) => setConfig({ ...config, period: value })}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="mes" id="mes" />
-                    <Label htmlFor="mes">Último mês</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="trimestre" id="trimestre" />
-                    <Label htmlFor="trimestre">Último trimestre</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="semestre" id="semestre" />
-                    <Label htmlFor="semestre">Semestre</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="ano" id="ano" />
-                    <Label htmlFor="ano">Ano completo</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Conteúdo */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">📊 Conteúdo a incluir:</Label>
-                <div className="space-y-2">
-                  {[
-                    { id: 'includeOverview', label: 'Visão geral do progresso' },
-                    { id: 'includePEI', label: 'Objetivos do PEI alcançados' },
-                    { id: 'includeGraphs', label: 'Gráficos de evolução' },
-                    { id: 'includeAchievements', label: 'Conquistas e destaques' },
-                    { id: 'includeMedia', label: 'Fotos e vídeos de evidências' },
-                    { id: 'includeRecommendations', label: 'Recomendações para casa' },
-                    { id: 'includeNextGoals', label: 'Próximos objetivos' },
-                    { id: 'includeComparison', label: 'Comparativo com turma (opcional)' },
-                    { id: 'includeAttendance', label: 'Dados de frequência detalhados' },
-                  ].map((item) => (
-                    <div key={item.id} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={item.id}
-                        checked={config[item.id as keyof typeof config] as boolean}
-                        onCheckedChange={(checked) =>
-                          setConfig({ ...config, [item.id]: checked })
-                        }
-                      />
-                      <Label htmlFor={item.id} className="text-sm cursor-pointer">
-                        {item.label}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Estilo */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">🎨 Estilo da apresentação:</Label>
-                <RadioGroup value={config.style} onValueChange={(value) => setConfig({ ...config, style: value })}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="accessible" id="accessible" />
-                    <Label htmlFor="accessible">Visual e Acessível (recomendado para famílias)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="technical" id="technical" />
-                    <Label htmlFor="technical">Técnico e Detalhado (para especialistas)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="minimal" id="minimal" />
-                    <Label htmlFor="minimal">Minimalista e Direto</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
               {/* Formato */}
               <div className="space-y-2">
                 <Label className="text-sm font-semibold">📱 Formato de saída:</Label>
-                <RadioGroup value={config.format} onValueChange={(value) => setConfig({ ...config, format: value })}>
+                <RadioGroup value={format} onValueChange={setFormat}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="interactive" id="interactive" />
                     <Label htmlFor="interactive">Apresentação interativa (navegável no navegador)</Label>
