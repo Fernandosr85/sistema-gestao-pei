@@ -148,6 +148,23 @@ depois painéis de gestão.
 **Critério de aceite:** varredura de `<Button` sem `onClick` que não seja trigger de
 Radix nem esteja dentro de `<Link>`; cada ocorrência restante justificada.
 
+**Estado em 15/09/2026:** feita na branch `etapa-2/controles-inertes`, ainda sem PR, em seis
+commits de código (`e80a93d`, `f807a04`, `c8f5e2b`, `2fb404d`, `ee41265` e `639a641`), além
+dos de documentação. O store está na versão 3.
+
+Varredura do critério de aceite, feita por script sobre `src/`, fora de `components/ui`:
+- **Total:** 171 `<Button>`.
+- **Justificadas:** 65 com `onClick`, 62 com `disabled`, 2 de envio de formulário, 3 com
+  `asChild`, 20 dentro de gatilho Radix ou de `<Link>` e 11 dentro de `<fieldset disabled>`
+  (Perfil e Configurações).
+- **Restantes:** 8, todas em arquivos que nenhuma rota monta: `CoordinationDashboard.tsx`
+  (2) e `reports/ActionPanel.tsx` (6), este importado só por `pages/Reports.tsx`, que não
+  tem rota. Saem com a Etapa 5.
+
+A varredura só enxerga o componente `Button`. Ficam de fora o `<button>` nativo, `div` com
+`onClick` e controles como `Checkbox` e `Select`. O motivo visível dos controles
+desabilitados foi conferido no navegador em cada commit, não pelo script.
+
 ---
 
 ## Etapa 3 — Acessibilidade profunda
@@ -166,6 +183,8 @@ Falta:
    customizada não focável.
 4. **Emoji com significado** (`BenchmarkingTable`, `ExecutiveSummary`, `VerPEIDialog`):
    `✅🟡🔴` carregam status sozinhos. Acrescentar texto; `aria-hidden` nos decorativos.
+   Registrado na Etapa 2: rótulos de aba e títulos que começam com emoji, como "📋 Dados
+   Pessoais" no Editar Cadastro, fazem o leitor de tela ler o nome do emoji antes do texto.
 5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:225-242`): cinco botões só com SVG,
    sem nome nem estado. Virar radiogroup rotulado com valor textual visível.
 
@@ -180,6 +199,17 @@ Falta:
    abre com `<h3>`. Corrigir os outlines de todas as rotas.
 8. **Alvos de toque**: botões `sm` com 36 px e ícones 40×40. Rodapé de apresentação não
    quebra linha. Testar em 320 px e zoom 200%.
+9. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
+   contraste, aumentar o tamanho dos botões, destacar o foco do teclado, reduzir animações,
+   ampliação e atalhos de teclado aparecem desabilitados desde a Etapa 2, rotulados como
+   ilustrativos. Por decisão do autor, a implementação acontece aqui, e não junto dos
+   controles inertes.
+   - Guardar as preferências no navegador e aplicá-las ao app inteiro, sem conta de usuário.
+   - Alto contraste exige recalcular o contraste de todas as combinações de cor.
+   - Reduzir animações deve respeitar também `prefers-reduced-motion`.
+   - "Navegação por voz", "Leitor de tela" e "Descrições de áudio para imagens" dependem do
+     sistema operacional ou de tecnologia assistiva, não do app. Remover essas opções ou
+     explicar isso na tela.
 
 **Critério de aceite:** navegar o sistema inteiro só com teclado, sem ficar preso nem
 encontrar controle inalcançável. Toda informação disponível por cor/hover também
@@ -200,6 +230,35 @@ percentuais de orçamento) já divergem.
 3. Se um fixture representa deliberadamente uma "escola maior" que os 4 alunos, separá-lo
    e rotular escopo e proveniência — não misturar com contagem real do dataset.
 4. Recalcular médias, ratings e percentuais a partir dos registros de origem.
+
+**Registrado durante a Etapa 2:** conteúdo fixo que continua aparecendo como se fosse do
+estudante ou como se tivesse sido medido.
+- **Ficha do estudante** (`StudentDetail`):
+  - ano letivo, turno, professor(a) de apoio, necessidades específicas, recursos e
+    composição familiar são inventados;
+  - a linha do tempo (ingresso, primeiro PEI, revisões), a "Última atualização" e o número
+    de anexos (21) são fixos.
+- **Histórico, Desempenho e Apresentação:** conteúdo e números fixos, iguais para qualquer
+  estudante. Os dados de saúde que aparecem nessas telas estão em Achados, item 1.
+- **Detalhe da observação** (`ObservationDetailDialog`): o detalhamento, a comparação
+  "+200%", as transições, as notificações "Visualizado", os metadados e a frase "têm se
+  mostrado eficazes" são texto fixo sobre "Maria", exibido em qualquer observação
+  estruturada.
+- **Dashboard:** as tendências +12% e +8% aparecem sem `DemoDataNotice`, os "12 relatórios
+  pendentes" são fixos, e o card "Observações: Este mês" conta todas as observações.
+- **Agenda:** o card "Este Mês" conta todos os atendimentos e mostra "+12% vs. mês
+  anterior".
+- **Benchmarking e projeções** (`BenchmarkingPanel`, `PredictiveAnalysis`): "% eficácia",
+  "chance de melhoria", "prevê-se", "baseado em 156 casos" e "Probabilidade".
+- **Biblioteca:**
+  - `rating` e `reviewCount` das fixtures não acompanham os comentários gravados;
+  - a ordenação por "Mais baixados" e "Melhor avaliados" usa esses números e o
+    `downloadCount` das fixtures;
+  - "Meus Recursos" (publicados, downloads, avaliação média, favoritados, ranking e badges)
+    é fixo;
+  - no detalhe do recurso, "Favoritado por" (`favoriteCount`) não tem relação com os
+    favoritos deste navegador, "Usado em 18 escolas" é inventado e "N pessoas acharam útil"
+    vem das fixtures.
 
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
 telas diferentes.
@@ -224,6 +283,26 @@ telas diferentes.
    nas avaliações, e `aluno` nos atendimentos. O `student/update` (commit `2fb404d`)
    propaga o nome editado para as três. Isso mantém a coerência, mas é justamente o dado
    duplicado que gera divergência.
+8. Arquivos sem uso além dos itens 1 e 2:
+   - `NavLink.tsx`;
+   - `reports/ActionPanel.tsx`, importado só por `pages/Reports.tsx`, que não tem rota e
+     ainda tem o rodapé de alegações;
+   - o formulário "Adicionar Evento" de `MinhaAgenda`, inalcançável desde a Etapa 2 porque o
+     gatilho está desabilitado.
+9. Estado morto em `ResourceLibrary`: `selectedTypes`, `selectedLevels` e as listas `types` e
+   `levels` não têm interface nem são lidos.
+10. Pequenos defeitos registrados na Etapa 2:
+    - `CalendarIntegrations.tsx:132` cita `docs/calendar-sync.md`, mas o arquivo é
+      `docs/calendar-sync-implementation.md`;
+    - `MeuPerfilDialog.tsx:413` tem `Progress value={310}`, fora da escala de 0 a 100;
+    - `VisaoGeralContent.tsx:37` usa a chave de objeto `MÉDIA`, com acento;
+    - `VisaoGeralContent` e `MeuPerfilDialog` põem `Badge` (um `<div>`) dentro de `<p>`, e o
+      React acusa aninhamento inválido;
+    - em `AgendaAtendimentos`, as visões de semana e de dia passam `view` ao
+      `react-big-calendar` sem `onView`, e o console avisa;
+    - `App.tsx`, `StudentDetail`, `ObservationDetailDialog`, `StudentHistoryDialog`,
+      `PresentationModeDialog`, `MeuPerfilDialog`, `AgendaAtendimentos` e `Dashboard` têm
+      imports sem uso anteriores à Etapa 2.
 
 **Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
 
@@ -288,11 +367,35 @@ passam.
 
 ---
 
+## Etapa 9 — Decisões de produto
+
+Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
+
+1. **PEI como entidade.** O sistema se chama Gestão PEI e não possui entidade PEI. Metas,
+   revisões e histórico são conteúdo fixo.
+
+   Hoje o `VerPEIDialog` mostra um PEI de exemplo, com aviso, igual para qualquer estudante.
+   Editar PEI, Nova Revisão, "Adicionar observação" na meta e "Ver ata" ficam desabilitados.
+   Modelar o PEI dá sentido ao nome do sistema: metas, prazos, responsáveis, revisões e
+   evidências ligadas a observações, avaliações e atas de atendimento.
+   - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
+     imprimível.
+   - Exige mudar o modelo de dados e subir a versão do store, com migração.
+
+2. **Minha Agenda.** Na Etapa 2, a tela ficou como exemplo rotulado, com todas as ações
+   desabilitadas. A opção preferida é a (a'): mostrar os atendimentos do store e tirar o
+   formulário de evento. Antes, responder: existe agenda pessoal separada dos atendimentos
+   (planejamento, formação, tarefas)? Se existir, o caminho é uma entidade nova de evento e
+   tarefa, e não a (a').
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
 - Integração OAuth com Google/Outlook
-- Exportação PDF/Excel/Word
+- Exportação de arquivos gerados pela aplicação (PDF, Excel, Word). O relatório da Etapa 2
+  é impresso pelo navegador, que também salva como PDF; a aplicação não gera arquivo.
 - Qualquer análise preditiva de verdade (exigiria dataset governado e validação; hoje há
   4 alunos fictícios)
 

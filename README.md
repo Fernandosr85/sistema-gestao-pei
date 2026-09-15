@@ -13,9 +13,10 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 >
 > Este repositório contém **apenas o frontend**, operando sobre dados fictícios
 > (`src/data/`). Não há backend, banco de dados, autenticação nem controle de acesso. Em
-> modo demonstração, o que é cadastrado na interface (alunos, observações, atendimentos,
-> avaliações e recursos) fica **só no localStorage do navegador em uso**, sem
-> criptografia. Edição de cadastro e vários outros controles ainda não salvam nada.
+> modo demonstração, o que é cadastrado ou editado na interface (alunos, observações,
+> atendimentos, avaliações, recursos, comentários e favoritos) fica **só no localStorage
+> do navegador em uso**, sem criptografia. Os controles sem função mapeados no backlog
+> aparecem desabilitados, com o motivo na tela, ou foram removidos.
 >
 > Os indicadores, projeções, comparativos e valores orçamentários exibidos são **exemplos
 > ilustrativos fixos no código**. Nenhum modelo estatístico ou de machine learning é
@@ -45,12 +46,12 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 
 Telas navegáveis do protótipo:
 
-- **Dashboard** — visão inicial com atalhos e listagens
-- **Alunos** — listagem, filtros por diagnóstico, perfil detalhado, modo apresentação
+- **Dashboard** — visão inicial com atalhos, listagens e relatório imprimível do estudante ou da turma
+- **Alunos** — listagem, filtros por diagnóstico, cadastro, edição, ficha detalhada, modo apresentação
 - **Observações** — registro estruturado por áreas (comunicação, social, comportamento)
-- **Agenda de atendimentos** — calendário em visões mês/semana/dia/lista
-- **Gestão** — visão geral, alertas e riscos, análise de complexidade, relatórios, equipe, orçamento
-- **Biblioteca de recursos** — catálogo de materiais adaptados com busca e filtros
+- **Agenda de atendimentos** — calendário em visões mês/semana/dia/lista, com remarcação, cancelamento e ata
+- **Gestão** — visão geral, alertas e riscos, análise de complexidade, relatórios, equipe, orçamento (conteúdo fixo de demonstração)
+- **Biblioteca de recursos** — catálogo de materiais adaptados com busca, filtros, ordenação e favoritos deste navegador
 - **Marco legal** — LDB 9.394/96, LBI 13.146/2015, Lei 12.764/2012, Decreto 7.611/2011
 - **Manual de procedimentos** — fluxo de identificação, PEI, equipe, protocolos e avaliação
 
@@ -126,9 +127,9 @@ localStorage do navegador, com aviso permanente e o botão "Restaurar dados de
 demonstração". Desligado, o store roda só em memória e não toca no localStorage. Ele só
 deve ser desligado quando as telas passarem a consumir dados reais de um backend.
 
-O formato gravado é versionado (`src/store/persistence.ts`). Dados da versão anterior são
-migrados na primeira leitura, sem perda; dados de versão desconhecida ou ilegíveis são
-descartados, com aviso na tela.
+O formato gravado é versionado (`src/store/persistence.ts`) e está na versão 3. Dados das
+versões 1 e 2 são migrados na primeira leitura, um passo de cada vez e sem perda; dados de
+versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 
 ---
 
@@ -138,18 +139,24 @@ descartados, com aviso na tela.
 |---|---|
 | Navegação e layout | ✅ Funcional |
 | Listagens, filtros e busca de alunos | ✅ Funcional (dados fictícios e cadastros locais) |
-| Cadastro de alunos e registro de observações, atendimentos, avaliações pedagógicas, recursos da biblioteca e comentários de recursos | ⚠️ Grava só no localStorage do navegador, em modo demonstração; sem edição nem exclusão (a exceção é marcar um atendimento como realizado e salvar a ata) |
-| Edição de cadastro e demais formulários | ⚠️ Validam, mas **descartam** o resultado |
+| Cadastro e edição de alunos; observações e avaliações pedagógicas; atendimentos com remarcação, cancelamento e ata; recursos, comentários e favoritos da biblioteca | ⚠️ Grava só no localStorage do navegador, em modo demonstração. Nada é excluído: o aluno muda de status e o atendimento é cancelado |
+| Relatório do estudante e da turma | ⚠️ Montado com os registros do navegador; imprime ou salva como PDF pela janela de impressão do navegador |
+| Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
+| PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
+| Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
+| Perfil, configurações e Minha Agenda | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
-| Exportação PDF/Excel/Word | ❌ Não implementado |
+| Exportação de arquivo (PDF gerado pela aplicação, Excel, Word) | ❌ Não implementada |
 | Sincronização Google Calendar / Outlook | ❌ Não implementada; os controles aparecem desabilitados, com o motivo |
 | Notificações | ❌ Não implementadas; os controles aparecem desabilitados |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
 | Testes automatizados | ❌ Não implementados |
 
-Muitos botões das telas são afordâncias visuais sem ação associada. Isso está mapeado e
-faz parte do backlog.
+Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
+desabilitado com o motivo na tela ou removido. Gestão, histórico, desempenho, apresentação e
+PEI continuam mostrando conteúdo fixo de demonstração, e nem toda tela desse tipo tem aviso
+ainda (ver Etapa 4 do backlog).
 
 ---
 
@@ -195,7 +202,7 @@ sistema-gestao-pei/
 │   ├── lib/
 │   ├── pages/              # Dashboard, Students, Observations, Gestao,
 │   │                       # ResourceLibrary, Legislation, Manual,
-│   │                       # AgendaAtendimentos, MinhaAgenda, NotFound
+│   │                       # AgendaAtendimentos, MinhaAgenda, PrintableReport, NotFound
 │   ├── store/              # Store de demonstração (reducer + localStorage em DEMO_MODE)
 │   ├── types/
 │   ├── App.tsx
