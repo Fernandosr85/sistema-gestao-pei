@@ -1,8 +1,9 @@
-import type { DemoState, DemoStateV1 } from '@/types/store';
-import { migrateV1ToV2 } from './migrations';
+import type { ResourceFavorite } from '@/types/resource';
+import type { DemoState, DemoStateV1, DemoStateV2 } from '@/types/store';
+import { migrateV1ToV2, migrateV2ToV3 } from './migrations';
 
 const STORAGE_KEY = 'pei-demo-store';
-const STORAGE_VERSION = 2;
+const STORAGE_VERSION = 3;
 
 interface StoredEnvelope {
   version: number;
@@ -33,18 +34,29 @@ const isDemoStateV1 = (value: unknown): value is DemoStateV1 => {
   );
 };
 
-const isDemoStateV2 = (value: unknown): value is DemoState =>
+const isDemoStateV2 = (value: unknown): value is DemoStateV2 =>
   isDemoStateV1(value) &&
   ['appointments', 'assessments', 'resources', 'reviews'].every((key) =>
     isRecordList((value as unknown as Record<string, unknown>)[key]),
   );
 
+const isFavoriteList = (value: unknown): value is ResourceFavorite[] =>
+  Array.isArray(value) &&
+  value.every((item) => {
+    if (typeof item !== 'object' || item === null) return false;
+    const candidate = item as { resourceId?: unknown; addedAt?: unknown };
+    return typeof candidate.resourceId === 'string' && typeof candidate.addedAt === 'string';
+  });
+
+const isDemoStateV3 = (value: unknown): value is DemoState =>
+  isDemoStateV2(value) && isFavoriteList((value as unknown as Record<string, unknown>).favorites);
+
 /**
  * Callers must only use this module when DEMO_MODE is on.
  *
- * The version is explicit so a legitimate version 1 record is never mistaken for
- * a damaged version 2 one: version 1 is migrated, anything else that does not
- * match its declared shape is discarded.
+ * The version is explicit so a legitimate older record is never mistaken for a
+ * damaged current one: versions 1 and 2 are migrated one step at a time, and
+ * anything else that does not match its declared shape is discarded.
  */
 export const loadState = (): LoadResult => {
   let raw: string | null;
@@ -58,11 +70,14 @@ export const loadState = (): LoadResult => {
   try {
     const envelope = JSON.parse(raw) as Partial<StoredEnvelope>;
     const stored = envelope.state;
-    if (envelope.version === STORAGE_VERSION && isDemoStateV2(stored)) {
+    if (envelope.version === STORAGE_VERSION && isDemoStateV3(stored)) {
       return { status: 'loaded', state: stored };
     }
+    if (envelope.version === 2 && isDemoStateV2(stored)) {
+      return { status: 'loaded', state: migrateV2ToV3(stored), migratedFrom: 2 };
+    }
     if (envelope.version === 1 && isDemoStateV1(stored)) {
-      return { status: 'loaded', state: migrateV1ToV2(stored), migratedFrom: 1 };
+      return { status: 'loaded', state: migrateV2ToV3(migrateV1ToV2(stored)), migratedFrom: 1 };
     }
   } catch {
     // Unparseable JSON is treated like data from an unknown version.

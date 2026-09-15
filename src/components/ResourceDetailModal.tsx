@@ -20,7 +20,8 @@ interface ResourceDetailModalProps {
   reviews: ResourceReview[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onFavorite: (resource: Resource) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (resource: Resource) => void;
 }
 
 export function ResourceDetailModal({
@@ -28,7 +29,8 @@ export function ResourceDetailModal({
   reviews,
   open,
   onOpenChange,
-  onFavorite
+  isFavorite,
+  onToggleFavorite
 }: ResourceDetailModalProps) {
   const { dispatch } = useDemoStore();
   const [userRating, setUserRating] = useState(0);
@@ -63,11 +65,13 @@ export function ResourceDetailModal({
                 <DialogTitle className="text-2xl">{resource.title}</DialogTitle>
                 <div className="flex gap-2">
                   <Button
-                    variant="outline"
+                    variant={isFavorite ? 'secondary' : 'outline'}
                     size="icon"
-                    onClick={() => onFavorite(resource)}
+                    onClick={() => onToggleFavorite(resource)}
+                    aria-pressed={isFavorite}
+                    aria-label={`Favoritar ${resource.title}`}
                   >
-                    <Heart className="h-4 w-4" />
+                    <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} aria-hidden="true" />
                   </Button>
                   <Button disabled aria-describedby="download-detalhe-indisponivel">
                     <Download className="h-4 w-4 mr-2" />
@@ -208,10 +212,12 @@ export function ResourceDetailModal({
                       </span>
                     </div>
                     <p className="text-muted-foreground mb-2">{review.comment}</p>
-                    <Button variant="ghost" size="sm">
-                      <ThumbsUp className="h-4 w-4 mr-1" />
-                      {review.helpfulCount} pessoas acharam útil
-                    </Button>
+                    {review.helpfulCount > 0 && (
+                      <p className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <ThumbsUp className="h-4 w-4" aria-hidden="true" />
+                        {review.helpfulCount} pessoas acharam útil
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

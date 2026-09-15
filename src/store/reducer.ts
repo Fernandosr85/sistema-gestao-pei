@@ -67,6 +67,15 @@ export const demoReducer = (state: DemoState, action: DemoAction): DemoState => 
       return { ...state, resources: [action.resource, ...state.resources] };
     case 'review/add':
       return { ...state, reviews: [action.review, ...state.reviews] };
+    case 'favorite/add':
+      // One favorite per resource, even if the same action arrives twice.
+      if (state.favorites.some((favorite) => favorite.resourceId === action.favorite.resourceId)) return state;
+      return { ...state, favorites: [action.favorite, ...state.favorites] };
+    case 'favorite/remove':
+      return {
+        ...state,
+        favorites: state.favorites.filter((favorite) => favorite.resourceId !== action.resourceId),
+      };
     case 'demo/reset':
       return createSeedState();
     default: {

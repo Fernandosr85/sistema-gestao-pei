@@ -1,5 +1,5 @@
 import type { Assessment, Atendimento, Observation, Student } from '@/types';
-import type { Resource, ResourceReview } from '@/types/resource';
+import type { Resource, ResourceFavorite, ResourceReview } from '@/types/resource';
 
 export interface DemoState {
   students: Student[];
@@ -8,7 +8,12 @@ export interface DemoState {
   assessments: Assessment[];
   resources: Resource[];
   reviews: ResourceReview[];
+  /** Added in version 3. */
+  favorites: ResourceFavorite[];
 }
+
+/** Shape written by version 2 of the store: every collection except favorites. */
+export type DemoStateV2 = Omit<DemoState, 'favorites'>;
 
 /** Shape written by version 1 of the store: only students and observations. */
 export interface DemoStateV1 {
@@ -28,6 +33,8 @@ export type DemoAction =
   | { type: 'assessment/add'; assessment: Assessment }
   | { type: 'resource/add'; resource: Resource }
   | { type: 'review/add'; review: ResourceReview }
+  | { type: 'favorite/add'; favorite: ResourceFavorite }
+  | { type: 'favorite/remove'; resourceId: string }
   | { type: 'demo/reset' };
 
 /**

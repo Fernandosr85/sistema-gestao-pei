@@ -82,6 +82,12 @@ export interface ResourceReview {
   helpfulCount: number;
 }
 
+/** Resource marked as favorite in this browser. Demo mode has no user accounts, so there is no owner. */
+export interface ResourceFavorite {
+  resourceId: string;
+  addedAt: string;
+}
+
 export interface Badge {
   id: string;
   name: string;

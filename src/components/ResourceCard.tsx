@@ -8,8 +8,9 @@ import { formatLocalDate } from '@/lib/date';
 
 interface ResourceCardProps {
   resource: Resource;
+  isFavorite: boolean;
   onView: (resource: Resource) => void;
-  onFavorite: (resource: Resource) => void;
+  onToggleFavorite: (resource: Resource) => void;
 }
 
 const resourceTypeColors: Record<string, string> = {
@@ -38,7 +39,7 @@ const resourceTypeLabels: Record<string, string> = {
   'outro': '📦 Outro'
 };
 
-export function ResourceCard({ resource, onView, onFavorite }: ResourceCardProps) {
+export function ResourceCard({ resource, isFavorite, onView, onToggleFavorite }: ResourceCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
       <div className="relative">
@@ -116,12 +117,14 @@ export function ResourceCard({ resource, onView, onFavorite }: ResourceCardProps
 
       <CardFooter className="flex gap-2">
         <Button
-          variant="outline"
+          variant={isFavorite ? 'secondary' : 'outline'}
           size="sm"
-          onClick={() => onFavorite(resource)}
+          onClick={() => onToggleFavorite(resource)}
+          aria-pressed={isFavorite}
+          aria-label={`Favoritar ${resource.title}`}
           className="flex-1"
         >
-          <Heart className="h-4 w-4 mr-1" />
+          <Heart className={cn('h-4 w-4 mr-1', isFavorite && 'fill-current')} aria-hidden="true" />
           Favoritar
         </Button>
         <Button

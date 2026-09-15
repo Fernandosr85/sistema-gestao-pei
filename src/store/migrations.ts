@@ -1,5 +1,5 @@
 import type { Student } from '@/types';
-import type { DemoState, DemoStateV1 } from '@/types/store';
+import type { DemoState, DemoStateV1, DemoStateV2 } from '@/types/store';
 import { createSeedState } from './seed';
 
 /** Key written by version 1, before the accent was removed from `Student`. */
@@ -24,7 +24,7 @@ const renameLegacyCalmingStrategies = (student: Student): Student => {
  * fixes the legacy key and adds the collections that did not exist yet from the
  * demo fixtures, the same ones a fresh browser starts with.
  */
-export const migrateV1ToV2 = (state: DemoStateV1): DemoState => {
+export const migrateV1ToV2 = (state: DemoStateV1): DemoStateV2 => {
   const seed = createSeedState();
   return {
     students: state.students.map(renameLegacyCalmingStrategies),
@@ -35,3 +35,17 @@ export const migrateV1ToV2 = (state: DemoStateV1): DemoState => {
     reviews: seed.reviews,
   };
 };
+
+/**
+ * Version 2 had no favorites. Keeps every stored record as it was and starts
+ * with no favorites, the same as a fresh browser.
+ */
+export const migrateV2ToV3 = (state: DemoStateV2): DemoState => ({
+  students: state.students,
+  observations: state.observations,
+  appointments: state.appointments,
+  assessments: state.assessments,
+  resources: state.resources,
+  reviews: state.reviews,
+  favorites: [],
+});
