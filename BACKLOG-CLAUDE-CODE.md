@@ -180,46 +180,144 @@ desabilitados foi conferido no navegador em cada commit, não pelo script.
 ## Etapa 3 — Acessibilidade profunda
 
 Base já feita na Etapa 0 (menu mobile, skip link, `<main>`, contraste, nomes no header).
-Falta:
 
-1. **Matriz de risco 3×3** (`gestao/AlertasRiscosContent.tsx:365,478`): badges clicáveis
-   são `<span>`, inalcançáveis por teclado. Virar `<button>` com nome descritivo;
+**Estado em 15/09/2026:** em andamento na branch `etapa-3/acessibilidade`, a partir do
+`a9fe84f`. Os oito itens abaixo foram revalidados contra o código depois da Etapa 2, que
+removeu mais de 1.200 linhas. Três mudaram de tamanho ou de natureza, e a revalidação
+achou quatro defeitos que não estavam no inventário.
+
+### Ferramentas de verificação
+
+Duas dependências de desenvolvimento, com funções distintas, aprovadas nesta etapa.
+
+- **`eslint-plugin-jsx-a11y`**, dentro do `npm run lint` que já existe, portanto também no
+  CI. As regras entram como **aviso** (`JSX_A11Y_SEVERITY` no `eslint.config.js`) para
+  servirem de lista de trabalho sem quebrar a exigência de 0 erros, e passam a **erro** no
+  commit final da etapa.
+  - **Linha de base, no commit 1:** 8 avisos. Eram 100 antes de preservar as regras que o
+    preset desliga: `label-has-for` está obsoleta, exige aninhamento **e** `htmlFor` ao
+    mesmo tempo, e sozinha gerava 85 avisos sobre rótulos corretos.
+  - **Ponto cego conhecido:** a regra só enxerga elemento do DOM. Dos cinco controles
+    inalcançáveis por teclado desta etapa, ela vê **um**, o `<div onClick>` do
+    `ProgressChart`. Os `<Badge onClick>` da matriz de riscos e o `<Card onClick>` da agenda
+    passam batido, porque são componentes. É o mesmo ponto cego da varredura de `<Button>`
+    da Etapa 2: ferramenta estática não atravessa abstração de componente.
+- **`axe-core`**, sem navegador headless e **fora do CI**. O Vite serve
+  `/node_modules/axe-core/axe.min.js` para a página, e a varredura roda rota a rota na
+  sessão, com a versão fixada no lockfile. Pega o que o lint não vê: nome acessível
+  computado, contraste calculado e alvo de `aria-describedby` inexistente.
+  - **Primeira varredura, na rota `/`:** duas violações, uma real e uma falso positivo. A
+    real são três `Progress` sem nome acessível (`aria-progressbar-name`, grave). O falso
+    positivo é "Usuário de demonstração" no cabeçalho, acusado de contraste 1,04:1 — o axe
+    não lê gradiente e usou o fundo da página. O gradiente real vai de 10,65:1 a 5,96:1
+    contra branco, ambos acima de 4,5:1.
+  - Vale registrar os dois: uma auditoria automatizada erra nas duas direções, e tratá-la
+    como veredito produziria tanto defeito não visto quanto correção desnecessária.
+
+`jest-axe` foi descartado: exigiria `vitest`, `jsdom` e `@testing-library`, e o jsdom não
+calcula layout nem contraste, que é metade do valor do axe.
+
+### Itens
+
+1. **Matriz de risco 3×3** (`gestao/AlertasRiscosContent.tsx:356-422`): nove badges
+   clicáveis são `<div>` (o `Badge` do shadcn), sem `role`, `tabIndex` nem handler de
+   teclado, e o texto é só `{id} {emoji}`. Virar `<button>` com nome descritivo;
    probabilidade/impacto/severidade como texto, não só posição na grade e tom de cor.
-2. **Heatmap** (`reports/ObservationHeatmap.tsx`): dias são `<div>` não focáveis com
-   contagem só em tooltip de hover. Virar botões focáveis com nome "12 de novembro, 3
-   observações", ou tabela equivalente. Legenda precisa de valores.
-3. **Gráficos Recharts** (`ProgressChart`, `PEIRadarChart`, `InterventionDonut`): sem
-   nome acessível nem tabela equivalente. Donut tem realce só por mouse e legenda
-   customizada não focável.
-4. **Emoji com significado** (`BenchmarkingTable`, `ExecutiveSummary`, `VerPEIDialog`):
-   `✅🟡🔴` carregam status sozinhos. Acrescentar texto; `aria-hidden` nos decorativos.
-   Registrado na Etapa 2: rótulos de aba e títulos que começam com emoji, como "📋 Dados
-   Pessoais" no Editar Cadastro, fazem o leitor de tela ler o nome do emoji antes do texto.
-5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:225-242`): cinco botões só com SVG,
-   sem nome nem estado. Virar radiogroup rotulado com valor textual visível.
+2. **Heatmap** (`reports/ObservationHeatmap.tsx`): 30 `<div>` com `cursor-pointer` e
+   contagem só no tooltip de hover; a legenda não tem valores.
+   **Decisão:** vira **tabela**, não botões. As células não têm ação nenhuma, e
+   transformá-las em botão criaria controle inerte, exatamente o que a Etapa 2 passou seis
+   commits eliminando. Achado junto: a grade de sete colunas começa no dia 1 sem alinhar ao
+   dia da semana, então o cabeçalho Dom–Sáb está errado.
+3. **Gráficos Recharts**: sem nome acessível nem equivalente textual. Não são três, são
+   **doze em sete arquivos montados** — `ProgressChart` (3), `MeuPerfilDialog` (3),
+   `OrcamentoContent` (2), `InterventionDonut`, `PEIRadarChart`,
+   `StudentPerformanceDialog` e `AgendaAtendimentos` (1 cada). Somam-se os três `Progress`
+   sem nome do Dashboard, achados pelo axe.
+   A legenda do donut **já** traz nome e porcentagem em texto: o que sobra lá é
+   `cursor-pointer` e realce só por mouse, sem informação nova. Reclassificado como
+   afordância falsa, não perda de informação.
+4. **Emoji com significado**: são 325 ocorrências em 32 arquivos, 314 delas em arquivos
+   montados por rota. Por natureza, e com escopo decidido pelo autor:
+   - **24 linhas em que o emoji carrega o status sozinho** (`✅🟡🔴⚠️` em
+     `BenchmarkingTable`, `ExpandedComplexityCard`, `AlertasRiscosContent`,
+     `StudentPerformanceDialog`, `lib/observation.ts` e `data/mockResources.ts`): **saem e
+     ganham texto**. É falha AA (1.4.1).
+   - **97 linhas em título, aba, `DialogTitle` e `Label`** (como "📋 Dados Pessoais"):
+     **saem**. O leitor de tela lê o nome do emoji antes do texto, o que polui a navegação.
+   - **155 linhas decorativas no meio de texto corrido: ficam.** Envolver cada uma em `span`
+     com `aria-hidden` seriam 155 pontos de alteração para resolver verbosidade, não
+     barreira. O leitor anuncia o nome do emoji: é incômodo, não é falha. Registrado para
+     ficar claro que foi escolha, e não esquecimento.
+5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:232-247`): cinco `<button>` só com
+   SVG, sem nome, sem estado e sem `type`. Virar radiogroup rotulado com valor textual
+   visível.
 
    Evidência de campo: durante o teste da Etapa 1, a árvore de acessibilidade do diálogo
    expôs as cinco estrelas como botões sem nome e sem estado. Não foi possível identificar
    qual estrela era qual, nem a nota selecionada, sem inspecionar o DOM. Confirma o defeito
    na prática, não só na análise estática. A ativação por teclado não foi verificada: a
    ferramenta de teste não ativa por Enter/Space nem botões com nome.
-6. **Diálogos**: `PresentationModeDialog` não tem `DialogTitle` no modo apresentação e
-   não move foco nem anuncia troca de slide. Outros diálogos sem `DialogDescription`.
+6. **Diálogos**: `PresentationModeDialog` tem dois `DialogContent` e um só `DialogTitle` — é
+   o modo apresentação que está sem título — e não move foco nem anuncia troca de slide.
+   **Dez diálogos montados estão sem `DialogDescription`**: Anexos, Configurações,
+   Contribuir, Meu Perfil, Nova Observação, Detalhe da Observação, Apresentação, Detalhe do
+   Recurso, Desempenho e Ver PEI.
 7. **Hierarquia de headings**: `NewObservation` usa `<h4>` sob `<h1>`; `VisaoGeralContent`
-   abre com `<h3>`. Corrigir os outlines de todas as rotas.
-8. **Alvos de toque**: botões `sm` com 36 px e ícones 40×40. Rodapé de apresentação não
-   quebra linha. Testar em 320 px e zoom 200%.
+   abre com `<h3>`. A causa comum é o `CardTitle`, que é `<h3>` fixo: toda página cujo `<h1>`
+   é seguido de Card pula o `<h2>`, o que inclui `/agenda-atendimentos`,
+   `/biblioteca-recursos`, `/gestao` e `/alunos`.
+   **Decisão:** `CardTitle` ganha nível configurável, retrocompatível, em vez de espalhar
+   títulos de seção que ninguém pediu.
+8. **Refluxo e zoom**, não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
+   40 × 40 eram defeito de alvo de toque, mas o critério 2.5.5 (44 px) é **AAA**, e a meta
+   do projeto é AA. O que é AA aqui é **1.4.10 Refluxo, em 320 px**, e **1.4.4
+   Redimensionar texto, em zoom de 200%** — inclusive o rodapé da apresentação, que não
+   quebra linha. O botão maior vira preferência opcional do item 9.
 9. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
    contraste, aumentar o tamanho dos botões, destacar o foco do teclado, reduzir animações,
    ampliação e atalhos de teclado aparecem desabilitados desde a Etapa 2, rotulados como
    ilustrativos. Por decisão do autor, a implementação acontece aqui, e não junto dos
    controles inertes.
-   - Guardar as preferências no navegador e aplicá-las ao app inteiro, sem conta de usuário.
-   - Alto contraste exige recalcular o contraste de todas as combinações de cor.
+   - Guardadas em **chave própria do navegador**, `pei-a11y-preferences`, fora do store de
+     demonstração e sem versão 4 dele. O argumento decisivo: elas precisam sobreviver quando
+     o envelope do store é descartado por versão desconhecida.
+   - Aplicadas **na hora**, sem passar pelo botão Salvar, sob o rótulo "Preferências deste
+     navegador" — mesma decisão dos favoritos da Etapa 2.
+   - Alto contraste sai por **atributo de dados sobre os tokens**. O `next-themes` já é
+     dependência, usado só pelo toaster, mas não deve ser reaproveitado: arrastaria modo
+     escuro, que ninguém pediu e que multiplicaria o recálculo de contraste.
    - Reduzir animações deve respeitar também `prefers-reduced-motion`.
-   - "Navegação por voz", "Leitor de tela" e "Descrições de áudio para imagens" dependem do
-     sistema operacional ou de tecnologia assistiva, não do app. Remover essas opções ou
-     explicar isso na tela.
+   - Dos dez controles da aba: **implementar** alto contraste, tamanho de fonte, reduzir
+     animações, destacar foco do teclado e aumentar o tamanho dos botões; **remover**
+     navegação por voz, leitor de tela e descrições de áudio, que dependem do sistema
+     operacional, atalhos de teclado e sua lista, que o app não tem, e ampliação, que é o
+     zoom do navegador.
+   - **Remover "Limpar cache"**: "Restaurar dados de demonstração" já faz isso, e dois
+     controles destrutivos com nomes diferentes para a mesma ação é pior que nenhum.
+   - "Tamanho da fonte" hoje está na aba **Aparência**, também desabilitada. O controle se
+     muda para Acessibilidade, e Aparência ganha uma linha dizendo para onde ele foi.
+
+### Achados da revalidação, fora do inventário original
+
+- `pages/AgendaAtendimentos.tsx:681`: o `<Card>` inteiro tem `onClick`. Há um `<Button>`
+  dentro com o mesmo handler, então o teclado alcança a ação; o clique no card é afordância
+  redundante que ainda dispara o handler duas vezes quando se clica no botão. Sai o
+  `onClick` do card.
+- `reports/ProgressChart.tsx:372`: `<div onClick>` que abre o painel de detalhe da área.
+  Controle real, só por mouse. Vira `<button>`.
+- `pages/StudentDetail.tsx:104`: `<Link>` envolvendo `<Button size="icon">` só com ícone —
+  link sem nome acessível (2.4.4) e `<a>` contendo `<button>`, aninhamento inválido. É o
+  único dos dez botões de ícone sem nome.
+- `reports/PredictiveAnalysis.tsx:178`: conjunto de abas caseiro em `<button>`, sem
+  `role="tablist"` nem `aria-selected`; o estado ativo é só cor de fundo.
+
+### Limite de verificação da sessão
+
+A ferramenta de navegador não ativa `<button>` nativo por Enter/Space. Dá para verificar
+árvore de acessibilidade (nome, papel, estado, ordem de foco, alvo de `aria-describedby`),
+contraste calculado, refluxo e zoom — **não** ativação por teclado nem leitor de tela real.
+Esses ficam numa lista de teste manual, executada pelo autor ao fim da etapa.
 
 **Critério de aceite:** navegar o sistema inteiro só com teclado, sem ficar preso nem
 encontrar controle inalcançável. Toda informação disponível por cor/hover também
@@ -343,6 +441,15 @@ Vitest + Testing Library. Cobrir, no mínimo:
 - teste de rotas: todo destino de `Link`/`navigate()` resolve para rota declarada
 
 Adicionar `npm test` ao workflow de CI.
+
+**Varredura de acessibilidade no CI** (vindo da Etapa 3). O `axe-core` entrou como
+dependência de desenvolvimento e roda rota a rota na sessão, servido pelo Vite, **fora do
+CI**. Automatizá-lo exige navegador headless — Playwright ou Puppeteer —, porque o jsdom não
+calcula layout nem contraste, que é metade do valor da ferramenta. São três a quatro
+dependências novas e um tempo de CI bem maior, então isso pertence a esta etapa, junto do
+runner. Duas lições da Etapa 3 valem para o desenho do teste: o axe erra nas duas direções
+(acusou contraste 1,04:1 num gradiente que na verdade vai de 10,65:1 a 5,96:1), e o
+resultado precisa de revisão humana em vez de virar critério de aprovação cego.
 
 ---
 

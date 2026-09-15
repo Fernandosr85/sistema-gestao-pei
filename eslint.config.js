@@ -1,8 +1,35 @@
 import js from "@eslint/js";
 import globals from "globals";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
+
+/**
+ * Etapa 3 do BACKLOG. As regras de acessibilidade entram como aviso, para
+ * servirem de lista de trabalho sem quebrar `npm run lint`, que exige 0 erros
+ * antes de cada commit. No commit final da etapa isto passa a "error".
+ */
+const JSX_A11Y_SEVERITY = "warn";
+
+const isOff = (value) => {
+  const severity = Array.isArray(value) ? value[0] : value;
+  return severity === "off" || severity === 0;
+};
+
+/**
+ * Troca a severidade das regras ligadas e preserva as que o preset desliga.
+ * `label-has-for`, por exemplo, vem desligada por estar obsoleta: ela exige
+ * aninhamento E `htmlFor` ao mesmo tempo, e reativá-la traria 85 avisos sobre
+ * rótulos que já estão corretos, escondendo os defeitos reais.
+ */
+const withSeverity = (rules, severity) =>
+  Object.fromEntries(
+    Object.entries(rules).map(([rule, value]) => [
+      rule,
+      isOff(value) ? value : Array.isArray(value) ? [severity, ...value.slice(1)] : severity,
+    ]),
+  );
 
 export default tseslint.config(
   { ignores: ["dist"] },
@@ -14,11 +41,13 @@ export default tseslint.config(
       globals: globals.browser,
     },
     plugins: {
+      "jsx-a11y": jsxA11y,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      ...withSeverity(jsxA11y.flatConfigs.recommended.rules, JSX_A11Y_SEVERITY),
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
     },
