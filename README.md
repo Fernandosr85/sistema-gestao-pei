@@ -143,6 +143,7 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Relatório do estudante e da turma | ⚠️ Montado com os registros do navegador; imprime ou salva como PDF pela janela de impressão do navegador |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
 | PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
+| Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
 | Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
 | Perfil, configurações e Minha Agenda | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
 | Autenticação, perfis e permissões | ❌ Não implementado |
@@ -154,9 +155,10 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Testes automatizados | ❌ Não implementados |
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
-desabilitado com o motivo na tela ou removido. Gestão, histórico, desempenho, apresentação e
+desabilitado com o motivo na tela ou removido. Gestão, desempenho, apresentação e
 PEI continuam mostrando conteúdo fixo de demonstração, e nem toda tela desse tipo tem aviso
-ainda (ver Etapa 4 do backlog).
+ainda (ver Etapa 4 do backlog). O histórico acadêmico não tem modelo de dados e diz isso na
+tela.
 
 ---
 

@@ -62,10 +62,6 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                     <p className="text-muted-foreground">Próxima revisão</p>
                     <p className="font-medium">15/12/2024</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Diagnóstico</p>
-                    <p className="font-medium">TEA Nível 1 (F84.0)</p>
-                  </div>
                 </div>
                 <div className="pt-2">
                   <p className="text-muted-foreground">Participantes</p>

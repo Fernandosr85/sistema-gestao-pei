@@ -62,6 +62,10 @@ O README tem uma tabela "O que está implementado" com ✅/⚠️/❌. Se você 
 remover algo, **atualize a tabela no mesmo commit**. Nunca marque ✅ o que não funciona
 ponta a ponta.
 
+Em etapas de vários commits, a tabela do README pode ficar defasada entre commits
+intermediários, desde que o commit final da etapa a atualize. Registre a defasagem na
+mensagem do commit.
+
 Nunca exiba toast de sucesso ("salvo", "enviado", "gerado") para uma ação que não
 produziu resultado persistido ou arquivo. Ou implemente, ou desabilite o controle com
 explicação visível, ou remova.

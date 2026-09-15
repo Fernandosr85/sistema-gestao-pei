@@ -10,6 +10,7 @@ import {
   Play, X, ChevronLeft, ChevronRight, Home,
   Settings, FileText, Video
 } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface PresentationModeDialogProps {
   open: boolean;
@@ -54,7 +55,6 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                 <div className="text-center space-y-8">
                   <div className="text-6xl mb-8">👧</div>
                   <h1 className="text-5xl font-bold text-foreground">{studentName.toUpperCase()}</h1>
-                  <p className="text-2xl text-muted-foreground">2º Ano EF - Turma C</p>
                   <p className="text-xl text-muted-foreground">Trimestre 3 de 2024 (Set-Nov)</p>
                   <div className="my-12 h-1 w-64 mx-auto bg-gradient-to-r from-transparent via-primary to-transparent" />
                   <div className="space-y-4">
@@ -124,7 +124,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                           <div>
                             <h3 className="text-2xl font-bold mb-2">Leitura Independente</h3>
                             <p className="text-xl text-muted-foreground">
-                              Ana conseguiu ler textos curtos sozinha!
+                              Leu textos curtos sem ajuda.
                             </p>
                           </div>
                         </div>
@@ -220,7 +220,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
 
             {/* Indicador de Slide */}
             <div className="text-center py-4 text-sm text-muted-foreground">
-              Slide {currentSlide} de {totalSlides}
+              Slide {currentSlide} de {totalSlides} · Conteúdo de exemplo, que não vem dos registros do estudante
             </div>
 
             {/* Controles de Navegação */}
@@ -283,6 +283,11 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
             Crie uma apresentação visual e acessível para compartilhar o progresso de {studentName} com a família.
           </p>
         </DialogHeader>
+
+        <DemoDataNotice
+          subject="O progresso, os objetivos, as conquistas, as datas e os próximos passos dos slides"
+          detail="Só o nome vem da ficha: os slides não usam os registros do estudante."
+        />
 
         <div className="space-y-6">
           {/* Configurações */}

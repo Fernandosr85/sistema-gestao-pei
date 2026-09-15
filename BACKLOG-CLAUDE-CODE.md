@@ -13,55 +13,65 @@ Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementa
 Defeitos cuja gravidade vai além do controle em que apareceram. É material para o artigo:
 cada item registra o que acontecia, como foi confirmado e o que ainda está aberto.
 
-### 1. Vazamento de dados de saúde entre estudantes (Etapa 2, commit `2fb404d`)
+### 1. Vazamento de dados de saúde entre estudantes (Etapa 2)
 
 **Qualificação:** o defeito não era um formulário mal inicializado, e sim a exibição dos
 dados de saúde de uma estudante na ficha de outros. Os dados eram fictícios. Com dados
 reais, seria incidente de segurança com dado pessoal sensível (LGPD, art. 5º, II) de
 crianças e adolescentes (art. 14), a ser comunicado à ANPD e aos titulares (art. 48).
 
-**Onde:**
-- **`EditarCadastroDialog`:** todos os campos eram `defaultValue` fixo de Ana Carolina
-  Souza. O título mostrava o nome do estudante aberto, mas os campos traziam os dados
-  dela: nome, nascimento, matrícula MAT-2024-003, médico responsável ("Dra. Ana Paulita")
-  e CID-10 F84.0.
-- **`StudentDetail`, card "Perfil de Saúde":** mostrava "Medicina: Ana Paulita",
-  "Restrições/Alergias: Nenhuma" e "Último Laudo: 01/02/2024" para todos os estudantes.
-  Essa segunda tela não constava de nenhum inventário, nem no do Codex nem no da Etapa 2;
-  apareceu durante a correção do diálogo.
+**Onde:** o mesmo padrão apareceu em sete telas: texto fixo de uma estudante fictícia, Ana
+Carolina Souza, exibido sob o nome de qualquer estudante. Cinco dessas telas mostravam dado
+de saúde.
 
-**Como foi confirmado:** no navegador, antes da correção, abri o diálogo em `/alunos/1`
-(Maria Silva Santos) e em `/alunos/2` (Pedro Oliveira Costa). Nos dois casos, ele trouxe
-matrícula, médico e CID de Ana Carolina. Depois da correção, cada diálogo abre com os dados
-do próprio estudante, sem nenhum campo de saúde fora do modelo.
+| Tela | O que aparecia para qualquer estudante | Dado de saúde | Aviso de exemplo |
+|---|---|---|---|
+| `EditarCadastroDialog` | nome, nascimento, matrícula, médico responsável ("Dra. Ana Paulita") e CID-10 F84.0 nos campos | sim | não |
+| `StudentDetail`, card "Perfil de Saúde" | "Medicina: Ana Paulita", "Restrições/Alergias: Nenhuma" e "Último Laudo: 01/02/2024" | sim | não |
+| `StudentHistoryDialog` | "Laudo médico atualizado (TEA Nível 1)" e "Médica: Dra. Ana Paulita", além de matrícula, turma e um evento dela | sim | não |
+| `VerPEIDialog` | diagnóstico "TEA Nível 1 (F84.0)" na identificação do PEI | sim | sim |
+| `AnexosDialog` | os laudos "Laudo_TEA_Atualizado.pdf", da Dra. Ana Paulita, e "Laudo_Neurologico_2023.pdf" | sim | sim |
+| `ObservationDetailDialog` | matrícula, turma e nome da mãe dela em qualquer observação | não | não |
+| `PresentationModeDialog` | turma e uma conquista citando "Ana" | não | não |
 
-**Correção:**
-- **Formulário:** passou a ser controlado a partir do estudante da ficha, com chave nova a
-  cada abertura.
-- **Campos de saúde:** medicação, alergias, médico e CID saíram do formulário e da ficha,
-  por minimização. O modelo `Student` nunca teve esses campos; eles eram texto fixo na
-  interface.
+O inventário da Etapa 2 só tinha o `EditarCadastroDialog`. O card da ficha apareceu durante a
+correção desse diálogo. As outras cinco telas apareceram numa busca pelo mesmo texto fixo:
+nome da médica, matrícula, CID, turma e nome da estudante.
+
+**Como foi confirmado:** no navegador, antes da correção, abri o Editar Cadastro em
+`/alunos/1` (Maria Silva Santos) e em `/alunos/2` (Pedro Oliveira Costa). Nos dois casos, ele
+trouxe matrícula, médico e CID de Ana Carolina. Depois da correção, cada diálogo abre com os
+dados do próprio estudante, sem nenhum campo de saúde fora do modelo. As outras cinco telas
+foram conferidas no navegador depois do segundo commit de correção.
+
+**Correção, em dois commits:**
+- **`2fb404d`:**
+  - o Editar Cadastro passou a ser controlado a partir do estudante da ficha, com chave nova
+    a cada abertura;
+  - medicação, alergias, médico e CID saíram do formulário e da ficha, por minimização. O
+    modelo `Student` nunca teve esses campos; eles eram texto fixo na interface.
+- **`Fix:` que fecha a Etapa 2:**
+  - **Histórico:** todo o conteúdo fixo saiu. Como não existe modelo de histórico acadêmico,
+    o diálogo diz "Sem histórico registrado para este estudante".
+  - **Ver PEI:** saiu o diagnóstico com CID.
+  - **Anexos:** saíram os dois laudos, e a aba informa que nenhum laudo foi anexado.
+  - **Detalhe da observação:** turma e matrícula passam a vir do estudante da observação.
+    Saíram o nome da mãe e o nome "Maria" do texto fixo, e o diálogo ganhou aviso de
+    conteúdo de exemplo.
+  - **Apresentação:** saíram a turma e o nome na conquista, e o diálogo ganhou aviso de
+    conteúdo de exemplo.
+
+**Regra adotada:** o aviso de dados fictícios justifica número inventado, mas não justifica
+exibir prontuário de terceiro. Dado de saúde fixo sai mesmo de tela que tem aviso.
 
 A remontagem a cada abertura importa. No teste, com o painel do navegador oculto, a
 animação de saída não terminou e o conteúdo fechado continuou montado. O diálogo reabriu
 com o estado anterior. Um formulário que depende da desmontagem para limpar o estado pode
 exibir dados de uma abertura na seguinte.
 
-**Ainda aberto:** o mesmo padrão continua em telas ilustrativas, com texto fixo de Ana
-Carolina exibido sob o nome de qualquer estudante:
-- **Histórico, laudo:** `StudentHistoryDialog.tsx:74-75` mostra "Laudo médico atualizado
-  (TEA Nível 1)" e "Médica: Dra. Ana Paulita" no histórico de todos. É dado de saúde, sem
-  aviso de exemplo.
-- **Histórico, demais eventos:** `StudentHistoryDialog.tsx:91` e `:142` mostram a
-  participação dela na feira de ciências, a matrícula e a turma.
-- **Ver PEI:** `VerPEIDialog.tsx:67` mostra o diagnóstico com CID (F84.0), sob aviso de PEI
-  de exemplo.
-- **Detalhe da observação:** `ObservationDetailDialog.tsx:40` e `:393` mostram a matrícula,
-  a turma e o nome da mãe dela em qualquer observação.
-- **Apresentação:** `PresentationModeDialog.tsx:57` e `:127` mostram a turma e uma conquista
-  dela na apresentação de qualquer estudante.
-- **Anexos:** `AnexosDialog.tsx:26` lista um laudo assinado pela mesma médica, sob aviso de
-  exemplo.
+**Ainda aberto:** Ver PEI, Detalhe da observação e Apresentação continuam com conteúdo fixo de
+exemplo, agora com aviso e sem dado de saúde nem identificação de outra estudante. A troca
+por dados reais está na Etapa 4 e, no caso do PEI, na Etapa 9.
 
 ---
 
@@ -238,12 +248,13 @@ estudante ou como se tivesse sido medido.
     composição familiar são inventados;
   - a linha do tempo (ingresso, primeiro PEI, revisões), a "Última atualização" e o número
     de anexos (21) são fixos.
-- **Histórico, Desempenho e Apresentação:** conteúdo e números fixos, iguais para qualquer
-  estudante. Os dados de saúde que aparecem nessas telas estão em Achados, item 1.
+- **Desempenho e Apresentação:** conteúdo e números fixos, iguais para qualquer estudante.
+  A Apresentação tem aviso de exemplo; o Desempenho, não. O Histórico deixou de mostrar
+  exemplo e diz que não há histórico registrado (Achados, item 1).
 - **Detalhe da observação** (`ObservationDetailDialog`): o detalhamento, a comparação
   "+200%", as transições, as notificações "Visualizado", os metadados e a frase "têm se
-  mostrado eficazes" são texto fixo sobre "Maria", exibido em qualquer observação
-  estruturada.
+  mostrado eficazes" são texto fixo, exibido em qualquer observação estruturada, agora com
+  aviso de exemplo.
 - **Dashboard:** as tendências +12% e +8% aparecem sem `DemoDataNotice`, os "12 relatórios
   pendentes" são fixos, e o card "Observações: Este mês" conta todas as observações.
 - **Agenda:** o card "Este Mês" conta todos os atendimentos e mostra "+12% vs. mês
@@ -298,6 +309,8 @@ telas diferentes.
     - `VisaoGeralContent.tsx:37` usa a chave de objeto `MÉDIA`, com acento;
     - `VisaoGeralContent` e `MeuPerfilDialog` põem `Badge` (um `<div>`) dentro de `<p>`, e o
       React acusa aninhamento inválido;
+    - `ObservationDetailDialog` formata a data com `new Date('AAAA-MM-DD')`, que é UTC: a
+      observação de 19/11/2025 aparece como 18/11/2025 no Brasil;
     - em `AgendaAtendimentos`, as visões de semana e de dia passam `view` ao
       `react-big-calendar` sem `onView`, e o console avisa;
     - `App.tsx`, `StudentDetail`, `ObservationDetailDialog`, `StudentHistoryDialog`,

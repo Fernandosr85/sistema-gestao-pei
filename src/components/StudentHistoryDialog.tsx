@@ -1,158 +1,5 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  FileText, Award, Users, Activity,
-  Image, Video, Download, School, FileCheck, Stethoscope 
-} from 'lucide-react';
-
-const timelineEvents = [
-  {
-    month: 'NOVEMBRO',
-    year: '2024',
-    current: true,
-    events: [
-      {
-        date: '21/11',
-        type: 'observation',
-        icon: FileText,
-        color: 'text-primary',
-        bgColor: 'bg-primary/10',
-        title: 'Observação: Ótima participação em atividade',
-        description: 'em grupo de ciências',
-      },
-      {
-        date: '15/11',
-        type: 'assessment',
-        icon: FileCheck,
-        color: 'text-success',
-        bgColor: 'bg-success/10',
-        title: 'Avaliação trimestral do PEI realizada',
-        description: 'Progresso geral: 85%',
-      },
-      {
-        date: '05/11',
-        type: 'achievement',
-        icon: Award,
-        color: 'text-warning',
-        bgColor: 'bg-warning/10',
-        title: 'Conquista desbloqueada: Leitura independente!',
-        attachments: '📷 2 fotos, 🎥 1 vídeo',
-      },
-    ],
-  },
-  {
-    month: 'OUTUBRO',
-    year: '2024',
-    current: false,
-    events: [
-      {
-        date: '30/10',
-        type: 'pei',
-        icon: FileText,
-        color: 'text-info',
-        bgColor: 'bg-info/10',
-        title: 'PEI revisado e atualizado',
-        description: 'Novos objetivos adicionados',
-      },
-      {
-        date: '18/10',
-        type: 'meeting',
-        icon: Users,
-        color: 'text-accent',
-        bgColor: 'bg-accent/10',
-        title: 'Reunião com família realizada',
-        description: 'Pauta: Progressos em matemática\nParticipantes: Mãe, Prof. Marina, Coord.',
-      },
-      {
-        date: '10/10',
-        type: 'medical',
-        icon: Stethoscope,
-        color: 'text-secondary',
-        bgColor: 'bg-secondary/10',
-        title: 'Laudo médico atualizado (TEA Nível 1)',
-        description: 'Médica: Dra. Ana Paulita',
-      },
-    ],
-  },
-  {
-    month: 'SETEMBRO',
-    year: '2024',
-    current: false,
-    events: [
-      {
-        date: '25/09',
-        type: 'event',
-        icon: Activity,
-        color: 'text-success',
-        bgColor: 'bg-success/10',
-        title: 'Evento: Feira de Ciências',
-        description: 'Ana participou com projeto sobre plantas',
-        attachments: '📷 Ver fotos',
-      },
-      {
-        date: '20/09',
-        type: 'assessment',
-        icon: FileCheck,
-        color: 'text-success',
-        bgColor: 'bg-success/10',
-        title: 'Avaliação de Matemática adaptada',
-        description: 'Nota: 8.5/10 ✅',
-      },
-      {
-        date: '05/09',
-        type: 'observation',
-        icon: FileText,
-        color: 'text-primary',
-        bgColor: 'bg-primary/10',
-        title: 'Início do uso da prancha de CAA',
-        description: 'Primeiras tentativas com sucesso',
-      },
-    ],
-  },
-  {
-    month: 'DEZEMBRO',
-    year: '2023',
-    current: false,
-    events: [
-      {
-        date: '15/12',
-        type: 'pei',
-        icon: FileText,
-        color: 'text-info',
-        bgColor: 'bg-info/10',
-        title: 'Primeiro PEI elaborado',
-        description: '15 objetivos definidos',
-      },
-    ],
-  },
-  {
-    month: 'MARÇO',
-    year: '2023',
-    current: false,
-    events: [
-      {
-        date: '05/03',
-        type: 'enrollment',
-        icon: School,
-        color: 'text-primary',
-        bgColor: 'bg-primary/10',
-        title: 'Ingresso na instituição',
-        description: 'Matrícula: MAT-2024-003\nTurma: 2º Ano EF - Turma C',
-      },
-    ],
-  },
-];
-
-const stats = {
-  total: 127,
-  observations: 68,
-  assessments: 24,
-  meetings: 12,
-  documents: 15,
-  achievements: 8,
-};
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { History } from 'lucide-react';
 
 interface StudentHistoryDialogProps {
   open: boolean;
@@ -160,116 +7,27 @@ interface StudentHistoryDialogProps {
   studentName: string;
 }
 
+/**
+ * There is no academic history model yet. The fixed timeline this dialog used to show belonged
+ * to one fictitious student, medical report and doctor included, and appeared under every
+ * student's name, so the dialog states that nothing is recorded instead of showing an example.
+ */
 export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: StudentHistoryDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl">HISTÓRICO ACADÊMICO - {studentName.toUpperCase()}</DialogTitle>
-          <p id="historico-acoes-indisponiveis" className="text-xs text-muted-foreground">
-            Anexos e exportação do histórico não estão disponíveis neste protótipo.
-          </p>
+          <DialogDescription>Sem histórico registrado para este estudante.</DialogDescription>
         </DialogHeader>
 
-        {/* Timeline */}
-        <div className="space-y-8">
-          <h3 className="text-lg font-semibold border-b pb-2">LINHA DO TEMPO COMPLETA</h3>
-          
-          {timelineEvents.map((period, periodIdx) => (
-            <div key={periodIdx} className="space-y-4">
-              {/* Ano */}
-              {(periodIdx === 0 || timelineEvents[periodIdx - 1].year !== period.year) && (
-                <div className="text-2xl font-bold text-muted-foreground">{period.year}</div>
-              )}
-
-              {/* Mês */}
-              <div className="relative">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-3 h-3 rounded-full ${period.current ? 'bg-destructive' : 'bg-warning'}`} />
-                  <h4 className="text-lg font-semibold">{period.month} {period.current && '(Atual)'}</h4>
-                </div>
-
-                {/* Eventos */}
-                <div className="ml-6 border-l-2 border-border pl-6 space-y-4">
-                  {period.events.map((event, eventIdx) => (
-                    <div key={eventIdx} className="relative">
-                      <div className="absolute -left-[29px] top-2">
-                        <div className={`w-4 h-4 rounded-full border-2 border-background ${event.bgColor}`} />
-                      </div>
-                      
-                      <Card className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-lg ${event.bgColor}`}>
-                              <event.icon className={`h-5 w-5 ${event.color}`} />
-                            </div>
-                            <div className="flex-1">
-                              <div className="mb-1">
-                                <span className="text-xs font-semibold text-muted-foreground">{event.date}</span>
-                              </div>
-                              <h5 className="font-semibold text-sm mb-1">{event.title}</h5>
-                              {event.description && (
-                                <p className="text-xs text-muted-foreground whitespace-pre-line">
-                                  {event.description}
-                                </p>
-                              )}
-                              {event.attachments && (
-                                <div className="mt-2">
-                                  <Button variant="outline" size="sm" className="h-7 text-xs" disabled aria-describedby="historico-acoes-indisponiveis">
-                                    {event.attachments}
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Estatísticas */}
-        <Card className="bg-muted/50">
-          <CardContent className="pt-6">
-            <h4 className="font-semibold mb-4">📊 ESTATÍSTICAS DO HISTÓRICO</h4>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-4 text-center text-sm">
-              <div>
-                <div className="text-2xl font-bold text-primary">{stats.total}</div>
-                <div className="text-xs text-muted-foreground">Total de registros</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-primary">{stats.observations}</div>
-                <div className="text-xs text-muted-foreground">Observações</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-success">{stats.assessments}</div>
-                <div className="text-xs text-muted-foreground">Avaliações</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-accent">{stats.meetings}</div>
-                <div className="text-xs text-muted-foreground">Reuniões</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-info">{stats.documents}</div>
-                <div className="text-xs text-muted-foreground">Documentos</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-warning">{stats.achievements}</div>
-                <div className="text-xs text-muted-foreground">Conquistas</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-center">
-          <Button variant="outline" disabled aria-describedby="historico-acoes-indisponiveis">
-            <Download className="h-4 w-4 mr-2" />
-            Exportar histórico completo
-          </Button>
+        <div className="flex flex-col items-center gap-3 py-6 text-center text-sm text-muted-foreground">
+          <History className="h-10 w-10 opacity-50" aria-hidden="true" />
+          <p>
+            O sistema ainda não registra eventos de histórico acadêmico, como ingresso, revisões de PEI e
+            progressões. As observações e as avaliações do estudante aparecem na ficha, e o relatório
+            imprimível do Dashboard reúne observações, atendimentos e avaliações.
+          </p>
         </div>
       </DialogContent>
     </Dialog>
