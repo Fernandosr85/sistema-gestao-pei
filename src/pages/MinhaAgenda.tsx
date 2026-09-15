@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, Users, Plus, FileText, ChevronLeft, ChevronRight, CheckCircle2, RefreshCw } from 'lucide-react';
-import { useCalendarSync } from '@/hooks/useCalendarSync';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Calendar as CalendarIcon, Clock, MapPin, Users, Plus, FileText, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { CALENDAR_INTEGRATION_UNAVAILABLE, useCalendarSync } from '@/hooks/useCalendarSync';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,13 +13,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
+import { DEMO_USER_NAME } from '@/config/institution';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 const MinhaAgenda = () => {
   const [currentMonth, setCurrentMonth] = useState('Novembro 2024');
   const [selectedView, setSelectedView] = useState('semana');
   const [isNewEventDialogOpen, setIsNewEventDialogOpen] = useState(false);
   
-  const { connections, syncStatus, triggerSync } = useCalendarSync();
+  const { connections } = useCalendarSync();
 
   const weekEvents = {
     seg: [
@@ -59,11 +59,11 @@ const MinhaAgenda = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">📅 Minha Agenda</h1>
-          <p className="text-muted-foreground">Profª. Patrícia Cecy</p>
+          <p className="text-muted-foreground">{DEMO_USER_NAME}</p>
         </div>
         <Dialog open={isNewEventDialogOpen} onOpenChange={setIsNewEventDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2" disabled aria-describedby="agenda-exemplo">
               <Plus className="h-4 w-4" />
               Adicionar Evento
             </Button>
@@ -210,6 +210,13 @@ const MinhaAgenda = () => {
         </Dialog>
       </div>
 
+      <DemoDataNotice
+        id="agenda-exemplo"
+        className="mb-6"
+        subject="Os eventos, tarefas, horários e alertas desta agenda"
+        detail="Esta agenda é um exemplo fixo: não é possível adicionar eventos, marcar tarefas nem navegar entre semanas ou dias."
+      />
+
       <Tabs value={selectedView} onValueChange={setSelectedView}>
         <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="mes">📅 Mês</TabsTrigger>
@@ -221,11 +228,11 @@ const MinhaAgenda = () => {
         {/* VISUALIZAÇÃO SEMANAL */}
         <TabsContent value="semana" className="space-y-6">
           <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" disabled aria-label="Semana anterior" aria-describedby="agenda-exemplo">
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <h2 className="text-xl font-semibold">{currentMonth}: 25/11 a 01/12/2024</h2>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" disabled aria-label="Próxima semana" aria-describedby="agenda-exemplo">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -301,8 +308,8 @@ const MinhaAgenda = () => {
                   <CardDescription>Detalhes do dia</CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon"><ChevronLeft className="h-4 w-4" /></Button>
-                  <Button variant="outline" size="icon"><ChevronRight className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" disabled aria-label="Dia anterior" aria-describedby="agenda-exemplo"><ChevronLeft className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" disabled aria-label="Próximo dia" aria-describedby="agenda-exemplo"><ChevronRight className="h-4 w-4" /></Button>
                 </div>
               </div>
             </CardHeader>
@@ -319,8 +326,8 @@ const MinhaAgenda = () => {
                   <p className="text-sm text-muted-foreground">Alunos PEI: Maria, Pedro, João (3)</p>
                   <p className="text-sm text-muted-foreground">Conteúdo: Matemática - Adição até 20</p>
                   <div className="flex gap-2 mt-2">
-                    <Button variant="link" size="sm" className="p-0 h-auto">Ver planejamento</Button>
-                    <Button variant="link" size="sm" className="p-0 h-auto">Materiais</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="agenda-exemplo">Ver planejamento</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="agenda-exemplo">Materiais</Button>
                   </div>
                 </div>
 
@@ -345,7 +352,7 @@ const MinhaAgenda = () => {
                     <div className="space-y-2">
                       {tarefasDia.map((tarefa) => (
                         <div key={tarefa.id} className="flex items-center gap-2">
-                          <Checkbox id={`tarefa-${tarefa.id}`} checked={tarefa.concluida} />
+                          <Checkbox id={`tarefa-${tarefa.id}`} checked={tarefa.concluida} disabled aria-describedby="agenda-exemplo" />
                           <label htmlFor={`tarefa-${tarefa.id}`} className="text-sm flex-1">
                             {tarefa.title}
                             {tarefa.vence && (
@@ -357,7 +364,7 @@ const MinhaAgenda = () => {
                         </div>
                       ))}
                     </div>
-                    <Button variant="outline" size="sm" className="mt-3">Iniciar bloco de tarefas</Button>
+                    <Button variant="outline" size="sm" className="mt-3" disabled aria-describedby="agenda-exemplo">Iniciar bloco de tarefas</Button>
                   </div>
                 </div>
               </div>
@@ -388,90 +395,27 @@ const MinhaAgenda = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <RefreshCw className={`h-5 w-5 ${syncStatus.inProgress ? 'animate-spin' : ''}`} />
+                <RefreshCw className="h-5 w-5" aria-hidden="true" />
                 Integrações e Sincronização
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Google Calendar Status */}
-              {connections.google.connected && (
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <Badge variant="default" className="bg-green-500">Sincronizado</Badge>
-                    </div>
-                    <p className="text-sm font-medium">Google Calendar</p>
-                    <p className="text-xs text-muted-foreground">
-                      {connections.google.email}
-                    </p>
-                    {connections.google.lastSync && (
-                      <p className="text-xs text-muted-foreground">
-                        Última sync: {formatDistanceToNow(new Date(connections.google.lastSync), { 
-                          addSuffix: true, 
-                          locale: ptBR 
-                        })}
-                      </p>
-                    )}
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={triggerSync}
-                    disabled={syncStatus.inProgress}
-                    className="gap-2"
-                  >
-                    <RefreshCw className={`h-3 w-3 ${syncStatus.inProgress ? 'animate-spin' : ''}`} />
-                    Sincronizar
-                  </Button>
-                </div>
-              )}
-
-              {/* Outlook Status */}
-              {connections.outlook.connected && (
-                <div className="flex items-center justify-between pt-3 border-t">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
-                      <Badge variant="default" className="bg-blue-500">Sincronizado</Badge>
-                    </div>
-                    <p className="text-sm font-medium">Outlook / Microsoft 365</p>
-                    <p className="text-xs text-muted-foreground">
-                      {connections.outlook.email}
-                    </p>
-                    {connections.outlook.lastSync && (
-                      <p className="text-xs text-muted-foreground">
-                        Última sync: {formatDistanceToNow(new Date(connections.outlook.lastSync), { 
-                          addSuffix: true, 
-                          locale: ptBR 
-                        })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Sync Status */}
-              {syncStatus.inProgress && (
-                <div className="flex items-center gap-2 text-blue-600 text-sm pt-3 border-t">
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>Sincronizando calendários...</span>
-                </div>
-              )}
-
-              {/* Reminder Settings */}
-              <div className="pt-3 border-t">
-                <p className="text-sm font-medium mb-2">📧 Lembretes configurados:</p>
-                <div className="space-y-1 text-xs text-muted-foreground">
-                  <p>• Email: 1 dia antes</p>
-                  <p>• Push: 30 min antes</p>
-                  <p>• SMS: Apenas urgentes</p>
-                </div>
+              <div className="space-y-1 text-sm">
+                <p>Google Calendar: {connections.google.connected ? 'conectado' : 'não conectado'}</p>
+                <p>Outlook / Microsoft 365: {connections.outlook.connected ? 'conectado' : 'não conectado'}</p>
               </div>
-
-              {/* Settings Link */}
-              <Button variant="link" className="p-0 h-auto text-sm">
-                ⚙️ Configurar integrações e sincronização
+              <p id="agenda-integracoes-indisponiveis" className="text-sm text-muted-foreground">
+                {CALENDAR_INTEGRATION_UNAVAILABLE}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled
+                aria-describedby="agenda-integracoes-indisponiveis"
+                className="gap-2"
+              >
+                <RefreshCw className="h-3 w-3" aria-hidden="true" />
+                Sincronizar
               </Button>
             </CardContent>
           </Card>

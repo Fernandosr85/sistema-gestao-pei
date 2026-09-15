@@ -21,7 +21,7 @@ export const mockStudents: Student[] = [
       email: 'responsavel1@example.org',
     },
     comunicacao: {
-      compreensaoFala: 'sim-comandos-simples',
+      compreensaoFala: 'Compreende comandos simples',
       palavrasConhecidas: 'mamãe, papai, água, comer, banho, dormir, escola, brincar',
     },
     comportamento: {

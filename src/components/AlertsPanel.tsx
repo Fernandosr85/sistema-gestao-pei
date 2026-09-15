@@ -1,6 +1,5 @@
-import { AlertTriangle, Clock, Calendar, User, Bell, FileText, Phone, ClipboardCheck, GraduationCap } from 'lucide-react';
+import { AlertTriangle, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -10,7 +9,6 @@ interface Alert {
   title: string;
   description: string;
   details: string[];
-  actions: { label: string; icon: React.ReactNode }[];
 }
 
 const AlertsPanel = () => {
@@ -25,11 +23,6 @@ const AlertsPanel = () => {
         '📅 Última revisão: 15/07/2024',
         '👤 Responsável: Prof. Ana Santos'
       ],
-      actions: [
-        { label: 'Agendar Revisão Urgente', icon: <Calendar className="h-4 w-4" /> },
-        { label: 'Ver PEI', icon: <FileText className="h-4 w-4" /> },
-        { label: 'Notificar', icon: <Bell className="h-4 w-4" /> }
-      ]
     },
     {
       id: '2',
@@ -41,11 +34,6 @@ const AlertsPanel = () => {
         '📅 Última presença: 18/11/2024',
         '⚠️ Risco de retenção por falta'
       ],
-      actions: [
-        { label: 'Contatar Família', icon: <Phone className="h-4 w-4" /> },
-        { label: 'Ver Histórico', icon: <FileText className="h-4 w-4" /> },
-        { label: 'Plano de Ação', icon: <ClipboardCheck className="h-4 w-4" /> }
-      ]
     },
     {
       id: '3',
@@ -57,10 +45,6 @@ const AlertsPanel = () => {
         '📈 Última evolução: Set/2024',
         '💡 Sugestão: Revisão de estratégias'
       ],
-      actions: [
-        { label: 'Revisar Estratégias', icon: <ClipboardCheck className="h-4 w-4" /> },
-        { label: 'Consultar Especialista', icon: <User className="h-4 w-4" /> }
-      ]
     },
     {
       id: '4',
@@ -72,10 +56,6 @@ const AlertsPanel = () => {
         '🔴 Apoio disponível: 1 (insuficiente)',
         '📊 Recomendado: 2 profissionais'
       ],
-      actions: [
-        { label: 'Solicitar Contratação', icon: <User className="h-4 w-4" /> },
-        { label: 'Redistribuir Equipe', icon: <ClipboardCheck className="h-4 w-4" /> }
-      ]
     },
     {
       id: '5',
@@ -87,11 +67,6 @@ const AlertsPanel = () => {
         '👥 Vagas: 30 (18 disponíveis)',
         '🎓 Certificação: 8 horas'
       ],
-      actions: [
-        { label: 'Inscrever-se', icon: <GraduationCap className="h-4 w-4" /> },
-        { label: 'Ver Programa', icon: <FileText className="h-4 w-4" /> },
-        { label: 'Compartilhar', icon: <Bell className="h-4 w-4" /> }
-      ]
     }
   ];
 
@@ -134,14 +109,6 @@ const AlertsPanel = () => {
               <div className="space-y-1 text-sm text-muted-foreground mb-3">
                 {alert.details.map((detail, idx) => (
                   <div key={idx}>{detail}</div>
-                ))}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {alert.actions.map((action, idx) => (
-                  <Button key={idx} variant="outline" size="sm">
-                    {action.icon}
-                    <span className="ml-2">{action.label}</span>
-                  </Button>
                 ))}
               </div>
             </div>
@@ -192,10 +159,6 @@ const AlertsPanel = () => {
             {infoAlerts.map(renderAlert)}
           </TabsContent>
         </Tabs>
-
-        <Button variant="outline" className="w-full mt-4">
-          Ver Todos os Alertas (25)
-        </Button>
       </CardContent>
     </Card>
   );

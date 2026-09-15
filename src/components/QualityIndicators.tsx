@@ -1,7 +1,6 @@
 import { Star, FileText, GraduationCap, Heart, Users, Clock, TrendingUp, TrendingDown } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -15,7 +14,6 @@ interface KPI {
   status: 'success' | 'warning' | 'error';
   statusText: string;
   actionText: string;
-  actionLink: string;
 }
 
 const QualityIndicators = () => {
@@ -30,7 +28,6 @@ const QualityIndicators = () => {
       status: 'warning',
       statusText: '🟡 Atenção - 7% abaixo da meta',
       actionText: '12 PEIs aguardando revisão urgente',
-      actionLink: 'Ver PEIs pendentes →'
     },
     {
       id: '2',
@@ -42,7 +39,6 @@ const QualityIndicators = () => {
       status: 'success',
       statusText: '✅ Acima da meta',
       actionText: '37 alunos alcançaram todos objetivos',
-      actionLink: 'Ver detalhes →'
     },
     {
       id: '3',
@@ -54,7 +50,6 @@ const QualityIndicators = () => {
       status: 'success',
       statusText: '✅ Superando meta em 30%',
       actionText: 'Participação: 98% dos professores',
-      actionLink: 'Ver certificações →'
     },
     {
       id: '4',
@@ -66,7 +61,6 @@ const QualityIndicators = () => {
       status: 'success',
       statusText: '✅ Excelente',
       actionText: 'NPS: 78 (Promotores)',
-      actionLink: 'Ver feedbacks →'
     },
     {
       id: '5',
@@ -78,7 +72,6 @@ const QualityIndicators = () => {
       status: 'warning',
       statusText: '🟡 Abaixo da meta',
       actionText: 'Ação: Implementar programa de sensibilização',
-      actionLink: 'Ver plano de ação →'
     },
     {
       id: '6',
@@ -90,7 +83,6 @@ const QualityIndicators = () => {
       status: 'success',
       statusText: '✅ Excelente tempo de resposta',
       actionText: '',
-      actionLink: 'Ver demandas →'
     }
   ];
 
@@ -151,10 +143,6 @@ const QualityIndicators = () => {
               </div>
             )}
           </div>
-
-          <Button variant="link" size="sm" className="p-0 h-auto text-primary">
-            {kpi.actionLink}
-          </Button>
         </CardContent>
       </Card>
     );
@@ -212,10 +200,6 @@ const QualityIndicators = () => {
             </div>
           </TabsContent>
         </Tabs>
-
-        <Button className="w-full" variant="outline">
-          📥 Exportar Relatório de Indicadores
-        </Button>
       </CardContent>
     </Card>
   );

@@ -126,11 +126,6 @@ const ExpandedComplexityCard = ({
                 )}
                 {item.comAdaptacoes && <div>├─ Com adaptações: {item.comAdaptacoes}</div>}
                 {item.usandoCAA !== undefined && <div>├─ Usando CAA: {item.usandoCAA} alunos</div>}
-                <div>
-                  <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary">
-                    └─ [Ver detalhes →]
-                  </Button>
-                </div>
               </CollapsibleContent>
             </div>
           </Collapsible>
@@ -159,11 +154,6 @@ const ExpandedComplexityCard = ({
                 <div>├─ Abaixo da meta: {item.abaixoMeta} alunos</div>
                 <div>├─ Na meta: {item.naMeta} alunos</div>
                 <div>├─ Acima da meta: {item.acimaMeta} alunos</div>
-                <div>
-                  <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary">
-                    └─ [Plano de ação →]
-                  </Button>
-                </div>
               </CollapsibleContent>
             </div>
           </Collapsible>
@@ -209,19 +199,10 @@ const ExpandedComplexityCard = ({
                     <div>├─ Crises ocasionais: {item.crisesOcasionais} alunos</div>
                   </>
                 )}
-                <div>
-                  <Button variant="link" size="sm" className="h-auto p-0 text-xs text-primary">
-                    └─ [{type === 'social' && item.label === 'Autorregulação' ? 'Protocolo de crise' : 'Estratégias'} →]
-                  </Button>
-                </div>
               </CollapsibleContent>
             </div>
           </Collapsible>
         ))}
-
-        <Button variant="outline" size="sm" className="w-full mt-4">
-          + Ver {type === 'health' ? 'todos diagnósticos' : type === 'educational' ? 'mais componentes' : 'mais habilidades'}
-        </Button>
 
         <div className="mt-4 pt-4 border-t">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">

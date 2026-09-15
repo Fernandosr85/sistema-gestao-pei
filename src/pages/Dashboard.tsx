@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
+import { isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate, todayLocalISO, toLocalISODate } from '@/lib/date';
 import { useDemoStore } from '@/store/useDemoStore';
 
@@ -23,7 +24,7 @@ const Dashboard = () => {
   const now = new Date();
   const sevenDaysAhead = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
   const upcomingAppointments = state.appointments
-    .filter((appointment) => appointment.status === 'agendado' && appointment.data >= today)
+    .filter((appointment) => isOpenAppointment(appointment.status) && appointment.data >= today)
     .sort((a, b) => `${a.data} ${a.horarioInicio}`.localeCompare(`${b.data} ${b.horarioInicio}`));
   const appointmentsNextSevenDays = upcomingAppointments.filter((appointment) => appointment.data <= sevenDaysAhead).length;
 

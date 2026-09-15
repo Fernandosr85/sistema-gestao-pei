@@ -11,4 +11,6 @@ export const createSeedState = (): DemoState =>
     assessments: mockAssessments,
     resources: mockResources,
     reviews: mockReviews,
+    // Favorites belong to the browser, so there are none to seed.
+    favorites: [],
   });

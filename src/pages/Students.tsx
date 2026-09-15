@@ -38,17 +38,22 @@ const Students = () => {
             Gerenciar e acompanhar o desenvolvimento dos alunos
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Exportar
-          </Button>
-          <Link to="/alunos/novo">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Aluno
+        <div className="flex flex-col items-start gap-1 md:items-end">
+          <div className="flex gap-2">
+            <Button variant="outline" disabled aria-describedby="exportar-alunos-indisponivel">
+              <Download className="mr-2 h-4 w-4" />
+              Exportar
             </Button>
-          </Link>
+            <Link to="/alunos/novo">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Aluno
+              </Button>
+            </Link>
+          </div>
+          <p id="exportar-alunos-indisponivel" className="text-xs text-muted-foreground">
+            Exportação não implementada neste protótipo.
+          </p>
         </div>
       </div>
 

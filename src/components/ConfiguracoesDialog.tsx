@@ -6,12 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { CalendarIntegrations } from '@/components/CalendarIntegrations';
+import { DEMO_USER_NAME } from '@/config/institution';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface ConfiguracoesDialogProps {
   open: boolean;
@@ -27,9 +28,15 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Settings className="h-6 w-6" />
-            Configurações - Profª. Patrícia Cecy
+            Configurações - {DEMO_USER_NAME}
           </DialogTitle>
         </DialogHeader>
+
+        <DemoDataNotice
+          id="configuracoes-ilustrativas"
+          subject="As preferências desta tela"
+          detail="Nenhuma delas é salva nem aplicada ao sistema, e nenhuma notificação é enviada; os campos estão desabilitados."
+        />
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-6">
@@ -61,26 +68,27 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
           {/* NOTIFICAÇÕES */}
           <TabsContent value="notificacoes" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Notificações por Email</CardTitle>
-                <CardDescription>Enviar para: professor.demo@example.org</CardDescription>
+                <CardDescription>Nenhum e-mail é enviado neste protótipo.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email1" defaultChecked />
+                  <Checkbox id="email1" />
                   <label htmlFor="email1" className="text-sm">Resumo diário (às 18h)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email2" defaultChecked />
+                  <Checkbox id="email2" />
                   <label htmlFor="email2" className="text-sm">Alertas de prazos (3 dias antes)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email3" defaultChecked />
+                  <Checkbox id="email3" />
                   <label htmlFor="email3" className="text-sm">Mensagens de famílias</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email4" defaultChecked />
+                  <Checkbox id="email4" />
                   <label htmlFor="email4" className="text-sm">Novos comentários em observações</label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -94,7 +102,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
                 <div className="pt-4">
                   <Label>Frequência de resumos:</Label>
-                  <RadioGroup defaultValue="diario" className="mt-2">
+                  <RadioGroup defaultValue="nunca" className="mt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="diario" id="freq1" />
                       <label htmlFor="freq1" className="text-sm">Diário</label>
@@ -118,19 +126,19 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push1" defaultChecked />
+                  <Checkbox id="push1" />
                   <label htmlFor="push1" className="text-sm">Mensagens urgentes de famílias</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push2" defaultChecked />
+                  <Checkbox id="push2" />
                   <label htmlFor="push2" className="text-sm">Alertas de crises (alunos)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push3" defaultChecked />
+                  <Checkbox id="push3" />
                   <label htmlFor="push3" className="text-sm">Lembretes de reuniões (30 min antes)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push4" defaultChecked />
+                  <Checkbox id="push4" />
                   <label htmlFor="push4" className="text-sm">Tarefas com vencimento hoje</label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -140,7 +148,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
                 <div className="pt-4 space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="dnd" defaultChecked />
+                    <Checkbox id="dnd" />
                     <label htmlFor="dnd" className="text-sm font-medium">Ativar Não Perturbe em horários específicos</label>
                   </div>
                   <div className="ml-6 space-y-2">
@@ -151,7 +159,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                       <Input type="time" defaultValue="07:00" className="w-32" />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="dnd-weekend" defaultChecked />
+                      <Checkbox id="dnd-weekend" />
                       <label htmlFor="dnd-weekend" className="text-sm">Sábados e Domingos</label>
                     </div>
                   </div>
@@ -165,23 +173,21 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="sys1" defaultChecked />
-                  <label htmlFor="sys1" className="text-sm">Mostrar badge com contador no ícone 🔔</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="sys2" defaultChecked />
+                  <Checkbox id="sys2" />
                   <label htmlFor="sys2" className="text-sm">Som ao receber notificação</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="sys3" defaultChecked />
+                  <Checkbox id="sys3" />
                   <label htmlFor="sys3" className="text-sm">Notificações desktop (navegador)</label>
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* APARÊNCIA */}
           <TabsContent value="aparencia" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Tema</CardTitle>
@@ -201,10 +207,6 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                     <label htmlFor="theme3" className="text-sm">Automático (segue sistema)</label>
                   </div>
                 </RadioGroup>
-
-                <div className="mt-6 p-4 border rounded-lg bg-muted">
-                  <p className="text-sm text-muted-foreground">Preview do tema selecionado</p>
-                </div>
               </CardContent>
             </Card>
 
@@ -291,90 +293,22 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* PRIVACIDADE */}
           <TabsContent value="privacidade" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Visibilidade do Perfil</CardTitle>
+                <CardTitle>Privacidade e direitos do titular</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Quem pode ver meu perfil completo?</Label>
-                  <RadioGroup defaultValue="toda-equipe" className="mt-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="toda-equipe" id="vis1" />
-                      <label htmlFor="vis1" className="text-sm">Toda a equipe pedagógica</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="minha-unidade" id="vis2" />
-                      <label htmlFor="vis2" className="text-sm">Apenas minha unidade</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="coordenacao" id="vis3" />
-                      <label htmlFor="vis3" className="text-sm">Apenas coordenação</label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="pt-4">
-                  <Label>Mostrar estatísticas publicamente:</Label>
-                  <div className="space-y-2 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="stat1" defaultChecked />
-                      <label htmlFor="stat1" className="text-sm">Taxa de sucesso</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="stat2" defaultChecked />
-                      <label htmlFor="stat2" className="text-sm">Satisfação das famílias</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="stat3" />
-                      <label htmlFor="stat3" className="text-sm">Número de alunos atendidos</label>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Compartilhamento de Dados</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Participar de análises agregadas da rede:</Label>
-                  <RadioGroup defaultValue="sim" className="mt-2">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="sim" id="share1" />
-                      <label htmlFor="share1" className="text-sm">Sim, permitir uso anonimizado</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="nao" id="share2" />
-                      <label htmlFor="share2" className="text-sm">Não participar (opt-out)</label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Button variant="link" className="p-0">Ver política de privacidade completa</Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>LGPD - Meus Direitos</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="outline" className="w-full justify-start">
-                  📥 Baixar meus dados
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-destructive">
-                  🗑️ Solicitar exclusão de conta
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  📋 Ver histórico de consentimentos
-                </Button>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Este protótipo não tem contas de usuário, autenticação, controle de visibilidade
+                  de perfil nem atendimento aos direitos do titular previstos na LGPD. Antes de
+                  qualquer uso com dados reais, consulte a seção "Antes de usar com dados reais"
+                  do README do projeto.
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
@@ -382,114 +316,11 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
           {/* INTEGRAÇÕES */}
           <TabsContent value="integracoes" className="space-y-6">
             <CalendarIntegrations />
-            <Card>
-              <CardHeader>
-                <CardTitle>Calendário</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="default" className="bg-green-500">Conectado</Badge>
-                      <p className="font-medium">Google Calendar</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Conta: professor.demo@example.org</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">Desconectar</Button>
-                    <Button variant="outline" size="sm">Configurar</Button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">Outlook/Microsoft 365</p>
-                  </div>
-                  <Button variant="outline" size="sm">Conectar</Button>
-                </div>
-
-                <div className="pt-4">
-                  <Label>Sincronizar:</Label>
-                  <div className="space-y-2 mt-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="sync1" defaultChecked />
-                      <label htmlFor="sync1" className="text-sm">Reuniões com famílias</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="sync2" defaultChecked />
-                      <label htmlFor="sync2" className="text-sm">Prazos de PEI</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="sync3" defaultChecked />
-                      <label htmlFor="sync3" className="text-sm">Formações e eventos</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox id="sync4" />
-                      <label htmlFor="sync4" className="text-sm">Todas as tarefas</label>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Email</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="default" className="bg-green-500">Conectado</Badge>
-                      <p className="font-medium">Gmail</p>
-                    </div>
-                    <p className="text-sm text-muted-foreground">professor.demo@example.org</p>
-                  </div>
-                  <Button variant="outline" size="sm">Desconectar</Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Armazenamento</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-3 border rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="default" className="bg-green-500">Conectado</Badge>
-                    <p className="font-medium">Google Drive</p>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">Sincronizar documentos e evidências</p>
-                  <p className="text-sm">Uso: 2.3 GB de 15 GB</p>
-                  <Button variant="outline" size="sm" className="mt-2">Gerenciar</Button>
-                </div>
-
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <p className="font-medium">OneDrive</p>
-                  <Button variant="outline" size="sm">Conectar</Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Comunicação</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div>
-                    <p className="font-medium">WhatsApp Business</p>
-                    <p className="text-sm text-muted-foreground">Receber notificações via WhatsApp</p>
-                  </div>
-                  <Button variant="outline" size="sm">Conectar</Button>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           {/* IDIOMA */}
           <TabsContent value="idioma" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Idioma e Região</CardTitle>
@@ -556,10 +387,12 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* ACESSIBILIDADE */}
           <TabsContent value="acessibilidade" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Visual</CardTitle>
@@ -606,7 +439,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
-                    <Checkbox id="acc5" defaultChecked />
+                    <Checkbox id="acc5" />
                     <label htmlFor="acc5" className="text-sm">Atalhos de teclado habilitados</label>
                   </div>
                   <Button variant="link" className="p-0 h-auto">Ver lista de atalhos</Button>
@@ -643,19 +476,19 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 <div>
                   <Label htmlFor="cache">Cache local</Label>
                   <div className="flex items-center gap-2 mt-2">
-                    <p className="text-sm">Tamanho: 127 MB</p>
                     <Button variant="outline" size="sm">Limpar cache</Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
         </Tabs>
 
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button variant="outline">Restaurar Padrões</Button>
-          <Button>
+          <Button variant="outline" disabled aria-describedby="configuracoes-ilustrativas">Restaurar Padrões</Button>
+          <Button disabled aria-describedby="configuracoes-ilustrativas">
             <Settings className="h-4 w-4 mr-2" />
             Salvar
           </Button>

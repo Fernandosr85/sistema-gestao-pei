@@ -19,7 +19,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import StatCard from '@/components/StatCard';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
-import { appointmentTypes } from '@/lib/appointment';
+import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import { useDemoStore } from '@/store/useDemoStore';
 
@@ -72,7 +72,7 @@ const AgendaAtendimentos = () => {
     const atendimentoDate = new Date(a.data);
     const diffTime = atendimentoDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 7 && a.status === 'agendado';
+    return diffDays >= 0 && diffDays <= 7 && isOpenAppointment(a.status);
   }).length;
 
   const pendentesRegistro = atendimentos.filter(a => 

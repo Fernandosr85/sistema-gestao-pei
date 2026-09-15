@@ -40,7 +40,7 @@ const DemoStorageNotice = () => {
     <div
       role="region"
       aria-label="Aviso sobre o armazenamento dos dados"
-      className="border-b border-[hsl(var(--alert-warning-border))] bg-[hsl(var(--alert-warning-bg))] text-[hsl(var(--alert-warning-text))]"
+      className="border-b border-[hsl(var(--alert-warning-border))] bg-[hsl(var(--alert-warning-bg))] text-[hsl(var(--alert-warning-text))] print:hidden"
     >
       <div className="container flex flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:justify-between">
         <p className="flex items-start gap-2 text-sm leading-relaxed">

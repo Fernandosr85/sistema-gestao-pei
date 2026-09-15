@@ -1,3 +1,5 @@
+export type StudentStatus = 'ativo' | 'inativo' | 'transferido' | 'trancado';
+
 export interface Student {
   id: string;
   nomeCompleto: string;
@@ -9,7 +11,7 @@ export interface Student {
   nivelSuporte: 'baixo' | 'medio' | 'alto';
   professorResponsavel: string;
   progresso?: number;
-  status: 'ativo' | 'inativo';
+  status: StudentStatus;
   dataCadastro: string;
   responsavel: {
     nome: string;
@@ -135,6 +137,8 @@ export interface Professional {
 
 export type AppointmentType = 'Reunião Pedagógica' | 'Avaliação' | 'Atendimento Família' | 'Multidisciplinar' | 'Outros';
 
+export type AppointmentStatus = 'agendado' | 'remarcado' | 'realizado' | 'cancelado';
+
 export interface Atendimento {
   id: string;
   studentId: string;
@@ -143,7 +147,7 @@ export interface Atendimento {
   data: string;
   horarioInicio: string;
   horarioFim: string;
-  status: 'agendado' | 'realizado' | 'cancelado';
+  status: AppointmentStatus;
   profissionais: string[];
   local: string;
   objetivos: string;

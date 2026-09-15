@@ -1,7 +1,6 @@
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { BarChart3, Award, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -102,19 +101,6 @@ const BenchmarkingTable = () => {
           detail="Nenhuma escola real foi medida ou classificada."
           className="mb-6"
         />
-        <div className="flex items-center gap-2 mb-6">
-          <span className="text-sm text-muted-foreground">Comparar com:</span>
-          <Button variant="outline" size="sm">
-            🏫 Minha Escola
-          </Button>
-          <Button variant="outline" size="sm">
-            🌆 Regional SP
-          </Button>
-          <Button variant="outline" size="sm">
-            🌍 Rede
-          </Button>
-        </div>
-
         <div className="border rounded-lg overflow-hidden mb-6">
           <Table>
             <TableHeader>
@@ -182,18 +168,6 @@ const BenchmarkingTable = () => {
             </div>
           </CardContent>
         </Card>
-
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1">
-            Ver Ranking Completo
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Boas Práticas
-          </Button>
-          <Button variant="outline" className="flex-1">
-            Solicitar Consultoria
-          </Button>
-        </div>
       </CardContent>
     </Card>
   );

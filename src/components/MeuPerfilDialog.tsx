@@ -13,6 +13,8 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
+import { DEMO_USER_NAME } from '@/config/institution';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface MeuPerfilDialogProps {
   open: boolean;
@@ -89,9 +91,15 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <User className="h-6 w-6" />
-            Meu Perfil - Profª. Patrícia Cecy
+            Meu Perfil - {DEMO_USER_NAME}
           </DialogTitle>
         </DialogHeader>
+
+        <DemoDataNotice
+          id="perfil-ilustrativo"
+          subject="Os dados deste perfil, as estatísticas e as conquistas"
+          detail="Não há contas de usuário neste protótipo: os campos estão desabilitados e nada é salvo."
+        />
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-5">
@@ -119,10 +127,13 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
           {/* DADOS PESSOAIS */}
           <TabsContent value="dados-pessoais" className="space-y-6">
+            <fieldset disabled aria-describedby="perfil-ilustrativo" className="min-w-0 space-y-6">
             <div className="flex flex-col items-center gap-4">
               <Avatar className="h-32 w-32">
                 <AvatarImage src="" />
-                <AvatarFallback className="text-4xl">PC</AvatarFallback>
+                <AvatarFallback>
+                  <User className="h-16 w-16" aria-hidden="true" />
+                </AvatarFallback>
               </Avatar>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
@@ -139,21 +150,18 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="nome-completo">Nome Completo *</Label>
-                <Input id="nome-completo" defaultValue="Patrícia Cecy Silva Santos" />
+                <Input id="nome-completo" defaultValue={DEMO_USER_NAME} />
               </div>
 
               <div>
                 <Label htmlFor="nome-exibicao">Nome de Exibição</Label>
-                <Input id="nome-exibicao" defaultValue="Profª. Patrícia Cecy" />
+                <Input id="nome-exibicao" defaultValue={DEMO_USER_NAME} />
                 <p className="text-sm text-muted-foreground mt-1">Como você aparece no sistema</p>
               </div>
 
               <div>
                 <Label htmlFor="email-institucional">Email Institucional *</Label>
-                <div className="flex gap-2">
-                  <Input id="email-institucional" defaultValue="professor.demo@example.org" />
-                  <Badge variant="default" className="bg-green-500">Verificado</Badge>
-                </div>
+                <Input id="email-institucional" defaultValue="professor.demo@example.org" />
               </div>
 
               <div>
@@ -281,33 +289,13 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 defaultValue="Sou professora há 9 anos na instituição e especializada em educação inclusiva. Tenho experiência com alunos TEA, TDAH e uso de comunicação alternativa. Acredito que cada criança tem seu próprio ritmo e que, com as estratégias certas, todos podem aprender e se desenvolver plenamente."
                 maxLength={500}
               />
-              <p className="text-sm text-muted-foreground mt-1">0/500 caracteres</p>
             </div>
+            </fieldset>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Segurança</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label>Senha</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input type="password" value="••••••••••" disabled />
-                    <Button variant="outline">Alterar senha</Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">Última alteração: 15/08/2024</p>
-                </div>
-
-                <div>
-                  <Label>Autenticação de dois fatores (2FA)</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Badge variant="default" className="bg-green-500">Ativada via SMS (11) 98765-****</Badge>
-                    <Button variant="outline" size="sm">Configurar</Button>
-                    <Button variant="outline" size="sm">Desativar</Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <p className="text-sm text-muted-foreground">
+              Este protótipo não tem contas de usuário nem autenticação: não há senha, verificação
+              de e-mail nem autenticação em dois fatores para configurar.
+            </p>
 
             <Card>
               <CardHeader>
@@ -330,7 +318,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button>
+              <Button disabled aria-describedby="perfil-ilustrativo">
                 <Settings className="h-4 w-4 mr-2" />
                 Salvar Alterações
               </Button>
@@ -339,6 +327,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
           {/* FORMAÇÃO */}
           <TabsContent value="formacao" className="space-y-6">
+            <fieldset disabled aria-describedby="perfil-ilustrativo" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Formação Acadêmica</CardTitle>
@@ -387,7 +376,12 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <Card>
               <CardHeader>
                 <CardTitle>Certificações e Formações</CardTitle>
-                <Button variant="outline" size="sm">Sincronizar com Portal de formação</Button>
+                <Button variant="outline" size="sm" disabled aria-describedby="portal-formacao-indisponivel">
+                  Sincronizar com Portal de formação
+                </Button>
+                <p id="portal-formacao-indisponivel" className="text-sm text-muted-foreground">
+                  Indisponível: não há integração com portal de formação.
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -425,24 +419,11 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* ESTATÍSTICAS */}
           <TabsContent value="estatisticas" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Período de análise</h3>
-              <Select defaultValue="historico">
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="historico">Todo o histórico</SelectItem>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             <Card>
               <CardHeader>
                 <CardTitle>Alunos Atendidos</CardTitle>
@@ -609,7 +590,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <p className="text-sm mt-1">Casos de sucesso documentados: <strong>5</strong></p>
                   </div>
                 </div>
-                <Button variant="link" className="mt-4 p-0">Ver impacto detalhado</Button>
+                <Button variant="link" className="mt-4 p-0" disabled aria-describedby="perfil-ilustrativo">Ver impacto detalhado</Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -710,19 +691,19 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="obj1" />
+                    <Checkbox id="obj1" disabled aria-describedby="perfil-ilustrativo" />
                     <label htmlFor="obj1" className="text-sm">Alcançar 1.000 observações (+153)</label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="obj2" />
+                    <Checkbox id="obj2" disabled aria-describedby="perfil-ilustrativo" />
                     <label htmlFor="obj2" className="text-sm">Completar formação em Dislexia</label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="obj3" />
+                    <Checkbox id="obj3" disabled aria-describedby="perfil-ilustrativo" />
                     <label htmlFor="obj3" className="text-sm">Mentorar mais 2 professores</label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="obj4" />
+                    <Checkbox id="obj4" disabled aria-describedby="perfil-ilustrativo" />
                     <label htmlFor="obj4" className="text-sm">Manter satisfação 4.8+ por +6 meses</label>
                   </div>
                 </div>
@@ -732,6 +713,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
           {/* PREFERÊNCIAS */}
           <TabsContent value="preferencias" className="space-y-6">
+            <fieldset disabled aria-describedby="perfil-ilustrativo" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Preferências de Visualização</CardTitle>
@@ -754,7 +736,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <div className="space-y-2">
                   <Label>Auto-save</Label>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="autosave" defaultChecked />
+                    <Checkbox id="autosave" />
                     <label htmlFor="autosave" className="text-sm">Salvar rascunhos automaticamente a cada 2 minutos</label>
                   </div>
                 </div>
@@ -763,22 +745,23 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <Label>Confirmações</Label>
                   <div className="space-y-2 mt-2">
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="confirm1" defaultChecked />
+                      <Checkbox id="confirm1" />
                       <label htmlFor="confirm1" className="text-sm">Confirmar antes de excluir</label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="confirm2" defaultChecked />
+                      <Checkbox id="confirm2" />
                       <label htmlFor="confirm2" className="text-sm">Confirmar antes de sair sem salvar</label>
                     </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-              <Button variant="outline">Restaurar Padrões</Button>
-              <Button>
+              <Button variant="outline" disabled aria-describedby="perfil-ilustrativo">Restaurar Padrões</Button>
+              <Button disabled aria-describedby="perfil-ilustrativo">
                 <Settings className="h-4 w-4 mr-2" />
                 Salvar
               </Button>

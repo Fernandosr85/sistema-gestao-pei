@@ -8,6 +8,73 @@ Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementa
 
 ---
 
+## Achados
+
+Defeitos cuja gravidade vai além do controle em que apareceram. É material para o artigo:
+cada item registra o que acontecia, como foi confirmado e o que ainda está aberto.
+
+### 1. Vazamento de dados de saúde entre estudantes (Etapa 2)
+
+**Qualificação:** o defeito não era um formulário mal inicializado, e sim a exibição dos
+dados de saúde de uma estudante na ficha de outros. Os dados eram fictícios. Com dados
+reais, seria incidente de segurança com dado pessoal sensível (LGPD, art. 5º, II) de
+crianças e adolescentes (art. 14), a ser comunicado à ANPD e aos titulares (art. 48).
+
+**Onde:** o mesmo padrão apareceu em sete telas: texto fixo de uma estudante fictícia, Ana
+Carolina Souza, exibido sob o nome de qualquer estudante. Cinco dessas telas mostravam dado
+de saúde.
+
+| Tela | O que aparecia para qualquer estudante | Dado de saúde | Aviso de exemplo |
+|---|---|---|---|
+| `EditarCadastroDialog` | nome, nascimento, matrícula, médico responsável ("Dra. Ana Paulita") e CID-10 F84.0 nos campos | sim | não |
+| `StudentDetail`, card "Perfil de Saúde" | "Medicina: Ana Paulita", "Restrições/Alergias: Nenhuma" e "Último Laudo: 01/02/2024" | sim | não |
+| `StudentHistoryDialog` | "Laudo médico atualizado (TEA Nível 1)" e "Médica: Dra. Ana Paulita", além de matrícula, turma e um evento dela | sim | não |
+| `VerPEIDialog` | diagnóstico "TEA Nível 1 (F84.0)" na identificação do PEI | sim | sim |
+| `AnexosDialog` | os laudos "Laudo_TEA_Atualizado.pdf", da Dra. Ana Paulita, e "Laudo_Neurologico_2023.pdf" | sim | sim |
+| `ObservationDetailDialog` | matrícula, turma e nome da mãe dela em qualquer observação | não | não |
+| `PresentationModeDialog` | turma e uma conquista citando "Ana" | não | não |
+
+O inventário da Etapa 2 só tinha o `EditarCadastroDialog`. O card da ficha apareceu durante a
+correção desse diálogo. As outras cinco telas apareceram numa busca pelo mesmo texto fixo:
+nome da médica, matrícula, CID, turma e nome da estudante.
+
+**Como foi confirmado:** no navegador, antes da correção, abri o Editar Cadastro em
+`/alunos/1` (Maria Silva Santos) e em `/alunos/2` (Pedro Oliveira Costa). Nos dois casos, ele
+trouxe matrícula, médico e CID de Ana Carolina. Depois da correção, cada diálogo abre com os
+dados do próprio estudante, sem nenhum campo de saúde fora do modelo. As outras cinco telas
+foram conferidas no navegador depois do segundo commit de correção.
+
+**Correção, em dois commits:**
+- **`2fb404d`:**
+  - o Editar Cadastro passou a ser controlado a partir do estudante da ficha, com chave nova
+    a cada abertura;
+  - medicação, alergias, médico e CID saíram do formulário e da ficha, por minimização. O
+    modelo `Student` nunca teve esses campos; eles eram texto fixo na interface.
+- **`Fix:` que fecha a Etapa 2:**
+  - **Histórico:** todo o conteúdo fixo saiu. Como não existe modelo de histórico acadêmico,
+    o diálogo diz "Sem histórico registrado para este estudante".
+  - **Ver PEI:** saiu o diagnóstico com CID.
+  - **Anexos:** saíram os dois laudos, e a aba informa que nenhum laudo foi anexado.
+  - **Detalhe da observação:** turma e matrícula passam a vir do estudante da observação.
+    Saíram o nome da mãe e o nome "Maria" do texto fixo, e o diálogo ganhou aviso de
+    conteúdo de exemplo.
+  - **Apresentação:** saíram a turma e o nome na conquista, e o diálogo ganhou aviso de
+    conteúdo de exemplo.
+
+**Regra adotada:** o aviso de dados fictícios justifica número inventado, mas não justifica
+exibir prontuário de terceiro. Dado de saúde fixo sai mesmo de tela que tem aviso.
+
+A remontagem a cada abertura importa. No teste, com o painel do navegador oculto, a
+animação de saída não terminou e o conteúdo fechado continuou montado. O diálogo reabriu
+com o estado anterior. Um formulário que depende da desmontagem para limpar o estado pode
+exibir dados de uma abertura na seguinte.
+
+**Ainda aberto:** Ver PEI, Detalhe da observação e Apresentação continuam com conteúdo fixo de
+exemplo, agora com aviso e sem dado de saúde nem identificação de outra estudante. A troca
+por dados reais está na Etapa 4 e, no caso do PEI, na Etapa 9.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -83,11 +150,30 @@ depois painéis de gestão.
   `sortBy` nunca ordena.
 - `Reports` / `ReportsContent`: quatro filtros que nenhum gráfico consome.
 - `AnexosDialog`: busca que não filtra; `currentMonth` com setter nunca chamado.
-- `useCalendarSync`: começa com uma conta Google "conectada" fictícia — deve iniciar
-  desconectado e rotular os controles como simulação.
+- `useCalendarSync`: começava com uma conta Google "conectada" fictícia e simulava conexão
+  e sincronização com toasts de sucesso. Deve iniciar desconectado e sem nenhum sucesso
+  simulado: conectar e sincronizar ficam desabilitados, com o motivo visível. Um toast como
+  "Outlook conectado!" viola a invariante 3 mesmo com rótulo de simulação.
 
 **Critério de aceite:** varredura de `<Button` sem `onClick` que não seja trigger de
 Radix nem esteja dentro de `<Link>`; cada ocorrência restante justificada.
+
+**Estado em 15/09/2026:** feita na branch `etapa-2/controles-inertes`, ainda sem PR, em seis
+commits de código (`e80a93d`, `f807a04`, `c8f5e2b`, `2fb404d`, `ee41265` e `639a641`), além
+dos de documentação. O store está na versão 3.
+
+Varredura do critério de aceite, feita por script sobre `src/`, fora de `components/ui`:
+- **Total:** 171 `<Button>`.
+- **Justificadas:** 65 com `onClick`, 62 com `disabled`, 2 de envio de formulário, 3 com
+  `asChild`, 20 dentro de gatilho Radix ou de `<Link>` e 11 dentro de `<fieldset disabled>`
+  (Perfil e Configurações).
+- **Restantes:** 8, todas em arquivos que nenhuma rota monta: `CoordinationDashboard.tsx`
+  (2) e `reports/ActionPanel.tsx` (6), este importado só por `pages/Reports.tsx`, que não
+  tem rota. Saem com a Etapa 5.
+
+A varredura só enxerga o componente `Button`. Ficam de fora o `<button>` nativo, `div` com
+`onClick` e controles como `Checkbox` e `Select`. O motivo visível dos controles
+desabilitados foi conferido no navegador em cada commit, não pelo script.
 
 ---
 
@@ -107,6 +193,8 @@ Falta:
    customizada não focável.
 4. **Emoji com significado** (`BenchmarkingTable`, `ExecutiveSummary`, `VerPEIDialog`):
    `✅🟡🔴` carregam status sozinhos. Acrescentar texto; `aria-hidden` nos decorativos.
+   Registrado na Etapa 2: rótulos de aba e títulos que começam com emoji, como "📋 Dados
+   Pessoais" no Editar Cadastro, fazem o leitor de tela ler o nome do emoji antes do texto.
 5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:225-242`): cinco botões só com SVG,
    sem nome nem estado. Virar radiogroup rotulado com valor textual visível.
 
@@ -121,6 +209,17 @@ Falta:
    abre com `<h3>`. Corrigir os outlines de todas as rotas.
 8. **Alvos de toque**: botões `sm` com 36 px e ícones 40×40. Rodapé de apresentação não
    quebra linha. Testar em 320 px e zoom 200%.
+9. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
+   contraste, aumentar o tamanho dos botões, destacar o foco do teclado, reduzir animações,
+   ampliação e atalhos de teclado aparecem desabilitados desde a Etapa 2, rotulados como
+   ilustrativos. Por decisão do autor, a implementação acontece aqui, e não junto dos
+   controles inertes.
+   - Guardar as preferências no navegador e aplicá-las ao app inteiro, sem conta de usuário.
+   - Alto contraste exige recalcular o contraste de todas as combinações de cor.
+   - Reduzir animações deve respeitar também `prefers-reduced-motion`.
+   - "Navegação por voz", "Leitor de tela" e "Descrições de áudio para imagens" dependem do
+     sistema operacional ou de tecnologia assistiva, não do app. Remover essas opções ou
+     explicar isso na tela.
 
 **Critério de aceite:** navegar o sistema inteiro só com teclado, sem ficar preso nem
 encontrar controle inalcançável. Toda informação disponível por cor/hover também
@@ -142,6 +241,36 @@ percentuais de orçamento) já divergem.
    e rotular escopo e proveniência — não misturar com contagem real do dataset.
 4. Recalcular médias, ratings e percentuais a partir dos registros de origem.
 
+**Registrado durante a Etapa 2:** conteúdo fixo que continua aparecendo como se fosse do
+estudante ou como se tivesse sido medido.
+- **Ficha do estudante** (`StudentDetail`):
+  - ano letivo, turno, professor(a) de apoio, necessidades específicas, recursos e
+    composição familiar são inventados;
+  - a linha do tempo (ingresso, primeiro PEI, revisões), a "Última atualização" e o número
+    de anexos (21) são fixos.
+- **Desempenho e Apresentação:** conteúdo e números fixos, iguais para qualquer estudante.
+  A Apresentação tem aviso de exemplo; o Desempenho, não. O Histórico deixou de mostrar
+  exemplo e diz que não há histórico registrado (Achados, item 1).
+- **Detalhe da observação** (`ObservationDetailDialog`): o detalhamento, a comparação
+  "+200%", as transições, as notificações "Visualizado", os metadados e a frase "têm se
+  mostrado eficazes" são texto fixo, exibido em qualquer observação estruturada, agora com
+  aviso de exemplo.
+- **Dashboard:** as tendências +12% e +8% aparecem sem `DemoDataNotice`, os "12 relatórios
+  pendentes" são fixos, e o card "Observações: Este mês" conta todas as observações.
+- **Agenda:** o card "Este Mês" conta todos os atendimentos e mostra "+12% vs. mês
+  anterior".
+- **Benchmarking e projeções** (`BenchmarkingPanel`, `PredictiveAnalysis`): "% eficácia",
+  "chance de melhoria", "prevê-se", "baseado em 156 casos" e "Probabilidade".
+- **Biblioteca:**
+  - `rating` e `reviewCount` das fixtures não acompanham os comentários gravados;
+  - a ordenação por "Mais baixados" e "Melhor avaliados" usa esses números e o
+    `downloadCount` das fixtures;
+  - "Meus Recursos" (publicados, downloads, avaliação média, favoritados, ranking e badges)
+    é fixo;
+  - no detalhe do recurso, "Favoritado por" (`favoriteCount`) não tem relação com os
+    favoritos deste navegador, "Usado em 18 escolas" é inventado e "N pessoas acharam útil"
+    vem das fixtures.
+
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
 telas diferentes.
 
@@ -160,6 +289,33 @@ telas diferentes.
    `PredictiveAnalysis.tsx` (~616), `AlertasRiscosContent.tsx` (~536).
 5. `QueryClientProvider` está montado sem nenhum `useQuery` — remover até existir API.
 6. `dadosAnalisePreditiva` em `mockData.ts:218` nunca é importado.
+7. Avaliar remoção de `studentName` dos registros vinculados, resolvendo pelo `studentId`
+   na exibição. Hoje o nome fica copiado em três coleções: `studentName` nas observações e
+   nas avaliações, e `aluno` nos atendimentos. O `student/update` (commit `2fb404d`)
+   propaga o nome editado para as três. Isso mantém a coerência, mas é justamente o dado
+   duplicado que gera divergência.
+8. Arquivos sem uso além dos itens 1 e 2:
+   - `NavLink.tsx`;
+   - `reports/ActionPanel.tsx`, importado só por `pages/Reports.tsx`, que não tem rota e
+     ainda tem o rodapé de alegações;
+   - o formulário "Adicionar Evento" de `MinhaAgenda`, inalcançável desde a Etapa 2 porque o
+     gatilho está desabilitado.
+9. Estado morto em `ResourceLibrary`: `selectedTypes`, `selectedLevels` e as listas `types` e
+   `levels` não têm interface nem são lidos.
+10. Pequenos defeitos registrados na Etapa 2:
+    - `CalendarIntegrations.tsx:132` cita `docs/calendar-sync.md`, mas o arquivo é
+      `docs/calendar-sync-implementation.md`;
+    - `MeuPerfilDialog.tsx:413` tem `Progress value={310}`, fora da escala de 0 a 100;
+    - `VisaoGeralContent.tsx:37` usa a chave de objeto `MÉDIA`, com acento;
+    - `VisaoGeralContent` e `MeuPerfilDialog` põem `Badge` (um `<div>`) dentro de `<p>`, e o
+      React acusa aninhamento inválido;
+    - `ObservationDetailDialog` formata a data com `new Date('AAAA-MM-DD')`, que é UTC: a
+      observação de 19/11/2025 aparece como 18/11/2025 no Brasil;
+    - em `AgendaAtendimentos`, as visões de semana e de dia passam `view` ao
+      `react-big-calendar` sem `onView`, e o console avisa;
+    - `App.tsx`, `StudentDetail`, `ObservationDetailDialog`, `StudentHistoryDialog`,
+      `PresentationModeDialog`, `MeuPerfilDialog`, `AgendaAtendimentos` e `Dashboard` têm
+      imports sem uso anteriores à Etapa 2.
 
 **Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
 
@@ -224,11 +380,35 @@ passam.
 
 ---
 
+## Etapa 9 — Decisões de produto
+
+Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
+
+1. **PEI como entidade.** O sistema se chama Gestão PEI e não possui entidade PEI. Metas,
+   revisões e histórico são conteúdo fixo.
+
+   Hoje o `VerPEIDialog` mostra um PEI de exemplo, com aviso, igual para qualquer estudante.
+   Editar PEI, Nova Revisão, "Adicionar observação" na meta e "Ver ata" ficam desabilitados.
+   Modelar o PEI dá sentido ao nome do sistema: metas, prazos, responsáveis, revisões e
+   evidências ligadas a observações, avaliações e atas de atendimento.
+   - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
+     imprimível.
+   - Exige mudar o modelo de dados e subir a versão do store, com migração.
+
+2. **Minha Agenda.** Na Etapa 2, a tela ficou como exemplo rotulado, com todas as ações
+   desabilitadas. A opção preferida é a (a'): mostrar os atendimentos do store e tirar o
+   formulário de evento. Antes, responder: existe agenda pessoal separada dos atendimentos
+   (planejamento, formação, tarefas)? Se existir, o caminho é uma entidade nova de evento e
+   tarefa, e não a (a').
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
 - Integração OAuth com Google/Outlook
-- Exportação PDF/Excel/Word
+- Exportação de arquivos gerados pela aplicação (PDF, Excel, Word). O relatório da Etapa 2
+  é impresso pelo navegador, que também salva como PDF; a aplicação não gera arquivo.
 - Qualquer análise preditiva de verdade (exigiria dataset governado e validação; hoje há
   4 alunos fictícios)
 

@@ -276,3 +276,28 @@ All colors MUST be HSL.
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
   }
 }
+
+/*
+ * Printable report (/relatorio). The header, the storage notice, the skip link and
+ * the report action bar are hidden with print:hidden; the report states in its own
+ * header that the data is from the demo.
+ */
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .report-page li,
+  .report-page tr {
+    break-inside: avoid;
+  }
+
+  .report-page h2 {
+    break-after: avoid;
+  }
+}

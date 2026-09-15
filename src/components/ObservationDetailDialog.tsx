@@ -9,6 +9,9 @@ import {
   AlertCircle, Camera, Video, FileIcon, Bell,
   Edit, FileDown, Mail, Trash2
 } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
+import { classLabelOf } from '@/lib/report';
+import { useDemoStore } from '@/store/useDemoStore';
 import { StructuredObservation } from '@/types';
 
 interface ObservationDetailDialogProps {
@@ -18,7 +21,14 @@ interface ObservationDetailDialogProps {
 }
 
 export function ObservationDetailDialog({ open, onOpenChange, observation }: ObservationDetailDialogProps) {
+  const { state } = useDemoStore();
   if (!observation) return null;
+
+  // Class and enrollment come from the observed student; they used to be another student's, fixed in the code.
+  const student = state.students.find((item) => item.id === observation.studentId);
+
+  const situacoes = observation.comunicacao.situacoes.filter((item) => item.contexto.trim() || item.resposta.trim());
+  const interacoes = observation.habilidadesSociais.interacoes.filter((item) => item.tipo.trim() || item.descricao.trim());
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -34,8 +44,17 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Student Info */}
           <div className="p-4 bg-muted/50 rounded-lg">
             <h2 className="text-xl font-bold">{observation.studentName}</h2>
-            <p className="text-sm text-muted-foreground">2º Ano EF - Turma C | Matrícula: MAT-2024-003</p>
+            {student && (
+              <p className="text-sm text-muted-foreground">
+                {classLabelOf(student)} | Matrícula: {student.matricula}
+              </p>
+            )}
           </div>
+
+          <DemoDataNotice
+            subject="O horário, o local, os objetivos do PEI, os detalhamentos, as comparações, as evidências, as observações adicionais, as notificações e os metadados deste detalhe"
+            detail="Vêm da observação registrada só a data, a duração, o observador, as situações de comunicação, as interações sociais, o resumo e os comportamentos listados."
+          />
 
           {/* General Information */}
           <Card>
@@ -84,6 +103,45 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
             </CardContent>
           </Card>
 
+          {/* Communication and social skills, as recorded */}
+          <Card>
+            <CardContent className="pt-6 space-y-4">
+              <h3 className="font-semibold text-lg">Comunicação e habilidades sociais registradas</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Situações de comunicação</h4>
+                  {situacoes.length === 0 ? (
+                    <p className="text-muted-foreground">Nenhuma situação registrada.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {situacoes.map((situacao, idx) => (
+                        <li key={idx} className="rounded-md border p-3">
+                          <p className="font-medium">{situacao.contexto}</p>
+                          <p className="text-muted-foreground">{situacao.resposta}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Interações sociais</h4>
+                  {interacoes.length === 0 ? (
+                    <p className="text-muted-foreground">Nenhuma interação registrada.</p>
+                  ) : (
+                    <ul className="space-y-2">
+                      {interacoes.map((interacao, idx) => (
+                        <li key={idx} className="rounded-md border p-3">
+                          <p className="font-medium">{interacao.tipo}</p>
+                          <p className="text-muted-foreground">{interacao.descricao}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Detailed Observation */}
           <Card>
             <CardContent className="pt-6 space-y-4">
@@ -100,7 +158,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="mt-3 space-y-2">
                   <p className="text-sm font-semibold">DETALHAMENTO:</p>
                   <p className="text-sm text-muted-foreground">
-                    Maria demonstrou progresso significativo na comunicação verbal durante toda a manhã. Ela:
+                    Demonstrou progresso significativo na comunicação verbal durante toda a manhã:
                   </p>
                   <ul className="list-disc list-inside text-sm text-muted-foreground ml-2">
                     <li>Iniciou 3 conversas espontâneas com colegas</li>
@@ -138,7 +196,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="mt-3 space-y-3">
                   <p className="text-sm font-semibold">DETALHAMENTO:</p>
                   <p className="text-sm text-muted-foreground">
-                    Maria apresentou resistência em 2 das 4 transições:
+                    Apresentou resistência em 2 das 4 transições:
                   </p>
 
                   <div className="space-y-3">
@@ -209,7 +267,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                       <ul className="space-y-1 text-sm text-muted-foreground">
                         <li className="flex items-center gap-2">
                           <div className="h-4 w-4 border-2 border-muted-foreground rounded" />
-                          Treinar Maria a usar timer independentemente
+                          Treinar o uso independente do timer
                         </li>
                         <li className="flex items-center gap-2">
                           <div className="h-4 w-4 border-2 border-muted-foreground rounded" />
@@ -252,8 +310,8 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                     <p><strong>⏰ Horário:</strong> {idx === 0 ? '09:45' : '08:45 - 09:15 (30 minutos)'}</p>
                     <p>
                       <strong>📝 Observação:</strong> {idx === 0 
-                        ? 'Maria aguardou pacientemente por 3 minutos sem necessidade de intervenção. Manteve-se calma e não tentou furar a fila como em observações anteriores.'
-                        : 'Maria participou ativamente da atividade de pintura. Mostrou criatividade ao escolher cores e compartilhou materiais com os colegas sem resistência.'}
+                        ? 'Aguardou pacientemente por 3 minutos sem necessidade de intervenção. Manteve-se calma e não tentou furar a fila como em observações anteriores.'
+                        : 'Participou ativamente da atividade de pintura. Mostrou criatividade ao escolher cores e compartilhou materiais com os colegas sem resistência.'}
                     </p>
                   </div>
                 </div>
@@ -268,15 +326,15 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                   <div className="ml-7 space-y-2 text-sm text-muted-foreground">
                     <p><strong>📍 Contexto:</strong> Final da atividade livre</p>
                     <p><strong>⏰ Horário:</strong> 09:15</p>
-                    <p><strong>📝 Observação:</strong> Ao ser solicitada a guardar os blocos de montar, Maria inicialmente recusou e disse "ainda não acabei".</p>
+                    <p><strong>📝 Observação:</strong> Ao ser solicitada a guardar os blocos de montar, inicialmente recusou e disse "ainda não acabei".</p>
                     
                     <div className="mt-3 p-3 bg-background rounded">
                       <p className="font-semibold mb-2">🔄 Intervenção realizada:</p>
                       <ol className="list-decimal list-inside space-y-1">
-                        <li>Profª. Ana ofereceu aviso prévio: "Mais 2 minutos"</li>
+                        <li>A professora ofereceu aviso prévio: "Mais 2 minutos"</li>
                         <li>Usou timer visual</li>
                         <li>Negociou: "Vamos guardar juntas?"</li>
-                        <li>Maria aceitou após os 2 minutos</li>
+                        <li>Aceitou após os 2 minutos</li>
                       </ol>
                       <p className="mt-2"><strong>⏱️ Tempo de resistência:</strong> 8 minutos</p>
                       <p><strong>✅ Resultado:</strong> Guardou com ajuda verbal</p>
@@ -303,7 +361,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                   <div className="w-full aspect-square bg-muted rounded flex items-center justify-center">
                     <Camera className="h-8 w-8 text-muted-foreground" />
                   </div>
-                  <p className="text-sm font-medium">Maria na atividade</p>
+                  <p className="text-sm font-medium">Registro da atividade</p>
                 </div>
                 <div className="p-4 border rounded-lg text-center space-y-2">
                   <div className="w-full aspect-square bg-muted rounded flex items-center justify-center">
@@ -322,8 +380,8 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               <h3 className="font-semibold text-lg mb-4">💬 Observações Adicionais</h3>
               <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground space-y-2">
                 <p>
-                  Esta manhã foi particularmente produtiva para Maria. Ela demonstrou avanços 
-                  significativos na comunicação e manteve-se engajada nas atividades propostas.
+                  Esta manhã foi particularmente produtiva, com avanços
+                  significativos na comunicação e engajamento nas atividades propostas.
                 </p>
                 <p>
                   A questão das transições continua sendo um desafio, mas as estratégias de negociação 
@@ -348,7 +406,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="flex items-start gap-3 p-3 bg-success/5 border border-success/20 rounded-lg">
                   <Bell className="h-5 w-5 text-success mt-0.5" />
                   <div className="flex-1 text-sm">
-                    <p className="font-medium">Família (Mãe Mariana Souza) - {new Date(observation.data).toLocaleDateString('pt-BR')} 10:45</p>
+                    <p className="font-medium">Família - {new Date(observation.data).toLocaleDateString('pt-BR')} 10:45</p>
                     <p className="text-muted-foreground">Status: Visualizado às 11:30</p>
                     <p className="mt-2 p-2 bg-background rounded">
                       💬 Resposta: "Obrigada pelo retorno! Vamos implementar o timer em casa também."
@@ -382,26 +440,32 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-4 border-t">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <Edit className="h-4 w-4 mr-2" />
               Editar Observação
             </Button>
-            <Button variant="outline" size="sm">
-              <FileText className="h-4 w-4 mr-2" />
-              Adicionar Follow-up
-            </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <FileDown className="h-4 w-4 mr-2" />
               Exportar PDF
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <Mail className="h-4 w-4 mr-2" />
               Reenviar Notificação
             </Button>
-            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive hover:text-destructive"
+              disabled
+              aria-describedby="observacao-acoes-indisponiveis"
+            >
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
             </Button>
+            <p id="observacao-acoes-indisponiveis" className="w-full text-xs text-muted-foreground">
+              Editar, excluir, exportar e reenviar notificação não estão disponíveis neste protótipo. Nenhuma
+              observação é excluída.
+            </p>
           </div>
         </div>
       </DialogContent>

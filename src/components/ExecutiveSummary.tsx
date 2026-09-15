@@ -1,6 +1,5 @@
-import { Users, FileText, GraduationCap, TrendingUp, Target, AlertTriangle, Heart, BarChart3, RefreshCw, Download, Mail } from 'lucide-react';
+import { Users, FileText, GraduationCap, TrendingUp, Target, AlertTriangle, Heart, BarChart3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface MetricCardProps {
@@ -147,19 +146,8 @@ const ExecutiveSummary = () => {
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <RefreshCw className="h-4 w-4" />
-            <span>Atualizado há 5 min</span>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar Resumo
-            </Button>
-            <Button variant="outline" size="sm">
-              <Mail className="h-4 w-4 mr-2" />
-              Enviar Gestão
-            </Button>
+          <div className="text-sm text-muted-foreground">
+            <span>Valores fixos de demonstração</span>
           </div>
         </div>
       </CardContent>

@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Upload, FileText, Image, Video, Download, Eye, Trash2 } from 'lucide-react';
+import { Search, Upload, FileText, Image, Video, Download, Eye } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface AnexosDialogProps {
   open: boolean;
@@ -17,21 +18,8 @@ interface AnexosDialogProps {
 export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: AnexosDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const laudos = [
-    {
-      nome: 'Laudo_TEA_Atualizado.pdf',
-      data: '01/02/2024',
-      tamanho: '2.3 MB',
-      autor: 'Dra. Ana Paulita'
-    },
-    {
-      nome: 'Laudo_Neurologico_2023.pdf',
-      data: '15/08/2023',
-      tamanho: '1.8 MB',
-      autor: 'Dr. Carlos Silva'
-    }
-  ];
-
+  // No medical reports here, not even as an example: a fixed report would show one student's
+  // health record under every student's name.
   const peis = [
     {
       nome: 'PEI_2024_T4.pdf',
@@ -66,6 +54,12 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
           <p className="text-sm text-muted-foreground">Total de documentos: {totalAnexos}</p>
         </DialogHeader>
 
+        <DemoDataNotice
+          id="anexos-indisponiveis"
+          subject="Os documentos, fotos e PEIs listados"
+          detail="Nenhum arquivo é armazenado neste protótipo: enviar, buscar, visualizar, baixar, excluir, compartilhar e imprimir estão desabilitados."
+        />
+
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -75,9 +69,11 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
+                disabled
+                aria-describedby="anexos-indisponiveis"
               />
             </div>
-            <Button>
+            <Button disabled aria-describedby="anexos-indisponiveis">
               <Upload className="w-4 h-4 mr-2" />
               Adicionar Anexo
             </Button>
@@ -102,37 +98,9 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
             </TabsContent>
 
             <TabsContent value="laudos" className="space-y-4 mt-4">
-              <div className="space-y-3">
-                {laudos.map((laudo, idx) => (
-                  <Card key={idx}>
-                    <CardContent className="flex items-center justify-between py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-destructive/10 rounded">
-                          <FileText className="w-5 h-5 text-destructive" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-sm">{laudo.nome}</p>
-                          <p className="text-xs text-muted-foreground">
-                            📅 {laudo.data} | 📏 {laudo.tamanho} | 👤 {laudo.autor}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4 mr-1" />
-                          Visualizar
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Download className="w-4 h-4 mr-1" />
-                          Baixar
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="text-center py-12 text-muted-foreground">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Nenhum laudo anexado</p>
               </div>
             </TabsContent>
 
@@ -156,11 +124,11 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Eye className="w-4 h-4 mr-1" />
                           Visualizar
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Download className="w-4 h-4 mr-1" />
                           Baixar
                         </Button>
@@ -185,14 +153,14 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                   </Card>
                 ))}
               </div>
-              <Button variant="outline" className="w-full">Ver todas as fotos →</Button>
+              <Button variant="outline" className="w-full" disabled aria-describedby="anexos-indisponiveis">Ver todas as fotos →</Button>
             </TabsContent>
 
             <TabsContent value="videos" className="space-y-4 mt-4">
               <div className="text-center py-12 text-muted-foreground">
                 <Video className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum vídeo anexado ainda</p>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
                   <Upload className="w-4 h-4 mr-2" />
                   Adicionar primeiro vídeo
                 </Button>
@@ -203,7 +171,7 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
               <div className="text-center py-12 text-muted-foreground">
                 <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum relatório anexado ainda</p>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
                   <Upload className="w-4 h-4 mr-2" />
                   Adicionar primeiro relatório
                 </Button>
@@ -213,13 +181,13 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
         </div>
 
         <div className="flex justify-between gap-3 mt-6 pt-6 border-t">
-          <Button variant="outline">
+          <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">
             <Download className="w-4 h-4 mr-2" />
             Baixar Todos
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline">📧 Compartilhar</Button>
-            <Button variant="outline">🖨️ Imprimir Lista</Button>
+            <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">📧 Compartilhar</Button>
+            <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">🖨️ Imprimir Lista</Button>
           </div>
         </div>
       </DialogContent>

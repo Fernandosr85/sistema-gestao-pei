@@ -13,13 +13,15 @@ import { ResourceCard } from '@/components/ResourceCard';
 import { ResourceDetailModal } from '@/components/ResourceDetailModal';
 import { ContributeResourceDialog } from '@/components/ContributeResourceDialog';
 import { mockBadges } from '@/data/mockResources';
+import { todayLocalISO } from '@/lib/date';
+import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 import { Resource } from '@/types/resource';
 import { Search, Plus, Trophy, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ResourceLibrary() {
-  const { state } = useDemoStore();
+  const { state, dispatch } = useDemoStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDiagnoses, setSelectedDiagnoses] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
@@ -27,6 +29,7 @@ export default function ResourceLibrary() {
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState('recent');
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
   
   const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -48,6 +51,7 @@ export default function ResourceLibrary() {
     setSelectedTypes([]);
     setSelectedLevels([]);
     setMinRating(0);
+    setOnlyFavorites(false);
   };
 
   const handleViewResource = (resource: Resource) => {
@@ -55,20 +59,36 @@ export default function ResourceLibrary() {
     setDetailModalOpen(true);
   };
 
-  const handleDownload = (resource: Resource) => {
-    toast.success(`Baixando: ${resource.title}`);
-  };
+  const favoriteIds = new Set(state.favorites.map((favorite) => favorite.resourceId));
+  const favoriteCount = state.resources.filter((resource) => favoriteIds.has(resource.id)).length;
 
-  const handleFavorite = (resource: Resource) => {
-    toast.success(`${resource.title} adicionado aos favoritos!`);
+  const handleToggleFavorite = (resource: Resource) => {
+    if (favoriteIds.has(resource.id)) {
+      const result = dispatch({ type: 'favorite/remove', resourceId: resource.id });
+      toast.success('Removido dos favoritos deste navegador', {
+        description: `${resource.title}. ${describeSaveLocation(result)}`,
+      });
+      return;
+    }
+    const result = dispatch({ type: 'favorite/add', favorite: { resourceId: resource.id, addedAt: todayLocalISO() } });
+    toast.success('Adicionado aos favoritos deste navegador', {
+      description: `${resource.title}. ${describeSaveLocation(result)}`,
+    });
   };
 
   const filteredResources = state.resources.filter(resource => {
+    if (onlyFavorites && !favoriteIds.has(resource.id)) return false;
     if (searchQuery && !resource.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedDiagnoses.length > 0 && !selectedDiagnoses.some(d => resource.diagnoses.includes(d as DiagnosisType))) return false;
     if (selectedSubjects.length > 0 && !selectedSubjects.some(s => resource.subjects.includes(s as SubjectType))) return false;
     if (minRating > 0 && resource.rating < minRating) return false;
     return true;
+  });
+
+  const sortedResources = [...filteredResources].sort((a, b) => {
+    if (sortBy === 'downloads') return b.downloadCount - a.downloadCount;
+    if (sortBy === 'rating') return b.rating - a.rating;
+    return b.createdAt.localeCompare(a.createdAt);
   });
 
   return (
@@ -139,6 +159,20 @@ export default function ResourceLibrary() {
                 <CardContent>
                   <ScrollArea className="h-[600px] pr-4">
                     <div className="space-y-6">
+                      {/* Favorites */}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="only-favorites"
+                          checked={onlyFavorites}
+                          onCheckedChange={(checked) => setOnlyFavorites(checked === true)}
+                        />
+                        <Label htmlFor="only-favorites" className="font-normal cursor-pointer text-sm">
+                          Só os favoritos deste navegador ({favoriteCount})
+                        </Label>
+                      </div>
+
+                      <Separator />
+
                       {/* Diagnoses */}
                       <div>
                         <Label className="font-semibold mb-2 block">📋 Por Diagnóstico</Label>
@@ -317,17 +351,20 @@ export default function ResourceLibrary() {
               </div>
             ) : (
               <>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-1">
                   {filteredResources.length} recursos encontrados
                 </p>
+                <p id="download-indisponivel" className="text-xs text-muted-foreground mb-4">
+                  Baixar está indisponível: os recursos não têm arquivo neste protótipo.
+                </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {filteredResources.map(resource => (
+                  {sortedResources.map(resource => (
                     <ResourceCard
                       key={resource.id}
                       resource={resource}
+                      isFavorite={favoriteIds.has(resource.id)}
                       onView={handleViewResource}
-                      onDownload={handleDownload}
-                      onFavorite={handleFavorite}
+                      onToggleFavorite={handleToggleFavorite}
                     />
                   ))}
                 </div>
@@ -343,8 +380,8 @@ export default function ResourceLibrary() {
         reviews={state.reviews.filter(r => r.resourceId === selectedResource?.id)}
         open={detailModalOpen}
         onOpenChange={setDetailModalOpen}
-        onDownload={handleDownload}
-        onFavorite={handleFavorite}
+        isFavorite={selectedResource ? favoriteIds.has(selectedResource.id) : false}
+        onToggleFavorite={handleToggleFavorite}
       />
 
       <ContributeResourceDialog

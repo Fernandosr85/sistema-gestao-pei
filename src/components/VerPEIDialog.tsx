@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, TrendingUp, FileText, Printer, Download } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface VerPEIDialogProps {
   open: boolean;
@@ -26,6 +27,12 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
             </div>
           </div>
         </DialogHeader>
+
+        <DemoDataNotice
+          id="pei-exemplo"
+          subject="Os dados deste PEI (identificação, objetivos, estratégias, reuniões e histórico)"
+          detail="O sistema ainda não tem registro de PEI: editar, revisar, anexar evidências, abrir documentos, baixar e imprimir estão desabilitados."
+        />
 
         <Tabs defaultValue="visao-geral" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
@@ -54,10 +61,6 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   <div>
                     <p className="text-muted-foreground">Próxima revisão</p>
                     <p className="font-medium">15/12/2024</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Diagnóstico</p>
-                    <p className="font-medium">TEA Nível 1 (F84.0)</p>
                   </div>
                 </div>
                 <div className="pt-2">
@@ -138,7 +141,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   <div className="space-y-2 text-sm">
                     <p><span className="font-medium">Data alcance:</span> 15/10/2024</p>
                     <p><span className="font-medium">Estratégias usadas:</span> Treino diário, modelo visual</p>
-                    <Button variant="link" size="sm" className="p-0 h-auto">
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="pei-exemplo">
                       Ver evidências: 📷 3 fotos
                     </Button>
                   </div>
@@ -158,7 +161,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   <div className="space-y-2 text-sm">
                     <p><span className="font-medium">Estratégias:</span> Flashcards, leitura compartilhada</p>
                     <p><span className="font-medium">Próxima etapa:</span> Frases curtas</p>
-                    <Button variant="link" size="sm" className="p-0 h-auto">
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="pei-exemplo">
                       Adicionar observação
                     </Button>
                   </div>
@@ -275,7 +278,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
               <CardContent className="text-sm space-y-2">
                 <p>Última reunião: 18/10/2024</p>
                 <p>Próxima reunião: Fevereiro/2025</p>
-                <Button variant="outline" size="sm" className="mt-2">
+                <Button variant="outline" size="sm" className="mt-2" disabled aria-describedby="pei-exemplo">
                   <FileText className="w-4 h-4 mr-2" />
                   Ver ata da última reunião
                 </Button>
@@ -293,7 +296,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                       <h4 className="font-semibold">PEI 2024 - 4º Trimestre</h4>
                       <p className="text-sm text-muted-foreground">15/09/2024 - Profª Marina Santos</p>
                     </div>
-                    <Button variant="outline" size="sm">Ver documento</Button>
+                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -305,7 +308,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                       <h4 className="font-semibold">PEI 2024 - 3º Trimestre</h4>
                       <p className="text-sm text-muted-foreground">15/06/2024 - Profª Marina Santos</p>
                     </div>
-                    <Button variant="outline" size="sm">Ver documento</Button>
+                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -317,7 +320,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                       <h4 className="font-semibold">PEI 2024 - 2º Trimestre</h4>
                       <p className="text-sm text-muted-foreground">15/03/2024 - Profª Marina Santos</p>
                     </div>
-                    <Button variant="outline" size="sm">Ver documento</Button>
+                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -327,18 +330,18 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
 
         <div className="flex justify-between gap-3 mt-6 pt-6 border-t">
           <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="outline" disabled aria-describedby="pei-exemplo">
               <Download className="w-4 h-4 mr-2" />
               Baixar PDF
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" disabled aria-describedby="pei-exemplo">
               <Printer className="w-4 h-4 mr-2" />
               Imprimir
             </Button>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline">✏️ Editar PEI</Button>
-            <Button>📋 Nova Revisão</Button>
+            <Button variant="outline" disabled aria-describedby="pei-exemplo">✏️ Editar PEI</Button>
+            <Button disabled aria-describedby="pei-exemplo">📋 Nova Revisão</Button>
           </div>
         </div>
       </DialogContent>
