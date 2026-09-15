@@ -47,7 +47,6 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
   const [local, setLocal] = useState('');
   const [objetivos, setObjetivos] = useState('');
   const [observacoes, setObservacoes] = useState('');
-  const [lembretes, setLembretes] = useState<string[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
 
   // Each opening starts an empty form.
@@ -62,19 +61,12 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
     setLocal('');
     setObjetivos('');
     setObservacoes('');
-    setLembretes([]);
     setErrors([]);
   }, [open]);
 
   const handleProfissionalToggle = (prof: string) => {
     setSelectedProfissionais(prev =>
       prev.includes(prof) ? prev.filter(p => p !== prof) : [...prev, prof]
-    );
-  };
-
-  const handleLembreteToggle = (lembrete: string) => {
-    setLembretes(prev =>
-      prev.includes(lembrete) ? prev.filter(l => l !== lembrete) : [...prev, lembrete]
     );
   };
 
@@ -278,8 +270,9 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
                 <div key={lembrete} className="flex items-center space-x-2">
                   <Checkbox
                     id={lembrete}
-                    checked={lembretes.includes(lembrete)}
-                    onCheckedChange={() => handleLembreteToggle(lembrete)}
+                    checked={false}
+                    disabled
+                    aria-describedby="lembretes-indisponiveis"
                   />
                   <label
                     htmlFor={lembrete}
@@ -290,6 +283,9 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange }: NovoAtendimentoDia
                 </div>
               ))}
             </div>
+            <p id="lembretes-indisponiveis" className="text-xs text-muted-foreground">
+              Lembretes não são enviados neste protótipo.
+            </p>
           </div>
         </div>
 

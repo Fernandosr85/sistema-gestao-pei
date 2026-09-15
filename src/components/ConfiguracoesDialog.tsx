@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { CalendarIntegrations } from '@/components/CalendarIntegrations';
 import { DEMO_USER_NAME } from '@/config/institution';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface ConfiguracoesDialogProps {
   open: boolean;
@@ -30,6 +31,12 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
             Configurações - {DEMO_USER_NAME}
           </DialogTitle>
         </DialogHeader>
+
+        <DemoDataNotice
+          id="configuracoes-ilustrativas"
+          subject="As preferências desta tela"
+          detail="Nenhuma delas é salva nem aplicada ao sistema, e nenhuma notificação é enviada; os campos estão desabilitados."
+        />
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-6">
@@ -61,26 +68,27 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
           {/* NOTIFICAÇÕES */}
           <TabsContent value="notificacoes" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Notificações por Email</CardTitle>
-                <CardDescription>Enviar para: professor.demo@example.org</CardDescription>
+                <CardDescription>Nenhum e-mail é enviado neste protótipo.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email1" defaultChecked />
+                  <Checkbox id="email1" />
                   <label htmlFor="email1" className="text-sm">Resumo diário (às 18h)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email2" defaultChecked />
+                  <Checkbox id="email2" />
                   <label htmlFor="email2" className="text-sm">Alertas de prazos (3 dias antes)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email3" defaultChecked />
+                  <Checkbox id="email3" />
                   <label htmlFor="email3" className="text-sm">Mensagens de famílias</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="email4" defaultChecked />
+                  <Checkbox id="email4" />
                   <label htmlFor="email4" className="text-sm">Novos comentários em observações</label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -94,7 +102,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
                 <div className="pt-4">
                   <Label>Frequência de resumos:</Label>
-                  <RadioGroup defaultValue="diario" className="mt-2">
+                  <RadioGroup defaultValue="nunca" className="mt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="diario" id="freq1" />
                       <label htmlFor="freq1" className="text-sm">Diário</label>
@@ -118,19 +126,19 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push1" defaultChecked />
+                  <Checkbox id="push1" />
                   <label htmlFor="push1" className="text-sm">Mensagens urgentes de famílias</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push2" defaultChecked />
+                  <Checkbox id="push2" />
                   <label htmlFor="push2" className="text-sm">Alertas de crises (alunos)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push3" defaultChecked />
+                  <Checkbox id="push3" />
                   <label htmlFor="push3" className="text-sm">Lembretes de reuniões (30 min antes)</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="push4" defaultChecked />
+                  <Checkbox id="push4" />
                   <label htmlFor="push4" className="text-sm">Tarefas com vencimento hoje</label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -140,7 +148,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
                 <div className="pt-4 space-y-4">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="dnd" defaultChecked />
+                    <Checkbox id="dnd" />
                     <label htmlFor="dnd" className="text-sm font-medium">Ativar Não Perturbe em horários específicos</label>
                   </div>
                   <div className="ml-6 space-y-2">
@@ -151,7 +159,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                       <Input type="time" defaultValue="07:00" className="w-32" />
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="dnd-weekend" defaultChecked />
+                      <Checkbox id="dnd-weekend" />
                       <label htmlFor="dnd-weekend" className="text-sm">Sábados e Domingos</label>
                     </div>
                   </div>
@@ -165,23 +173,21 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="sys1" defaultChecked />
-                  <label htmlFor="sys1" className="text-sm">Mostrar badge com contador no ícone 🔔</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="sys2" defaultChecked />
+                  <Checkbox id="sys2" />
                   <label htmlFor="sys2" className="text-sm">Som ao receber notificação</label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="sys3" defaultChecked />
+                  <Checkbox id="sys3" />
                   <label htmlFor="sys3" className="text-sm">Notificações desktop (navegador)</label>
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* APARÊNCIA */}
           <TabsContent value="aparencia" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Tema</CardTitle>
@@ -201,10 +207,6 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                     <label htmlFor="theme3" className="text-sm">Automático (segue sistema)</label>
                   </div>
                 </RadioGroup>
-
-                <div className="mt-6 p-4 border rounded-lg bg-muted">
-                  <p className="text-sm text-muted-foreground">Preview do tema selecionado</p>
-                </div>
               </CardContent>
             </Card>
 
@@ -291,6 +293,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* PRIVACIDADE */}
@@ -317,6 +320,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
           {/* IDIOMA */}
           <TabsContent value="idioma" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Idioma e Região</CardTitle>
@@ -383,10 +387,12 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
 
           {/* ACESSIBILIDADE */}
           <TabsContent value="acessibilidade" className="space-y-6">
+            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Visual</CardTitle>
@@ -433,7 +439,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex items-center space-x-2 mb-2">
-                    <Checkbox id="acc5" defaultChecked />
+                    <Checkbox id="acc5" />
                     <label htmlFor="acc5" className="text-sm">Atalhos de teclado habilitados</label>
                   </div>
                   <Button variant="link" className="p-0 h-auto">Ver lista de atalhos</Button>
@@ -470,19 +476,19 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 <div>
                   <Label htmlFor="cache">Cache local</Label>
                   <div className="flex items-center gap-2 mt-2">
-                    <p className="text-sm">Tamanho: 127 MB</p>
                     <Button variant="outline" size="sm">Limpar cache</Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
+            </fieldset>
           </TabsContent>
         </Tabs>
 
         <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button variant="outline">Restaurar Padrões</Button>
-          <Button>
+          <Button variant="outline" disabled aria-describedby="configuracoes-ilustrativas">Restaurar Padrões</Button>
+          <Button disabled aria-describedby="configuracoes-ilustrativas">
             <Settings className="h-4 w-4 mr-2" />
             Salvar
           </Button>

@@ -92,15 +92,20 @@ export function EditarCadastroDialog({ open, onOpenChange, studentName }: Editar
                   <AvatarImage src="" />
                   <AvatarFallback className="text-lg">AC</AvatarFallback>
                 </Avatar>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Camera className="w-4 h-4 mr-2" />
-                    Alterar Foto
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Remover
-                  </Button>
+                <div className="space-y-1">
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" disabled aria-describedby="foto-aluno-indisponivel">
+                      <Camera className="w-4 h-4 mr-2" />
+                      Alterar Foto
+                    </Button>
+                    <Button variant="outline" size="sm" disabled aria-describedby="foto-aluno-indisponivel">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Remover
+                    </Button>
+                  </div>
+                  <p id="foto-aluno-indisponivel" className="text-xs text-muted-foreground">
+                    Fotos não são armazenadas neste protótipo.
+                  </p>
                 </div>
               </div>
             </div>
@@ -142,9 +147,12 @@ export function EditarCadastroDialog({ open, onOpenChange, studentName }: Editar
               <Label>Último Laudo</Label>
               <div className="flex items-center gap-2">
                 <Input type="date" defaultValue="2024-02-01" />
-                <Button variant="outline" size="sm">📄 Ver Documento</Button>
-                <Button variant="outline" size="sm">📎 Anexar Novo</Button>
+                <Button variant="outline" size="sm" disabled aria-describedby="laudo-indisponivel">📄 Ver Documento</Button>
+                <Button variant="outline" size="sm" disabled aria-describedby="laudo-indisponivel">📎 Anexar Novo</Button>
               </div>
+              <p id="laudo-indisponivel" className="text-xs text-muted-foreground">
+                Documentos não são armazenados neste protótipo.
+              </p>
             </div>
           </TabsContent>
 

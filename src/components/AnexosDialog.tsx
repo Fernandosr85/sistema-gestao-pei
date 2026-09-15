@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Upload, FileText, Image, Video, Download, Eye, Trash2 } from 'lucide-react';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface AnexosDialogProps {
   open: boolean;
@@ -66,6 +67,12 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
           <p className="text-sm text-muted-foreground">Total de documentos: {totalAnexos}</p>
         </DialogHeader>
 
+        <DemoDataNotice
+          id="anexos-indisponiveis"
+          subject="Os documentos, laudos, fotos e PEIs listados"
+          detail="Nenhum arquivo é armazenado neste protótipo: enviar, buscar, visualizar, baixar, excluir, compartilhar e imprimir estão desabilitados."
+        />
+
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -75,9 +82,11 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
+                disabled
+                aria-describedby="anexos-indisponiveis"
               />
             </div>
-            <Button>
+            <Button disabled aria-describedby="anexos-indisponiveis">
               <Upload className="w-4 h-4 mr-2" />
               Adicionar Anexo
             </Button>
@@ -118,15 +127,15 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Eye className="w-4 h-4 mr-1" />
                           Visualizar
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Download className="w-4 h-4 mr-1" />
                           Baixar
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" disabled aria-label={`Excluir ${laudo.nome}`} aria-describedby="anexos-indisponiveis">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -156,11 +165,11 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Eye className="w-4 h-4 mr-1" />
                           Visualizar
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
                           <Download className="w-4 h-4 mr-1" />
                           Baixar
                         </Button>
@@ -185,14 +194,14 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
                   </Card>
                 ))}
               </div>
-              <Button variant="outline" className="w-full">Ver todas as fotos →</Button>
+              <Button variant="outline" className="w-full" disabled aria-describedby="anexos-indisponiveis">Ver todas as fotos →</Button>
             </TabsContent>
 
             <TabsContent value="videos" className="space-y-4 mt-4">
               <div className="text-center py-12 text-muted-foreground">
                 <Video className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum vídeo anexado ainda</p>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
                   <Upload className="w-4 h-4 mr-2" />
                   Adicionar primeiro vídeo
                 </Button>
@@ -203,7 +212,7 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
               <div className="text-center py-12 text-muted-foreground">
                 <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum relatório anexado ainda</p>
-                <Button variant="outline" size="sm" className="mt-4">
+                <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
                   <Upload className="w-4 h-4 mr-2" />
                   Adicionar primeiro relatório
                 </Button>
@@ -213,13 +222,13 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
         </div>
 
         <div className="flex justify-between gap-3 mt-6 pt-6 border-t">
-          <Button variant="outline">
+          <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">
             <Download className="w-4 h-4 mr-2" />
             Baixar Todos
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline">📧 Compartilhar</Button>
-            <Button variant="outline">🖨️ Imprimir Lista</Button>
+            <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">📧 Compartilhar</Button>
+            <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">🖨️ Imprimir Lista</Button>
           </div>
         </div>
       </DialogContent>

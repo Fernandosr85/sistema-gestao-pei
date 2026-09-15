@@ -9,7 +9,6 @@ import { formatLocalDate } from '@/lib/date';
 interface ResourceCardProps {
   resource: Resource;
   onView: (resource: Resource) => void;
-  onDownload: (resource: Resource) => void;
   onFavorite: (resource: Resource) => void;
 }
 
@@ -39,7 +38,7 @@ const resourceTypeLabels: Record<string, string> = {
   'outro': '📦 Outro'
 };
 
-export function ResourceCard({ resource, onView, onDownload, onFavorite }: ResourceCardProps) {
+export function ResourceCard({ resource, onView, onFavorite }: ResourceCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
       <div className="relative">
@@ -128,7 +127,8 @@ export function ResourceCard({ resource, onView, onDownload, onFavorite }: Resou
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onDownload(resource)}
+          disabled
+          aria-describedby="download-indisponivel"
           className="flex-1"
         >
           <Download className="h-4 w-4 mr-1" />

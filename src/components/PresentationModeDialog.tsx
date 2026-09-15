@@ -387,14 +387,17 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                     <Label htmlFor="interactive">Apresentação interativa (navegável no navegador)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="video" id="video" />
+                    <RadioGroupItem value="video" id="video" disabled aria-describedby="formato-indisponivel" />
                     <Label htmlFor="video">Vídeo MP4 (gravado com narração)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="pdf" id="pdf" />
+                    <RadioGroupItem value="pdf" id="pdf" disabled aria-describedby="formato-indisponivel" />
                     <Label htmlFor="pdf">PDF para impressão</Label>
                   </div>
                 </RadioGroup>
+                <p id="formato-indisponivel" className="text-xs text-muted-foreground">
+                  Vídeo e PDF não são gerados neste protótipo; só a apresentação interativa funciona.
+                </p>
               </div>
             </CardContent>
           </Card>

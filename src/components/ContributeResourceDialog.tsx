@@ -345,15 +345,15 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
 
               {step === 3 && (
                 <div className="space-y-4">
-                  <p className="rounded-md border p-3 text-sm text-muted-foreground">
+                  <p id="envio-arquivos-indisponivel" className="rounded-md border p-3 text-sm text-muted-foreground">
                     O envio de arquivos ainda não está disponível nesta versão: o recurso é salvo sem arquivo.
                   </p>
 
                   <div>
-                    <Label>📁 Arquivo Principal *</Label>
-                    <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
+                    <Label>📁 Arquivo Principal</Label>
+                    <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
                       <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-sm font-medium mb-1">Arraste ou clique para upload</p>
+                      <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
                       <p className="text-xs text-muted-foreground mb-2">
                         📄 Formatos aceitos: PDF, DOC, DOCX, PPT, PPTX, ZIP
                       </p>
@@ -362,10 +362,10 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>🖼️ Imagem de Capa/Thumbnail *</Label>
-                    <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
+                    <Label>🖼️ Imagem de Capa/Thumbnail</Label>
+                    <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
                       <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-sm font-medium mb-1">Arraste ou clique para upload</p>
+                      <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
                       <p className="text-xs text-muted-foreground mb-2">
                         📷 Formatos aceitos: JPG, PNG
                       </p>
@@ -380,6 +380,8 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                     <Input
                       placeholder="Insira link do YouTube/Vimeo"
                       className="mt-2"
+                      disabled
+                      aria-describedby="envio-arquivos-indisponivel"
                     />
                   </div>
                 </div>

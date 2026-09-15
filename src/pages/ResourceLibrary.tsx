@@ -55,10 +55,6 @@ export default function ResourceLibrary() {
     setDetailModalOpen(true);
   };
 
-  const handleDownload = (resource: Resource) => {
-    toast.success(`Baixando: ${resource.title}`);
-  };
-
   const handleFavorite = (resource: Resource) => {
     toast.success(`${resource.title} adicionado aos favoritos!`);
   };
@@ -317,8 +313,11 @@ export default function ResourceLibrary() {
               </div>
             ) : (
               <>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-1">
                   {filteredResources.length} recursos encontrados
+                </p>
+                <p id="download-indisponivel" className="text-xs text-muted-foreground mb-4">
+                  Baixar está indisponível: os recursos não têm arquivo neste protótipo.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredResources.map(resource => (
@@ -326,7 +325,6 @@ export default function ResourceLibrary() {
                       key={resource.id}
                       resource={resource}
                       onView={handleViewResource}
-                      onDownload={handleDownload}
                       onFavorite={handleFavorite}
                     />
                   ))}
@@ -343,7 +341,6 @@ export default function ResourceLibrary() {
         reviews={state.reviews.filter(r => r.resourceId === selectedResource?.id)}
         open={detailModalOpen}
         onOpenChange={setDetailModalOpen}
-        onDownload={handleDownload}
         onFavorite={handleFavorite}
       />
 

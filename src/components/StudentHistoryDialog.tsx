@@ -167,6 +167,9 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">HISTÓRICO ACADÊMICO - {studentName.toUpperCase()}</DialogTitle>
+          <p id="historico-acoes-indisponiveis" className="text-xs text-muted-foreground">
+            Anexos e exportação do histórico não estão disponíveis neste protótipo.
+          </p>
         </DialogHeader>
 
         {/* Filtros */}
@@ -254,7 +257,7 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
                               )}
                               {event.attachments && (
                                 <div className="mt-2">
-                                  <Button variant="outline" size="sm" className="h-7 text-xs">
+                                  <Button variant="outline" size="sm" className="h-7 text-xs" disabled aria-describedby="historico-acoes-indisponiveis">
                                     {event.attachments}
                                   </Button>
                                 </div>
@@ -305,7 +308,7 @@ export const StudentHistoryDialog = ({ open, onOpenChange, studentName }: Studen
         </Card>
 
         <div className="flex justify-center">
-          <Button variant="outline">
+          <Button variant="outline" disabled aria-describedby="historico-acoes-indisponiveis">
             <Download className="h-4 w-4 mr-2" />
             Exportar histórico completo
           </Button>

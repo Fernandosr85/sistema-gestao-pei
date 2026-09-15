@@ -176,37 +176,43 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           <div className="space-y-2">
             <Label>📎 Anexar evidências</Label>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
                 <Camera className="w-4 h-4 mr-2" />
                 Foto
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
                 <Video className="w-4 h-4 mr-2" />
                 Vídeo
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
                 <FileText className="w-4 h-4 mr-2" />
                 Documento
               </Button>
             </div>
+            <p id="evidencias-indisponiveis" className="text-xs text-muted-foreground">
+              Anexos não são armazenados neste protótipo.
+            </p>
           </div>
 
           <div className="space-y-2">
             <Label>🔔 Notificar</Label>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Checkbox id="notif-familia" defaultChecked />
+                <Checkbox id="notif-familia" checked={false} disabled aria-describedby="notificar-indisponivel" />
                 <Label htmlFor="notif-familia">Família</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="notif-coord" />
+                <Checkbox id="notif-coord" checked={false} disabled aria-describedby="notificar-indisponivel" />
                 <Label htmlFor="notif-coord">Coordenação</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <Checkbox id="notif-apoio" />
+                <Checkbox id="notif-apoio" checked={false} disabled aria-describedby="notificar-indisponivel" />
                 <Label htmlFor="notif-apoio">Profissional de apoio</Label>
               </div>
             </div>
+            <p id="notificar-indisponivel" className="text-xs text-muted-foreground">
+              Nenhuma notificação é enviada neste protótipo.
+            </p>
           </div>
 
           <Card className="bg-muted/50">

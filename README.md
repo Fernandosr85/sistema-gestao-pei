@@ -144,7 +144,7 @@ descartados, com aviso na tela.
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação PDF/Excel/Word | ❌ Não implementado |
 | Sincronização Google Calendar / Outlook | ❌ Não implementada; os controles aparecem desabilitados, com o motivo |
-| Notificações | ❌ Apenas a interface |
+| Notificações | ❌ Não implementadas; os controles aparecem desabilitados |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
 | Testes automatizados | ❌ Não implementados |
 

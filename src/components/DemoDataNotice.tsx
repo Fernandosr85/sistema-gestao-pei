@@ -7,6 +7,8 @@ interface DemoDataNoticeProps {
   /** Extra sentence for screens that imply a model, forecast or measurement. */
   detail?: string;
   className?: string;
+  /** Lets disabled controls point at this notice with aria-describedby. */
+  id?: string;
 }
 
 /**
@@ -21,11 +23,13 @@ const DemoDataNotice = ({
   subject = "Os dados desta tela",
   detail,
   className = "",
+  id,
 }: DemoDataNoticeProps) => {
   if (!DEMO_MODE) return null;
 
   return (
     <div
+      id={id}
       role="note"
       aria-label="Aviso sobre dados de demonstração"
       className={`flex items-start gap-3 rounded-lg border border-[hsl(var(--alert-info-border))] bg-[hsl(var(--alert-info-bg))] p-4 text-[hsl(var(--alert-info-text))] ${className}`}

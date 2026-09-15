@@ -14,6 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Progress } from '@/components/ui/progress';
 import { DEMO_USER_NAME } from '@/config/institution';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 const MinhaAgenda = () => {
   const [currentMonth, setCurrentMonth] = useState('Novembro 2024');
@@ -62,7 +63,7 @@ const MinhaAgenda = () => {
         </div>
         <Dialog open={isNewEventDialogOpen} onOpenChange={setIsNewEventDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="gap-2">
+            <Button className="gap-2" disabled aria-describedby="agenda-exemplo">
               <Plus className="h-4 w-4" />
               Adicionar Evento
             </Button>
@@ -209,6 +210,13 @@ const MinhaAgenda = () => {
         </Dialog>
       </div>
 
+      <DemoDataNotice
+        id="agenda-exemplo"
+        className="mb-6"
+        subject="Os eventos, tarefas, horários e alertas desta agenda"
+        detail="Esta agenda é um exemplo fixo: não é possível adicionar eventos, marcar tarefas nem navegar entre semanas ou dias."
+      />
+
       <Tabs value={selectedView} onValueChange={setSelectedView}>
         <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="mes">📅 Mês</TabsTrigger>
@@ -220,11 +228,11 @@ const MinhaAgenda = () => {
         {/* VISUALIZAÇÃO SEMANAL */}
         <TabsContent value="semana" className="space-y-6">
           <div className="flex items-center justify-between mb-4">
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" disabled aria-label="Semana anterior" aria-describedby="agenda-exemplo">
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <h2 className="text-xl font-semibold">{currentMonth}: 25/11 a 01/12/2024</h2>
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" disabled aria-label="Próxima semana" aria-describedby="agenda-exemplo">
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -300,8 +308,8 @@ const MinhaAgenda = () => {
                   <CardDescription>Detalhes do dia</CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon"><ChevronLeft className="h-4 w-4" /></Button>
-                  <Button variant="outline" size="icon"><ChevronRight className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" disabled aria-label="Dia anterior" aria-describedby="agenda-exemplo"><ChevronLeft className="h-4 w-4" /></Button>
+                  <Button variant="outline" size="icon" disabled aria-label="Próximo dia" aria-describedby="agenda-exemplo"><ChevronRight className="h-4 w-4" /></Button>
                 </div>
               </div>
             </CardHeader>
@@ -318,8 +326,8 @@ const MinhaAgenda = () => {
                   <p className="text-sm text-muted-foreground">Alunos PEI: Maria, Pedro, João (3)</p>
                   <p className="text-sm text-muted-foreground">Conteúdo: Matemática - Adição até 20</p>
                   <div className="flex gap-2 mt-2">
-                    <Button variant="link" size="sm" className="p-0 h-auto">Ver planejamento</Button>
-                    <Button variant="link" size="sm" className="p-0 h-auto">Materiais</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="agenda-exemplo">Ver planejamento</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="agenda-exemplo">Materiais</Button>
                   </div>
                 </div>
 
@@ -344,7 +352,7 @@ const MinhaAgenda = () => {
                     <div className="space-y-2">
                       {tarefasDia.map((tarefa) => (
                         <div key={tarefa.id} className="flex items-center gap-2">
-                          <Checkbox id={`tarefa-${tarefa.id}`} checked={tarefa.concluida} />
+                          <Checkbox id={`tarefa-${tarefa.id}`} checked={tarefa.concluida} disabled aria-describedby="agenda-exemplo" />
                           <label htmlFor={`tarefa-${tarefa.id}`} className="text-sm flex-1">
                             {tarefa.title}
                             {tarefa.vence && (
@@ -356,7 +364,7 @@ const MinhaAgenda = () => {
                         </div>
                       ))}
                     </div>
-                    <Button variant="outline" size="sm" className="mt-3">Iniciar bloco de tarefas</Button>
+                    <Button variant="outline" size="sm" className="mt-3" disabled aria-describedby="agenda-exemplo">Iniciar bloco de tarefas</Button>
                   </div>
                 </div>
               </div>

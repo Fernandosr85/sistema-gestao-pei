@@ -51,20 +51,23 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl">DESEMPENHO - {studentName.toUpperCase()}</DialogTitle>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
                 <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
                 <Share2 className="h-4 w-4 mr-2" />
                 Compartilhar
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
                 <Printer className="h-4 w-4 mr-2" />
                 Imprimir
               </Button>
             </div>
           </div>
+          <p id="desempenho-acoes-indisponiveis" className="text-xs text-muted-foreground">
+            Exportar, compartilhar e imprimir não estão implementados neste protótipo.
+          </p>
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="w-full">

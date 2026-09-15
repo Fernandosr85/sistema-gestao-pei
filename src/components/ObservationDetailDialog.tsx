@@ -386,11 +386,11 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               <Edit className="h-4 w-4 mr-2" />
               Editar Observação
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <FileDown className="h-4 w-4 mr-2" />
               Exportar PDF
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
               <Mail className="h-4 w-4 mr-2" />
               Reenviar Notificação
             </Button>
@@ -398,6 +398,9 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               <Trash2 className="h-4 w-4 mr-2" />
               Excluir
             </Button>
+            <p id="observacao-acoes-indisponiveis" className="w-full text-xs text-muted-foreground">
+              Exportação e envio de notificações não estão implementados neste protótipo.
+            </p>
           </div>
         </div>
       </DialogContent>

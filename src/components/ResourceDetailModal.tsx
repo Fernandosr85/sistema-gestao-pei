@@ -20,7 +20,6 @@ interface ResourceDetailModalProps {
   reviews: ResourceReview[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onDownload: (resource: Resource) => void;
   onFavorite: (resource: Resource) => void;
 }
 
@@ -29,7 +28,6 @@ export function ResourceDetailModal({
   reviews,
   open,
   onOpenChange,
-  onDownload,
   onFavorite
 }: ResourceDetailModalProps) {
   const { dispatch } = useDemoStore();
@@ -71,12 +69,15 @@ export function ResourceDetailModal({
                   >
                     <Heart className="h-4 w-4" />
                   </Button>
-                  <Button onClick={() => onDownload(resource)}>
+                  <Button disabled aria-describedby="download-detalhe-indisponivel">
                     <Download className="h-4 w-4 mr-2" />
                     Baixar
                   </Button>
                 </div>
               </div>
+              <p id="download-detalhe-indisponivel" className="text-xs text-muted-foreground">
+                Baixar está indisponível: os recursos não têm arquivo neste protótipo.
+              </p>
             </DialogHeader>
 
             {/* Preview */}
