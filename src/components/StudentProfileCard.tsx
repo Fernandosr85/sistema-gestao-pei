@@ -1,49 +1,14 @@
 import { MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { studentProfileSections } from '@/lib/student';
 import type { Student } from '@/types';
 
 interface StudentProfileCardProps {
   student: Student;
 }
 
-interface ProfileSection {
-  title: string;
-  entries: Array<{ label: string; value?: string }>;
-}
-
-/** Fields filled in the new-student form, which were saved but never displayed. */
-const sectionsFor = (student: Student): ProfileSection[] => [
-  {
-    title: 'Comunicação',
-    entries: [
-      { label: 'Compreensão da fala', value: student.comunicacao?.compreensaoFala },
-      { label: 'Palavras conhecidas', value: student.comunicacao?.palavrasConhecidas },
-    ],
-  },
-  {
-    title: 'Comportamento',
-    entries: [
-      { label: 'Comportamentos desafiadores', value: student.comportamento?.comportamentosDesafiadores },
-      { label: 'Estratégias para acalmar', value: student.comportamento?.estrategiasAcalmar },
-      { label: 'Situações de estresse', value: student.comportamento?.situacoesEstresse },
-    ],
-  },
-  {
-    title: 'Rotina',
-    entries: [
-      { label: 'Horário de acordar', value: student.rotina?.horarioAcordar },
-      { label: 'Horário de dormir', value: student.rotina?.horarioDormir },
-      { label: 'Come sozinha?', value: student.rotina?.comeSozinha },
-      { label: 'Usa o banheiro sozinha?', value: student.rotina?.usaBanheiroSozinha },
-      { label: 'Atividades preferidas', value: student.rotina?.atividadesPreferidas },
-    ],
-  },
-];
-
 const StudentProfileCard = ({ student }: StudentProfileCardProps) => {
-  const sections = sectionsFor(student)
-    .map((section) => ({ ...section, entries: section.entries.filter((entry) => entry.value?.trim()) }))
-    .filter((section) => section.entries.length > 0);
+  const sections = studentProfileSections(student);
 
   return (
     <Card>

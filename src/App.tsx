@@ -17,6 +17,7 @@ import ResourceLibrary from "./pages/ResourceLibrary";
 import AgendaAtendimentos from "./pages/AgendaAtendimentos";
 import Gestao from "./pages/Gestao";
 import MinhaAgenda from "./pages/MinhaAgenda";
+import PrintableReport from "./pages/PrintableReport";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import DemoStorageNotice from "./components/DemoStorageNotice";
@@ -32,7 +33,7 @@ const App = () => (
         <div className="min-h-screen bg-background">
           <a
             href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground print:hidden"
           >
             Pular para o conteúdo
           </a>
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/biblioteca-recursos" element={<ResourceLibrary />} />
             <Route path="/agenda-atendimentos" element={<AgendaAtendimentos />} />
             <Route path="/minha-agenda" element={<MinhaAgenda />} />
+            <Route path="/relatorio" element={<PrintableReport />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

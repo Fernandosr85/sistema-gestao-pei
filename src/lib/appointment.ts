@@ -12,3 +12,12 @@ export const appointmentTypes: AppointmentType[] = [
 /** Still ahead: scheduled, including appointments moved to a new date or time. */
 export const isOpenAppointment = (status: AppointmentStatus): boolean =>
   status === 'agendado' || status === 'remarcado';
+
+const appointmentStatusLabels: Record<AppointmentStatus, string> = {
+  agendado: 'Agendado',
+  remarcado: 'Remarcado',
+  realizado: 'Realizado',
+  cancelado: 'Cancelado',
+};
+
+export const appointmentStatusLabel = (status: AppointmentStatus): string => appointmentStatusLabels[status];
