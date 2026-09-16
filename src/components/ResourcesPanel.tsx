@@ -53,7 +53,7 @@ const ResourcesPanel = () => {
         { label: 'Taxa ocupação', value: null }
       ],
       coverage: 92,
-      additionalInfo: 'Necessário: +2 salas (previsão)',
+      additionalInfo: 'Necessário: +2 salas',
       link: { label: 'Ir para a Agenda de Atendimentos', to: '/agenda-atendimentos' }
     }
   ];
@@ -65,7 +65,7 @@ const ResourcesPanel = () => {
           RECURSOS E INTERVENÇÕES
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Distribuição e efetividade dos recursos disponíveis
+          Distribuição e cobertura dos recursos disponíveis
         </p>
       </CardHeader>
       <CardContent>

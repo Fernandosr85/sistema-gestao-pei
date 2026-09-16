@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Brain, ChevronDown, ChevronUp, TrendingUp, Users, Lightbulb, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Target, ChevronDown, ChevronUp, TrendingUp, Users, Lightbulb, AlertCircle, AlertTriangle } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 const projectionData = [
@@ -45,10 +45,37 @@ interface MiniGraficoProps {
 interface CenarioCardProps {
   titulo: string;
   objetivos: string;
-  probabilidade: string;
   cor: 'warning' | 'primary' | 'success';
   destaque?: boolean;
 }
+
+/*
+ * Vocabulário. O CLAUDE.md permite mostrar projeção com aviso, mas proíbe descrever número fixo
+ * como saído de modelo, predição ou confiança estatística. Esta tela dizia "com base nos dados
+ * dos últimos 3 meses, prevê-se", dava probabilidade aos cenários (15%, 87% e 35%, somando 137%),
+ * "encontrava 156 casos similares" com percentual de semelhança, media "taxa de sucesso" de
+ * estratégias e mostrava um "Índice ilustrativo" de 87% — o mesmo 87 da `confianca` em mockData.
+ * As projeções ficam, como projeções digitadas; as alegações de inferência saem.
+ */
+const casosExemplo = [1, 2, 3];
+
+const estrategiasExemplo = [
+  {
+    nome: "Método Fônico Multissensorial",
+    area: "Alfabetização",
+    prioridade: "alta"
+  },
+  {
+    nome: "Zona de Descompressão + Timer Visual",
+    area: "Regulação Emocional",
+    prioridade: "alta"
+  },
+  {
+    nome: "Grupos Estruturados (2-3 alunos)",
+    area: "Socialização",
+    prioridade: "média"
+  }
+];
 
 const PredictiveAnalysis = () => {
   const [expandido, setExpandido] = useState(false);
@@ -60,7 +87,7 @@ const PredictiveAnalysis = () => {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
-              <Brain className="h-6 w-6" />
+              <Target className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
               <CardTitle className="text-xl">PROJEÇÃO ILUSTRATIVA</CardTitle>
@@ -82,7 +109,7 @@ const PredictiveAnalysis = () => {
               </>
             ) : (
               <>
-                Ver análise completa <ChevronDown className="ml-2 w-4 h-4" />
+                Ver detalhes do exemplo <ChevronDown className="ml-2 w-4 h-4" />
               </>
             )}
           </Button>
@@ -92,21 +119,20 @@ const PredictiveAnalysis = () => {
       <CardContent className="p-6">
         <DemoDataNotice
           className="mb-6"
-          subject="As projeções, cenários e percentuais de confiança"
-          detail="Nenhum modelo estatístico ou de machine learning é executado nesta tela, e nenhuma inferência sobre um aluno individual pode ser tirada dela."
+          subject="As projeções, os cenários, os casos, as estratégias e os alertas desta seção"
+          detail="Nenhum cálculo é feito: não há modelo, busca de casos nem medida de eficácia, e nada sobre um aluno individual pode ser concluído desta tela."
         />
 
         {/* Resumo - Sempre visível. Sem nome de aluno: o cenário ilustrativo não nomeia aluno. */}
         <div className="mb-6">
           <p className="text-foreground mb-4">
-            Com base nos dados dos últimos <strong>3 meses</strong>, prevê-se que o 
-            aluno do exemplo alcance o objetivo de
-            <strong className="text-primary"> "leitura fluente de textos curtos"</strong> em 
-            aproximadamente <strong>4 meses</strong>, mantendo o ritmo atual de evolução.
+            No exemplo, a projeção digitada é que o aluno alcance o objetivo de
+            <strong className="text-primary"> "leitura fluente de textos curtos"</strong> em
+            cerca de <strong>4 meses</strong>. É um número fixo, não calculado a partir de registros.
           </p>
 
-          {/* Mini-gráficos resumo */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Mini-gráficos resumo. Saiu o "Índice ilustrativo" de 87%: era a confiança com outro nome. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <MiniGrafico 
               titulo="Projeção Temporal"
               valor="4 meses"
@@ -115,11 +141,6 @@ const PredictiveAnalysis = () => {
             <MiniGrafico 
               titulo="Evolução vs. Turma"
               valor="Acima da média"
-              tendencia="positiva"
-            />
-            <MiniGrafico 
-              titulo="Índice ilustrativo"
-              valor="87%"
               tendencia="positiva"
             />
           </div>
@@ -135,21 +156,20 @@ const PredictiveAnalysis = () => {
                 onClick={() => setAbaAtiva('projecao')}
                 icone={<TrendingUp className="w-4 h-4" />}
                 texto="Projeção Detalhada"
-                badge="3"
               />
               <TabButton
                 ativo={abaAtiva === 'casos'}
                 onClick={() => setAbaAtiva('casos')}
                 icone={<Users className="w-4 h-4" />}
-                texto="Casos Similares"
-                badge="156"
+                texto="Casos de exemplo"
+                badge={String(casosExemplo.length)}
               />
               <TabButton
                 ativo={abaAtiva === 'estrategias'}
                 onClick={() => setAbaAtiva('estrategias')}
                 icone={<Lightbulb className="w-4 h-4" />}
                 texto="Estratégias"
-                badge="8"
+                badge={String(estrategiasExemplo.length)}
               />
               <TabButton
                 ativo={abaAtiva === 'alertas'}
@@ -244,7 +264,7 @@ function ProjecaoDetalhada() {
           Projeção de Progresso - Fim do Ano Letivo
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <p className="text-sm text-muted-foreground mb-1">Situação Atual</p>
             <p className="text-3xl font-bold text-primary">6/12</p>
@@ -256,11 +276,6 @@ function ProjecaoDetalhada() {
             <p className="text-xs text-muted-foreground">
               +4 objetivos esperados
             </p>
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Índice ilustrativo</p>
-            <p className="text-3xl font-bold text-primary">87%</p>
-            <p className="text-xs text-muted-foreground">baseado em 156 casos</p>
           </div>
         </div>
 
@@ -323,24 +338,24 @@ function ProjecaoDetalhada() {
       {/* Cenários Alternativos */}
       <div>
         <h4 className="font-semibold text-foreground mb-4">Cenários Alternativos</h4>
+        <p className="text-sm text-muted-foreground mb-4">
+          Três cenários digitados. Nenhum tem probabilidade calculada.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CenarioCard
             titulo="Cenário Conservador"
             objetivos="8/12"
-            probabilidade="15%"
             cor="warning"
           />
           <CenarioCard
             titulo="Cenário Esperado"
             objetivos="10/12"
-            probabilidade="87%"
             cor="primary"
             destaque
           />
           <CenarioCard
             titulo="Cenário Otimista"
             objetivos="11/12"
-            probabilidade="35%"
             cor="success"
           />
         </div>
@@ -387,7 +402,7 @@ function AreaProgresso({ nome, atual, projetado, risco }: AreaProgressoProps) {
   );
 }
 
-function CenarioCard({ titulo, objetivos, probabilidade, cor, destaque }: CenarioCardProps) {
+function CenarioCard({ titulo, objetivos, cor, destaque }: CenarioCardProps) {
   const cores = {
     warning: 'bg-[hsl(var(--alert-warning-bg))] border-[hsl(var(--alert-warning-border))]',
     primary: 'bg-primary/5 border-primary/30',
@@ -404,13 +419,9 @@ function CenarioCard({ titulo, objetivos, probabilidade, cor, destaque }: Cenari
       <h5 className="font-semibold text-foreground mb-2">{titulo}</h5>
       <p className="text-3xl font-bold text-foreground mb-1">{objetivos}</p>
       <p className="text-sm text-muted-foreground mb-3">objetivos alcançados</p>
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">Probabilidade:</span>
-        <span className="text-sm font-bold text-foreground">{probabilidade}</span>
-      </div>
       {destaque && (
         <Badge className="mt-3 w-full justify-center bg-primary">
-          ⭐ Mais provável
+          Cenário da projeção acima
         </Badge>
       )}
     </div>
@@ -422,24 +433,18 @@ function CasosSimilaresDetalhado() {
     <div className="space-y-4">
       <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
         <p className="text-sm text-foreground">
-          📊 Encontramos <strong>156 casos similares</strong> na rede (dados fictícios) (2021-2024) 
-          com perfil próximo ao do aluno do exemplo. Veja os 3 casos mais relevantes:
+          Três casos inventados, para mostrar como a tela apresentaria histórias de outras escolas.
+          Nenhuma busca é feita: não há base de casos nem cálculo de semelhança.
         </p>
       </div>
 
       {/* Cards de casos */}
-      {[1, 2, 3].map((num) => (
+      {casosExemplo.map((num) => (
         <div key={num} className="bg-card rounded-lg p-5 border-2 border-border hover:border-primary/40 transition-all">
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground flex-shrink-0">
-              <span className="text-xl font-bold">9{num}%</span>
-            </div>
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-bold text-foreground">Caso #{num} - Escola Exemplo A</h5>
-                {num === 1 && (
-                  <Badge className="bg-primary">⭐ Mais similar</Badge>
-                )}
               </div>
               <p className="text-sm text-muted-foreground">
                 TEA Nível 2 • 9 anos • Ano letivo 2023
@@ -462,7 +467,7 @@ function CasosSimilaresDetalhado() {
 
           <div className="mb-4">
             <p className="text-xs font-semibold text-foreground mb-2">
-              ✅ Estratégias que funcionaram:
+              Estratégias usadas:
             </p>
             <div className="flex flex-wrap gap-2">
               <Badge variant="outline" className="bg-success/10">Rotina visual</Badge>
@@ -477,30 +482,12 @@ function CasosSimilaresDetalhado() {
 }
 
 function EstrategiasIA() {
-  const estrategias = [
-    {
-      nome: "Método Fônico Multissensorial",
-      area: "Alfabetização",
-      sucesso: 89,
-      prioridade: "alta"
-    },
-    {
-      nome: "Zona de Descompressão + Timer Visual",
-      area: "Regulação Emocional",
-      sucesso: 94,
-      prioridade: "alta"
-    },
-    {
-      nome: "Grupos Estruturados (2-3 alunos)",
-      area: "Socialização",
-      sucesso: 82,
-      prioridade: "média"
-    }
-  ];
-
   return (
     <div className="space-y-4">
-      {estrategias.map((estrategia, idx) => (
+      <p className="text-sm text-muted-foreground">
+        Estratégias de exemplo. Nenhuma eficácia foi medida.
+      </p>
+      {estrategiasExemplo.map((estrategia, idx) => (
         <div key={idx} className="bg-card rounded-lg p-5 border-2 border-border">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
@@ -514,13 +501,9 @@ function EstrategiasIA() {
               </div>
               <h5 className="font-bold text-foreground text-lg">{estrategia.nome}</h5>
             </div>
-            <div className="text-right ml-4">
-              <p className="text-3xl font-bold text-success">{estrategia.sucesso}%</p>
-              <p className="text-xs text-muted-foreground">taxa de sucesso</p>
-            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 mb-4 p-3 bg-muted/50 rounded-lg">
+          <div className="grid grid-cols-2 gap-3 mb-4 p-3 bg-muted/50 rounded-lg">
             <div>
               <p className="text-xs text-muted-foreground">Implementação</p>
               <p className="font-semibold text-sm text-foreground">3-4 semanas</p>
@@ -528,10 +511,6 @@ function EstrategiasIA() {
             <div>
               <p className="text-xs text-muted-foreground">Custo</p>
               <p className="font-semibold text-sm text-foreground">Baixo</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Casos na rede</p>
-              <p className="font-semibold text-sm text-foreground">67 escolas</p>
             </div>
           </div>
         </div>
@@ -558,7 +537,7 @@ function AlertasIA() {
               Progresso 25% abaixo do esperado
             </h5>
             <p className="text-sm text-[hsl(var(--alert-critical-text))] mb-4">
-              João está significativamente abaixo da projeção em leitura. 
+              O aluno do exemplo está bem abaixo da projeção em leitura.
               Intervenção recomendada nas próximas 2 semanas.
             </p>
 
@@ -627,7 +606,7 @@ function AlertasIA() {
               Progresso acima do esperado!
             </h5>
             <p className="text-sm text-muted-foreground mb-3">
-              João superou expectativas em autonomia (+15%). Considere aumentar 
+              O aluno do exemplo passou da projeção em autonomia (+15%). Considere aumentar a
               complexidade dos objetivos.
             </p>
           </div>

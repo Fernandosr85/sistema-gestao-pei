@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bot, Lightbulb, AlertTriangle } from 'lucide-react';
+import { CalendarSearch, Lightbulb, AlertTriangle } from 'lucide-react';
 
 const alerts = [
   {
     tipo: 'insight',
-    icone: Bot,
-    mensagem: 'Padrão identificado: Melhor desempenho nas terças-feiras',
+    // Era "Padrão identificado: Melhor desempenho nas terças-feiras", com ícone de robô. Nada é
+    // identificado, e o calendário ao lado tem zero observação em todas as terças do mês.
+    icone: CalendarSearch,
+    mensagem: 'Leitura do calendário ao lado: nenhuma observação às terças e quartas-feiras',
     bgColor: 'bg-[hsl(var(--alert-warning-bg))]',
     textColor: 'text-[hsl(var(--alert-warning-text))]',
     borderColor: 'border-l-[hsl(var(--alert-warning-border))]',

@@ -145,7 +145,7 @@ const BenchmarkingTable = () => {
             <div className="flex items-start gap-3 mb-4">
               <TrendingUp className="h-5 w-5 text-primary mt-1" />
               <div>
-                <h3 className="font-semibold text-foreground mb-3">INSIGHTS DO BENCHMARKING:</h3>
+                <h3 className="font-semibold text-foreground mb-3">LEITURA DO COMPARATIVO:</h3>
                 
                 <div className="space-y-3 text-sm">
                   <div>

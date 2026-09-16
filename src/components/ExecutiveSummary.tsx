@@ -2,6 +2,7 @@ import { Users, FileText, GraduationCap, TrendingUp, Target, AlertTriangle, Hear
 import { Card, CardContent } from '@/components/ui/card';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { illustrativeScenario } from '@/config/institution';
+import { scenarioAlerts } from '@/data/scenarioAlerts';
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -48,6 +49,9 @@ const MetricCard = ({ icon, value, label, sublabel, trend, trendValue, status }:
 };
 
 const ExecutiveSummary = () => {
+  // Contados da mesma lista que o painel de alertas mostra logo abaixo, na mesma aba. Eram
+  // "17 alertas ativos, 5 críticos", digitados, ao lado de uma lista com 5 e 2.
+  const criticalAlerts = scenarioAlerts.filter((alert) => alert.type === 'critical').length;
   const metrics = [
     {
       icon: <Users className="h-5 w-5 text-primary" />,
@@ -96,11 +100,11 @@ const ExecutiveSummary = () => {
     },
     {
       icon: <AlertTriangle className="h-5 w-5 text-primary" />,
-      value: 17,
+      value: scenarioAlerts.length,
       label: 'ALERT',
       sublabel: 'ativos',
       trend: 'neutral' as const,
-      trendValue: '🔴 5 crít',
+      trendValue: `🔴 ${criticalAlerts} crít`,
       status: 'error' as const
     },
     {

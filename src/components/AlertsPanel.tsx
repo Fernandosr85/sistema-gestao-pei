@@ -2,81 +2,17 @@ import { AlertTriangle, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-interface Alert {
-  id: string;
-  type: 'critical' | 'warning' | 'info';
-  title: string;
-  description: string;
-  details: string[];
-}
+import { scenarioAlerts, type ScenarioAlert } from '@/data/scenarioAlerts';
 
 const AlertsPanel = () => {
-  // Sem nome de aluno: o cenário ilustrativo não nomeia aluno. "Pedro Costa" lembrava o aluno
-  // Pedro Oliveira Costa da demonstração.
-  const alerts: Alert[] = [
-    {
-      id: '1',
-      type: 'critical',
-      title: 'PEI não atualizado há 120 dias',
-      description: 'Ação Imediata Necessária',
-      details: [
-        '⏱️ Vencido há: 30 dias',
-        '📅 Última revisão: 15/07/2024',
-        '👤 Responsável: Profª. Helena Duarte'
-      ],
-    },
-    {
-      id: '2',
-      type: 'critical',
-      title: 'Um aluno com frequência abaixo de 60%',
-      description: 'Intervenção Necessária',
-      details: [
-        '📊 Presença: 58% (12 faltas no mês)',
-        '📅 Última presença: 18/11/2024',
-        '⚠️ Risco de retenção por falta'
-      ],
-    },
-    {
-      id: '3',
-      type: 'warning',
-      title: 'Um aluno sem progresso há 8 semanas',
-      description: 'Monitoramento Necessário',
-      details: [
-        '📊 Objetivos estagnados: 4 de 7',
-        '📈 Última evolução: Set/2024',
-        '💡 Sugestão: Revisão de estratégias'
-      ],
-    },
-    {
-      id: '4',
-      type: 'warning',
-      title: 'Turma 3º B: Necessita profissional de apoio',
-      description: 'Recurso Insuficiente',
-      details: [
-        '👥 Alunos com PEI: 6',
-        '🔴 Apoio disponível: 1 (insuficiente)',
-        '📊 Recomendado: 2 profissionais'
-      ],
-    },
-    {
-      id: '5',
-      type: 'info',
-      title: 'Nova formação sobre TEA disponível',
-      description: 'Para Conhecimento',
-      details: [
-        '📅 Data: 05/12/2024 às 14h',
-        '👥 Vagas: 30 (18 disponíveis)',
-        '🎓 Certificação: 8 horas'
-      ],
-    }
-  ];
+  // Os alertas moram em src/data/scenarioAlerts.ts, para o Resumo Executivo contar da mesma lista.
+  const alerts = scenarioAlerts;
 
   const criticalAlerts = alerts.filter(a => a.type === 'critical');
   const warningAlerts = alerts.filter(a => a.type === 'warning');
   const infoAlerts = alerts.filter(a => a.type === 'info');
 
-  const renderAlert = (alert: Alert) => {
+  const renderAlert = (alert: ScenarioAlert) => {
     const bgColors = {
       critical: 'bg-destructive/10 border-destructive',
       warning: 'bg-warning/10 border-warning',

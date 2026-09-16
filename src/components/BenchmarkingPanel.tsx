@@ -12,26 +12,24 @@ interface BenchmarkingPanelProps {
 
 export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: BenchmarkingPanelProps) => {
   const firstName = studentName.split(" ")[0];
-  const networkSize = 378;
-  const similarCases = 234;
+
+  /*
+   * Saíram a "coorte" de 378 alunos, os 234 "casos similares", a eficácia e a melhoria média de
+   * cada estratégia e a "chance de melhoria" de 92%: alegações de análise sobre números fixos,
+   * que o CLAUDE.md proíbe. O comparativo com a média da rede fica, como exemplo com aviso.
+   */
 
   const strategies = [
     {
       name: "Timer visual",
-      effectiveness: 92,
-      improvement: 34,
       implemented: false,
     },
     {
       name: "Rotina com pictogramas",
-      effectiveness: 89,
-      improvement: 28,
       implemented: true,
     },
     {
       name: "Cantinho da calma",
-      effectiveness: 87,
-      improvement: 31,
       implemented: true,
     },
   ];
@@ -80,20 +78,20 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
       </CardHeader>
       <CardContent className="space-y-6 pt-6">
         <DemoDataNotice
-          subject="A coorte, as taxas de eficácia e as probabilidades"
-          detail="Os números são fixos no código e não mudam conforme o aluno exibido."
+          subject="As estratégias, a média da rede e o comparativo desta seção"
+          detail="Os números são fixos no código e não mudam conforme o aluno exibido. Não há base de casos nem medida de eficácia."
         />
         {/* Network Analysis */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Target className="h-4 w-4" />
-            ANÁLISE: Alunos com {diagnosis} {diagnosisLevel} na rede ({networkSize} alunos)
+            EXEMPLO: estratégias para alunos com {diagnosis} {diagnosisLevel}
           </div>
 
           {/* Strategies with Highest Success */}
           <Card className="bg-muted/50">
             <CardContent className="pt-4 space-y-3">
-              <h4 className="font-semibold text-sm mb-3">Estratégias com Maior Sucesso:</h4>
+              <h4 className="font-semibold text-sm mb-3">Estratégias de exemplo:</h4>
               
               {strategies.map((strategy, index) => (
                 <div key={index} className="space-y-2">
@@ -108,13 +106,6 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
                         </Badge>
                       )}
                     </div>
-                    <span className="text-xs font-medium text-primary">
-                      {strategy.effectiveness}% eficácia
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <TrendingUp className="h-3 w-3 text-green-600" />
-                    <span>Melhoria média: +{strategy.improvement}%</span>
                   </div>
                 </div>
               ))}
@@ -131,9 +122,6 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
                     <p className="text-sm font-medium">ATENÇÃO:</p>
                     <p className="text-sm text-muted-foreground">
                       {firstName} ainda não usa {notImplementedStrategy.name.toLowerCase()}.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Baseado em {similarCases} casos similares, há {notImplementedStrategy.effectiveness}% de chance de melhoria.
                     </p>
                   </div>
                 </div>
@@ -176,15 +164,15 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
             ))}
           </div>
 
-          {/* Insight Box */}
+          {/* Leitura do comparativo */}
           <Card className="bg-blue-50/50 border-blue-200">
             <CardContent className="pt-4">
               <div className="flex items-start gap-2">
                 <div className="text-2xl">💡</div>
                 <div className="text-sm text-muted-foreground">
                   <p>
-                    {firstName} está acima da média em comunicação! Foco agora em 
-                    socialização pode trazer melhores resultados.
+                    Nestes números de exemplo, {firstName} aparece acima da média da rede em
+                    comunicação e abaixo em socialização.
                   </p>
                 </div>
               </div>
