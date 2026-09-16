@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { Settings, Bell, Palette, Shield, Plug, Globe, Accessibility } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  applyA11yPreferences,
+  defaultA11yPreferences,
+  loadA11yPreferences,
+  saveA11yPreferences,
+  type A11yPreferences,
+  type FontSizePreference,
+  type PreferenceSaveResult,
+} from '@/lib/a11yPreferences';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +31,28 @@ interface ConfiguracoesDialogProps {
 const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) => {
   const [selectedTab, setSelectedTab] = useState('notificacoes');
 
+  /*
+   * As preferências de acessibilidade são as únicas desta tela que fazem algo. Ficam em
+   * chave própria do navegador, fora do store de demonstração, e são aplicadas na hora.
+   */
+  const [preferences, setPreferences] = useState<A11yPreferences>(() => loadA11yPreferences());
+  const [saveResult, setSaveResult] = useState<PreferenceSaveResult>('browser');
+
+  const commitPreferences = (proximas: A11yPreferences) => {
+    setPreferences(proximas);
+    applyA11yPreferences(proximas);
+    setSaveResult(saveA11yPreferences(proximas));
+  };
+
+  const updatePreference = <K extends keyof A11yPreferences>(
+    chave: K,
+    valor: A11yPreferences[K],
+  ) => {
+    commitPreferences({ ...preferences, [chave]: valor });
+  };
+
+  const resetPreferences = () => commitPreferences(defaultA11yPreferences);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -38,8 +69,8 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
         <DemoDataNotice
           id="configuracoes-ilustrativas"
-          subject="As preferências desta tela"
-          detail="Nenhuma delas é salva nem aplicada ao sistema, e nenhuma notificação é enviada; os campos estão desabilitados."
+          subject="As preferências de notificação, aparência, privacidade, integrações e idioma"
+          detail="Nenhuma delas é salva nem aplicada ao sistema, e nenhuma notificação é enviada; os campos estão desabilitados. A aba Acessibilidade é a exceção: ela funciona e guarda a escolha neste navegador."
         />
 
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
@@ -267,20 +298,12 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
                 <CardTitle>Fonte</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="font-size">Tamanho</Label>
-                  <Select defaultValue="medio">
-                    <SelectTrigger id="font-size" className="mt-2">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pequeno">Pequeno</SelectItem>
-                      <SelectItem value="medio">Médio</SelectItem>
-                      <SelectItem value="grande">Grande</SelectItem>
-                      <SelectItem value="muito-grande">Muito grande</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* O tamanho da fonte saiu daqui: é o único controle desta aba que funciona,
+                    e ficava desabilitado junto com os ilustrativos. Foi para Acessibilidade. */}
+                <p className="text-sm text-muted-foreground">
+                  O tamanho da fonte mudou de lugar: agora fica na aba Acessibilidade, onde
+                  funciona de verdade e é guardado neste navegador.
+                </p>
 
                 <div>
                   <Label htmlFor="font-type">Tipo</Label>
@@ -396,96 +419,144 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
 
           {/* ACESSIBILIDADE */}
           <TabsContent value="acessibilidade" className="space-y-6">
-            <fieldset disabled aria-describedby="configuracoes-ilustrativas" className="min-w-0 space-y-6">
+            {/*
+              * Única aba que funciona de verdade. As preferências valem só neste navegador,
+              * são aplicadas assim que mudam e não passam pelo botão Salvar, que continua
+              * desabilitado por causa das outras abas.
+              */}
+            <div className="rounded-md border border-border bg-muted/40 p-3 text-sm">
+              <p className="font-medium">Preferências deste navegador</p>
+              <p id="preferencias-aplicadas" className="text-muted-foreground">
+                {saveResult === 'memoryOnly'
+                  ? 'Aplicadas agora, mas o navegador não permitiu gravar: voltam ao padrão ao recarregar a página.'
+                  : 'Aplicadas assim que você muda e guardadas neste navegador. Não dependem de conta nem saem daqui.'}
+              </p>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle>Visual</CardTitle>
+                <CardTitle level={2}>Visual</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc1" />
-                  <label htmlFor="acc1" className="text-sm">Alto contraste</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc2" />
-                  <label htmlFor="acc2" className="text-sm">Aumentar tamanho dos botões</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc3" />
-                  <label htmlFor="acc3" className="text-sm">Destacar foco do teclado</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc4" />
-                  <label htmlFor="acc4" className="text-sm">Reduzir animações</label>
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="acc-contraste"
+                    checked={preferences.altoContraste}
+                    onCheckedChange={(checked) => updatePreference('altoContraste', checked === true)}
+                    aria-describedby="acc-contraste-descricao"
+                  />
+                  <div>
+                    <label htmlFor="acc-contraste" className="text-sm font-medium">Alto contraste</label>
+                    <p id="acc-contraste-descricao" className="text-xs text-muted-foreground">
+                      Escurece texto, bordas e cores de marca, e tira o fundo azulado da página.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="pt-4">
-                  <Label htmlFor="zoom">Ampliação</Label>
-                  <Select defaultValue="100">
-                    <SelectTrigger id="zoom" className="mt-2">
+                <div>
+                  <Label htmlFor="acc-fonte">Tamanho da fonte</Label>
+                  <Select
+                    value={preferences.tamanhoFonte}
+                    onValueChange={(value) => updatePreference('tamanhoFonte', value as FontSizePreference)}
+                  >
+                    <SelectTrigger id="acc-fonte" className="mt-2" aria-describedby="acc-fonte-descricao">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="100">100%</SelectItem>
-                      <SelectItem value="125">125%</SelectItem>
-                      <SelectItem value="150">150%</SelectItem>
-                      <SelectItem value="200">200%</SelectItem>
+                      <SelectItem value="padrao">Padrão</SelectItem>
+                      <SelectItem value="grande">Grande</SelectItem>
+                      <SelectItem value="muito-grande">Muito grande</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Navegação</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Checkbox id="acc5" />
-                    <label htmlFor="acc5" className="text-sm">Atalhos de teclado habilitados</label>
-                  </div>
-                  <Button variant="link" className="p-0 h-auto">Ver lista de atalhos</Button>
+                  <p id="acc-fonte-descricao" className="mt-1 text-xs text-muted-foreground">
+                    Aumenta o texto e, junto com ele, espaçamentos e controles. O zoom do
+                    navegador continua funcionando por cima disto.
+                  </p>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc6" />
-                  <label htmlFor="acc6" className="text-sm">Navegação por voz</label>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Áudio</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc7" />
-                  <label htmlFor="acc7" className="text-sm">Leitor de tela</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="acc8" />
-                  <label htmlFor="acc8" className="text-sm">Descrições de áudio para imagens</label>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Preferências Avançadas</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="cache">Cache local</Label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button variant="outline" size="sm">Limpar cache</Button>
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="acc-animacoes"
+                    checked={preferences.reduzirAnimacoes}
+                    onCheckedChange={(checked) => updatePreference('reduzirAnimacoes', checked === true)}
+                    aria-describedby="acc-animacoes-descricao"
+                  />
+                  <div>
+                    <label htmlFor="acc-animacoes" className="text-sm font-medium">Reduzir animações</label>
+                    <p id="acc-animacoes-descricao" className="text-xs text-muted-foreground">
+                      Encurta transições e animações. Se o sistema operacional já pedir menos
+                      movimento, isto já vale sem precisar marcar.
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            </fieldset>
+
+            <Card>
+              <CardHeader>
+                <CardTitle level={2}>Navegação por teclado</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="acc-foco"
+                    checked={preferences.destacarFoco}
+                    onCheckedChange={(checked) => updatePreference('destacarFoco', checked === true)}
+                    aria-describedby="acc-foco-descricao"
+                  />
+                  <div>
+                    <label htmlFor="acc-foco" className="text-sm font-medium">Destacar o foco do teclado</label>
+                    <p id="acc-foco-descricao" className="text-xs text-muted-foreground">
+                      Contorno mais espesso no elemento que está com o foco.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="acc-alvos"
+                    checked={preferences.botoesMaiores}
+                    onCheckedChange={(checked) => updatePreference('botoesMaiores', checked === true)}
+                    aria-describedby="acc-alvos-descricao"
+                  />
+                  <div>
+                    <label htmlFor="acc-alvos" className="text-sm font-medium">Aumentar o tamanho dos botões</label>
+                    <p id="acc-alvos-descricao" className="text-xs text-muted-foreground">
+                      Alvo mínimo de 44 pixels em botões e links, útil para quem usa toque ou
+                      tem dificuldade de mirar.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle level={2}>O que não fica aqui</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  Leitor de tela, navegação por voz e descrição de imagens em áudio são
+                  recursos do sistema operacional ou de tecnologia assistiva, e não de um
+                  site. O sistema é feito para funcionar com eles; ligá-los ou desligá-los é
+                  nas preferências do seu aparelho.
+                </p>
+                <p>
+                  Ampliação da página é o zoom do navegador, normalmente Ctrl e + ou Ctrl e −.
+                  O sistema é testado com 200% de zoom.
+                </p>
+                <p>
+                  Atalhos de teclado próprios ainda não existem. A navegação é a padrão do
+                  navegador: Tab e Shift+Tab para andar, Enter ou Espaço para acionar.
+                </p>
+              </CardContent>
+            </Card>
+
+            <div>
+              <Button variant="outline" onClick={resetPreferences}>
+                Restaurar preferências de acessibilidade
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
 

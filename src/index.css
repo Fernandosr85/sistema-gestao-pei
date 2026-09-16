@@ -98,6 +98,96 @@ All colors MUST be HSL.
     --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.15);
   }
 
+  /*
+   * Preferências de acessibilidade deste navegador, guardadas em `pei-a11y-preferences` e
+   * aplicadas por atributo no elemento raiz (src/lib/a11yPreferences.ts). Sem atributo, vale
+   * o padrão acima.
+   */
+
+  /*
+   * Alto contraste: escurece o texto secundário, as bordas e os tons de marca, e tira o
+   * fundo levemente azulado da página. Medido no navegador, com o modo ligado:
+   * texto sobre o fundo 21:1; texto secundário sobre o fundo 12,63:1; e os tokens de marca,
+   * com texto branco, entre 8,44:1 (verde-azulado) e 14,37:1 (azul).
+   */
+  :root[data-a11y-contrast="alto"] {
+    --brand-blue: 228 75% 24%;
+    --brand-red: 356 85% 28%;
+    --brand-light-blue: 187 85% 19%;
+    --brand-green: 152 75% 18%;
+    --brand-orange: 22 95% 24%;
+    --brand-yellow: 42 95% 20%;
+    --brand-gray: 220 12% 26%;
+    --brand-purple: 271 70% 28%;
+    --brand-pink: 330 75% 27%;
+    --brand-indigo: 243 65% 32%;
+    --brand-teal: 174 80% 19%;
+
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 20%;
+    --border: 0 0% 35%;
+    --input: 0 0% 35%;
+  }
+
+  /* Tamanho da fonte: escala a raiz, então texto, espaçamento e controles crescem juntos,
+     porque o projeto inteiro mede em rem. */
+  :root[data-a11y-font="grande"] {
+    font-size: 112.5%;
+  }
+
+  :root[data-a11y-font="muito-grande"] {
+    font-size: 125%;
+  }
+
+  /* Reduzir animações: a preferência do app e a do sistema operacional valem igual. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  :root[data-a11y-motion="reduzido"] *,
+  :root[data-a11y-motion="reduzido"] *::before,
+  :root[data-a11y-motion="reduzido"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Destacar o foco do teclado: contorno mais espesso, sem depender da cor de cada
+     componente. */
+  :root[data-a11y-focus="destacado"] :focus-visible {
+    outline: 3px solid hsl(var(--ring)) !important;
+    outline-offset: 2px !important;
+    border-radius: 2px;
+  }
+
+  /* Alvos maiores: 44 px é o critério 2.5.5, que é AAA. Fica como opção de quem precisa. */
+  :root[data-a11y-targets="grandes"] button,
+  :root[data-a11y-targets="grandes"] a[href],
+  :root[data-a11y-targets="grandes"] [role="button"],
+  :root[data-a11y-targets="grandes"] [role="tab"],
+  :root[data-a11y-targets="grandes"] summary {
+    min-height: 2.75rem;
+  }
+
+  :root[data-a11y-targets="grandes"] button:not(:has(> :not(svg))),
+  :root[data-a11y-targets="grandes"] [role="button"]:not(:has(> :not(svg))) {
+    min-width: 2.75rem;
+  }
+
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
