@@ -22,6 +22,13 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 > ilustrativos fixos no código**. Nenhum modelo estatístico ou de machine learning é
 > executado, e nenhuma escola real foi medida.
 >
+> **Por que o Dashboard e a Agenda mostram zero "neste mês".** Os registros de exemplo
+> têm datas fixas de novembro e dezembro de 2025, e as contagens por período são calculadas
+> a partir dessas datas e do dia de hoje. Fora daqueles meses, "Observações registradas neste
+> mês" e "Atendimentos neste mês" dão 0, e a variação diz "sem base de comparação". Não é
+> defeito: as datas ficaram fixas de propósito, para os números serem reproduzíveis. O que
+> for cadastrado na interface com data do mês corrente entra na contagem normalmente.
+>
 > O sistema **não está pronto para receber dados reais de estudantes**. Ver
 > [Antes de usar com dados reais](#antes-de-usar-com-dados-reais).
 

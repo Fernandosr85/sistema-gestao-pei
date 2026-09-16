@@ -75,6 +75,33 @@ export const weekPeriod = (reference: Date): DatePeriod => {
 export const previousWeekPeriod = (reference: Date): DatePeriod =>
   weekPeriod(new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() - 7));
 
+/** O mês-calendário que contém a data de referência, do dia 1 ao último dia. */
+export const monthPeriod = (reference: Date): DatePeriod => ({
+  start: toLocalISODate(new Date(reference.getFullYear(), reference.getMonth(), 1)),
+  end: toLocalISODate(new Date(reference.getFullYear(), reference.getMonth() + 1, 0)),
+});
+
+export const previousMonthPeriod = (reference: Date): DatePeriod =>
+  monthPeriod(new Date(reference.getFullYear(), reference.getMonth() - 1, 1));
+
+export const observationsInPeriod = (state: DemoState, period: DatePeriod): number =>
+  state.observations.filter((observation) => isWithinPeriod(observation.data, period)).length;
+
+/** Todos os atendimentos com data no período, inclusive cancelados, que continuam na agenda. */
+export const appointmentsInPeriod = (state: DemoState, period: DatePeriod): number =>
+  state.appointments.filter((appointment) => isWithinPeriod(appointment.data, period)).length;
+
+/**
+ * Variação entre dois períodos. Sem registro no período anterior não há base para
+ * porcentagem, e isso é um resultado, não um zero: "sem base de comparação".
+ */
+export type PeriodChange = { kind: 'noBaseline' } | { kind: 'change'; percent: number };
+
+export const periodChange = (current: number, previous: number): PeriodChange =>
+  previous === 0
+    ? { kind: 'noBaseline' }
+    : { kind: 'change', percent: Math.round(((current - previous) / previous) * 100) };
+
 /** Atendimentos já realizados que ainda não têm ata registrada. */
 export const appointmentsWithoutMinutes = (state: DemoState): number =>
   state.appointments.filter((appointment) => appointment.status === 'realizado' && !appointment.ata).length;

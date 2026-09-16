@@ -22,8 +22,12 @@ import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialo
 import { appointmentTypes } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import {
+  appointmentsInPeriod,
   appointmentsWithoutMinutes,
   isWithinPeriod,
+  monthPeriod,
+  periodChange,
+  previousMonthPeriod,
   previousWeekPeriod,
   upcomingAppointmentsWithin,
   weekPeriod,
@@ -80,9 +84,14 @@ const AgendaAtendimentos = () => {
    * UTC: a partir das 21h no Brasil, a Agenda deixava de contar os atendimentos de hoje e
    * passava a contar os do oitavo dia, e o número divergia do Dashboard.
    */
-  const proximosSete = upcomingAppointmentsWithin(state, new Date(), 7).length;
+  const hoje = new Date();
+  const proximosSete = upcomingAppointmentsWithin(state, hoje, 7).length;
 
   const pendentesRegistro = appointmentsWithoutMinutes(state);
+
+  // "Este Mês" contava todos os atendimentos, de qualquer data, e mostrava "+12%" digitado.
+  const atendimentosEsteMes = appointmentsInPeriod(state, monthPeriod(hoje));
+  const atendimentosMesAnterior = appointmentsInPeriod(state, previousMonthPeriod(hoje));
 
   const filteredAtendimentos = atendimentos.filter(atendimento => {
     if (filtroAluno !== 'todos' && atendimento.aluno !== filtroAluno) return false;
@@ -152,10 +161,10 @@ const AgendaAtendimentos = () => {
         />
         <StatCard
           title="Este Mês"
-          value={atendimentos.length}
+          value={atendimentosEsteMes}
           icon={CalendarRange}
-          description="+12% vs. mês anterior"
-          trend={{ value: 12, isPositive: true }}
+          description="Com data neste mês, inclusive cancelados"
+          trend={periodChange(atendimentosEsteMes, atendimentosMesAnterior)}
           variant="success"
         />
         <StatCard
