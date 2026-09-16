@@ -278,9 +278,19 @@ cada commit da etapa, com o relógio emulado quando o defeito dependia de data o
 | Badges conquistadas com zero contribuições | 4 | 0 |
 | Ranking de pessoas fictícias apresentado como classificação real | 1 | 0 |
 | Pessoas dos dados de demonstração dentro do cenário de Gestão | 4 | 0 |
-| Alunos e famílias nomeados no cenário de Gestão | 8 | 0 |
+| Alunos e famílias nomeados no cenário de Gestão | 8 | 0¹ |
 | Indicadores da Gestão com o mesmo nome e valor ou veredicto diferente | 2 | 0 |
 | Telas com número sem aviso de dados fictícios | 4 | 0 |
+
+¹ Só a partir de `0c2be34`, depois do merge da etapa: "João", sem sobrenome, ficou em dois
+textos de Gestão > Relatórios, porque a varredura de nomes não casava letra acentuada (achado 7
+do backlog).
+
+Depois do merge, `0c2be34` também reescreveu o vocabulário de inferência sobre números fixos —
+"prevê-se", probabilidades de cenário, "156 casos similares", "taxa de sucesso", "chance de
+melhoria", "padrão identificado" — e acertou as contagens que contradiziam a lista ao lado, como
+"17 alertas, 5 críticos" sobre uma lista de 5 e 2. As projeções continuam, ditas como projeções
+digitadas.
 
 O que isso significa na prática:
 
@@ -298,12 +308,11 @@ O que isso significa na prática:
 ### Limites conhecidos
 
 - **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação, Ver PEI e
-  Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante, agora com
-  aviso de que não é dele. O Desempenho de uma aluna pode dizer 85% enquanto a ficha dela,
-  calculada, diz 60%. Trocar por dado real depende da entidade PEI.
-- **Vocabulário de previsão.** A análise preditiva e o comparativo da ficha ainda dizem
-  "prevê-se", "probabilidade" e "chance de melhoria" sobre números fixos, com aviso de que
-  nenhum modelo é executado. Está registrado no backlog, para decisão.
+  Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante. O
+  Desempenho de uma aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Trocar por
+  dado real depende da entidade PEI. Três dos quatro dizem na tela que o conteúdo não é do
+  estudante aberto; o **Ver PEI não diz**: o aviso o chama de exemplo, mas o cabeçalho mostra o
+  nome do aluno e "Ativo".
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
 

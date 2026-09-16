@@ -107,6 +107,10 @@ saúde mental), nunca pelos termos do defeito já conhecido. Cada busca anterior
 usou as palavras do caso anterior, e foi assim que 'Transtorno Global do Desenvolvimento'
 sobreviveu a duas varreduras.
 
+O cenário ilustrativo da Gestão não nomeia nenhum estudante nem família, e sua equipe não
+repete nome algum dos dados de demonstração. Ao editar qualquer tela de Gestão, verifique as
+duas coisas.
+
 ## Convenções
 
 - Identificadores novos: inglês, ASCII, camelCase/PascalCase. Português apenas em textos

@@ -130,16 +130,31 @@ tem um aluno chamado Pedro Oliveira Costa. A Visão Geral tinha aviso de dados f
 Etapa 2, e sob o critério acima isso não muda nada. Corrigido em `9273891`, junto com as
 licenças: o cartão diz "1 registro, às 9h", e a linha do tempo, "Intercorrência registrada".
 
-- **Encontrada por vocabulário, na primeira aplicação da regra.** O autor formulou a regra da
-  varredura por vocabulário numa mensagem de 16/09/2026, às 10h31. A varredura seguinte, com
-  termos de saúde, afastamento e saúde mental ("licença", "atestado", "estresse", "ansiedade",
-  "depress", "laudo", "transtorno" e afins) sobre as telas de gestão, devolveu a linha às
-  10h32. A correção entrou às 10h35 (`9273891`), e a regra entrou no CLAUDE.md às 10h36
-  (`7faa8f2`). A regra se pagou na mesma sessão em que foi escrita, antes de ser versionada.
-- **Estava à vista desde a Etapa 2.** Em 14/09/2026, às 19h44, `VisaoGeralContent.tsx` foi lido
-  inteiro, com a linha, na busca por ações sem destino da Etapa 2 — um minuto depois do commit
-  que pôs o aviso de dados fictícios na Gestão (`e80a93d`). A leitura procurava outra coisa, e a
-  linha passou. Ler o arquivo não achou; procurar pelas palavras do domínio achou.
+**O par que é o achado metodológico mais forte desta série: a leitura completa não pegou; a
+busca por vocabulário pegou em um minuto.** A mesma linha, no mesmo arquivo, passou por dois
+métodos:
+
+| Método | Quando | O que cobriu | Resultado |
+|---|---|---|---|
+| Leitura de `VisaoGeralContent.tsx`, linha a linha | 14/09/2026, 19h44, Etapa 2 | as linhas 70 a 374, o fim de um arquivo de 374 linhas, com "Pedro, 9h - Ansiedade" na linha 160 | **não pegou** |
+| Busca por vocabulário do domínio (saúde, afastamento, saúde mental), sem ler os arquivos | 16/09/2026, 10h32, Etapa 4 | as telas de gestão | **pegou**, um minuto depois de a regra ser formulada |
+
+- **A leitura.** Aconteceu na busca por ações sem destino da Etapa 2, um minuto depois do
+  commit que pôs o aviso de dados fictícios na Gestão (`e80a93d`, 19h43). O trecho lido ia da
+  linha 70 ao fim do arquivo e continha a linha 160; ela não foi apontada. A leitura olhava para
+  o que a tarefa pedia. (O registro do commit `cc83fc5` dizia "lido inteiro"; o transcript mostra
+  a leitura a partir da linha 70.)
+- **A busca.** O autor formulou a regra da varredura por vocabulário numa mensagem de
+  16/09/2026, às 10h31. A varredura seguinte, com termos de saúde, afastamento e saúde mental
+  ("licença", "atestado", "estresse", "ansiedade", "depress", "laudo", "transtorno" e afins),
+  devolveu a linha às 10h32. A correção entrou às 10h35 (`9273891`), três minutos depois, na
+  mesma sessão; a regra entrou no CLAUDE.md às 10h36 (`7faa8f2`). A regra se pagou antes de
+  ser versionada.
+- **O que o par mostra.** Ler tudo não substitui procurar pelo domínio. A leitura depende do
+  que a tarefa do momento manda olhar; a busca por vocabulário não depende de atenção nem de
+  objetivo, e devolve a linha porque ela contém a palavra. A busca, por sua vez, só vale se
+  casar o que procura — ver o achado 7, em que uma varredura por vocabulário devolveu zero por
+  defeito da própria ferramenta.
 - **Ficaram, por não serem atribuídos a ninguém:** "2 professoras [...] com histórico de
   afastamentos por estresse" e "Afastamentos médicos" nos riscos, e as especialidades clínicas
   do profissional em Meu Perfil.
@@ -376,6 +391,49 @@ para onde o código foi alterado.**
 
 ---
 
+### 7. Varredura que devolve zero por defeito da própria busca (Etapas 1 a 4)
+
+**Qualificação:** uma busca por vocabulário que não casa o que procura tem a mesma saída de uma
+busca limpa. Zero resultado lê-se como "não há", e nada na saída distingue "não há" de "a busca
+não funciona". O achado 1 mostra que a busca por vocabulário pega o que a leitura não pega; este
+mostra que a busca também precisa ser verificada.
+
+**O defeito.** No shell das sessões (Git Bash no Windows, com `LANG` vazio), o `grep` trata uma
+classe entre colchetes como classe de bytes. "á" tem dois bytes em UTF-8, então `[áa]` casa o "a"
+e nunca o "á". Acento escrito fora de colchete ("licença", "diagnós") casa normalmente.
+
+| Comando | Resultado |
+|---|---|
+| `printf 'eficácia' \| grep -cE "efic[áa]cia"` | 0 |
+| `printf 'João' \| grep -cE "\bJo[ãa]o\b"` | 0 |
+| `printf 'eficácia' \| LC_ALL=C.UTF-8 grep -cE "efic[áa]cia"` | 1 |
+
+**Onde afetou.** Comandos do transcript com classe acentuada entre colchetes:
+
+| Quando | Busca | Alternativas que não podiam casar | O que sobreviveu |
+|---|---|---|---|
+| 13/09/2026, Etapa 1 | vocabulário de IA e predição | `intelig[eê]n`, `predi[cçt]`, `confian[cç]a`, `acur[aá]cia`, `precis[aã]o`, `efic[aá]cia` | "% eficácia" no `BenchmarkingPanel` da ficha, presente desde `3ebf062` (26/11/2025), até `0c2be34` |
+| 14/09/2026, Etapa 2 | nome próprio de pessoa real | `patr[ií]cia` | nada: a outra alternativa, "cecy", casava o nome completo |
+| 16/09/2026, Etapa 4, commit 7 | nomes de aluno no cenário de Gestão | `Jo[ãa]o` e as classes de letras acentuadas | "João", duas vezes, em Gestão > Relatórios, até `0c2be34` |
+| 16/09/2026, depois da Etapa 4 | primeira varredura do vocabulário de previsão | `efic[áa]cia`, `tend[êe]ncia`, `estat[íi]stic` e outras | nada: foi pega antes do commit, como descrito abaixo |
+
+**Como foi pega.** Na primeira varredura do `Fix:` `0c2be34`, a linha 83 do `BenchmarkingPanel`
+apareceu — por conter "probabilidades" — e a linha 112, "% eficácia", não. Uma linha que se
+sabia existir e faltava na saída foi o sinal. A varredura foi refeita em Node, com regex
+Unicode, e a de nomes também: foi aí que "João" apareceu.
+
+**Consequência para os registros.** O README e o BACKLOG da Etapa 4 diziam que o cenário de
+Gestão não nomeava aluno. Até `0c2be34`, não era verdade. A tabela de resultado da Etapa 4
+passa a dizer isso.
+
+**Regra proposta, para decisão do autor:** toda varredura leva um controle positivo, uma
+ocorrência que se sabe existir e precisa aparecer na saída; sem ele, zero não é evidência. E
+classe com acento, só com `LC_ALL=C.UTF-8` ou em ferramenta com regex Unicode. É a forma do
+achado 6 aplicada à ferramenta de verificação: a checagem confirmou que o comando rodou, não
+que ele casava.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -419,6 +477,22 @@ parecem não funcionar. É artefato da automação, não do app.
 **Para fechar:** executar os nove, registrar aqui o resultado de cada um (passou, falhou e
 como) e a data. Falha vira item de correção, e a pendência só sai deste bloco quando os nove
 passarem.
+
+### 2. Dois defeitos de acessibilidade achados depois do merge (Etapa 3) — não corrigidos
+
+Achados durante a verificação da Etapa 4 e deixados para a Etapa 3 por decisão do autor.
+Nenhum foi corrigido.
+
+- **Calendário da Agenda em inglês.** Em `/agenda-atendimentos`, a visão Lista mostra "Tue Nov
+  25", "2:00 pm" e "11/25/2025". A página tem `lang="pt-BR"`, e o leitor de tela lê esses trechos
+  com pronúncia portuguesa (3.1.1 e 3.1.2). Visto de passagem; a causa não foi investigada.
+- **Selo "ATENÇÃO" com contraste 3,15:1.** Em Gestão > Relatórios, "Ver detalhes do exemplo" →
+  subtab "Alertas", o selo tem texto branco sobre `--alert-warning-icon` (`#db7706`): 3,15:1,
+  medido pelo axe em 16/09/2026 (1.4.3 pede 4,5:1). O selo é de `645280f`. A medida da Etapa 3
+  deu 0 nessa rota porque o selo só aparece depois de dois cliques.
+
+**O que a Etapa 3 pode afirmar sem eles:** o "124 violações para 0" vale para o que aparece nas
+rotas sem interação. **O que não pode:** que todo conteúdo alcançável por clique foi medido.
 
 ---
 
@@ -761,8 +835,10 @@ executados antes do merge.
 
 ## Etapa 4 — Números coerentes
 
-**Estado em 16/09/2026:** pronta para revisão, em oito commits de código e três de
-documentação, a partir do `6875c1a`. O merge é do autor. A regra da etapa: número que
+**Estado em 16/09/2026:** mesclada no PR #5 (`885a196`), em oito commits de código e três de
+documentação, a partir do `6875c1a`. Depois do merge, dois commits na branch
+`etapa-4/vocabulario-e-alertas`, ainda fora da `main`: o `Fix:` `0c2be34`, das pendências 1 e 2
+que a etapa deixou, e este `Docs:`. A regra da etapa: número que
 descreve os registros se calcula a partir deles, em `src/lib/metrics.ts`; número que não tem
 registro de origem vira cenário com nome próprio, com aviso, ou sai. As decisões D1 a D6 são
 do autor e estão no plano aprovado; os commits citam cada uma onde ela se aplica.
@@ -779,7 +855,9 @@ do autor e estão no plano aprovado; os commits citam cada uma onde ela se aplic
 | `46ae545` Fix | Ficha: progresso calculado das avaliações (D3) e campos inventados fora |
 | `6c502da` Fix | Biblioteca: nota das avaliações (D4), downloads fora (D5), badges por contribuição |
 | `7039784` Fix | Gestão como cenário nomeado (D1), o 88% (D6), avisos, ranking fora, "+100%" da Agenda |
-| este `Docs:` | Medida da etapa, quarta onda do achado 1, caso a mais do achado 6, README |
+| `cc83fc5` Docs | Medida da etapa, quarta onda do achado 1, caso a mais do achado 6, README |
+| `0c2be34` Fix | Depois do merge: vocabulário de inferência sobre dado fixo, contagens que contradiziam a lista ao lado, "João" |
+| este `Docs:` | Depois do merge: o par leitura × busca no achado 1, achado 7, pendências realocadas, correções dos registros |
 
 ### Resultado da etapa
 
@@ -808,9 +886,28 @@ dependia de data ou hora. Os detalhes de cada linha estão na mensagem do commit
 | Badges conquistadas com zero contribuições | 4 | 0 |
 | Ranking de pessoas fictícias apresentado como classificação real | 1 | 0 |
 | Pessoas do seed dentro do cenário de Gestão | 4 | 0 |
-| Alunos e famílias nomeados no cenário de Gestão | 8 | 0 |
+| Alunos e famílias nomeados no cenário de Gestão | 8 | 0, só a partir de `0c2be34` |
 | Indicadores da Gestão com o mesmo nome e valor ou veredicto diferente (88%; satisfação) | 2 | 0 |
 | Telas com número sem aviso de dados fictícios (Dashboard, Agenda, Desempenho, Biblioteca) | 4 | 0 |
+
+**Correção desta tabela.** No fechamento da etapa (`cc83fc5`), a linha dos nomes dizia "8 → 0".
+Ficou "João", sem sobrenome, em dois textos de Gestão > Relatórios — o mesmo aluno do exemplo
+que era "João Silva". A varredura de nomes do commit 7 não casava "João" (achado 7). O zero só
+vale a partir de `0c2be34`.
+
+**Depois do merge, em `0c2be34`.** Medido no texto renderizado de Gestão > Relatórios (com os
+quatro subtabs do exemplo abertos), de Gestão > Análise e da ficha do Pedro:
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Termos de inferência sobre número fixo, distintos, fora de frase de negação — Relatórios | 11, mais "significativamente" e "João" no subtab Alertas | 0 |
+| — Análise ("efetividade", "insights") | 2 | 0 |
+| — ficha do aluno ("eficácia", "probabilidade", "baseado em", "casos similares", "chance") | 5 | 0 |
+| Números ou leituras que contradiziam o que está ao lado (17 alertas, 5 críticos, 156 casos, 8 estratégias, "melhor desempenho nas terças") | 5 | 0 |
+
+O que sobra desses termos na tela é negação: "nenhum modelo preditivo é executado", "nenhuma
+eficácia foi medida", "nenhum tem probabilidade calculada". Critério e classificação das 305
+linhas da varredura estão na mensagem do commit.
 
 Os 13 campos e selos da ficha: ano letivo, turno e professor(a) de apoio; composição e
 observações da família; os cinco itens do "Histórico" (pendências, ingresso, primeiro PEI,
@@ -825,10 +922,20 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
   contagens da ficha e do relatório vêm dos mesmos registros (o relatório, no período
   escolhido). Mas Desempenho, Apresentação, Ver PEI e Detalhe da observação ainda
   mostram números fixos sob o nome do estudante: o Desempenho da Maria diz 85% no 4º
-  trimestre, e a ficha, 60%. Agora o diálogo diz, em aviso e na descrição, que o conteúdo é
-  igual para qualquer estudante e que o progresso calculado está na ficha. Os números deixaram
-  de ser apresentados como dela, mas continuam na tela. Trocar por dado real depende da
-  entidade PEI (Etapa 9).
+  trimestre, e a ficha, 60%. Trocar por dado real depende da entidade PEI (Etapa 9), e o autor
+  aceitou a ressalva.
+- **Conferido em 16/09/2026, depois do merge: três dos quatro dizem na tela que o conteúdo não
+  é do estudante aberto; o Ver PEI não diz.**
+  - Desempenho: "São os mesmos para qualquer estudante e não vêm das avaliações registradas",
+    no aviso, e "igual para qualquer estudante", na descrição.
+  - Apresentação: "Só o nome vem da ficha: os slides não usam os registros do estudante."
+  - Detalhe da observação: o aviso diz quais partes são exemplo e quais "vêm da observação
+    registrada".
+  - Ver PEI: o aviso chama os dados de "exemplos estáticos" e diz que o sistema não tem registro
+    de PEI, mas não diz que o conteúdo não é do estudante. O cabeçalho mostra "Aluno: Pedro
+    Oliveira Costa", "PEI 2024 - 4º Trimestre" e "Ativo", e a descrição fala em "plano do
+    estudante". O registro de `cc83fc5` dizia que os quatro tinham esse aviso; não era verdade
+    para o Ver PEI.
 - **Zero "neste mês" é resultado, não defeito** (D2). As observações e os atendimentos do seed
   são de novembro e dezembro de 2025. O README e os avisos do Dashboard e da Agenda dizem isso.
 - **O cenário de Gestão continua inventado**, agora com nome e separado dos registros (D1).
@@ -837,23 +944,25 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
 
 ### O que ainda falta
 
-Encontrado durante a etapa e deixado de fora, de propósito:
-- **Vocabulário de previsão sobre dado estático.** `PredictiveAnalysis` ("prevê-se",
-  "Probabilidade") e `BenchmarkingPanel` ("Baseado em N casos similares, há X% de chance de
-  melhoria") usam o vocabulário que a invariante 2 do CLAUDE.md proíbe para dados estáticos. As
-  duas telas têm aviso dizendo que nenhum modelo é executado. Estava registrado desde a Etapa 2
-  e não entrou no plano desta etapa. Precisa de decisão: reescrever o texto ou tirar as telas.
-- **Contradições internas do cenário além do 88%.** O Resumo Executivo diz "17 alertas ativos,
-  5 críticos", e o painel de alertas logo abaixo, na mesma aba, lista 5 alertas, 2 críticos.
-  `MeuPerfilDialog`, fora da Gestão e com aviso, ainda mostra "Taxa média de sucesso: 88%".
-- **Acessibilidade, achado na verificação do commit 7.** Na aba Orçamento, abaixo de ~800 px
-  de largura, a tabela "Aprovações Pendentes" transborda num contêiner com rolagem que não
-  recebe foco, e o axe acusa `scrollable-region-focusable` (2.1.1). Não é da Etapa 4: com os
-  nomes antigos recolocados no DOM, a tabela transborda igual. A medida da Etapa 3 deu 0 nessa
-  rota, e a largura em que o axe rodou não ficou registrada. A mesma regra deve ser medida nas
-  outras tabelas em largura estreita.
-- **Calendário da Agenda em inglês.** A visão Lista mostra "Tue Nov 25", "2:00 pm" e
-  "11/25/2025". Visto de passagem; não investigado.
+Encontrado durante a etapa e deixado de fora, de propósito, com o destino que o autor deu a
+cada item depois do merge:
+- ~~**Vocabulário de previsão sobre dado estático.**~~ **Corrigido em `0c2be34`**, por decisão
+  do autor: reescrever o texto, sem remover as telas, com varredura por vocabulário. A
+  varredura com `grep` falhava em classe acentuada (achado 7) e foi refeita em Node.
+- ~~**"17 alertas ativos, 5 críticos" contra a lista de 5 e 2.**~~ **Corrigido em `0c2be34`**:
+  o resumo conta da mesma lista. No mesmo commit, as abas "Casos Similares 156" e "Estratégias
+  8" do `PredictiveAnalysis`, sobre listas de 3, e a leitura "melhor desempenho nas terças"
+  ao lado de um calendário com zero observação às terças. Fica, fora da Gestão e com aviso,
+  "Taxa média de sucesso: 88%" no `MeuPerfilDialog`.
+- **Tabela do Orçamento sem foco em largura estreita** (`scrollable-region-focusable`, 2.1.1):
+  **Etapa 5, item 12**, por decisão do autor.
+- **Calendário da Agenda em inglês:** **Pendências abertas, item 2 (Etapa 3)**, por decisão do
+  autor, junto do selo "ATENÇÃO" de 3,15:1 achado na verificação de `0c2be34`.
+- **Ver PEI sem dizer que o conteúdo não é do estudante aberto.** Ver **O que o número não
+  diz**. Não corrigido; aguarda decisão do autor.
+- **Série fixa do calendário de observações.** Em Gestão > Relatórios, novembro de 2024 tem
+  zero observação em todas as terças e quartas e 23 observações nos fins de semana. A série não
+  corresponde a um calendário escolar. Visto na verificação de `0c2be34`; sem correção.
 - **Código morto novo:** `mockProfessionals` ficou sem uso (Etapa 5, item 11).
 
 ### Inventário e plano original
@@ -931,7 +1040,7 @@ faziam essa leitura:
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
 telas diferentes. **Estado:** cumprido com uma ressalva, descrita em **O que o número não diz**,
 no topo desta etapa: os diálogos de exemplo ainda mostram números fixos sob o nome do
-estudante, agora com aviso de que não são dele.
+estudante. Três dos quatro dizem na tela que o conteúdo não é dele; o Ver PEI não diz.
 
 ---
 
@@ -978,6 +1087,11 @@ estudante, agora com aviso de que não são dele.
       imports sem uso anteriores à Etapa 2.
 11. `mockProfessionals`, em `mockData.ts`, ficou sem nenhum uso na Etapa 4 (`7039784`), quando
     a aba Equipe da Gestão deixou de repetir os profissionais do seed.
+12. Tabela "Aprovações Pendentes" da aba Orçamento, trazida da Etapa 4 por decisão do autor:
+    abaixo de ~800 px de largura, transborda num contêiner com rolagem que não recebe foco, e o
+    axe acusa `scrollable-region-focusable` (2.1.1). Medido em 743 px e em 320 px. Anterior à
+    Etapa 4: com os nomes antigos recolocados no DOM, a violação continua. Conferir a mesma regra
+    nas outras tabelas em largura estreita.
 
 **Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
 
