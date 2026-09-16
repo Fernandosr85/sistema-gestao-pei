@@ -28,7 +28,9 @@ acumule.
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
 defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letra acentuada
-neste ambiente; use script com regex Unicode.
+neste ambiente; use script com regex Unicode. grep -i não muda o caso de letra acentuada:
+'licença' não casa 'LICENÇA'. Vale para qualquer busca por termo em maiúsculas em código
+escrito em português.
 
 ## Invariantes — nunca violar
 
