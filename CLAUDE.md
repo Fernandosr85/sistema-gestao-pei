@@ -82,6 +82,8 @@ explicação visível, ou remova.
 - Gráfico Recharts precisa de nome acessível e equivalente textual (tabela ou lista).
 - Ao mudar qualquer valor HSL em `src/index.css`, recalcule o contraste. Mínimo 4,5:1
   para texto normal. Os valores atuais foram medidos e passam.
+- Razão de contraste anotada em comentário não é evidência. Meça da cor computada no
+  navegador, no uso real do token, e anote a medição.
 - Hierarquia de headings sem pular níveis.
 - `lang="pt-BR"` no `index.html` — não alterar.
 - A ferramenta de navegador das sessões não ativa `<button>` nativo por Enter/Space, nem

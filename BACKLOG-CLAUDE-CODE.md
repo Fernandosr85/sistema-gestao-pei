@@ -133,34 +133,87 @@ sessão não ativa `<button>` por Enter ou Space.
 
 ### 3. Correção de acessibilidade revelando defeito funcional (Etapa 3)
 
-**Qualificação:** o calendário de frequência de observações exibia as contagens **sob o dia
-da semana errado**, desde o commit inicial do projeto. Não é defeito de acessibilidade: é
-defeito de dados, numa tela de acompanhamento pedagógico. Quem lesse "3 observações" numa
-coluna pensaria estar lendo uma quarta-feira.
+**Qualificação:** não são dois incidentes soltos, é um padrão. Implementar o equivalente
+acessível obriga a exercitar o caminho que o mouse encobria — e é aí que o defeito aparece.
+Aconteceu duas vezes na mesma etapa, em telas e por motivos diferentes.
 
-**O que acontecia:** `ObservationHeatmap` desenhava um cabeçalho fixo de Dom a Sáb e, abaixo,
-uma grade de sete colunas que começava o mês na primeira coluna, sempre. O dia 1 caía sempre
-sob "Dom". A série é de novembro de 2024, e **1º de novembro de 2024 foi uma sexta-feira**:
-todo o mês aparecia deslocado em cinco colunas.
+**Caso 1: o calendário mostrava as contagens sob o dia da semana errado.**
+`ObservationHeatmap` desenhava um cabeçalho fixo de Dom a Sáb e, abaixo, uma grade de sete
+colunas que começava o mês sempre na primeira coluna. A série é de novembro de 2024, e **1º
+de novembro de 2024 foi uma sexta-feira**: o mês inteiro aparecia deslocado em cinco colunas.
+Quem lesse "3 observações" numa coluna pensaria estar lendo uma quarta-feira.
 
-**Por que passou:** a contagem só existia no tooltip de hover. Ninguém que olhasse a tela via
-"dia 1, sexta-feira, 0 observações" — via um quadrado colorido numa grade, e o número só
-aparecia com o mouse parado em cima. Um deslocamento de coluna não tem sintoma visível quando
-não há nada escrito para conferir contra o cabeçalho.
+- **Por que passou:** a contagem só existia no tooltip de hover. Não havia número escrito na
+  tela para conferir contra o cabeçalho, e um deslocamento de coluna não tem sintoma visível
+  quando não há nada a comparar.
+- **Como apareceu:** o item 2 mandava trocar a grade de `<div>` por tabela. Escrever a
+  contagem em cada célula, e dar ao dia da semana o papel de cabeçalho de coluna, obrigou a
+  alinhar o dia 1 com o dia da semana real. O desalinhamento apareceu na primeira renderização.
 
-**Como apareceu:** o item 2 da Etapa 3 mandava trocar a grade de `<div>` por tabela, porque a
-informação estava presa ao hover. Escrever a contagem em cada célula, e dar ao dia da semana
-o papel de cabeçalho de coluna, obrigou a alinhar o dia 1 com o dia da semana real — e o
-desalinhamento apareceu na primeira renderização.
+**Caso 2: as setas do modo apresentação nunca funcionaram.** `PresentationModeDialog` tem
+doze slides e botões "Anterior" e "Próximo". Nenhuma tecla trocava de slide: não havia
+handler de teclado no componente, só `onClick` nos botões.
 
-**Três revisões não pegaram:** a auditoria estática do Claude, a auditoria complementar do
-Codex e a leitura do autor. Nenhuma das três olha para o que o dado significa na tela; todas
-olham para o código, onde `DEMO_COUNTS.map((count, i) => ...)` parece correto.
+- **Por que passou:** com o mouse, a apresentação funciona inteira. Ninguém que a usasse
+  clicando notaria a ausência — e uma apresentação para reunião com família é exatamente o
+  uso em que a pessoa espera avançar pelo teclado, longe do notebook.
+- **Como apareceu:** o item 6 pedia que a troca de slide movesse o foco e fosse anunciada.
+  Para mover o foco era preciso saber quando o slide muda pelo teclado, e a pergunta "o que
+  acontece quando o usuário aperta a seta?" não tinha resposta no código.
+
+**Nenhuma revisão pegou os dois.** A auditoria estática do Claude, a complementar do Codex e
+a leitura do autor olham para o código, onde `DEMO_COUNTS.map((count, i) => ...)` parece
+correto e onde a ausência de um handler não é uma linha escrita em lugar nenhum. Defeito de
+omissão não aparece em varredura: não há o que casar.
 
 **Conclusão para o artigo:** tornar a informação acessível é, antes de tudo, torná-la
-explícita. Um dado que só existe como cor, posição ou hover não pode ser conferido — nem por
-quem usa leitor de tela, nem por quem enxerga. Acessibilidade aqui não foi um custo pago
-depois da funcionalidade: foi o que revelou que a funcionalidade estava errada.
+explícita, e tornar um controle acessível é enumerar as formas de acioná-lo. Um dado que só
+existe como cor, posição ou hover não pode ser conferido por ninguém; um caminho de interação
+que só existe no mouse não pode ser testado pelos outros. Nos dois casos a acessibilidade não
+foi um custo pago depois da funcionalidade: foi o que mostrou que a funcionalidade estava
+errada.
+
+---
+
+### 4. Cor de categoria produzida por acidente (Etapa 3)
+
+**Qualificação:** funcionava, e qualquer categoria nova quebraria em silêncio. É o tipo de
+código que passa em revisão porque a tela está certa.
+
+**O que acontecia:** em `pages/AgendaAtendimentos`, a cor de cada tipo de atendimento no
+calendário saía de uma classe do Tailwind desmontada com duas substituições de texto:
+
+```js
+backgroundColor: tipoColors[tipo].replace('bg-', '').replace('-500', '')
+```
+
+De `'bg-blue-500'` sobrava `'blue'` — que é uma **cor nomeada do CSS**, e por isso pintava.
+Mas a cor nomeada não é a do Tailwind, então o calendário **nunca** mostrou a mesma cor da
+legenda ao lado. Medido no navegador:
+
+| Classe | Cor do Tailwind, na legenda | Cor nomeada, no calendário |
+|---|---|---|
+| `bg-blue-500` | `rgb(59, 130, 246)` | `rgb(0, 0, 255)` |
+| `bg-green-500` | `rgb(34, 197, 94)` | `rgb(0, 128, 0)` |
+| `bg-orange-500` | `rgb(249, 115, 22)` | `rgb(255, 165, 0)` |
+| `bg-gray-500` | `rgb(107, 114, 128)` | `rgb(128, 128, 128)` |
+
+E bastava uma categoria com nome composto, como `'bg-light-blue-500'`, ou um tom fora do
+500, para sobrar uma string que o CSS ignora: o evento ficaria sem cor, sem erro no console
+e sem falha em nenhuma verificação.
+
+**Como apareceu:** a conversão das cores fixas em tokens, feita por contraste. Trocar
+`'bg-blue-500'` por `'bg-brand-blue'` fez as duas substituições devolverem `'bg-brand-blue'`,
+uma string sem sentido para `backgroundColor`, e o TypeScript acusou na hora que o novo objeto
+não tinha `.replace`.
+
+**Correção:** uma tabela só por tipo, com a classe e o valor CSS derivados do mesmo token, em
+vez de três formas diferentes de dizer a mesma cor — duas tabelas paralelas e uma terceira
+derivada por manipulação de string.
+
+**Conclusão para o artigo:** três representações da mesma informação, mantidas à mão, é um
+convite à divergência. Aqui elas já tinham divergido, e ninguém tinha visto porque o resultado
+ainda era uma cor.
 
 ---
 
