@@ -310,9 +310,9 @@ O que isso significa na prática:
 - **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação, Ver PEI e
   Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante. O
   Desempenho de uma aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Trocar por
-  dado real depende da entidade PEI. Três dos quatro dizem na tela que o conteúdo não é do
-  estudante aberto; o **Ver PEI não diz**: o aviso o chama de exemplo, mas o cabeçalho mostra o
-  nome do aluno e "Ativo".
+  dado real depende da entidade PEI. Os quatro dizem na tela que o conteúdo não é do estudante
+  aberto; o Ver PEI passou a dizer em `bd93507`, e deixou de mostrar o nome do aluno com "Ativo"
+  no cabeçalho.
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
 

@@ -153,8 +153,8 @@ métodos:
 - **O que o par mostra.** Ler tudo não substitui procurar pelo domínio. A leitura depende do
   que a tarefa do momento manda olhar; a busca por vocabulário não depende de atenção nem de
   objetivo, e devolve a linha porque ela contém a palavra. A busca, por sua vez, só vale se
-  casar o que procura — ver o achado 7, em que uma varredura por vocabulário devolveu zero por
-  defeito da própria ferramenta.
+  casar o que procura — ver o achado 7, em que varreduras por vocabulário deixaram de ver as
+  formas acentuadas por defeito da própria ferramenta.
 - **Ficaram, por não serem atribuídos a ninguém:** "2 professoras [...] com histórico de
   afastamentos por estresse" e "Afastamentos médicos" nos riscos, e as especialidades clínicas
   do profissional em Meu Perfil.
@@ -391,31 +391,71 @@ para onde o código foi alterado.**
 
 ---
 
-### 7. Varredura que devolve zero por defeito da própria busca (Etapas 1 a 4)
+### 7. Varredura que não vê o que procura, por defeito da própria busca (Etapas 1 a 4)
 
-**Qualificação:** uma busca por vocabulário que não casa o que procura tem a mesma saída de uma
-busca limpa. Zero resultado lê-se como "não há", e nada na saída distingue "não há" de "a busca
-não funciona". O achado 1 mostra que a busca por vocabulário pega o que a leitura não pega; este
-mostra que a busca também precisa ser verificada.
+**Qualificação:** o autor classificou este como o achado mais importante da série, porque
+reclassifica resultados anteriores. Uma busca que não casa parte do que procura devolve uma
+saída com resultados, e uma saída com resultados parece completa. Nada nela distingue "não há
+mais" de "a busca não vê o resto". O achado 1 mostra que a busca por vocabulário pega o que a
+leitura não pega; este mostra que a busca também precisa ser verificada.
 
-**O defeito.** No shell das sessões (Git Bash no Windows, com `LANG` vazio), o `grep` trata uma
-classe entre colchetes como classe de bytes. "á" tem dois bytes em UTF-8, então `[áa]` casa o "a"
-e nunca o "á". Acento escrito fora de colchete ("licença", "diagnós") casa normalmente.
+**O defeito, em duas formas.** No shell das sessões (Git Bash no Windows, com `LANG` vazio), o
+`grep` trabalha com bytes, e letra acentuada tem dois bytes em UTF-8.
+1. **Classe entre colchetes:** `[áa]` casa o "a" e nunca o "á".
+2. **`-i` com letra acentuada:** só letras ASCII trocam de caixa. `grep -i "licença"` casa
+   "Licença" e não casa "LICENÇA".
+
+Acento escrito fora de colchete, na caixa em que está no texto, casa normalmente.
 
 | Comando | Resultado |
 |---|---|
 | `printf 'eficácia' \| grep -cE "efic[áa]cia"` | 0 |
 | `printf 'João' \| grep -cE "\bJo[ãa]o\b"` | 0 |
 | `printf 'eficácia' \| LC_ALL=C.UTF-8 grep -cE "efic[áa]cia"` | 1 |
+| `printf 'LICENÇA' \| grep -ci "licença"` | 0 |
+| `printf 'LICENÇA' \| LC_ALL=C.UTF-8 grep -ci "licença"` | 1 |
 
-**Onde afetou.** Comandos do transcript com classe acentuada entre colchetes:
+**Quantas buscas, e o que cada uma deixou de ver.** O transcript das Etapas 0 a 4 tem 364
+comandos Bash distintos com `grep`. Em 10, o padrão tem classe de caractere acentuada; em 3, `-i`
+com letra acentuada escrita no padrão. Cada padrão foi testado de novo. Três das 10 funcionaram
+por coincidência de bytes: duas usam faixas como `[A-Za-z_À-ú]`, que cobrem o segundo byte da
+letra, e uma é a classe de emojis da Etapa 3, que casou corretamente no teste. As outras foram
+refeitas com regex Unicode, no commit vigente na hora, e comparadas com o que o `grep` daquele
+ambiente efetivamente casava:
 
-| Quando | Busca | Alternativas que não podiam casar | O que sobreviveu |
-|---|---|---|---|
-| 13/09/2026, Etapa 1 | vocabulário de IA e predição | `intelig[eê]n`, `predi[cçt]`, `confian[cç]a`, `acur[aá]cia`, `precis[aã]o`, `efic[aá]cia` | "% eficácia" no `BenchmarkingPanel` da ficha, presente desde `3ebf062` (26/11/2025), até `0c2be34` |
-| 14/09/2026, Etapa 2 | nome próprio de pessoa real | `patr[ií]cia` | nada: a outra alternativa, "cecy", casava o nome completo |
-| 16/09/2026, Etapa 4, commit 7 | nomes de aluno no cenário de Gestão | `Jo[ãa]o` e as classes de letras acentuadas | "João", duas vezes, em Gestão > Relatórios, até `0c2be34` |
-| 16/09/2026, depois da Etapa 4 | primeira varredura do vocabulário de previsão | `efic[áa]cia`, `tend[êe]ncia`, `estat[íi]stic` e outras | nada: foi pega antes do commit, como descrito abaixo |
+| Quando (horário de Brasília) | Busca | Commit vigente | Linhas que a busca correta acha | Linhas que o `grep` casou | O que não viu |
+|---|---|---|---:|---:|---|
+| 13/09, 15h47, Etapa 1 | vocabulário de IA e predição: `intelig[eê]n`, `predi[cçt]`, `confian[cç]a`, `acur[aá]cia`, `precis[aã]o`, `efic[aá]cia` | `85fb601` | 20 | 15 | "% eficácia" e "taxas de eficácia" no `BenchmarkingPanel`; "eficácia terapêutica" nos riscos |
+| 14/09, 19h38 e 19h40, Etapa 2 | nome próprio de pessoa real: `cecy\|patr[ií]cia` | `f756b12` | 7 | 7 | nada: "cecy" casava o nome completo |
+| 16/09, 10h32, Etapa 4 | saúde nas telas de gestão, com `-i` e acento no padrão | `a0d36cf` | 36 | 36 | nada: não havia forma acentuada em caixa alta |
+| 16/09, 11h20, Etapa 4, commit 7 | nomes de aluno no cenário de Gestão: `Jo[ãa]o`, `Patr[ií]cia` (a listagem de nomes de 11h07, com classes de maiúsculas e minúsculas acentuadas, tinha o mesmo alvo e não foi refeita à parte) | `7039784` | 14 | 12 | "João", duas vezes, em Gestão > Relatórios |
+| 16/09, 11h10, Etapa 4, commit 7 | vocabulário: `prev[êe]`, `confian[çc]a`, `intelig[êe]ncia` | `7039784` | 60 | 58 | "prevê-se" e "percentuais de confiança" no `PredictiveAnalysis` |
+| 16/09, 19h02, depois do merge | primeira passada do vocabulário de previsão | — | — | — | pega antes do commit, como descrito abaixo |
+
+As outras duas buscas com `-i` e acento foram uma varredura de saúde só na aba Equipe (16/09,
+8h31), contida na de 10h32, e uma consulta ao próprio BACKLOG. O que as buscas não viram foi
+corrigido em `0c2be34`, exceto "eficácia terapêutica", que descreve a consequência de um risco e
+ficou pelo critério daquele commit.
+
+**O número 31.** Numa mensagem de andamento desta sessão, falei em 31 buscas afetadas. A contagem
+incluía corpos de heredoc com colchetes e entradas duplicadas do log, e contava comandos, não
+buscas. Não é o número de buscas afetadas; o número é o da tabela acima.
+
+**O que isto reclassifica.**
+- **A limpeza de "IA" da Etapa 1 fica registrada como incompleta.** Foi declarada completa com
+  uma busca que não via forma acentuada das palavras procuradas: devolveu 15 das 20 linhas que
+  devia. "Confiança IA" foi pega pela outra parte do mesmo comando, `\bIA\b`; as três linhas de
+  "eficácia" não foram, e "% eficácia" continuou na ficha do aluno até `0c2be34`.
+- **Mas a maior parte do que sobreviveu à Etapa 1 não tem relação com acento.** "prevê-se",
+  "Probabilidade", "chance de melhoria", "Encontramos 156 casos similares" e "taxa de sucesso"
+  não estavam na lista de termos daquela busca. Foram duas causas: a ferramenta e a lista. A
+  segunda é a do achado 1 — procurar pelos termos já conhecidos.
+- **Nenhuma busca devolveu zero por causa do defeito.** Todas devolveram parte do que deviam, e a
+  parte que faltava era a acentuada. É por isso que passou: a saída tinha resultados.
+- **O "8 → 0" de nomes na tabela da Etapa 4** só vale a partir de `0c2be34`.
+- **As varreduras de dado de saúde por vocabulário não perderam nada.** As da terceira onda do
+  achado 1 não usaram classe acentuada nem `-i` com acento; a da quarta onda usou `-i` com
+  acento e, refeita no commit vigente, casou as mesmas 36 linhas.
 
 **Como foi pega.** Na primeira varredura do `Fix:` `0c2be34`, a linha 83 do `BenchmarkingPanel`
 apareceu — por conter "probabilidades" — e a linha 112, "% eficácia", não. Uma linha que se
@@ -426,11 +466,18 @@ Unicode, e a de nomes também: foi aí que "João" apareceu.
 Gestão não nomeava aluno. Até `0c2be34`, não era verdade. A tabela de resultado da Etapa 4
 passa a dizer isso.
 
-**Regra proposta, para decisão do autor:** toda varredura leva um controle positivo, uma
-ocorrência que se sabe existir e precisa aparecer na saída; sem ele, zero não é evidência. E
-classe com acento, só com `LC_ALL=C.UTF-8` ou em ferramenta com regex Unicode. É a forma do
-achado 6 aplicada à ferramenta de verificação: a checagem confirmou que o comando rodou, não
-que ele casava.
+**Regra, aprovada pelo autor e no CLAUDE.md**, em "Verificação obrigatória", com o texto dele:
+toda varredura inclui um controle positivo, uma ocorrência que se sabe existir e precisa aparecer
+na saída; classe de caractere com acento não casa a letra acentuada neste ambiente, e o caminho é
+script com regex Unicode. A segunda forma do defeito, `-i` sem trocar a caixa de letra
+acentuada, não está no texto da regra; fica registrada aqui, para o autor decidir se entra. É a
+forma do achado 6 aplicada à ferramenta de verificação: a checagem confirmou que o comando
+rodou, não que ele casava.
+
+**Como a recontagem foi verificada.** O script de reexecução também errou duas vezes antes de
+valer: a primeira emulação do `grep` quebrava o `\b` e as classes, e a segunda comparava com um
+objeto em vez de uma expressão, casando quase tudo. Os controles que desmontaram os dois erros
+foram casos conhecidos: "Patricia", sem acento, tinha de casar; "eficácia" e "LICENÇA", não.
 
 ---
 
@@ -836,9 +883,9 @@ executados antes do merge.
 ## Etapa 4 — Números coerentes
 
 **Estado em 16/09/2026:** mesclada no PR #5 (`885a196`), em oito commits de código e três de
-documentação, a partir do `6875c1a`. Depois do merge, dois commits na branch
-`etapa-4/vocabulario-e-alertas`, ainda fora da `main`: o `Fix:` `0c2be34`, das pendências 1 e 2
-que a etapa deixou, e este `Docs:`. A regra da etapa: número que
+documentação, a partir do `6875c1a`. Depois do merge, quatro commits na branch
+`etapa-4/vocabulario-e-alertas`, ainda fora da `main`: `0c2be34` e `bd93507`, de correção, e
+`d959540` e este, de documentação. A regra da etapa: número que
 descreve os registros se calcula a partir deles, em `src/lib/metrics.ts`; número que não tem
 registro de origem vira cenário com nome próprio, com aviso, ou sai. As decisões D1 a D6 são
 do autor e estão no plano aprovado; os commits citam cada uma onde ela se aplica.
@@ -857,7 +904,9 @@ do autor e estão no plano aprovado; os commits citam cada uma onde ela se aplic
 | `7039784` Fix | Gestão como cenário nomeado (D1), o 88% (D6), avisos, ranking fora, "+100%" da Agenda |
 | `cc83fc5` Docs | Medida da etapa, quarta onda do achado 1, caso a mais do achado 6, README |
 | `0c2be34` Fix | Depois do merge: vocabulário de inferência sobre dado fixo, contagens que contradiziam a lista ao lado, "João" |
-| este `Docs:` | Depois do merge: o par leitura × busca no achado 1, achado 7, pendências realocadas, correções dos registros |
+| `d959540` Docs | Depois do merge: o par leitura × busca no achado 1, achado 7, pendências realocadas, correções dos registros |
+| `bd93507` Fix | Depois do merge: o Ver PEI deixa de atribuir o plano de exemplo ao estudante aberto |
+| este `Docs:` | Depois do merge: regra do controle positivo no CLAUDE.md, recontagem e reexecução do achado 7, série do calendário atribuída |
 
 ### Resultado da etapa
 
@@ -924,8 +973,9 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
   mostram números fixos sob o nome do estudante: o Desempenho da Maria diz 85% no 4º
   trimestre, e a ficha, 60%. Trocar por dado real depende da entidade PEI (Etapa 9), e o autor
   aceitou a ressalva.
-- **Conferido em 16/09/2026, depois do merge: três dos quatro dizem na tela que o conteúdo não
-  é do estudante aberto; o Ver PEI não diz.**
+- **Conferido em 16/09/2026, depois do merge: três dos quatro diziam na tela que o conteúdo não
+  é do estudante aberto; o Ver PEI não dizia. Corrigido em `bd93507`, a pedido do autor — era o
+  pior dos quatro justamente por nomear.**
   - Desempenho: "São os mesmos para qualquer estudante e não vêm das avaliações registradas",
     no aviso, e "igual para qualquer estudante", na descrição.
   - Apresentação: "Só o nome vem da ficha: os slides não usam os registros do estudante."
@@ -935,7 +985,13 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
     de PEI, mas não diz que o conteúdo não é do estudante. O cabeçalho mostra "Aluno: Pedro
     Oliveira Costa", "PEI 2024 - 4º Trimestre" e "Ativo", e a descrição fala em "plano do
     estudante". O registro de `cc83fc5` dizia que os quatro tinham esse aviso; não era verdade
-    para o Ver PEI.
+    para o Ver PEI. Além disso, a responsável do plano, quatro vezes, era "Profª Marina Santos",
+    na demonstração a regente de outra aluna.
+  - Ver PEI, depois de `bd93507`, medido nas fichas de Pedro e de Maria: título "— exemplo";
+    descrição "o mesmo para qualquer estudante: não é o plano de <nome>"; aviso "nada deste plano
+    vem do registro de <nome>"; sem "Aluno:" e sem selo de status no cabeçalho; "Professor(a)
+    regente" no lugar do nome da professora. O nome do estudante só aparece nas duas frases que
+    negam que o plano seja dele.
 - **Zero "neste mês" é resultado, não defeito** (D2). As observações e os atendimentos do seed
   são de novembro e dezembro de 2025. O README e os avisos do Dashboard e da Agenda dizem isso.
 - **O cenário de Gestão continua inventado**, agora com nome e separado dos registros (D1).
@@ -958,11 +1014,15 @@ cada item depois do merge:
   **Etapa 5, item 12**, por decisão do autor.
 - **Calendário da Agenda em inglês:** **Pendências abertas, item 2 (Etapa 3)**, por decisão do
   autor, junto do selo "ATENÇÃO" de 3,15:1 achado na verificação de `0c2be34`.
-- **Ver PEI sem dizer que o conteúdo não é do estudante aberto.** Ver **O que o número não
-  diz**. Não corrigido; aguarda decisão do autor.
-- **Série fixa do calendário de observações.** Em Gestão > Relatórios, novembro de 2024 tem
-  zero observação em todas as terças e quartas e 23 observações nos fins de semana. A série não
-  corresponde a um calendário escolar. Visto na verificação de `0c2be34`; sem correção.
+- ~~**Ver PEI sem dizer que o conteúdo não é do estudante aberto.**~~ **Corrigido em
+  `bd93507`**, por decisão do autor. Ver **O que o número não diz**.
+- **Dado ilustrativo implausível, não bug: a série fixa do calendário de observações.** Em
+  Gestão > Relatórios, novembro de 2024 tem zero observação em todas as terças e quartas e 23
+  observações nos fins de semana. A série não corresponde a um calendário escolar. O autor a
+  escreveu na Etapa 0 (`441a31e`) para substituir o `Math.random()`, que mudava os números a
+  cada renderização, e registra que escolheu os números sem pensar no padrão semanal que eles
+  desenhavam. Visto na verificação de `0c2be34`. Registrado é suficiente, por decisão do autor;
+  sem correção.
 - **Código morto novo:** `mockProfessionals` ficou sem uso (Etapa 5, item 11).
 
 ### Inventário e plano original
@@ -1040,7 +1100,8 @@ faziam essa leitura:
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
 telas diferentes. **Estado:** cumprido com uma ressalva, descrita em **O que o número não diz**,
 no topo desta etapa: os diálogos de exemplo ainda mostram números fixos sob o nome do
-estudante. Três dos quatro dizem na tela que o conteúdo não é dele; o Ver PEI não diz.
+estudante. Os quatro dizem na tela que o conteúdo não é dele: três desde a Etapa 4, e o Ver PEI
+desde `bd93507`.
 
 ---
 
