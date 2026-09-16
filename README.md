@@ -18,16 +18,21 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 > do navegador em uso**, sem criptografia. Os controles sem função mapeados no backlog
 > aparecem desabilitados, com o motivo na tela, ou foram removidos.
 >
-> Os indicadores, projeções, comparativos e valores orçamentários exibidos são **exemplos
-> ilustrativos fixos no código**. Nenhum modelo estatístico ou de machine learning é
-> executado, e nenhuma escola real foi medida.
+> Os números que descrevem os registros — alunos ativos, observações e atendimentos por
+> período, progresso do aluno, nota dos recursos — são **calculados** a partir do que está no
+> navegador. O **painel de Gestão** é outra coisa: um cenário fictício com nome próprio, a
+> *Escola Ilustrativa*, com 45 alunos, equipe e orçamento, separado dos alunos cadastrados. Os
+> indicadores dele, as projeções, os comparativos e os valores orçamentários são **exemplos
+> fixos no código**. Nenhum modelo estatístico ou de machine learning é executado, e nenhuma
+> escola real foi medida.
 >
-> **Por que o Dashboard e a Agenda mostram zero "neste mês".** Os registros de exemplo
-> têm datas fixas de novembro e dezembro de 2025, e as contagens por período são calculadas
-> a partir dessas datas e do dia de hoje. Fora daqueles meses, "Observações registradas neste
-> mês" e "Atendimentos neste mês" dão 0, e a variação diz "sem base de comparação". Não é
-> defeito: as datas ficaram fixas de propósito, para os números serem reproduzíveis. O que
-> for cadastrado na interface com data do mês corrente entra na contagem normalmente.
+> **Por que o Dashboard e a Agenda mostram zero "neste mês".** As observações e os
+> atendimentos de exemplo têm datas fixas de novembro e dezembro de 2025, e as contagens por
+> período são calculadas a partir dessas datas e do dia de hoje. Fora daqueles meses, as
+> observações e os atendimentos "neste mês" e nos próximos 7 dias dão 0, e a variação diz "sem
+> base de comparação". Não é defeito: as datas ficaram fixas de propósito, para os números
+> serem reproduzíveis. O que for cadastrado na interface com data do período entra na contagem
+> normalmente. O Dashboard e a Agenda repetem essa explicação num aviso na própria tela.
 >
 > O sistema **não está pronto para receber dados reais de estudantes**. Ver
 > [Antes de usar com dados reais](#antes-de-usar-com-dados-reais).
@@ -42,6 +47,7 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 - [Adaptando para sua instituição](#adaptando-para-sua-instituição)
 - [O que está implementado](#o-que-está-implementado)
 - [Acessibilidade](#acessibilidade)
+- [Números](#números)
 - [Antes de usar com dados reais](#antes-de-usar-com-dados-reais)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Contribuindo](#contribuindo)
@@ -58,8 +64,8 @@ Telas navegáveis do protótipo:
 - **Alunos** — listagem, filtros por diagnóstico, cadastro, edição, ficha detalhada, modo apresentação
 - **Observações** — registro estruturado por áreas (comunicação, social, comportamento)
 - **Agenda de atendimentos** — calendário em visões mês/semana/dia/lista, com remarcação, cancelamento e ata
-- **Gestão** — visão geral, alertas e riscos, análise de complexidade, relatórios, equipe, orçamento (conteúdo fixo de demonstração)
-- **Biblioteca de recursos** — catálogo de materiais adaptados com busca, filtros, ordenação e favoritos deste navegador
+- **Gestão** — visão geral, alertas e riscos, análise de complexidade, relatórios, equipe e orçamento de uma escola fictícia, a *Escola Ilustrativa* (cenário fixo de demonstração, separado dos alunos cadastrados)
+- **Biblioteca de recursos** — catálogo de materiais adaptados com busca, filtros, ordenação pela nota calculada das avaliações, favoritos e badges de contribuição deste navegador
 - **Marco legal** — LDB 9.394/96, LBI 13.146/2015, Lei 12.764/2012, Decreto 7.611/2011
 - **Manual de procedimentos** — fluxo de identificação, PEI, equipe, protocolos e avaliação
 
@@ -125,6 +131,10 @@ export const institution = {
 };
 ```
 
+O painel de Gestão não mostra a instituição configurada, e sim um cenário fictício: o nome
+e o tamanho dele ficam em `illustrativeScenario`, no mesmo arquivo. O cenário não nomeia
+aluno nem família, e a equipe dele não repete nome de pessoa dos dados de demonstração.
+
 A paleta de cores fica em `src/index.css`, nas variáveis `--brand-*`. Os valores padrão
 foram escolhidos para atingir contraste **≥ 4,5:1 com texto branco (WCAG 2.1 AA)** — ao
 trocá-los pelas cores da sua instituição, verifique o contraste novamente.
@@ -149,6 +159,9 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Listagens, filtros e busca de alunos | ✅ Funcional (dados fictícios e cadastros locais) |
 | Cadastro e edição de alunos; observações e avaliações pedagógicas; atendimentos com remarcação, cancelamento e ata; recursos, comentários e favoritos da biblioteca | ⚠️ Grava só no localStorage do navegador, em modo demonstração. Nada é excluído: o aluno muda de status e o atendimento é cancelado |
 | Relatório do estudante e da turma | ⚠️ Montado com os registros do navegador; imprime ou salva como PDF pela janela de impressão do navegador |
+| Indicadores do Dashboard, da Agenda, da ficha do aluno e da Biblioteca | ✅ Calculados dos registros do navegador, em `src/lib/metrics.ts`; sem registro no período anterior, a variação diz "sem base de comparação" |
+| Painel de Gestão | ❌ Cenário ilustrativo nomeado (*Escola Ilustrativa*), fixo no código e separado dos registros, com aviso acima das abas e em cada uma |
+| Desempenho e Modo Apresentação do estudante | ❌ Exemplos fixos, iguais para qualquer estudante, com aviso; o progresso calculado está na ficha |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
 | PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
@@ -166,9 +179,10 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
 desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero
 violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
-Gestão, desempenho, apresentação e PEI continuam mostrando conteúdo fixo de demonstração, e
-nem toda tela desse tipo tem aviso ainda (ver Etapa 4 do backlog). O histórico acadêmico não
-tem modelo de dados e diz isso na tela.
+Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
+registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
+Gestão, desempenho, apresentação e PEI continuam com conteúdo fixo de demonstração, agora com
+aviso em todas essas telas. O histórico acadêmico não tem modelo de dados e diz isso na tela.
 
 ---
 
@@ -232,6 +246,66 @@ navegador. A tela diz isso, em vez de oferecer um controle que não faria nada.
   não foram testadas**: os nove testes estão em "Pendências abertas" no backlog.
 - **165 classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores
   que passam no contraste. Estão registradas na Etapa 5 do backlog.
+
+---
+
+## Números
+
+A Etapa 4 do [backlog](BACKLOG-CLAUDE-CODE.md) aplicou uma regra: número que descreve os
+registros se calcula a partir deles, em `src/lib/metrics.ts`; número que não tem registro de
+origem vira cenário com nome próprio, com aviso, ou sai. Medido no navegador antes e depois de
+cada commit da etapa, com o relógio emulado quando o defeito dependia de data ou hora:
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Dado de saúde fixo atribuído a estudante ou a pessoa nomeada** | **9** | **0** |
+| — sob o nome de qualquer estudante: ficha, Desempenho, Nova Observação | 5 | 0 |
+| — de pessoa nomeada, na Gestão: duas licenças, "Pedro, 9h - Ansiedade", "Pedro (crise)" | 4 | 0 |
+| Afirmações falsas de funcionalidade na ficha | 2 | 0 |
+| **Números digitados apresentados como medida** | | |
+| — tendências sem base (Dashboard ↑12% e ↑8%; Agenda +12%) | 3 | 0 |
+| — selos "+100%" sem semana anterior na Agenda (visão Dia em 25/11/2025) | 3 | 0 |
+| — números sem entidade de origem ("12 relatórios pendentes", "21" anexos) | 2 | 0 |
+| Cartões "este mês" que contavam registros de qualquer data | 2 | 0 |
+| Leituras de data em UTC, que mudavam números à noite, aos domingos e na véspera de aniversário | 4 | 0 |
+| "Próximos 7 dias", Dashboard × Agenda, às 21h30 de 24/11/2025 | 3 × 4 | 3 × 3 |
+| Alunos com progresso exibido sem ter avaliação | 3 de 4 | 0 |
+| Campos e selos inventados na ficha, iguais para qualquer estudante | 13 | 0 |
+| Recursos com nota e contagem da fixture, e não das avaliações | 6 de 6 | 0 |
+| Cards de recurso com número de download | 6 | 0 |
+| Estatísticas sem origem no detalhe do recurso | 4 | 0 |
+| Números fixos em Meus Recursos | 4 | 0 |
+| Badges conquistadas com zero contribuições | 4 | 0 |
+| Ranking de pessoas fictícias apresentado como classificação real | 1 | 0 |
+| Pessoas dos dados de demonstração dentro do cenário de Gestão | 4 | 0 |
+| Alunos e famílias nomeados no cenário de Gestão | 8 | 0 |
+| Indicadores da Gestão com o mesmo nome e valor ou veredicto diferente | 2 | 0 |
+| Telas com número sem aviso de dados fictícios | 4 | 0 |
+
+O que isso significa na prática:
+
+- **O que é do navegador é calculado.** Alunos ativos, observações e atendimentos por período,
+  próximos atendimentos, progresso do aluno, último registro, nota e número de avaliações dos
+  recursos e badges de contribuição saem dos registros, e mudam quando algo é cadastrado.
+- **Sem base, a tela diz "sem base".** Quando o período anterior não tem registro, não há
+  porcentagem de variação para mostrar, e nenhuma é inventada.
+- **O que não é do navegador tem nome.** O painel de Gestão descreve a *Escola Ilustrativa*,
+  com um aviso acima das abas que mostra, ao lado dos 45 alunos do cenário, quantos alunos estão
+  cadastrados de fato. O cenário não nomeia aluno nem família.
+- **Datas locais.** Data de registro se compara como texto `AAAA-MM-DD`; nenhuma conta usa
+  `new Date('AAAA-MM-DD')`, que é meia-noite em UTC e, no Brasil, 21h do dia anterior.
+
+### Limites conhecidos
+
+- **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação, Ver PEI e
+  Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante, agora com
+  aviso de que não é dele. O Desempenho de uma aluna pode dizer 85% enquanto a ficha dela,
+  calculada, diz 60%. Trocar por dado real depende da entidade PEI.
+- **Vocabulário de previsão.** A análise preditiva e o comparativo da ficha ainda dizem
+  "prevê-se", "probabilidade" e "chance de melhoria" sobre números fixos, com aviso de que
+  nenhum modelo é executado. Está registrado no backlog, para decisão.
+- **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
+  tratada onde havia contradição à vista.
 
 ---
 
