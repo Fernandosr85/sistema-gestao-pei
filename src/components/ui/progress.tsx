@@ -6,18 +6,31 @@ import { cn } from "@/lib/utils";
 const Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => (
-  <ProgressPrimitive.Root
-    ref={ref}
-    className={cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className)}
-    {...props}
-  >
-    <ProgressPrimitive.Indicator
-      className="h-full w-full flex-1 bg-primary transition-all"
-      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-    />
-  </ProgressPrimitive.Root>
-));
+>(({ className, value, ...props }, ref) => {
+  /*
+   * Sem nome acessível, cada barra era anunciada como "barra de progresso" e nada mais:
+   * eram 62 delas nas rotas do sistema. Em todas, o rótulo e o valor já estão em texto
+   * ao lado ("Taxa de sucesso PEI" e "88%"), e a barra é a mesma informação em forma
+   * visual. O padrão passa a ser escondê-la da árvore de acessibilidade, em vez de
+   * repetir o que já foi lido. Uma barra que seja a única portadora do valor deve
+   * receber `aria-label` — e aí ela volta a ser anunciada.
+   */
+  const hasAccessibleName = Boolean(props["aria-label"] || props["aria-labelledby"]);
+
+  return (
+    <ProgressPrimitive.Root
+      ref={ref}
+      aria-hidden={hasAccessibleName ? undefined : true}
+      className={cn("relative h-4 w-full overflow-hidden rounded-full bg-secondary", className)}
+      {...props}
+    >
+      <ProgressPrimitive.Indicator
+        className="h-full w-full flex-1 bg-primary transition-all"
+        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+      />
+    </ProgressPrimitive.Root>
+  );
+});
 Progress.displayName = ProgressPrimitive.Root.displayName;
 
 export { Progress };

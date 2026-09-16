@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, LineChart } from 'recharts';
 import { TrendingUp, TrendingDown, Minus, Lightbulb, AlertCircle, CheckCircle2 } from 'lucide-react';
+import ChartDataTable from '@/components/ChartDataTable';
 
 const data = [
   { mes: 'Jan', progresso_real: 2, meta_esperada: 1 },
@@ -156,12 +157,16 @@ const ProgressChart = () => {
       <CardContent>
         <Tabs defaultValue="geral" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="geral">📊 Visão Geral</TabsTrigger>
-            <TabsTrigger value="areas">📈 Por Áreas</TabsTrigger>
+            <TabsTrigger value="geral">Visão Geral</TabsTrigger>
+            <TabsTrigger value="areas">Por Áreas</TabsTrigger>
           </TabsList>
 
           {/* TAB 1: VISÃO GERAL */}
           <TabsContent value="geral">
+        <div
+          role="img"
+          aria-label="Gráfico de linhas do progresso do PEI ao longo de 2024, comparando objetivos alcançados com a meta esperada, mês a mês. Os mesmos números estão na tabela abaixo."
+        >
         <ResponsiveContainer width="100%" height={350}>
           <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
@@ -244,6 +249,13 @@ const ProgressChart = () => {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
+
+        <ChartDataTable
+          caption="Progresso do PEI em 2024, por mês: objetivos alcançados e meta esperada."
+          columns={['Mês', 'Alcançados', 'Meta esperada']}
+          rows={data.map((ponto) => [ponto.mes, ponto.progresso_real, ponto.meta_esperada])}
+        />
 
         {/* Estatísticas resumidas */}
         <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t">
@@ -279,10 +291,12 @@ const ProgressChart = () => {
               <Lightbulb className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground mb-1">
+              {/* O fundo é `bg-accent`, escuro. O texto usava as cores de fundo claro, e ficava
+                  em 2,71:1 e 1,22:1. */}
+              <p className="text-sm font-semibold text-accent-foreground mb-1">
                 💡 Leitura ilustrativa — regra fixa, nenhum modelo é executado
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-accent-foreground">
                 {diferencaPercentual >= 0 
                   ? `O aluno está ${Math.abs(diferencaPercentual).toFixed(0)}% ${diferencaPercentual > 0 ? 'acima' : 'no ritmo'} da meta esperada! Continue com as estratégias atuais e considere aumentar o nível de desafio.`
                   : `O aluno está ${Math.abs(diferencaPercentual).toFixed(0)}% abaixo da meta. Recomenda-se revisar estratégias e intensificar intervenções nas áreas de maior dificuldade.`
@@ -317,7 +331,7 @@ const ProgressChart = () => {
             {!areaSelecionada && (
               <div className="text-center py-12 text-muted-foreground">
                 <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Clique em uma área acima para ver os detalhes</p>
+                <p>Selecione uma área acima para ver os detalhes</p>
               </div>
             )}
           </TabsContent>
@@ -369,21 +383,37 @@ function MiniCardArea({
   const percentual = Math.round((area.atual / area.total) * 100);
 
   return (
-    <div 
+    /*
+     * O cartão inteiro continua clicável, mas quem recebe o clique agora é o botão do
+     * título, esticado sobre o cartão pelo pseudoelemento. Antes o `onClick` estava no
+     * `<div>` de fora: funcionava no mouse e o teclado não alcançava nenhuma das cinco
+     * áreas. Manter o botão só no título deixa o HTML válido, preserva o `<h4>` e dá ao
+     * controle um nome curto, em vez de todo o texto do cartão.
+     */
+    <div
       className={`
-        p-4 rounded-lg border-2 cursor-pointer transition-all
+        relative p-4 rounded-lg border-2 transition-all
         hover:shadow-lg hover:scale-105
+        focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2
         ${ativo ? 'border-primary bg-accent shadow-md' : 'border-border bg-card'}
       `}
-      onClick={onClick}
     >
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-sm text-foreground">{area.nome}</h4>
+        <h4 className="font-semibold text-sm text-foreground">
+          <button
+            type="button"
+            onClick={onClick}
+            aria-pressed={ativo}
+            className="text-left after:absolute after:inset-0 after:content-[''] focus:outline-none"
+          >
+            {area.nome}
+          </button>
+        </h4>
         {getStatusIcon()}
       </div>
 
-      {/* Mini sparkline */}
-      <div className="h-12 mb-3">
+      {/* Mini sparkline. Decorativa: o cartão já traz "7/10" e "70%" em texto logo abaixo. */}
+      <div className="h-12 mb-3" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={area.dados}>
             <Line 
@@ -443,6 +473,10 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
       {/* Gráfico */}
       <div className="px-6 pb-4">
 
+        <div
+          role="img"
+          aria-label={`Gráfico de linhas de ${area.nome} no primeiro semestre, comparando o valor alcançado com a meta de cada mês. Os mesmos números estão na tabela abaixo.`}
+        >
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
@@ -498,6 +532,13 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
+
+        <ChartDataTable
+          caption={`${area.nome}: valor alcançado e meta, mês a mês.`}
+          columns={['Mês', 'Alcançado', 'Meta']}
+          rows={area.dados.map((ponto) => [ponto.mes, ponto.valor, ponto.meta])}
+        />
       </div>
 
       {/* Métricas detalhadas */}

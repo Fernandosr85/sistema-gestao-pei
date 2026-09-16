@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -100,23 +100,27 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">📝 Nova Observação - {studentName}</DialogTitle>
+          <DialogTitle className="text-xl">Nova Observação - {studentName}</DialogTitle>
+          <DialogDescription>
+            Registre o que foi observado, com data, local e tipo. O registro fica salvo neste
+            navegador.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="data">📅 Data</Label>
+              <Label htmlFor="data">Data</Label>
               <Input id="data" type="date" value={date} onChange={(event) => setDate(event.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="hora">⏰ Hora</Label>
+              <Label htmlFor="hora">Hora</Label>
               <Input id="hora" type="time" value={time} onChange={(event) => setTime(event.target.value)} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label>📍 Local/Contexto</Label>
+            <Label>Local/Contexto</Label>
             <RadioGroup value={context} onValueChange={(value) => setContext(value as QuickObservationContext)}>
               {quickObservationContextOptions.map((option) => (
                 <div key={option.value} className="flex items-center space-x-2">
@@ -128,7 +132,7 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           </div>
 
           <div className="space-y-2">
-            <Label>🎯 Relacionado a</Label>
+            <Label>Relacionado a</Label>
             <div className="space-y-2">
               {quickObservationTopicOptions.map((option) => (
                 <div key={option.value} className="flex items-center space-x-2">
@@ -144,13 +148,13 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           </div>
 
           <div className="space-y-2">
-            <Label>📝 Tipo de Observação</Label>
+            <Label>Tipo de Observação</Label>
             <RadioGroup value={tone} onValueChange={(value) => setTone(value as QuickObservationTone)}>
               {quickObservationToneOptions.map((option) => (
                 <div key={option.value} className="flex items-center space-x-2">
                   <RadioGroupItem value={option.value} id={`tipo-${option.value}`} />
                   <Label htmlFor={`tipo-${option.value}`}>
-                    {option.emoji} {option.label}
+                    {option.label}
                   </Label>
                 </div>
               ))}
@@ -158,7 +162,7 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="descricao">💬 Descrição *</Label>
+            <Label htmlFor="descricao">Descrição *</Label>
             <Textarea
               id="descricao"
               placeholder="Descreva a observação de forma clara e objetiva..."
@@ -174,7 +178,7 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           </div>
 
           <div className="space-y-2">
-            <Label>📎 Anexar evidências</Label>
+            <Label>Anexar evidências</Label>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
                 <Camera className="w-4 h-4 mr-2" />
@@ -195,7 +199,7 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
           </div>
 
           <div className="space-y-2">
-            <Label>🔔 Notificar</Label>
+            <Label>Notificar</Label>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox id="notif-familia" checked={false} disabled aria-describedby="notificar-indisponivel" />

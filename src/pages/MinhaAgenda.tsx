@@ -25,25 +25,25 @@ const MinhaAgenda = () => {
 
   const weekEvents = {
     seg: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
       { time: '14:00-17:00', title: 'Tempo Administrativo', type: 'admin', color: 'bg-gray-500' },
     ],
     ter: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-17:00', title: 'Apoio 3º Ano A', type: 'apoio', color: 'bg-green-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-17:00', title: 'Apoio 3º Ano A', type: 'apoio', color: 'bg-brand-green' },
     ],
     qua: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-15:00', title: 'Reunião Fam. Silva', type: 'reuniao', color: 'bg-purple-500' },
-      { time: '16:00-17:00', title: 'PEI Revisão Maria', type: 'pei', color: 'bg-orange-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-15:00', title: 'Reunião Fam. Silva', type: 'reuniao', color: 'bg-brand-purple' },
+      { time: '16:00-17:00', title: 'PEI Revisão Maria', type: 'pei', color: 'bg-brand-orange' },
     ],
     qui: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '19:00-21:00', title: 'Formação TEA', type: 'formacao', color: 'bg-yellow-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '19:00-21:00', title: 'Formação TEA', type: 'formacao', color: 'bg-brand-yellow' },
     ],
     sex: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-17:00', title: 'Observações (Pedro, João, Lucas)', type: 'observacao', color: 'bg-cyan-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-17:00', title: 'Observações (Pedro, João, Lucas)', type: 'observacao', color: 'bg-brand-lightblue' },
     ],
   };
 
@@ -58,7 +58,7 @@ const MinhaAgenda = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">📅 Minha Agenda</h1>
+          <h1 className="text-3xl font-bold">Minha Agenda</h1>
           <p className="text-muted-foreground">{DEMO_USER_NAME}</p>
         </div>
         <Dialog open={isNewEventDialogOpen} onOpenChange={setIsNewEventDialogOpen}>
@@ -219,10 +219,10 @@ const MinhaAgenda = () => {
 
       <Tabs value={selectedView} onValueChange={setSelectedView}>
         <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger value="mes">📅 Mês</TabsTrigger>
-          <TabsTrigger value="semana">📋 Semana</TabsTrigger>
-          <TabsTrigger value="dia">📄 Dia</TabsTrigger>
-          <TabsTrigger value="lista">📊 Lista</TabsTrigger>
+          <TabsTrigger value="mes">Mês</TabsTrigger>
+          <TabsTrigger value="semana">Semana</TabsTrigger>
+          <TabsTrigger value="dia">Dia</TabsTrigger>
+          <TabsTrigger value="lista">Lista</TabsTrigger>
         </TabsList>
 
         {/* VISUALIZAÇÃO SEMANAL */}
@@ -237,13 +237,15 @@ const MinhaAgenda = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-5 gap-4">
+          {/* Cinco colunas fixas não cabem em 320 px: cada dia ficava com 43 px de largura
+              e 48 px só de espaçamento interno. Empilha primeiro e vira grade a partir de sm. */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {Object.entries(weekEvents).map(([dia, eventos]) => (
               <Card key={dia}>
-                <CardHeader className="pb-3">
+                <CardHeader className="p-4 pb-3">
                   <CardTitle className="text-sm font-semibold uppercase">{dia}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="p-4 pt-0 space-y-2">
                   {eventos.map((evento, idx) => (
                     <div key={idx} className={`p-2 rounded-lg text-white text-xs ${evento.color}`}>
                       <p className="font-semibold">{evento.time}</p>
@@ -373,7 +375,7 @@ const MinhaAgenda = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>🔔 Próximos Compromissos</CardTitle>
+              <CardTitle>Próximos Compromissos</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useEffect, useRef, useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -43,14 +43,53 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
     if (currentSlide > 1) setCurrentSlide(currentSlide - 1);
   };
 
+  /*
+   * A troca de slide não movia o foco nem era anunciada: quem usa leitor de tela ouvia o
+   * nome do botão "Próximo" e nada mais. O slide vira uma região com nome que inclui o
+   * número, e o foco vai para ela a cada troca — é o leitor lendo o nome da região que
+   * anuncia "Slide 3 de 12". Também não havia navegação por setas: só o clique nos botões.
+   */
+  const slideRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isPresenting) slideRef.current?.focus();
+  }, [currentSlide, isPresenting]);
+
+  const handleSlideKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      nextSlide();
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      prevSlide();
+    }
+  };
+
   if (isPresenting) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0" onKeyDown={handleSlideKeys}>
+          <DialogHeader className="sr-only">
+            <DialogTitle>Apresentação do progresso de {studentName}</DialogTitle>
+            <DialogDescription>
+              {totalSlides} slides de exemplo. Use as setas esquerda e direita para navegar, ou
+              os botões no rodapé.
+            </DialogDescription>
+          </DialogHeader>
+
           {/* Tela de Apresentação em Fullscreen */}
-          <div className="relative w-full h-[90vh] bg-gradient-to-br from-primary/5 to-accent/5 flex flex-col">
+          {/* `min-w-0` porque item de grade tem largura mínima automática: sem ele, o slide
+              cresce até caber o conteúdo e estoura o diálogo em telas estreitas. */}
+          <div className="relative min-w-0 w-full h-[90vh] bg-gradient-to-br from-primary/5 to-accent/5 flex flex-col">
             {/* Conteúdo do Slide */}
-            <div className="flex-1 flex items-center justify-center p-12">
+            <div
+              ref={slideRef}
+              tabIndex={-1}
+              role="region"
+              aria-roledescription="slide"
+              aria-label={`Slide ${currentSlide} de ${totalSlides}`}
+              className="flex-1 min-w-0 overflow-y-auto flex items-center justify-center p-4 sm:p-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {currentSlide === 1 && (
                 <div className="text-center space-y-8">
                   <div className="text-6xl mb-8">👧</div>
@@ -58,7 +97,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                   <p className="text-xl text-muted-foreground">Trimestre 3 de 2024 (Set-Nov)</p>
                   <div className="my-12 h-1 w-64 mx-auto bg-gradient-to-r from-transparent via-primary to-transparent" />
                   <div className="space-y-4">
-                    <h2 className="text-3xl font-semibold text-primary">🎯 Apresentação do Progresso</h2>
+                    <h2 className="text-3xl font-semibold text-primary">Apresentação do Progresso</h2>
                     <p className="text-xl text-muted-foreground">Reunião com Família</p>
                     <p className="text-lg text-muted-foreground">21 de Novembro de 2024</p>
                   </div>
@@ -67,7 +106,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
 
               {currentSlide === 2 && (
                 <div className="w-full max-w-4xl space-y-8">
-                  <h2 className="text-4xl font-bold text-center mb-12">📊 PROGRESSO GERAL DO TRIMESTRE</h2>
+                  <h2 className="text-4xl font-bold text-center mb-12">PROGRESSO GERAL DO TRIMESTRE</h2>
                   <div className="flex items-center justify-center mb-8">
                     <div className="relative w-64 h-64">
                       <svg className="w-64 h-64 transform -rotate-90">
@@ -115,7 +154,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
 
               {currentSlide === 3 && (
                 <div className="w-full max-w-5xl space-y-8">
-                  <h2 className="text-4xl font-bold text-center mb-12">🏆 CONQUISTAS IMPORTANTES!</h2>
+                  <h2 className="text-4xl font-bold text-center mb-12">CONQUISTAS IMPORTANTES!</h2>
                   <div className="space-y-6">
                     <Card className="bg-gradient-to-r from-success/10 to-success/5">
                       <CardContent className="p-8">
@@ -172,15 +211,15 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
 
               {currentSlide === totalSlides && (
                 <div className="w-full max-w-4xl space-y-8">
-                  <h2 className="text-4xl font-bold text-center mb-12">🎯 PRÓXIMOS PASSOS</h2>
+                  <h2 className="text-4xl font-bold text-center mb-12">PRÓXIMOS PASSOS</h2>
                   
                   <Card>
                     <CardContent className="pt-8 space-y-6">
-                      <h3 className="text-2xl font-semibold text-primary mb-4">🏠 O QUE FAZER EM CASA:</h3>
+                      <h3 className="text-2xl font-semibold text-primary mb-4">O QUE FAZER EM CASA:</h3>
                       
                       <div className="space-y-4 text-lg">
                         <div>
-                          <h4 className="font-semibold mb-2">📖 1. Leitura compartilhada</h4>
+                          <h4 className="font-semibold mb-2">1. Leitura compartilhada</h4>
                           <ul className="ml-6 space-y-1 text-muted-foreground">
                             <li>• 15 minutos por dia</li>
                             <li>• Livros com imagens grandes</li>
@@ -189,7 +228,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                         </div>
 
                         <div>
-                          <h4 className="font-semibold mb-2">🔢 2. Brincadeiras com números</h4>
+                          <h4 className="font-semibold mb-2">2. Brincadeiras com números</h4>
                           <ul className="ml-6 space-y-1 text-muted-foreground">
                             <li>• Contar objetos do cotidiano</li>
                             <li>• Jogos simples de adição</li>
@@ -198,7 +237,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
                         </div>
 
                         <div>
-                          <h4 className="font-semibold mb-2">💬 3. Estimular comunicação</h4>
+                          <h4 className="font-semibold mb-2">3. Estimular comunicação</h4>
                           <ul className="ml-6 space-y-1 text-muted-foreground">
                             <li>• Incentivar uso da prancha em casa</li>
                             <li>• Dar tempo para ela se expressar</li>
@@ -223,9 +262,10 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
               Slide {currentSlide} de {totalSlides} · Conteúdo de exemplo, que não vem dos registros do estudante
             </div>
 
-            {/* Controles de Navegação */}
+            {/* Controles de Navegação. Em 320 px, ou com zoom de 200%, os três botões não
+                cabem lado a lado e o rodapé estourava a largura; agora quebram linha. */}
             <div className="bg-background/95 backdrop-blur border-t p-4">
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-3">
                 <Button
                   variant="outline"
                   size="lg"
@@ -277,7 +317,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            🎥 MODO APRESENTAÇÃO PARA REUNIÃO COM FAMÍLIA
+            MODO APRESENTAÇÃO PARA REUNIÃO COM FAMÍLIA
           </DialogTitle>
           <p className="text-sm text-muted-foreground mt-2">
             Crie uma apresentação visual e acessível para compartilhar o progresso de {studentName} com a família.
@@ -293,11 +333,11 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
           {/* Configurações */}
           <Card>
             <CardContent className="pt-6 space-y-6">
-              <h3 className="font-semibold text-lg">⚙️ CONFIGURAÇÕES DA APRESENTAÇÃO</h3>
+              <h3 className="font-semibold text-lg">CONFIGURAÇÕES DA APRESENTAÇÃO</h3>
 
               {/* Formato */}
               <div className="space-y-2">
-                <Label className="text-sm font-semibold">📱 Formato de saída:</Label>
+                <Label className="text-sm font-semibold">Formato de saída:</Label>
                 <RadioGroup value={format} onValueChange={setFormat}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="interactive" id="interactive" />
@@ -322,7 +362,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
           {/* Preview */}
           <Card className="bg-gradient-to-br from-primary/5 to-accent/5">
             <CardContent className="pt-6">
-              <h4 className="font-semibold mb-4">🎬 PREVIEW</h4>
+              <h4 className="font-semibold mb-4">PREVIEW</h4>
               <div className="bg-muted/50 rounded-lg p-8 text-center space-y-4">
                 <FileText className="h-16 w-16 mx-auto text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">Miniatura da apresentação</p>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
@@ -201,41 +201,83 @@ const AlertasRiscosContent = () => {
     return 'low';
   };
 
+  /*
+   * Cores fixas do Tailwind davam entre 3,0:1 e 4,2:1 sobre o próprio fundo tingido,
+   * abaixo do mínimo AA. Os tokens da marca são medidos e passam.
+   */
   const getSeverityColor = (severity: 'critical' | 'high' | 'medium' | 'low') => {
     switch (severity) {
-      case 'critical': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'high': return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
-      case 'low': return 'bg-green-500/10 text-green-600 border-green-500/30';
+      case 'critical': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'high': return 'bg-brand-orange/10 text-brand-orange border-brand-orange/30';
+      case 'medium': return 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30';
+      case 'low': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
     }
   };
 
-  const getSeverityIcon = (severity: 'critical' | 'high' | 'medium' | 'low') => {
+  const getSeverityName = (severity: 'critical' | 'high' | 'medium' | 'low') => {
     switch (severity) {
-      case 'critical': return '🔴';
-      case 'high': return '🟡';
-      case 'medium': return '⚠️';
-      case 'low': return '✅';
+      case 'critical': return 'crítica';
+      case 'high': return 'alta';
+      case 'medium': return 'média';
+      case 'low': return 'baixa';
     }
   };
+
+  const getProbabilityName = (probabilidade: number) =>
+    probabilidade >= 70 ? 'alta' : probabilidade >= 40 ? 'média' : 'baixa';
+
+  /**
+   * Cada célula da matriz é um botão que abre o detalhe do risco lá embaixo. Antes
+   * era um `Badge`, que renderiza `<div>`: o clique funcionava e o teclado não
+   * chegava a nenhuma das nove células. O nome acessível começa pelo texto visível,
+   * como exige o critério 2.5.3, e continua com probabilidade, impacto e severidade
+   * em palavras — na grade, esses três só existiam como posição e tom de cor.
+   *
+   * O `aria-controls` aponta para o cartão do risco, e não para o conteúdo do
+   * Collapsible: o Radix gera um id próprio para esse conteúdo e o usa no seu
+   * gatilho, então sobrescrevê-lo deixava o gatilho apontando para um id inexistente.
+   */
+  const renderCelulaMatriz = (riscos: Risco[]) =>
+    riscos.map(risco => {
+      const severity = getSeverityLevel(risco.probabilidade, risco.impacto);
+      return (
+        <button
+          key={risco.id}
+          type="button"
+          onClick={() => toggleRisk(risco.id)}
+          aria-expanded={expandedRisks.includes(risco.id)}
+          aria-controls={`risco-${risco.id}`}
+          className={cn(
+            badgeVariants(),
+            'text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          )}
+        >
+          {`${risco.id} · ${getSeverityName(severity)}`}
+          <span className="sr-only">
+            {`. ${risco.titulo}. Probabilidade ${getProbabilityName(risco.probabilidade)},`}
+            {` ${risco.probabilidade} por cento. Impacto ${risco.impacto.toLowerCase()}.`}
+          </span>
+        </button>
+      );
+    });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Identificado': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'Em monitoramento': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
-      case 'Em mitigação': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
-      case 'Resolvido': return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'Aceito': return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+      case 'Identificado': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'Em monitoramento': return 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30';
+      case 'Em mitigação': return 'bg-brand-blue/10 text-brand-blue border-brand-blue/30';
+      case 'Resolvido': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
+      case 'Aceito': return 'bg-brand-gray/10 text-brand-gray border-brand-gray/30';
       default: return '';
     }
   };
 
   const getCategoriaColor = (categoria: string) => {
     switch (categoria) {
-      case 'Gestão de Pessoas': return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      case 'Conformidade': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'Financeiro': return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'Operacional': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+      case 'Gestão de Pessoas': return 'bg-brand-purple/10 text-brand-purple border-brand-purple/30';
+      case 'Conformidade': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'Financeiro': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
+      case 'Operacional': return 'bg-brand-blue/10 text-brand-blue border-brand-blue/30';
       default: return '';
     }
   };
@@ -299,32 +341,32 @@ const AlertasRiscosContent = () => {
       {/* Resumo de Riscos */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
             Resumo de Riscos
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div className="text-center p-4 rounded-lg bg-red-500/10 border border-red-500/30">
-              <div className="text-3xl font-bold text-red-600">{countBySeverity.critical}</div>
-              <div className="text-sm text-red-600">Críticos 🔴</div>
+            <div className="text-center p-4 rounded-lg bg-brand-red/10 border border-brand-red/30">
+              <div className="text-3xl font-bold text-brand-red">{countBySeverity.critical}</div>
+              <div className="text-sm text-brand-red">Críticos 🔴</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
-              <div className="text-3xl font-bold text-orange-600">{countBySeverity.high}</div>
-              <div className="text-sm text-orange-600">Altos 🟡</div>
+            <div className="text-center p-4 rounded-lg bg-brand-orange/10 border border-brand-orange/30">
+              <div className="text-3xl font-bold text-brand-orange">{countBySeverity.high}</div>
+              <div className="text-sm text-brand-orange">Altos 🟡</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-              <div className="text-3xl font-bold text-yellow-700">{countBySeverity.medium}</div>
-              <div className="text-sm text-yellow-700">Médios ⚠️</div>
+            <div className="text-center p-4 rounded-lg bg-brand-yellow/10 border border-brand-yellow/30">
+              <div className="text-3xl font-bold text-brand-yellow">{countBySeverity.medium}</div>
+              <div className="text-sm text-brand-yellow">Médios ⚠️</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-              <div className="text-3xl font-bold text-green-600">{countBySeverity.low}</div>
-              <div className="text-sm text-green-600">Baixos ✅</div>
+            <div className="text-center p-4 rounded-lg bg-brand-green/10 border border-brand-green/30">
+              <div className="text-3xl font-bold text-brand-green">{countBySeverity.low}</div>
+              <div className="text-sm text-brand-green">Baixos ✅</div>
             </div>
           </div>
-          <div className="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
-            <p className="text-sm font-semibold text-red-600">
+          <div className="p-4 bg-brand-red/5 rounded-lg border border-brand-red/20">
+            <p className="text-sm font-semibold text-brand-red">
               AÇÕES IMEDIATAS NECESSÁRIAS: {acoesImediatas}
             </p>
           </div>
@@ -334,7 +376,7 @@ const AlertasRiscosContent = () => {
       {/* Matriz de Riscos */}
       <Card>
         <CardHeader>
-          <CardTitle>Matriz de Riscos (Probabilidade × Impacto)</CardTitle>
+          <CardTitle level={2}>Matriz de Riscos (Probabilidade × Impacto)</CardTitle>
           <CardDescription>Distribuição visual dos riscos identificados</CardDescription>
         </CardHeader>
         <CardContent>
@@ -351,84 +393,51 @@ const AlertasRiscosContent = () => {
               {/* Linha Alto */}
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Alto</div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.alto_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-orange/30 bg-brand-orange/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.alto_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-red-500/30 bg-red-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-red/30 bg-brand-red/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.alto_alto)}
                 </div>
               </div>
 
               {/* Linha Médio */}
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Médio</div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.medio_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.medio_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-orange/30 bg-brand-orange/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.medio_alto)}
                 </div>
               </div>
 
               {/* Linha Baixo */}
               <div className="grid grid-cols-4 gap-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Baixo</div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.baixo_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.baixo_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                  {renderCelulaMatriz(positions.baixo_alto)}
                 </div>
               </div>
 
               <div className="mt-4 text-sm text-muted-foreground">
                 <p className="font-semibold mb-1">Legenda:</p>
-                <p>Clique nos badges para expandir os detalhes do risco</p>
+                <p>
+                  Cada risco na grade abre o detalhe correspondente na lista abaixo. A posição indica
+                  probabilidade, na vertical, e impacto, na horizontal.
+                </p>
               </div>
             </div>
           </div>
@@ -437,19 +446,27 @@ const AlertasRiscosContent = () => {
 
       {/* Detalhamento de Riscos */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Detalhamento de Riscos</h3>
+        <h2 className="text-lg font-semibold">Detalhamento de Riscos</h2>
         {riscosSorted.map(risco => {
           const severity = getSeverityLevel(risco.probabilidade, risco.impacto);
           const isExpanded = expandedRisks.includes(risco.id);
 
           return (
-            <Card key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
+            <Card id={`risco-${risco.id}`} key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
               <Collapsible open={isExpanded} onOpenChange={() => toggleRisk(risco.id)}>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{getSeverityIcon(severity)}</span>
+                        {/*
+                          * Sem a classe de cor do getSeverityColor: as cores fixas do Tailwind
+                          * usadas ali ficam entre 3,0:1 e 4,2:1 sobre o próprio fundo tingido,
+                          * abaixo do mínimo AA. A cor da severidade continua na borda esquerda
+                          * do cartão, e a palavra diz o resto. Os tokens saem num commit próprio.
+                          */}
+                        <Badge variant="outline">
+                          {`Severidade ${getSeverityName(severity)}`}
+                        </Badge>
                         <CardTitle className="text-lg">
                           RISCO {risco.id}: {risco.titulo.toUpperCase()}
                         </CardTitle>
@@ -467,8 +484,16 @@ const AlertasRiscosContent = () => {
                       </div>
                     </div>
                     <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`${isExpanded ? 'Recolher' : 'Expandir'} o detalhe do risco ${risco.id}, ${risco.titulo}`}
+                      >
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                        )}
                       </Button>
                     </CollapsibleTrigger>
                   </div>
@@ -478,13 +503,13 @@ const AlertasRiscosContent = () => {
                   <CardContent className="space-y-4">
                     {/* Descrição */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">📝 DESCRIÇÃO:</h4>
+                      <h4 className="font-semibold text-sm mb-2">DESCRIÇÃO:</h4>
                       <p className="text-sm text-muted-foreground">{risco.descricao}</p>
                     </div>
 
                     {/* Impactos */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">⚡ IMPACTO SE OCORRER:</h4>
+                      <h4 className="font-semibold text-sm mb-2">IMPACTO SE OCORRER:</h4>
                       <ul className="list-disc list-inside space-y-1">
                         {risco.impactosDetalhados.map((impacto, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground">{impacto}</li>
@@ -494,7 +519,7 @@ const AlertasRiscosContent = () => {
 
                     {/* Mitigações */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">🛡️ MITIGAÇÃO RECOMENDADA:</h4>
+                      <h4 className="font-semibold text-sm mb-2">MITIGAÇÃO RECOMENDADA:</h4>
                       <ol className="list-decimal list-inside space-y-1">
                         {risco.mitigacoesPropostas.map((mitigacao, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground">{mitigacao}</li>
@@ -506,13 +531,13 @@ const AlertasRiscosContent = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
                       <div>
                         <p className="text-sm font-semibold mb-1">💰 Custo de Mitigação:</p>
-                        <p className="text-lg font-bold text-green-600">
+                        <p className="text-lg font-bold text-brand-green">
                           R$ {risco.custoMitigacao.toLocaleString('pt-BR')}/ano
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-semibold mb-1">💸 Custo se Não Mitigar:</p>
-                        <p className="text-lg font-bold text-red-600">
+                        <p className="text-lg font-bold text-brand-red">
                           R$ {risco.custoNaoMitigar.toLocaleString('pt-BR')}+
                         </p>
                       </div>

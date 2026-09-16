@@ -135,8 +135,13 @@ const NewObservation = () => {
   return (
     <div className="container mx-auto p-6 space-y-6 animate-fade-in">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/observacoes')}>
-          <ArrowLeft className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate('/observacoes')}
+          aria-label="Voltar para a lista de observações"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Nova Observação</h1>
@@ -151,7 +156,7 @@ const NewObservation = () => {
           {/* Informações Básicas */}
           <Card>
             <CardHeader>
-              <CardTitle>Informações Básicas</CardTitle>
+              <CardTitle level={2}>Informações Básicas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -250,13 +255,13 @@ const NewObservation = () => {
           {/* Comunicação */}
           <Card>
             <CardHeader>
-              <CardTitle>Comunicação</CardTitle>
+              <CardTitle level={2}>Comunicação</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {situacoesFields.map((field, index) => (
                 <div key={field.id} className="p-4 border rounded-lg space-y-4">
                   <div className="flex justify-between items-center">
-                    <h4 className="font-semibold">Situação {index + 1}</h4>
+                    <h3 className="font-semibold">Situação {index + 1}</h3>
                     {situacoesFields.length > 1 && (
                       <Button
                         type="button"
@@ -319,13 +324,13 @@ const NewObservation = () => {
           {/* Habilidades Sociais */}
           <Card>
             <CardHeader>
-              <CardTitle>Habilidades Sociais</CardTitle>
+              <CardTitle level={2}>Habilidades Sociais</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {interacoesFields.map((field, index) => (
                 <div key={field.id} className="p-4 border rounded-lg space-y-4">
                   <div className="flex justify-between items-center">
-                    <h4 className="font-semibold">Interação {index + 1}</h4>
+                    <h3 className="font-semibold">Interação {index + 1}</h3>
                     {interacoesFields.length > 1 && (
                       <Button
                         type="button"
@@ -385,7 +390,7 @@ const NewObservation = () => {
           {/* Comportamento */}
           <Card>
             <CardHeader>
-              <CardTitle>Comportamento</CardTitle>
+              <CardTitle level={2}>Comportamento</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -429,7 +434,7 @@ const NewObservation = () => {
           {/* Resumo */}
           <Card>
             <CardHeader>
-              <CardTitle>Resumo da Observação</CardTitle>
+              <CardTitle level={2}>Resumo da Observação</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField

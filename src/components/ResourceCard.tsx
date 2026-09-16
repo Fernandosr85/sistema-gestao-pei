@@ -14,16 +14,16 @@ interface ResourceCardProps {
 }
 
 const resourceTypeColors: Record<string, string> = {
-  'video': 'bg-red-500',
-  'material-impresso': 'bg-blue-500',
-  'jogo': 'bg-purple-500',
-  'aplicativo': 'bg-green-500',
-  'prancha-caa': 'bg-orange-500',
-  'sequencia-didatica': 'bg-indigo-500',
-  'avaliacao-adaptada': 'bg-cyan-500',
-  'roteiro-visual': 'bg-pink-500',
-  'historia-social': 'bg-teal-500',
-  'outro': 'bg-gray-500'
+  'video': 'bg-brand-red',
+  'material-impresso': 'bg-brand-blue',
+  'jogo': 'bg-brand-purple',
+  'aplicativo': 'bg-brand-green',
+  'prancha-caa': 'bg-brand-orange',
+  'sequencia-didatica': 'bg-brand-indigo',
+  'avaliacao-adaptada': 'bg-brand-lightblue',
+  'roteiro-visual': 'bg-brand-pink',
+  'historia-social': 'bg-brand-teal',
+  'outro': 'bg-brand-gray'
 };
 
 const resourceTypeLabels: Record<string, string> = {
@@ -65,7 +65,7 @@ export function ResourceCard({ resource, isFavorite, onView, onToggleFavorite }:
         )}
         {resource.isFeatured && resource.rating > 4.5 && resource.downloadCount > 100 && (
           <div className="absolute top-10 right-2">
-            <Badge className="bg-yellow-500 text-white">⭐ Destaque</Badge>
+            <Badge className="bg-brand-yellow text-white">⭐ Destaque</Badge>
           </div>
         )}
       </div>

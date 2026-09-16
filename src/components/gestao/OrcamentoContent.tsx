@@ -23,6 +23,7 @@ import {
   FileText
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface BudgetCategory {
@@ -167,7 +168,7 @@ const OrcamentoContent = () => {
       {/* Annual Budget Summary */}
       <Card className={`border-2 ${getStatusBg(budgetSummary.status)}`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Resumo Orçamentário 2024
           </CardTitle>
@@ -229,13 +230,18 @@ const OrcamentoContent = () => {
       {/* Budget Execution by Category */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
             Execução por Categoria
           </CardTitle>
           <CardDescription>Distribuição e utilização do orçamento por área</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* O equivalente textual deste gráfico é a lista logo abaixo, com valor e porcentagem de cada categoria. */}
+          <div
+            role="img"
+            aria-label="Gráfico de barras do orçamento por categoria, comparando o valor orçado com o executado. Os mesmos valores estão na lista abaixo."
+          >
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={categoryData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" />
@@ -249,6 +255,7 @@ const OrcamentoContent = () => {
               <Bar dataKey="executado" fill="#3b82f6" name="Executado" />
             </BarChart>
           </ResponsiveContainer>
+          </div>
 
           <div className="mt-6 space-y-3">
             {categoryData.map((cat) => (
@@ -272,13 +279,17 @@ const OrcamentoContent = () => {
       {/* Monthly Spending Trend */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             Tendência de Gastos Mensais
           </CardTitle>
           <CardDescription>Comparação entre orçamento planejado e gastos reais</CardDescription>
         </CardHeader>
         <CardContent>
+          <div
+            role="img"
+            aria-label="Gráfico de linhas dos gastos mensais, comparando o orçado com o executado mês a mês. Os mesmos valores estão na tabela abaixo."
+          >
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -292,6 +303,17 @@ const OrcamentoContent = () => {
               <Line type="monotone" dataKey="executado" stroke="#3b82f6" name="Executado" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
+          </div>
+
+          <ChartDataTable
+            caption="Gastos mensais: valor orçado e valor executado, mês a mês."
+            columns={['Mês', 'Orçado', 'Executado']}
+            rows={monthlyData.map((ponto) => [
+              ponto.mes,
+              new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ponto.orcado),
+              new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ponto.executado),
+            ])}
+          />
         </CardContent>
       </Card>
 
@@ -299,7 +321,7 @@ const OrcamentoContent = () => {
         {/* Programmed Expenses */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Despesas Programadas
             </CardTitle>
@@ -329,7 +351,7 @@ const OrcamentoContent = () => {
         {/* Benchmarking */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Comparativo com Outras Unidades
             </CardTitle>
@@ -364,7 +386,7 @@ const OrcamentoContent = () => {
       {/* Pending Approvals */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Aprovações Pendentes
           </CardTitle>
@@ -415,7 +437,7 @@ const OrcamentoContent = () => {
       {/* Budget Planning 2025 */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             Planejamento Orçamentário 2025
           </CardTitle>

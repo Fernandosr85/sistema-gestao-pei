@@ -96,16 +96,16 @@ export default function ResourceLibrary() {
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Biblioteca de Recursos para Educação Inclusiva 📚</h1>
+              <h1 className="text-3xl font-bold mb-2">Biblioteca de Recursos para Educação Inclusiva</h1>
               <p className="text-primary-foreground/80">
                 Materiais adaptados, estratégias e ferramentas para todos os professores
               </p>
             </div>
             <Button
               onClick={() => setContributeDialogOpen(true)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-brand-green hover:bg-brand-green/90"
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -128,7 +128,7 @@ export default function ResourceLibrary() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Tabs */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <Button
             variant={!showMyResources ? 'default' : 'outline'}
             onClick={() => setShowMyResources(false)}
@@ -149,8 +149,8 @@ export default function ResourceLibrary() {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    🔍 Filtros
+                  <CardTitle level={2} className="flex items-center justify-between">
+                    Filtros
                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                       Limpar
                     </Button>
@@ -175,7 +175,7 @@ export default function ResourceLibrary() {
 
                       {/* Diagnoses */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📋 Por Diagnóstico</Label>
+                        <Label className="font-semibold mb-2 block">Por Diagnóstico</Label>
                         <div className="space-y-2">
                           {diagnoses.map(diagnosis => (
                             <div key={diagnosis} className="flex items-center space-x-2">
@@ -196,7 +196,7 @@ export default function ResourceLibrary() {
 
                       {/* Subjects */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📚 Por Componente Curricular</Label>
+                        <Label className="font-semibold mb-2 block">Por Componente Curricular</Label>
                         <div className="space-y-2">
                           {subjects.map(subject => (
                             <div key={subject} className="flex items-center space-x-2">
@@ -217,7 +217,7 @@ export default function ResourceLibrary() {
 
                       {/* Rating */}
                       <div>
-                        <Label className="font-semibold mb-2 block">⭐ Por Avaliação</Label>
+                        <Label className="font-semibold mb-2 block">Por Avaliação</Label>
                         <RadioGroup value={minRating.toString()} onValueChange={(v) => setMinRating(Number(v))}>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="0" id="rating-all" />
@@ -242,7 +242,7 @@ export default function ResourceLibrary() {
 
                       {/* Sort */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📊 Ordenar por</Label>
+                        <Label className="font-semibold mb-2 block">Ordenar por</Label>
                         <RadioGroup value={sortBy} onValueChange={setSortBy}>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="recent" id="sort-recent" />
@@ -272,7 +272,7 @@ export default function ResourceLibrary() {
                 {/* My Resources Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>📚 Meus Recursos Compartilhados</CardTitle>
+                    <CardTitle level={2}>Meus Recursos Compartilhados</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -299,7 +299,7 @@ export default function ResourceLibrary() {
                     <div>
                       <h3 className="font-semibold mb-4 flex items-center gap-2">
                         <Award className="h-5 w-5" />
-                        🎖️ Badges Conquistadas
+                        Badges Conquistadas
                       </h3>
                       <div className="flex flex-wrap gap-3">
                         {mockBadges.filter(b => b.earnedAt).map(badge => (
@@ -315,9 +315,9 @@ export default function ResourceLibrary() {
                 {/* Leaderboard */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle level={2} className="flex items-center gap-2">
                       <Trophy className="h-5 w-5" />
-                      🏆 Ranking de Colaboradores
+                      Ranking de Colaboradores
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

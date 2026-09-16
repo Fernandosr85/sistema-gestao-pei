@@ -160,16 +160,16 @@ const QualityIndicators = () => {
         <Tabs defaultValue="overview" className="w-full mb-4">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview">
-              📊 Visão Geral
+              Visão Geral
             </TabsTrigger>
             <TabsTrigger value="school">
-              🏫 Por Escola
+              Por Escola
             </TabsTrigger>
             <TabsTrigger value="teacher">
-              👨‍🏫 Por Professor
+              Por Professor
             </TabsTrigger>
             <TabsTrigger value="history">
-              📅 Histórico
+              Histórico
             </TabsTrigger>
           </TabsList>
 

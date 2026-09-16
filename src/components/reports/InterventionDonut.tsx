@@ -2,12 +2,17 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
 
+/*
+ * As cores vêm dos tokens da marca, que são medidos. Como valor literal, três delas
+ * reprovavam ao pintar a porcentagem da legenda sobre o branco: 3,95:1 no roxo, 1,92:1 no
+ * amarelo e 3,59:1 no cinza.
+ */
 const data = [
-  { name: 'Adaptações Curriculares', value: 23, color: 'hsl(356 88% 46%)' },
-  { name: 'Apoio Individualizado', value: 25, color: 'hsl(271 91% 65%)' },
-  { name: 'Recursos Tec. Assistiva', value: 18, color: 'hsl(217 100% 36%)' },
-  { name: 'Material Adaptado', value: 20, color: 'hsl(42 88% 52%)' },
-  { name: 'Suporte Especializado', value: 14, color: 'hsl(0 0% 53%)' },
+  { name: 'Adaptações Curriculares', value: 23, color: 'hsl(var(--brand-red))' },
+  { name: 'Apoio Individualizado', value: 25, color: 'hsl(var(--brand-purple))' },
+  { name: 'Recursos Tec. Assistiva', value: 18, color: 'hsl(var(--brand-blue))' },
+  { name: 'Material Adaptado', value: 20, color: 'hsl(var(--brand-yellow))' },
+  { name: 'Suporte Especializado', value: 14, color: 'hsl(var(--brand-gray))' },
 ];
 
 interface ActiveShapeProps {
@@ -48,8 +53,15 @@ const InterventionDonut = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Gráfico */}
-          <div className="flex justify-center">
+          {/*
+            * Gráfico. O equivalente textual é a própria legenda ao lado, que já traz nome e
+            * porcentagem de cada fatia — por isso aqui basta o nome acessível, sem tabela.
+            */}
+          <div
+            className="flex justify-center"
+            role="img"
+            aria-label="Gráfico de rosca dos tipos de intervenção, com a porcentagem de cada um. Os mesmos valores estão na lista ao lado."
+          >
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
@@ -66,10 +78,10 @@ const InterventionDonut = () => {
                   onMouseLeave={() => setActiveIndex(null)}
                 >
                   {data.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
+                    <Cell
+                      key={`cell-${index}`}
                       fill={entry.color}
-                      className="cursor-pointer transition-all"
+                      className="transition-all"
                     />
                   ))}
                 </Pie>
@@ -88,10 +100,15 @@ const InterventionDonut = () => {
           {/* Legendas customizadas */}
           <div className="space-y-3">
             {data.map((item, index) => (
-              <div 
+              /*
+               * Sai o `cursor-pointer`: a legenda nunca teve clique. O realce por hover
+               * continua, porque é só reforço visual — nome e porcentagem já estão em
+               * texto aqui, então nada da legenda depende do mouse.
+               */
+              <div
                 key={index}
                 className={`
-                  flex items-center gap-3 p-3 rounded-lg cursor-pointer
+                  flex items-center gap-3 p-3 rounded-lg
                   transition-all duration-200 border
                   ${activeIndex === index 
                     ? 'bg-accent border-primary shadow-md scale-105' 

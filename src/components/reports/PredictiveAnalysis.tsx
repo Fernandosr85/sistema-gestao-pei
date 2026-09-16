@@ -57,7 +57,7 @@ const PredictiveAnalysis = () => {
   return (
     <Card className="shadow-lg">
       <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
               <Brain className="h-6 w-6" />
@@ -177,8 +177,16 @@ const PredictiveAnalysis = () => {
 
 function TabButton({ ativo, onClick, icone, texto, badge, alerta }: TabButtonProps) {
   return (
+    /*
+     * O estado ativo existia só como cor de fundo: nada no nome, no papel ou no estado
+     * dizia qual aba estava aberta. `aria-pressed` resolve isso sem fingir um `role="tab"`,
+     * que prometeria navegação por setas e painéis ligados, coisas que este conjunto
+     * caseiro não implementa.
+     */
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={ativo}
       className={`
         flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
         ${ativo 
@@ -233,7 +241,7 @@ function ProjecaoDetalhada() {
       {/* Card de Projeção Geral */}
       <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-6 border-2 border-primary/20">
         <h3 className="text-lg font-bold text-foreground mb-4">
-          📊 Projeção de Progresso - Fim do Ano Letivo
+          Projeção de Progresso - Fim do Ano Letivo
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -616,7 +624,7 @@ function AlertasIA() {
               <Badge variant="outline">Autonomia</Badge>
             </div>
             <h5 className="font-bold text-foreground mb-2">
-              🎉 Progresso acima do esperado!
+              Progresso acima do esperado!
             </h5>
             <p className="text-sm text-muted-foreground mb-3">
               João superou expectativas em autonomia (+15%). Considere aumentar 

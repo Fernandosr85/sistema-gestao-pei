@@ -31,7 +31,7 @@ const Students = () => {
   return (
     <div className="container mx-auto p-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 min-w-0">
         <div>
           <h1 className="text-3xl font-bold">Gestão de Alunos</h1>
           <p className="text-muted-foreground mt-1">
@@ -71,8 +71,12 @@ const Students = () => {
           </div>
         </div>
         
+        {/*
+          * Sem rótulo visível: o nome vinha do placeholder, que some assim que um valor é
+          * escolhido. O aria-label mantém o nome depois da escolha.
+          */}
         <Select value={selectedSerie} onValueChange={setSelectedSerie}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px]" aria-label="Filtrar por série">
             <Filter className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Série" />
           </SelectTrigger>
@@ -86,7 +90,7 @@ const Students = () => {
         </Select>
 
         <Select value={selectedSupport} onValueChange={setSelectedSupport}>
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px]" aria-label="Filtrar por nível de suporte">
             <Filter className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Nível de Suporte" />
           </SelectTrigger>
@@ -110,6 +114,9 @@ const Students = () => {
       {/* Students Grid */}
       {filteredStudents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Cada cartão de aluno traz um <h3> com o nome. O título da seção existe para o
+              sumário do leitor de tela não pular do <h1> da página para esses <h3>. */}
+          <h2 className="sr-only">Alunos cadastrados</h2>
           {filteredStudents.map((student) => (
             <StudentCard key={student.id} student={student} />
           ))}

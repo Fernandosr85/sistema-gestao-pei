@@ -175,6 +175,7 @@ const EquipeContent = () => {
       <DemoDataNotice subject="Os profissionais, cargas de trabalho, contratos e afastamentos desta aba" />
 
       {/* Team Overview */}
+      <h2 className="sr-only">Visão geral da equipe</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardHeader className="pb-3">
@@ -252,7 +253,7 @@ const EquipeContent = () => {
       {/* Workload Management */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             Gestão de Carga de Trabalho
           </CardTitle>
@@ -335,7 +336,7 @@ const EquipeContent = () => {
         {/* Contract Renewals */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Contratações e Renovações
             </CardTitle>
@@ -363,7 +364,7 @@ const EquipeContent = () => {
         {/* Absences History */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5" />
               Histórico de Afastamentos
             </CardTitle>

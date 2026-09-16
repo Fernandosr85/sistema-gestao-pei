@@ -52,7 +52,7 @@ const VisaoGeralContent = () => {
       {/* Alertas Críticos */}
       <Card className="border-destructive/50 bg-destructive/5">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
+          <CardTitle level={2} className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="h-5 w-5" />
             Alertas Críticos
           </CardTitle>
@@ -114,7 +114,7 @@ const VisaoGeralContent = () => {
 
       {/* Indicadores do Dia */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Indicadores do Dia</h3>
+        <h2 className="text-lg font-semibold mb-4">Indicadores do Dia</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Presença PEI */}
           <Card>
@@ -192,7 +192,7 @@ const VisaoGeralContent = () => {
         {/* Prioridades da Semana */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle level={2} className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Target className="h-5 w-5" />
                 Prioridades da Semana
@@ -229,7 +229,7 @@ const VisaoGeralContent = () => {
         {/* Linha do Tempo de Hoje */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Linha do Tempo de Hoje
             </CardTitle>
@@ -266,7 +266,7 @@ const VisaoGeralContent = () => {
         {/* Notificações Recentes */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle level={2} className="flex items-center justify-between">
               <span className="flex items-center gap-2">
                 <Bell className="h-5 w-5" />
                 Notificações Recentes
@@ -305,7 +305,7 @@ const VisaoGeralContent = () => {
         {/* Desempenho da Escola */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
               Desempenho da Escola
             </CardTitle>

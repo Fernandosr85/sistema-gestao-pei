@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Printer, TrendingUp, Target, BookOpen, Users, Award } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 
 const progressData = [
   { trimestre: '1º Tri', valor: 65 },
@@ -50,6 +51,9 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl">DESEMPENHO - {studentName.toUpperCase()}</DialogTitle>
+            <DialogDescription>
+              Evolução por trimestre, objetivos do PEI e desempenho por matéria.
+            </DialogDescription>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
                 <Download className="h-4 w-4 mr-2" />
@@ -72,11 +76,11 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">📈 Visão Geral</TabsTrigger>
-            <TabsTrigger value="pei">🎯 Objetivos PEI</TabsTrigger>
-            <TabsTrigger value="subjects">📚 Por Matéria</TabsTrigger>
-            <TabsTrigger value="social">🤝 Socioemocionais</TabsTrigger>
-            <TabsTrigger value="compare">📊 Comparativos</TabsTrigger>
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="pei">Objetivos PEI</TabsTrigger>
+            <TabsTrigger value="subjects">Por Matéria</TabsTrigger>
+            <TabsTrigger value="social">Socioemocionais</TabsTrigger>
+            <TabsTrigger value="compare">Comparativos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6 mt-6">
@@ -84,6 +88,10 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
             <Card>
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-4">PROGRESSO GERAL NO ANO</h3>
+                <div
+                  role="img"
+                  aria-label="Gráfico de linhas da evolução do desempenho por trimestre, em porcentagem. Os mesmos números estão na tabela abaixo."
+                >
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={progressData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -99,6 +107,13 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
                     />
                   </LineChart>
                 </ResponsiveContainer>
+                </div>
+
+                <ChartDataTable
+                  caption="Desempenho por trimestre, em porcentagem."
+                  columns={['Trimestre', 'Desempenho']}
+                  rows={progressData.map((ponto) => [ponto.trimestre, `${ponto.valor}%`])}
+                />
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
                     1º Tri: 65% → 2º Tri: 72% → 3º Tri: 78% → 4º Tri: 85%
@@ -185,9 +200,13 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
                                     item.status === 'warning' ? 'secondary' : 
                                     'destructive'
                                   }
-                                  className="w-6 h-6 p-0 flex items-center justify-center"
+                                  className="px-2"
                                 >
-                                  {item.status === 'success' ? '✅' : item.status === 'warning' ? '🟡' : '🔴'}
+                                  {item.status === 'success'
+                                    ? 'Alcançado'
+                                    : item.status === 'warning'
+                                      ? 'Em progresso'
+                                      : 'Atenção'}
                                 </Badge>
                               </div>
                             </div>

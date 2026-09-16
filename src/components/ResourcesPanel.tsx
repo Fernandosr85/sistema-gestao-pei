@@ -8,7 +8,7 @@ const ResourcesPanel = () => {
   const resources = [
     {
       icon: <Users className="h-6 w-6 text-primary" />,
-      title: '👥 APOIO HUMANO',
+      title: 'APOIO HUMANO',
       total: '18 profis.',
       items: [
         { label: 'Atuando', value: 16 },
@@ -19,7 +19,7 @@ const ResourcesPanel = () => {
     },
     {
       icon: <Laptop className="h-6 w-6 text-primary" />,
-      title: '💻 TECNOLOGIA ASSISTIVA',
+      title: 'TECNOLOGIA ASSISTIVA',
       total: '45 recursos',
       items: [
         { label: 'Tablets', value: 12 },
@@ -31,7 +31,7 @@ const ResourcesPanel = () => {
     },
     {
       icon: <BookOpen className="h-6 w-6 text-primary" />,
-      title: '📚 MATERIAIS ADAPTADOS',
+      title: 'MATERIAIS ADAPTADOS',
       total: '234 itens',
       items: [
         { label: 'Português', value: 89 },
@@ -45,7 +45,7 @@ const ResourcesPanel = () => {
     },
     {
       icon: <School className="h-6 w-6 text-primary" />,
-      title: '🏫 SALAS AEE',
+      title: 'SALAS AEE',
       total: '8 salas',
       items: [
         { label: 'Ativas', value: 8 },
@@ -62,7 +62,7 @@ const ResourcesPanel = () => {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          🎯 RECURSOS E INTERVENÇÕES
+          RECURSOS E INTERVENÇÕES
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Distribuição e efetividade dos recursos disponíveis

@@ -148,16 +148,16 @@ function EditarCadastroForm({ student, onClose }: EditarCadastroFormProps) {
   return (
     <>
       <DialogHeader>
-        <DialogTitle className="text-xl">✏️ Editar Cadastro - {student.nomeCompleto}</DialogTitle>
+        <DialogTitle className="text-xl">Editar Cadastro - {student.nomeCompleto}</DialogTitle>
         <DialogDescription>Campos marcados com * são obrigatórios.</DialogDescription>
       </DialogHeader>
 
       <Tabs defaultValue="pessoais" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="pessoais">📋 Dados Pessoais</TabsTrigger>
-          <TabsTrigger value="saude">🏥 Saúde</TabsTrigger>
-          <TabsTrigger value="familia">👨‍👩‍👧 Família</TabsTrigger>
-          <TabsTrigger value="academico">🎓 Acadêmico</TabsTrigger>
+          <TabsTrigger value="pessoais">Dados Pessoais</TabsTrigger>
+          <TabsTrigger value="saude">Saúde</TabsTrigger>
+          <TabsTrigger value="familia">Família</TabsTrigger>
+          <TabsTrigger value="academico">Acadêmico</TabsTrigger>
         </TabsList>
 
         <TabsContent value="pessoais" className="space-y-4 mt-6">
