@@ -135,6 +135,26 @@ All colors MUST be HSL.
     --input: 0 0% 35%;
   }
 
+  /*
+   * Com a fonte aumentada, rótulo de botão que não quebra linha passa a estourar a largura
+   * em telas estreitas. O `whitespace-nowrap` do botão vale para o tamanho padrão; aqui ele
+   * cede, porque texto cortado é pior que botão de duas linhas.
+   */
+  :root[data-a11y-font] button,
+  :root[data-a11y-font] [role="tab"],
+  :root[data-a11y-font] a {
+    white-space: normal;
+  }
+
+  /*
+   * `anywhere`, e não `break-word`, porque só ele entra no cálculo de largura mínima: é o
+   * que permite a um título longo ou a um valor como "R$ 850.000,00" encolher dentro de uma
+   * linha flex em vez de empurrar a página.
+   */
+  :root[data-a11y-font] body {
+    overflow-wrap: anywhere;
+  }
+
   /* Tamanho da fonte: escala a raiz, então texto, espaçamento e controles crescem juntos,
      porque o projeto inteiro mede em rem. */
   :root[data-a11y-font="grande"] {

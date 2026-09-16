@@ -237,13 +237,15 @@ const MinhaAgenda = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-5 gap-4">
+          {/* Cinco colunas fixas não cabem em 320 px: cada dia ficava com 43 px de largura
+              e 48 px só de espaçamento interno. Empilha primeiro e vira grade a partir de sm. */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {Object.entries(weekEvents).map(([dia, eventos]) => (
               <Card key={dia}>
-                <CardHeader className="pb-3">
+                <CardHeader className="p-4 pb-3">
                   <CardTitle className="text-sm font-semibold uppercase">{dia}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="p-4 pt-0 space-y-2">
                   {eventos.map((evento, idx) => (
                     <div key={idx} className={`p-2 rounded-lg text-white text-xs ${evento.color}`}>
                       <p className="font-semibold">{evento.time}</p>

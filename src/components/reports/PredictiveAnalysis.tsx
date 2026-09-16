@@ -57,7 +57,7 @@ const PredictiveAnalysis = () => {
   return (
     <Card className="shadow-lg">
       <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
               <Brain className="h-6 w-6" />

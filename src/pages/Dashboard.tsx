@@ -52,12 +52,17 @@ const Dashboard = () => {
               <FileText className="mr-2 h-5 w-5" />
               Gerar Relatório
             </Button>
-            <Link to="/agenda-atendimentos">
-              <Button size="lg" variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-                <Calendar className="mr-2 h-5 w-5" />
+            <Button
+              size="lg"
+              variant="outline"
+              className="max-w-full bg-white/10 text-white border-white/20 hover:bg-white/20"
+              asChild
+            >
+              <Link to="/agenda-atendimentos">
+                <Calendar className="mr-2 h-5 w-5" aria-hidden="true" />
                 Agenda de Atendimentos
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

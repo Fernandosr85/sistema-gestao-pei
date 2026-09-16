@@ -98,7 +98,7 @@ const StudentDetail = () => {
     <div className="min-h-screen bg-background">
       {/* Cabeçalho Azul */}
       <div className="bg-brand-blue text-white p-6">
-        <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-4">
             {/*
               * Era um <a> envolvendo um <button>, aninhamento inválido, e o link não tinha

@@ -118,7 +118,7 @@ const Observations = () => {
             return (
               <Card key={observation.id} className="card-hover">
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <CardTitle className="text-xl">{observation.studentName}</CardTitle>
                       <div className="flex items-center gap-2 mt-2">

@@ -455,7 +455,7 @@ const AlertasRiscosContent = () => {
             <Card id={`risco-${risco.id}`} key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
               <Collapsible open={isExpanded} onOpenChange={() => toggleRisk(risco.id)}>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {/*

@@ -78,7 +78,9 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
           </DialogHeader>
 
           {/* Tela de Apresentação em Fullscreen */}
-          <div className="relative w-full h-[90vh] bg-gradient-to-br from-primary/5 to-accent/5 flex flex-col">
+          {/* `min-w-0` porque item de grade tem largura mínima automática: sem ele, o slide
+              cresce até caber o conteúdo e estoura o diálogo em telas estreitas. */}
+          <div className="relative min-w-0 w-full h-[90vh] bg-gradient-to-br from-primary/5 to-accent/5 flex flex-col">
             {/* Conteúdo do Slide */}
             <div
               ref={slideRef}
@@ -86,7 +88,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
               role="region"
               aria-roledescription="slide"
               aria-label={`Slide ${currentSlide} de ${totalSlides}`}
-              className="flex-1 flex items-center justify-center p-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex-1 min-w-0 overflow-y-auto flex items-center justify-center p-4 sm:p-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {currentSlide === 1 && (
                 <div className="text-center space-y-8">
@@ -260,9 +262,10 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
               Slide {currentSlide} de {totalSlides} · Conteúdo de exemplo, que não vem dos registros do estudante
             </div>
 
-            {/* Controles de Navegação */}
+            {/* Controles de Navegação. Em 320 px, ou com zoom de 200%, os três botões não
+                cabem lado a lado e o rodapé estourava a largura; agora quebram linha. */}
             <div className="bg-background/95 backdrop-blur border-t p-4">
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-wrap items-center justify-center gap-3">
                 <Button
                   variant="outline"
                   size="lg"

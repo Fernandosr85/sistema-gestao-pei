@@ -31,7 +31,7 @@ const Students = () => {
   return (
     <div className="container mx-auto p-6 space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 min-w-0">
         <div>
           <h1 className="text-3xl font-bold">Gestão de Alunos</h1>
           <p className="text-muted-foreground mt-1">

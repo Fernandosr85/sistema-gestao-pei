@@ -96,7 +96,7 @@ export default function ResourceLibrary() {
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-8">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold mb-2">Biblioteca de Recursos para Educação Inclusiva</h1>
               <p className="text-primary-foreground/80">
@@ -128,7 +128,7 @@ export default function ResourceLibrary() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Tabs */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-wrap gap-4 mb-6">
           <Button
             variant={!showMyResources ? 'default' : 'outline'}
             onClick={() => setShowMyResources(false)}
