@@ -11,7 +11,6 @@ export const mockStudents: Student[] = [
     diagnostico: 'TEA - Nível 1',
     nivelSuporte: 'medio',
     professorResponsavel: 'Profª. Ana Beatriz',
-    progresso: 75,
     status: 'ativo',
     dataCadastro: '2024-02-15',
     responsavel: {
@@ -40,7 +39,6 @@ export const mockStudents: Student[] = [
     diagnostico: 'TEA - Nível 2',
     nivelSuporte: 'alto',
     professorResponsavel: 'Prof. Carlos Lima',
-    progresso: 68,
     status: 'ativo',
     dataCadastro: '2024-01-20',
     responsavel: {
@@ -60,7 +58,6 @@ export const mockStudents: Student[] = [
     diagnostico: 'TEA - Nível 1',
     nivelSuporte: 'baixo',
     professorResponsavel: 'Profª. Marina Santos',
-    progresso: 85,
     status: 'ativo',
     dataCadastro: '2024-03-10',
     responsavel: {
@@ -80,7 +77,6 @@ export const mockStudents: Student[] = [
     diagnostico: 'TEA - Nível 1',
     nivelSuporte: 'baixo',
     professorResponsavel: 'Prof. Roberto Silva',
-    progresso: 82,
     status: 'ativo',
     dataCadastro: '2024-02-01',
     responsavel: {

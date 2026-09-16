@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, User, Calendar, Phone, Mail, FileText, Activity, TrendingUp,
   Edit, FileCheck, Clipboard, BarChart3, Lock, GraduationCap,
-  Heart, BookOpen, Users, AlertCircle, CheckCircle, School
+  Heart, BookOpen, Users, School
 } from 'lucide-react';
 import { StudentPerformanceDialog } from '@/components/StudentPerformanceDialog';
 import { StudentHistoryDialog } from '@/components/StudentHistoryDialog';
@@ -26,6 +26,7 @@ import StudentObservationsCard from '@/components/StudentObservationsCard';
 import StudentAssessmentsCard from '@/components/StudentAssessmentsCard';
 import StudentProfileCard from '@/components/StudentProfileCard';
 import { studentStatusLabel, supportLevelLabel } from '@/lib/student';
+import { studentProgress, studentRecordSummary } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const StudentDetail = () => {
@@ -55,6 +56,8 @@ const StudentDetail = () => {
     );
   }
 
+  const registros = studentRecordSummary(state, student.id);
+
   const alunoCompleto = {
     nomeCompleto: student.nomeCompleto,
     matricula: student.matricula,
@@ -62,11 +65,10 @@ const StudentDetail = () => {
     dataNascimento: formatLocalDate(student.dataNascimento),
     idade: calculateAge(student.dataNascimento),
     status: studentStatusLabel(student.status),
+    // Saíram ano letivo (2024), "Turma: Manhã" e "Professor(a) de Apoio F.": nenhum dos três
+    // existe no cadastro, e eram iguais para qualquer estudante.
     informacoesAcademicas: {
-      anoLetivo: 2024,
-      turma: "Manhã",
       professorRegente: student.professorResponsavel,
-      professorApoio: "Professor(a) de Apoio F."
     },
     perfilSaude: {
       diagnosticos: student.diagnostico
@@ -80,22 +82,25 @@ const StudentDetail = () => {
     necessidadesEspecificas: {
       grau: student.nivelSuporte,
     },
+    // Saiu a composição "Família ativa", igual para qualquer estudante.
     contextoFamiliar: {
       responsaveis: `${student.responsavel.nome} (${student.responsavel.parentesco})`,
-      composicao: "Família ativa",
       contatos: student.responsavel.telefone
     },
+    /*
+     * Era uma linha do tempo fixa, igual para qualquer estudante: "Pendências: 1", "Ingresso na
+     * instituição 2020", "Primeiro PEI elaborado 2023", "Revisões realizadas: 3" e
+     * "Progressões/retenções: Nenhuma". Nada disso existe no store. Agora são os registros do
+     * estudante, contados. Não há entidade PEI (Etapa 9), então não há revisão para contar.
+     */
     timeline: [
-      { tipo: "pendencia", texto: "Pendências: 1", icone: AlertCircle, cor: "text-warning" },
-      { tipo: "ingresso", texto: "Ingresso na instituição", data: "2020", icone: School, cor: "text-primary" },
-      { tipo: "pei", texto: "Primeiro PEI elaborado", data: "2023", icone: FileText, cor: "text-success" },
-      { tipo: "revisao", texto: "Revisões realizadas: 3", icone: TrendingUp, cor: "text-info" },
-      { tipo: "progressao", texto: "Progressões/retenções: Nenhuma", icone: CheckCircle, cor: "text-success" },
-      // Saíram "Histórico completo desde o ingresso" e "Acesso controlado por perfil": o
-      // histórico acadêmico não existe e o sistema não tem autenticação nem perfis.
+      { tipo: "cadastro", texto: "Cadastro no sistema", data: formatLocalDate(student.dataCadastro), icone: School, cor: "text-primary" },
+      { tipo: "observacoes", texto: `Observações registradas: ${registros.observations}`, icone: FileText, cor: "text-info" },
+      { tipo: "avaliacoes", texto: `Avaliações registradas: ${registros.assessments}`, icone: TrendingUp, cor: "text-success" },
+      { tipo: "atendimentos", texto: `Atendimentos: ${registros.appointments}`, icone: Calendar, cor: "text-warning" },
     ],
-    documentacaoEmDia: student.progresso,
-    ultimaAtualizacao: "30/03/2024"
+    ultimoRegistro: registros.lastRecordDate ? formatLocalDate(registros.lastRecordDate) : undefined,
+    progresso: studentProgress(state, student.id),
   };
 
   return (
@@ -176,16 +181,14 @@ const StudentDetail = () => {
 
                 <Separator />
 
-                {alunoCompleto.documentacaoEmDia === undefined ? (
+                {/*
+                  * Saíram "Desempenho em dia" e "Documentação em dia", afirmados sempre que havia um
+                  * número, e o número guardado no cadastro, que nenhuma avaliação atualizava.
+                  */}
+                {alunoCompleto.progresso === undefined ? (
                   <p className="py-4 text-center text-sm text-muted-foreground">Sem avaliação registrada</p>
                 ) : (
                   <>
-                    {/* Indicador de Status */}
-                    <div className="flex items-center gap-2 text-success text-sm">
-                      <CheckCircle className="h-4 w-4" />
-                      <span className="font-medium">Desempenho em dia</span>
-                    </div>
-
                     {/* Círculo de Progresso */}
                     <div className="flex flex-col items-center py-4">
                       <div className="relative w-32 h-32">
@@ -206,18 +209,17 @@ const StudentDetail = () => {
                             strokeWidth="8"
                             fill="none"
                             strokeDasharray={`${2 * Math.PI * 56}`}
-                            strokeDashoffset={`${2 * Math.PI * 56 * (1 - alunoCompleto.documentacaoEmDia / 100)}`}
+                            strokeDashoffset={`${2 * Math.PI * 56 * (1 - alunoCompleto.progresso / 100)}`}
                             className="transition-all duration-1000"
                           />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-3xl font-bold text-primary">{alunoCompleto.documentacaoEmDia}%</span>
+                          <span className="text-3xl font-bold text-primary">{alunoCompleto.progresso}%</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-3 text-success text-sm">
-                        <CheckCircle className="h-4 w-4" />
-                        <span className="font-medium">Documentação em dia</span>
-                      </div>
+                      <p className="mt-3 text-center text-sm text-muted-foreground">
+                        Progresso médio dos objetivos na avaliação mais recente
+                      </p>
                     </div>
                   </>
                 )}
@@ -239,20 +241,12 @@ const StudentDetail = () => {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Ano letivo</p>
-                    <p className="font-medium">{alunoCompleto.informacoesAcademicas.anoLetivo}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Turma</p>
-                    <p className="font-medium">{alunoCompleto.informacoesAcademicas.turma}</p>
+                    <p className="text-muted-foreground">Série e turma</p>
+                    <p className="font-medium">{alunoCompleto.serieTurma}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Professor(a) Regente</p>
                     <p className="font-medium">{alunoCompleto.informacoesAcademicas.professorRegente}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Professor(a) de Apoio</p>
-                    <p className="font-medium">{alunoCompleto.informacoesAcademicas.professorApoio}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -315,14 +309,7 @@ const StudentDetail = () => {
                     <p className="text-muted-foreground">Contatos</p>
                     <p className="font-medium">{alunoCompleto.contextoFamiliar.contatos}</p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Composição</p>
-                    <p className="font-medium">{alunoCompleto.contextoFamiliar.composicao}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Observações</p>
-                    <p className="font-medium text-muted-foreground italic">Nenhuma observação adicional</p>
-                  </div>
+
                 </CardContent>
               </Card>
             </div>
@@ -347,7 +334,7 @@ const StudentDetail = () => {
             {/* Timeline Vertical */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Histórico</CardTitle>
+                <CardTitle className="text-lg">Registros do estudante</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -428,13 +415,11 @@ const StudentDetail = () => {
             Ver PEI Ativo
           </Button>
 
+          {/* Saiu o "21": não existe entidade de anexo, e a lista de exemplo tem oito itens. */}
           <Button 
             className="bg-success hover:bg-success/90 gap-2"
             onClick={() => setAnexosDialogOpen(true)}
           >
-            <Badge className="bg-white text-success text-lg font-bold px-3 py-1">
-              21
-            </Badge>
             Anexos
           </Button>
 
@@ -456,7 +441,10 @@ const StudentDetail = () => {
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            Última atualização: {alunoCompleto.ultimaAtualizacao}
+            {/* Era "Última atualização: 30/03/2024", fixo. */}
+            {alunoCompleto.ultimoRegistro
+              ? `Último registro: ${alunoCompleto.ultimoRegistro}`
+              : 'Nenhum registro de observação, avaliação ou atendimento'}
           </p>
         </div>
       </div>
@@ -491,7 +479,6 @@ const StudentDetail = () => {
         open={anexosDialogOpen}
         onOpenChange={setAnexosDialogOpen}
         studentName={student.nomeCompleto}
-        totalAnexos={21}
       />
       <NovaObservacaoDialog
         open={observacaoDialogOpen}

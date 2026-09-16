@@ -1,4 +1,4 @@
-import type { Atendimento } from '@/types';
+import type { Assessment, Atendimento } from '@/types';
 import type { DemoState } from '@/types/store';
 import { isOpenAppointment } from '@/lib/appointment';
 import { toLocalISODate } from '@/lib/date';
@@ -101,6 +101,50 @@ export const periodChange = (current: number, previous: number): PeriodChange =>
   previous === 0
     ? { kind: 'noBaseline' }
     : { kind: 'change', percent: Math.round(((current - previous) / previous) * 100) };
+
+/**
+ * Progresso médio dos objetivos na avaliação mais recente do estudante, de 0 a 100.
+ *
+ * Substitui `Student.progresso`, um número guardado no cadastro que nenhuma avaliação
+ * atualizava: aparecia em alunos sem avaliação nenhuma. Sem avaliação, ou sem objetivo na
+ * mais recente, não há número — `undefined`, e a tela diz "Sem avaliação registrada".
+ */
+export const studentProgress = (state: DemoState, studentId: string): number | undefined => {
+  const latest = state.assessments
+    .filter((assessment) => assessment.studentId === studentId)
+    .reduce<Assessment | undefined>(
+      (current, assessment) => (!current || assessment.date > current.date ? assessment : current),
+      undefined,
+    );
+  if (!latest || latest.objectives.length === 0) return undefined;
+  const total = latest.objectives.reduce((sum, objective) => sum + objective.progress, 0);
+  return Math.round(total / latest.objectives.length);
+};
+
+export interface StudentRecordSummary {
+  observations: number;
+  assessments: number;
+  appointments: number;
+  /** A data mais recente entre observações, avaliações e atendimentos, ou `undefined`. */
+  lastRecordDate: string | undefined;
+}
+
+export const studentRecordSummary = (state: DemoState, studentId: string): StudentRecordSummary => {
+  const observations = state.observations.filter((item) => item.studentId === studentId);
+  const assessments = state.assessments.filter((item) => item.studentId === studentId);
+  const appointments = state.appointments.filter((item) => item.studentId === studentId);
+  const dates = [
+    ...observations.map((item) => item.data),
+    ...assessments.map((item) => item.date),
+    ...appointments.map((item) => item.data),
+  ];
+  return {
+    observations: observations.length,
+    assessments: assessments.length,
+    appointments: appointments.length,
+    lastRecordDate: dates.length > 0 ? dates.reduce((a, b) => (b > a ? b : a)) : undefined,
+  };
+};
 
 /** Atendimentos já realizados que ainda não têm ata registrada. */
 export const appointmentsWithoutMinutes = (state: DemoState): number =>

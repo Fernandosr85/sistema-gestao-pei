@@ -6,12 +6,17 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { UserCircle, Calendar, BookOpen, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { studentProgress } from '@/lib/metrics';
+import { useDemoStore } from '@/store/useDemoStore';
 
 interface StudentCardProps {
   student: Student;
 }
 
 const StudentCard = ({ student }: StudentCardProps) => {
+  const { state } = useDemoStore();
+  const progress = studentProgress(state, student.id);
+
   const getSupportLevelColor = (level: string) => {
     switch (level) {
       case 'baixo':
@@ -76,16 +81,20 @@ const StudentCard = ({ student }: StudentCardProps) => {
           </div>
         </div>
 
+        {/*
+          * O número vinha de `student.progresso`, guardado no cadastro e nunca atualizado por
+          * avaliação: três dos quatro alunos do exemplo mostravam porcentagem sem ter avaliação.
+          */}
         <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Progresso</span>
-            {student.progresso === undefined ? (
-              <span className="text-muted-foreground">Sem avaliação registrada</span>
+          <div className="flex items-start justify-between gap-2 text-sm">
+            <span className="text-muted-foreground">Progresso médio dos objetivos na avaliação mais recente</span>
+            {progress === undefined ? (
+              <span className="shrink-0 text-muted-foreground">Sem avaliação registrada</span>
             ) : (
-              <span className="font-semibold">{student.progresso}%</span>
+              <span className="shrink-0 font-semibold">{progress}%</span>
             )}
           </div>
-          {student.progresso !== undefined && <Progress value={student.progresso} className="h-2" />}
+          {progress !== undefined && <Progress value={progress} className="h-2" />}
         </div>
 
         <div className="pt-4 border-t">

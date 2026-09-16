@@ -12,10 +12,9 @@ interface AnexosDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   studentName: string;
-  totalAnexos: number;
 }
 
-export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: AnexosDialogProps) {
+export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   // No medical reports here, not even as an example: a fixed report would show one student's
@@ -52,7 +51,7 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
         <DialogHeader>
           <DialogTitle className="text-xl">Documentos e Anexos - {studentName}</DialogTitle>
           <DialogDescription>
-            Documentos, fotos e PEIs deste estudante. Total de documentos: {totalAnexos}.
+            Documentos, fotos e PEIs do estudante. Nenhum arquivo é armazenado neste protótipo.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,8 +93,10 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
             <TabsContent value="todos" className="space-y-4 mt-4">
               <div className="text-center py-8 text-muted-foreground">
                 <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Mostrando todos os {totalAnexos} documentos</p>
-                <p className="text-sm">Use os filtros acima para visualizar categorias específicas</p>
+                {/* Dizia "Mostrando todos os 21 documentos" sem mostrar nenhum, e a lista de
+                    exemplo das outras abas tem oito itens. */}
+                <p>Nenhum documento anexado a este estudante</p>
+                <p className="text-sm">As abas Fotos e PEIs mostram exemplos ilustrativos</p>
               </div>
             </TabsContent>
 
