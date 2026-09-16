@@ -88,10 +88,15 @@ const InterventionDonut = () => {
           {/* Legendas customizadas */}
           <div className="space-y-3">
             {data.map((item, index) => (
-              <div 
+              /*
+               * Sai o `cursor-pointer`: a legenda nunca teve clique. O realce por hover
+               * continua, porque é só reforço visual — nome e porcentagem já estão em
+               * texto aqui, então nada da legenda depende do mouse.
+               */
+              <div
                 key={index}
                 className={`
-                  flex items-center gap-3 p-3 rounded-lg cursor-pointer
+                  flex items-center gap-3 p-3 rounded-lg
                   transition-all duration-200 border
                   ${activeIndex === index 
                     ? 'bg-accent border-primary shadow-md scale-105' 

@@ -229,24 +229,45 @@ export function ResourceDetailModal({
             <div className="border rounded-lg p-4 bg-muted/50">
               <h3 className="font-semibold mb-4">⭐ Avalie este Recurso</h3>
               <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={rating}
-                      onClick={() => setUserRating(rating)}
-                      className="transition-transform hover:scale-110"
-                    >
-                      <Star
-                        className={cn(
-                          'h-8 w-8',
-                          rating <= userRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-300'
-                        )}
-                      />
-                    </button>
-                  ))}
-                </div>
+                {/*
+                  * Eram cinco botões só com SVG: sem nome, sem estado e sem indicação de
+                  * qual estava marcado. Viram um grupo de rádio nativo — o navegador dá
+                  * papel, estado e navegação por setas, e a nota aparece em texto, não só
+                  * no preenchimento das estrelas.
+                  */}
+                <fieldset>
+                  <legend className="text-sm font-medium mb-2">Sua nota</legend>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <label key={rating} className="cursor-pointer">
+                        <input
+                          type="radio"
+                          name="nota-do-recurso"
+                          value={rating}
+                          checked={userRating === rating}
+                          onChange={() => setUserRating(rating)}
+                          className="sr-only peer"
+                        />
+                        <span className="sr-only">
+                          {rating} {rating === 1 ? 'estrela' : 'estrelas'}
+                        </span>
+                        <Star
+                          aria-hidden="true"
+                          className={cn(
+                            'h-8 w-8 rounded-sm transition-transform hover:scale-110',
+                            'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2',
+                            rating <= userRating
+                              ? 'fill-yellow-400 text-yellow-400'
+                              : 'text-gray-300'
+                          )}
+                        />
+                      </label>
+                    ))}
+                    <span aria-live="polite" className="ml-2 text-sm text-muted-foreground">
+                      {userRating === 0 ? 'Nenhuma nota escolhida' : `${userRating} de 5`}
+                    </span>
+                  </div>
+                </fieldset>
                 <Textarea
                   placeholder="Deixe um comentário sobre sua experiência com este recurso..."
                   value={userComment}

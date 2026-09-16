@@ -317,7 +317,7 @@ const ProgressChart = () => {
             {!areaSelecionada && (
               <div className="text-center py-12 text-muted-foreground">
                 <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Clique em uma área acima para ver os detalhes</p>
+                <p>Selecione uma área acima para ver os detalhes</p>
               </div>
             )}
           </TabsContent>
@@ -369,16 +369,32 @@ function MiniCardArea({
   const percentual = Math.round((area.atual / area.total) * 100);
 
   return (
-    <div 
+    /*
+     * O cartão inteiro continua clicável, mas quem recebe o clique agora é o botão do
+     * título, esticado sobre o cartão pelo pseudoelemento. Antes o `onClick` estava no
+     * `<div>` de fora: funcionava no mouse e o teclado não alcançava nenhuma das cinco
+     * áreas. Manter o botão só no título deixa o HTML válido, preserva o `<h4>` e dá ao
+     * controle um nome curto, em vez de todo o texto do cartão.
+     */
+    <div
       className={`
-        p-4 rounded-lg border-2 cursor-pointer transition-all
+        relative p-4 rounded-lg border-2 transition-all
         hover:shadow-lg hover:scale-105
+        focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2
         ${ativo ? 'border-primary bg-accent shadow-md' : 'border-border bg-card'}
       `}
-      onClick={onClick}
     >
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-sm text-foreground">{area.nome}</h4>
+        <h4 className="font-semibold text-sm text-foreground">
+          <button
+            type="button"
+            onClick={onClick}
+            aria-pressed={ativo}
+            className="text-left after:absolute after:inset-0 after:content-[''] focus:outline-none"
+          >
+            {area.nome}
+          </button>
+        </h4>
         {getStatusIcon()}
       </div>
 

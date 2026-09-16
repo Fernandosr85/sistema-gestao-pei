@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
@@ -219,6 +219,55 @@ const AlertasRiscosContent = () => {
     }
   };
 
+  const getSeverityName = (severity: 'critical' | 'high' | 'medium' | 'low') => {
+    switch (severity) {
+      case 'critical': return 'crítica';
+      case 'high': return 'alta';
+      case 'medium': return 'média';
+      case 'low': return 'baixa';
+    }
+  };
+
+  const getProbabilityName = (probabilidade: number) =>
+    probabilidade >= 70 ? 'alta' : probabilidade >= 40 ? 'média' : 'baixa';
+
+  /**
+   * Cada célula da matriz é um botão que abre o detalhe do risco lá embaixo. Antes
+   * era um `Badge`, que renderiza `<div>`: o clique funcionava e o teclado não
+   * chegava a nenhuma das nove células. O nome acessível começa pelo texto visível,
+   * como exige o critério 2.5.3, e continua com probabilidade, impacto e severidade
+   * em palavras — na grade, esses três só existiam como posição e tom de cor.
+   *
+   * O `aria-controls` aponta para o cartão do risco, e não para o conteúdo do
+   * Collapsible: o Radix gera um id próprio para esse conteúdo e o usa no seu
+   * gatilho, então sobrescrevê-lo deixava o gatilho apontando para um id inexistente.
+   */
+  const renderCelulaMatriz = (riscos: Risco[]) =>
+    riscos.map(risco => {
+      const severity = getSeverityLevel(risco.probabilidade, risco.impacto);
+      return (
+        <button
+          key={risco.id}
+          type="button"
+          onClick={() => toggleRisk(risco.id)}
+          aria-expanded={expandedRisks.includes(risco.id)}
+          aria-controls={`risco-${risco.id}`}
+          className={cn(
+            badgeVariants(),
+            'text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          )}
+        >
+          {risco.id}
+          <span className="sr-only">
+            {` ${risco.titulo}. Probabilidade ${getProbabilityName(risco.probabilidade)},`}
+            {` ${risco.probabilidade} por cento. Impacto ${risco.impacto.toLowerCase()}.`}
+            {` Severidade ${getSeverityName(severity)}.`}
+          </span>
+          <span aria-hidden="true"> {getSeverityIcon(severity)}</span>
+        </button>
+      );
+    });
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Identificado': return 'bg-red-500/10 text-red-600 border-red-500/30';
@@ -352,25 +401,13 @@ const AlertasRiscosContent = () => {
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Alto</div>
                 <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.alto_baixo)}
                 </div>
                 <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.alto_medio)}
                 </div>
                 <div className="min-h-[80px] border-2 border-red-500/30 bg-red-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.alto_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.alto_alto)}
                 </div>
               </div>
 
@@ -378,25 +415,13 @@ const AlertasRiscosContent = () => {
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Médio</div>
                 <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.medio_baixo)}
                 </div>
                 <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.medio_medio)}
                 </div>
                 <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.medio_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.medio_alto)}
                 </div>
               </div>
 
@@ -404,31 +429,22 @@ const AlertasRiscosContent = () => {
               <div className="grid grid-cols-4 gap-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Baixo</div>
                 <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_baixo.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.baixo_baixo)}
                 </div>
                 <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_medio.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.baixo_medio)}
                 </div>
                 <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
-                  {positions.baixo_alto.map(r => (
-                    <Badge key={r.id} className="text-xs cursor-pointer" onClick={() => toggleRisk(r.id)}>
-                      {r.id} {getSeverityIcon(getSeverityLevel(r.probabilidade, r.impacto))}
-                    </Badge>
-                  ))}
+                  {renderCelulaMatriz(positions.baixo_alto)}
                 </div>
               </div>
 
               <div className="mt-4 text-sm text-muted-foreground">
                 <p className="font-semibold mb-1">Legenda:</p>
-                <p>Clique nos badges para expandir os detalhes do risco</p>
+                <p>
+                  Cada risco na grade abre o detalhe correspondente na lista abaixo. A posição indica
+                  probabilidade, na vertical, e impacto, na horizontal.
+                </p>
               </div>
             </div>
           </div>
@@ -443,7 +459,7 @@ const AlertasRiscosContent = () => {
           const isExpanded = expandedRisks.includes(risco.id);
 
           return (
-            <Card key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
+            <Card id={`risco-${risco.id}`} key={risco.id} className={cn("border-l-4", getSeverityColor(severity).replace('bg-', 'border-l-').split(' ')[0])}>
               <Collapsible open={isExpanded} onOpenChange={() => toggleRisk(risco.id)}>
                 <CardHeader>
                   <div className="flex items-start justify-between">

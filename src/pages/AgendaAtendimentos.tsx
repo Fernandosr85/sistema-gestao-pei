@@ -678,10 +678,14 @@ const AgendaAtendimentos = () => {
             </Card>
           ) : (
             filteredAtendimentos.map((atendimento) => (
-              <Card 
-                key={atendimento.id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => handleAtendimentoClick(atendimento)}
+              /*
+               * O cartão tinha o mesmo `onClick` do botão "Ver detalhes" que ele contém.
+               * O teclado já chegava pelo botão, então o clique no cartão só duplicava a
+               * ação — e disparava o handler duas vezes quando o alvo era o próprio botão.
+               */
+              <Card
+                key={atendimento.id}
+                className="hover:shadow-lg transition-shadow"
               >
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
