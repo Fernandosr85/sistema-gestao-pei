@@ -14,6 +14,7 @@ import { ResourceDetailModal } from '@/components/ResourceDetailModal';
 import { ContributeResourceDialog } from '@/components/ContributeResourceDialog';
 import { mockBadges } from '@/data/mockResources';
 import { todayLocalISO } from '@/lib/date';
+import { earnedBadges, formatRating, localContributionCount, localContributionsRating, resourceRating } from '@/lib/metrics';
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 import { Resource } from '@/types/resource';
@@ -76,20 +77,35 @@ export default function ResourceLibrary() {
     });
   };
 
+  const ratings = new Map(state.resources.map((resource) => [resource.id, resourceRating(state, resource.id)]));
+
   const filteredResources = state.resources.filter(resource => {
     if (onlyFavorites && !favoriteIds.has(resource.id)) return false;
     if (searchQuery && !resource.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     if (selectedDiagnoses.length > 0 && !selectedDiagnoses.some(d => resource.diagnoses.includes(d as DiagnosisType))) return false;
     if (selectedSubjects.length > 0 && !selectedSubjects.some(s => resource.subjects.includes(s as SubjectType))) return false;
-    if (minRating > 0 && resource.rating < minRating) return false;
+    if (minRating > 0) {
+      // Recurso sem avaliação não atende a nenhuma nota mínima.
+      const { average } = ratings.get(resource.id) ?? { average: null };
+      if (average === null || average < minRating) return false;
+    }
     return true;
   });
 
+  // "Mais baixados" saiu: download não existe. "Melhor avaliados" usa a nota calculada, e
+  // recurso sem avaliação fica no fim.
   const sortedResources = [...filteredResources].sort((a, b) => {
-    if (sortBy === 'downloads') return b.downloadCount - a.downloadCount;
-    if (sortBy === 'rating') return b.rating - a.rating;
+    if (sortBy === 'rating') {
+      const notaA = ratings.get(a.id)?.average ?? -1;
+      const notaB = ratings.get(b.id)?.average ?? -1;
+      if (notaA !== notaB) return notaB - notaA;
+    }
     return b.createdAt.localeCompare(a.createdAt);
   });
+
+  const myContributions = localContributionCount(state);
+  const myContributionsRating = localContributionsRating(state);
+  const myBadges = earnedBadges(mockBadges, myContributions);
 
   return (
     <div className="min-h-screen bg-background">
@@ -249,10 +265,6 @@ export default function ResourceLibrary() {
                             <Label htmlFor="sort-recent" className="font-normal cursor-pointer">Mais recentes</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="downloads" id="sort-downloads" />
-                            <Label htmlFor="sort-downloads" className="font-normal cursor-pointer">Mais baixados</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
                             <RadioGroupItem value="rating" id="sort-rating" />
                             <Label htmlFor="sort-rating" className="font-normal cursor-pointer">Melhor avaliados</Label>
                           </div>
@@ -275,22 +287,27 @@ export default function ResourceLibrary() {
                     <CardTitle level={2}>Meus Recursos Compartilhados</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    {/*
+                      * Eram quatro números fixos: 12 publicados, 1.234 downloads, avaliação 4,7 e 234
+                      * favoritados. Publicados e avaliação agora vêm das contribuições feitas neste
+                      * navegador; downloads e favoritados por outras pessoas não existem, e saíram.
+                      */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                       <div className="text-center">
-                        <p className="text-3xl font-bold text-primary">12</p>
-                        <p className="text-sm text-muted-foreground">Publicados</p>
+                        <p className="text-3xl font-bold text-primary">{myContributions}</p>
+                        <p className="text-sm text-muted-foreground">Contribuídos neste navegador</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-3xl font-bold text-yellow-600">1,234</p>
-                        <p className="text-sm text-muted-foreground">Downloads</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-3xl font-bold text-green-600">4.7 ⭐</p>
-                        <p className="text-sm text-muted-foreground">Avaliação Média</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-3xl font-bold text-purple-600">234</p>
-                        <p className="text-sm text-muted-foreground">Favoritados</p>
+                        <p className="text-3xl font-bold text-primary">
+                          {myContributionsRating.average === null
+                            ? '—'
+                            : formatRating(myContributionsRating.average)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {myContributionsRating.average === null
+                            ? 'Sem avaliações'
+                            : `Avaliação média (${myContributionsRating.count} ${myContributionsRating.count === 1 ? 'avaliação' : 'avaliações'})`}
+                        </p>
                       </div>
                     </div>
 
@@ -301,13 +318,19 @@ export default function ResourceLibrary() {
                         <Award className="h-5 w-5" />
                         Badges Conquistadas
                       </h3>
-                      <div className="flex flex-wrap gap-3">
-                        {mockBadges.filter(b => b.earnedAt).map(badge => (
-                          <Badge key={badge.id} variant="secondary" className="text-lg px-4 py-2">
-                            {badge.icon} {badge.name}
-                          </Badge>
-                        ))}
-                      </div>
+                      {myBadges.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                          Nenhuma badge conquistada neste navegador. A primeira vem com a primeira contribuição.
+                        </p>
+                      ) : (
+                        <div className="flex flex-wrap gap-3">
+                          {myBadges.map(badge => (
+                            <Badge key={badge.id} variant="secondary" className="text-lg px-4 py-2">
+                              {badge.icon} {badge.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -327,13 +350,11 @@ export default function ResourceLibrary() {
                         { pos: '🥈', name: 'João Santos', resources: 38, badge: '🥇' },
                         { pos: '🥉', name: 'Maria Oliveira', resources: 29, badge: '🥇' },
                         { pos: '4', name: 'Pedro Costa', resources: 24, badge: '🥈' },
-                        { pos: '5', name: 'Você', resources: 12, badge: '🥉' }
+                        // Saiu a linha "Você: 12 recursos", que contradizia a contagem calculada acima.
                       ].map(item => (
                         <div
                           key={item.pos}
-                          className={`flex items-center justify-between p-3 rounded-lg ${
-                            item.name === 'Você' ? 'bg-primary/10 border-2 border-primary' : 'bg-muted'
-                          }`}
+                          className="flex items-center justify-between p-3 rounded-lg bg-muted"
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-2xl">{item.pos}</span>
@@ -362,6 +383,7 @@ export default function ResourceLibrary() {
                     <ResourceCard
                       key={resource.id}
                       resource={resource}
+                      rating={ratings.get(resource.id) ?? { average: null, count: 0 }}
                       isFavorite={favoriteIds.has(resource.id)}
                       onView={handleViewResource}
                       onToggleFavorite={handleToggleFavorite}

@@ -1,5 +1,6 @@
 import type { Assessment, Atendimento } from '@/types';
 import type { DemoState } from '@/types/store';
+import type { Badge, ResourceReview } from '@/types/resource';
 import { isOpenAppointment } from '@/lib/appointment';
 import { toLocalISODate } from '@/lib/date';
 
@@ -145,6 +146,44 @@ export const studentRecordSummary = (state: DemoState, studentId: string): Stude
     lastRecordDate: dates.length > 0 ? dates.reduce((a, b) => (b > a ? b : a)) : undefined,
   };
 };
+
+/** Nota média, com uma casa decimal, e número de avaliações. Sem avaliação, a média é `null`. */
+export interface RatingSummary {
+  average: number | null;
+  count: number;
+}
+
+export const summarizeRatings = (reviews: ResourceReview[]): RatingSummary => {
+  if (reviews.length === 0) return { average: null, count: 0 };
+  const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+  return { average: Math.round((total / reviews.length) * 10) / 10, count: reviews.length };
+};
+
+/**
+ * Nota de um recurso, calculada das avaliações gravadas. Substitui `rating` e `reviewCount`
+ * das fixtures: o recurso 1 dizia 4,8 com 47 avaliações e tinha 3; os outros cinco diziam
+ * entre 28 e 89 avaliações e não tinham nenhuma; e avaliar não mudava nada.
+ */
+export const resourceRating = (state: DemoState, resourceId: string): RatingSummary =>
+  summarizeRatings(state.reviews.filter((review) => review.resourceId === resourceId));
+
+/** Nota com uma casa decimal sempre, em português: "5,0" e não "5", "4,7" e não "4.7". */
+export const formatRating = (average: number): string =>
+  average.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+/** Recursos contribuídos neste navegador, pelo formulário da Biblioteca. */
+export const localContributionCount = (state: DemoState): number =>
+  state.resources.filter((resource) => resource.isLocalContribution).length;
+
+/** Nota de todas as avaliações dos recursos contribuídos neste navegador, juntas. */
+export const localContributionsRating = (state: DemoState): RatingSummary => {
+  const ids = new Set(state.resources.filter((resource) => resource.isLocalContribution).map((resource) => resource.id));
+  return summarizeRatings(state.reviews.filter((review) => ids.has(review.resourceId)));
+};
+
+/** Badges cuja exigência de contribuições já foi atingida, na ordem da definição (da menor exigência para a maior). */
+export const earnedBadges = (badges: Badge[], contributions: number): Badge[] =>
+  badges.filter((badge) => contributions >= badge.requiredContributions);
 
 /** Atendimentos já realizados que ainda não têm ata registrada. */
 export const appointmentsWithoutMinutes = (state: DemoState): number =>

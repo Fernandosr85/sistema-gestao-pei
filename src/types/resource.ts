@@ -53,10 +53,6 @@ export interface Resource {
   diagnoses: DiagnosisType[];
   subjects: SubjectType[];
   educationLevels: EducationLevel[];
-  rating: number;
-  reviewCount: number;
-  downloadCount: number;
-  favoriteCount: number;
   author: {
     name: string;
     school: string;
@@ -79,7 +75,6 @@ export interface ResourceReview {
   rating: number;
   comment: string;
   date: string;
-  helpfulCount: number;
 }
 
 /** Resource marked as favorite in this browser. Demo mode has no user accounts, so there is no owner. */
@@ -93,5 +88,6 @@ export interface Badge {
   name: string;
   description: string;
   icon: string;
-  earnedAt?: string;
+  /** Quantas contribuições feitas neste navegador a badge exige. */
+  requiredContributions: number;
 }

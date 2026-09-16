@@ -5,9 +5,12 @@ import { Heart, Download, Eye, Star } from 'lucide-react';
 import { Resource } from '@/types/resource';
 import { cn } from '@/lib/utils';
 import { formatLocalDate } from '@/lib/date';
+import { formatRating, type RatingSummary } from '@/lib/metrics';
 
 interface ResourceCardProps {
   resource: Resource;
+  /** Calculada das avaliações gravadas, por `resourceRating`. */
+  rating: RatingSummary;
   isFavorite: boolean;
   onView: (resource: Resource) => void;
   onToggleFavorite: (resource: Resource) => void;
@@ -39,7 +42,7 @@ const resourceTypeLabels: Record<string, string> = {
   'outro': '📦 Outro'
 };
 
-export function ResourceCard({ resource, isFavorite, onView, onToggleFavorite }: ResourceCardProps) {
+export function ResourceCard({ resource, rating, isFavorite, onView, onToggleFavorite }: ResourceCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
       <div className="relative">
@@ -63,7 +66,9 @@ export function ResourceCard({ resource, isFavorite, onView, onToggleFavorite }:
             <Badge variant="outline" className="bg-background">Contribuição local</Badge>
           </div>
         )}
-        {resource.isFeatured && resource.rating > 4.5 && resource.downloadCount > 100 && (
+        {/* Destaque é marcação editorial da fixture. A condição sobre nota e downloads saiu:
+            usava números que não vinham de nenhum registro. */}
+        {resource.isFeatured && (
           <div className="absolute top-10 right-2">
             <Badge className="bg-brand-yellow text-white">⭐ Destaque</Badge>
           </div>
@@ -89,27 +94,31 @@ export function ResourceCard({ resource, isFavorite, onView, onToggleFavorite }:
           )}
         </div>
 
-        <div className="flex items-center gap-1 text-sm">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className={cn(
-                'h-4 w-4',
-                i < Math.floor(resource.rating)
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : 'text-gray-300'
-              )}
-            />
-          ))}
-          <span className="ml-1 font-semibold">{resource.rating.toFixed(1)}</span>
-          <span className="text-muted-foreground">({resource.reviewCount})</span>
-        </div>
-
-        <div className="text-sm text-muted-foreground space-y-1">
-          <div className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            <span>{resource.downloadCount} downloads</span>
+        {rating.average === null ? (
+          <p className="text-sm text-muted-foreground">Sem avaliações</p>
+        ) : (
+          <div className="flex items-center gap-1 text-sm">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                aria-hidden="true"
+                className={cn(
+                  'h-4 w-4',
+                  i < Math.round(rating.average ?? 0)
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-300'
+                )}
+              />
+            ))}
+            <span className="ml-1 font-semibold">{formatRating(rating.average)}</span>
+            <span className="text-muted-foreground">
+              ({rating.count} {rating.count === 1 ? 'avaliação' : 'avaliações'})
+            </span>
           </div>
+        )}
+
+        {/* Saiu o número de downloads: download não existe desde a Etapa 2. */}
+        <div className="text-sm text-muted-foreground space-y-1">
           <div>👤 Por: {resource.author.name}</div>
           <div>📅 {formatLocalDate(resource.createdAt)}</div>
         </div>
