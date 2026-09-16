@@ -58,7 +58,7 @@ const MinhaAgenda = () => {
     <div className="container mx-auto py-8 px-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold">📅 Minha Agenda</h1>
+          <h1 className="text-3xl font-bold">Minha Agenda</h1>
           <p className="text-muted-foreground">{DEMO_USER_NAME}</p>
         </div>
         <Dialog open={isNewEventDialogOpen} onOpenChange={setIsNewEventDialogOpen}>
@@ -219,10 +219,10 @@ const MinhaAgenda = () => {
 
       <Tabs value={selectedView} onValueChange={setSelectedView}>
         <TabsList className="grid w-full grid-cols-4 mb-6">
-          <TabsTrigger value="mes">📅 Mês</TabsTrigger>
-          <TabsTrigger value="semana">📋 Semana</TabsTrigger>
-          <TabsTrigger value="dia">📄 Dia</TabsTrigger>
-          <TabsTrigger value="lista">📊 Lista</TabsTrigger>
+          <TabsTrigger value="mes">Mês</TabsTrigger>
+          <TabsTrigger value="semana">Semana</TabsTrigger>
+          <TabsTrigger value="dia">Dia</TabsTrigger>
+          <TabsTrigger value="lista">Lista</TabsTrigger>
         </TabsList>
 
         {/* VISUALIZAÇÃO SEMANAL */}
@@ -373,7 +373,7 @@ const MinhaAgenda = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>🔔 Próximos Compromissos</CardTitle>
+              <CardTitle>Próximos Compromissos</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>

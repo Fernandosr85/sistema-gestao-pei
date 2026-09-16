@@ -210,15 +210,6 @@ const AlertasRiscosContent = () => {
     }
   };
 
-  const getSeverityIcon = (severity: 'critical' | 'high' | 'medium' | 'low') => {
-    switch (severity) {
-      case 'critical': return '🔴';
-      case 'high': return '🟡';
-      case 'medium': return '⚠️';
-      case 'low': return '✅';
-    }
-  };
-
   const getSeverityName = (severity: 'critical' | 'high' | 'medium' | 'low') => {
     switch (severity) {
       case 'critical': return 'crítica';
@@ -257,13 +248,11 @@ const AlertasRiscosContent = () => {
             'text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           )}
         >
-          {risco.id}
+          {`${risco.id} · ${getSeverityName(severity)}`}
           <span className="sr-only">
-            {` ${risco.titulo}. Probabilidade ${getProbabilityName(risco.probabilidade)},`}
+            {`. ${risco.titulo}. Probabilidade ${getProbabilityName(risco.probabilidade)},`}
             {` ${risco.probabilidade} por cento. Impacto ${risco.impacto.toLowerCase()}.`}
-            {` Severidade ${getSeverityName(severity)}.`}
           </span>
-          <span aria-hidden="true"> {getSeverityIcon(severity)}</span>
         </button>
       );
     });
@@ -465,7 +454,15 @@ const AlertasRiscosContent = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-2xl">{getSeverityIcon(severity)}</span>
+                        {/*
+                          * Sem a classe de cor do getSeverityColor: as cores fixas do Tailwind
+                          * usadas ali ficam entre 3,0:1 e 4,2:1 sobre o próprio fundo tingido,
+                          * abaixo do mínimo AA. A cor da severidade continua na borda esquerda
+                          * do cartão, e a palavra diz o resto. Os tokens saem num commit próprio.
+                          */}
+                        <Badge variant="outline">
+                          {`Severidade ${getSeverityName(severity)}`}
+                        </Badge>
                         <CardTitle className="text-lg">
                           RISCO {risco.id}: {risco.titulo.toUpperCase()}
                         </CardTitle>
@@ -494,13 +491,13 @@ const AlertasRiscosContent = () => {
                   <CardContent className="space-y-4">
                     {/* Descrição */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">📝 DESCRIÇÃO:</h4>
+                      <h4 className="font-semibold text-sm mb-2">DESCRIÇÃO:</h4>
                       <p className="text-sm text-muted-foreground">{risco.descricao}</p>
                     </div>
 
                     {/* Impactos */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">⚡ IMPACTO SE OCORRER:</h4>
+                      <h4 className="font-semibold text-sm mb-2">IMPACTO SE OCORRER:</h4>
                       <ul className="list-disc list-inside space-y-1">
                         {risco.impactosDetalhados.map((impacto, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground">{impacto}</li>
@@ -510,7 +507,7 @@ const AlertasRiscosContent = () => {
 
                     {/* Mitigações */}
                     <div>
-                      <h4 className="font-semibold text-sm mb-2">🛡️ MITIGAÇÃO RECOMENDADA:</h4>
+                      <h4 className="font-semibold text-sm mb-2">MITIGAÇÃO RECOMENDADA:</h4>
                       <ol className="list-decimal list-inside space-y-1">
                         {risco.mitigacoesPropostas.map((mitigacao, idx) => (
                           <li key={idx} className="text-sm text-muted-foreground">{mitigacao}</li>

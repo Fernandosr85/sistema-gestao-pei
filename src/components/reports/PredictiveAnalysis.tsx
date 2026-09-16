@@ -177,8 +177,16 @@ const PredictiveAnalysis = () => {
 
 function TabButton({ ativo, onClick, icone, texto, badge, alerta }: TabButtonProps) {
   return (
+    /*
+     * O estado ativo existia só como cor de fundo: nada no nome, no papel ou no estado
+     * dizia qual aba estava aberta. `aria-pressed` resolve isso sem fingir um `role="tab"`,
+     * que prometeria navegação por setas e painéis ligados, coisas que este conjunto
+     * caseiro não implementa.
+     */
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={ativo}
       className={`
         flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
         ${ativo 

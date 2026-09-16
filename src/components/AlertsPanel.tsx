@@ -133,13 +133,13 @@ const AlertsPanel = () => {
               Todos ({alerts.length})
             </TabsTrigger>
             <TabsTrigger value="critical">
-              🔴 Críticos ({criticalAlerts.length})
+              Críticos ({criticalAlerts.length})
             </TabsTrigger>
             <TabsTrigger value="warning">
-              🟡 Atenção ({warningAlerts.length})
+              Atenção ({warningAlerts.length})
             </TabsTrigger>
             <TabsTrigger value="info">
-              🔵 Info ({infoAlerts.length})
+              Info ({infoAlerts.length})
             </TabsTrigger>
           </TabsList>
 

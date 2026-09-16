@@ -662,7 +662,12 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                           .map((badge) => (
                             <div key={badge.id} className="flex items-center justify-between p-2 border rounded-lg">
                               <div className="flex items-center gap-2">
-                                <span className="text-2xl">{badge.desbloqueado ? '🥇' : '🔒'}</span>
+                                <span className="text-2xl" aria-hidden="true">
+                                  {badge.desbloqueado ? '🥇' : '🔒'}
+                                </span>
+                                <span className="sr-only">
+                                  {badge.desbloqueado ? 'Conquistada:' : 'Bloqueada:'}
+                                </span>
                                 <div>
                                   <p className="text-sm font-medium">{badge.nome}</p>
                                   {badge.desbloqueado && badge.ano && (

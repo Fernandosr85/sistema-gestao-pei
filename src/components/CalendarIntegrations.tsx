@@ -78,14 +78,14 @@ export const CalendarIntegrations = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>📧 Email</CardTitle>
+          <CardTitle>Email</CardTitle>
         </CardHeader>
         <CardContent>{renderUnavailableRow('Gmail', 'Não conectado')}</CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>☁️ Armazenamento</CardTitle>
+          <CardTitle>Armazenamento</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {renderUnavailableRow('Google Drive', 'Documentos e evidências · não conectado')}
@@ -95,7 +95,7 @@ export const CalendarIntegrations = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>💬 Comunicação</CardTitle>
+          <CardTitle>Comunicação</CardTitle>
         </CardHeader>
         <CardContent>
           {renderUnavailableRow('WhatsApp Business', 'Notificações via WhatsApp · não conectado')}
@@ -105,7 +105,7 @@ export const CalendarIntegrations = () => {
       {/* Implementation Guide */}
       <Card className="border-blue-200 bg-blue-50">
         <CardHeader>
-          <CardTitle className="text-blue-900">🔧 Guia de Implementação Backend</CardTitle>
+          <CardTitle className="text-blue-900">Guia de Implementação Backend</CardTitle>
         </CardHeader>
         <CardContent className="text-sm text-blue-800 space-y-2">
           <p className="font-semibold">Para ativar a sincronização real, configure:</p>

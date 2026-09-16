@@ -76,11 +76,15 @@ const ExpandedComplexityCard = ({
     }
   };
 
-  const getStatusBadge = (status: 'error' | 'warning' | 'success') => {
+  /*
+   * Era um emoji sozinho ao lado da contagem de casos, sem nenhuma palavra que dissesse
+   * o que a cor significava. Vira palavra.
+   */
+  const getStatusLabel = (status: 'error' | 'warning' | 'success') => {
     switch (status) {
-      case 'error': return '🔴';
-      case 'warning': return '🟡';
-      case 'success': return '🟢';
+      case 'error': return 'Crítico';
+      case 'warning': return 'Atenção';
+      case 'success': return 'Adequado';
     }
   };
 
@@ -109,7 +113,9 @@ const ExpandedComplexityCard = ({
                   <Badge variant="secondary" className="font-bold">
                     {item.count} CASOS
                   </Badge>
-                  <span>{getStatusBadge(item.status)}</span>
+                  <Badge variant="outline" className={getStatusColor(item.status)}>
+                    {getStatusLabel(item.status)}
+                  </Badge>
                 </div>
               </div>
 
@@ -145,7 +151,9 @@ const ExpandedComplexityCard = ({
                 </CollapsibleTrigger>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getStatusColor(item.status)}`}>{item.value}%</span>
-                  <span>{getStatusBadge(item.status)}</span>
+                  <Badge variant="outline" className={getStatusColor(item.status)}>
+                    {getStatusLabel(item.status)}
+                  </Badge>
                 </div>
               </div>
               <Progress value={item.value} className="h-2" />
@@ -173,7 +181,9 @@ const ExpandedComplexityCard = ({
                 </CollapsibleTrigger>
                 <div className="flex items-center gap-2">
                   <span className={`text-sm font-bold ${getStatusColor(item.status)}`}>{item.value}%</span>
-                  <span>{getStatusBadge(item.status)}</span>
+                  <Badge variant="outline" className={getStatusColor(item.status)}>
+                    {getStatusLabel(item.status)}
+                  </Badge>
                 </div>
               </div>
               <Progress value={item.value} className="h-2" />

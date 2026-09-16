@@ -50,7 +50,7 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl">📎 Documentos e Anexos - {studentName}</DialogTitle>
+          <DialogTitle className="text-xl">Documentos e Anexos - {studentName}</DialogTitle>
           <p className="text-sm text-muted-foreground">Total de documentos: {totalAnexos}</p>
         </DialogHeader>
 
@@ -81,12 +81,12 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
 
           <Tabs defaultValue="todos" className="w-full">
             <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="todos">📋 Todos</TabsTrigger>
-              <TabsTrigger value="laudos">🏥 Laudos</TabsTrigger>
-              <TabsTrigger value="relatorios">📄 Relatórios</TabsTrigger>
-              <TabsTrigger value="fotos">📷 Fotos</TabsTrigger>
-              <TabsTrigger value="videos">🎥 Vídeos</TabsTrigger>
-              <TabsTrigger value="peis">📝 PEIs</TabsTrigger>
+              <TabsTrigger value="todos">Todos</TabsTrigger>
+              <TabsTrigger value="laudos">Laudos</TabsTrigger>
+              <TabsTrigger value="relatorios">Relatórios</TabsTrigger>
+              <TabsTrigger value="fotos">Fotos</TabsTrigger>
+              <TabsTrigger value="videos">Vídeos</TabsTrigger>
+              <TabsTrigger value="peis">PEIs</TabsTrigger>
             </TabsList>
 
             <TabsContent value="todos" className="space-y-4 mt-4">

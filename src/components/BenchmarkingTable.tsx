@@ -71,12 +71,16 @@ const BenchmarkingTable = () => {
     }
   ];
 
-  const getStatusEmoji = (status?: 'success' | 'warning' | 'error') => {
+  /*
+   * Era um emoji sozinho na célula: quem não enxerga a cor, ou usa leitor de tela, não
+   * tinha como saber a situação do indicador. Vira palavra.
+   */
+  const getStatusLabel = (status?: 'success' | 'warning' | 'error') => {
     if (!status) return '';
     switch (status) {
-      case 'success': return '✅';
-      case 'warning': return '🟡';
-      case 'error': return '🔴';
+      case 'success': return 'adequado';
+      case 'warning': return 'atenção';
+      case 'error': return 'crítico';
     }
   };
 
@@ -117,7 +121,11 @@ const BenchmarkingTable = () => {
                   <TableCell className="font-medium">{item.indicador}</TableCell>
                   <TableCell className="text-center">
                     <span className="font-bold">{formatValue(item.escola.value, item.indicador)}</span>
-                    {item.escola.status && <span className="ml-1">{getStatusEmoji(item.escola.status)}</span>}
+                    {item.escola.status && (
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">
+                        {getStatusLabel(item.escola.status)}
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-center text-muted-foreground">
                     {formatValue(item.regional, item.indicador)}
@@ -136,7 +144,7 @@ const BenchmarkingTable = () => {
             <div className="flex items-start gap-3 mb-4">
               <TrendingUp className="h-5 w-5 text-primary mt-1" />
               <div>
-                <h3 className="font-semibold text-foreground mb-3">💡 INSIGHTS DO BENCHMARKING:</h3>
+                <h3 className="font-semibold text-foreground mb-3">INSIGHTS DO BENCHMARKING:</h3>
                 
                 <div className="space-y-3 text-sm">
                   <div>

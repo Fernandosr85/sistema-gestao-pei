@@ -157,8 +157,8 @@ const ProgressChart = () => {
       <CardContent>
         <Tabs defaultValue="geral" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="geral">📊 Visão Geral</TabsTrigger>
-            <TabsTrigger value="areas">📈 Por Áreas</TabsTrigger>
+            <TabsTrigger value="geral">Visão Geral</TabsTrigger>
+            <TabsTrigger value="areas">Por Áreas</TabsTrigger>
           </TabsList>
 
           {/* TAB 1: VISÃO GERAL */}

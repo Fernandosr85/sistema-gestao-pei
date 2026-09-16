@@ -241,7 +241,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
         <ScrollArea className="h-full">
           <div className="p-6">
             <DialogHeader>
-              <DialogTitle className="text-2xl">📤 Contribuir com Novo Recurso</DialogTitle>
+              <DialogTitle className="text-2xl">Contribuir com Novo Recurso</DialogTitle>
               <p className="text-sm text-muted-foreground">
                 Etapa {step} de 4: {step === 1 ? 'Informações Básicas' : step === 2 ? 'Categorização' : step === 3 ? 'Upload de Arquivos' : 'Revisão e Submissão'}
               </p>
@@ -251,7 +251,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
               {step === 1 && (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="title">📋 Título do Recurso *</Label>
+                    <Label htmlFor="title">Título do Recurso *</Label>
                     <Input
                       id="title"
                       placeholder="Ex: Jogo de memória com pictogramas..."
@@ -265,7 +265,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label htmlFor="shortDescription">📝 Descrição Breve *</Label>
+                    <Label htmlFor="shortDescription">Descrição Breve *</Label>
                     <Textarea
                       id="shortDescription"
                       placeholder="Descreva em poucas palavras..."
@@ -280,7 +280,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label htmlFor="fullDescription">📄 Descrição Completa *</Label>
+                    <Label htmlFor="fullDescription">Descrição Completa *</Label>
                     <Textarea
                       id="fullDescription"
                       placeholder="Inclua: objetivos, como usar, materiais necessários, dicas de implementação..."
@@ -298,7 +298,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
               {step === 2 && (
                 <div className="space-y-6">
                   <div>
-                    <Label>🎯 Tipo de Recurso *</Label>
+                    <Label>Tipo de Recurso *</Label>
                     <RadioGroup
                       value={formData.type}
                       onValueChange={(value) => setFormData({ ...formData, type: value })}
@@ -316,7 +316,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>📋 Diagnósticos Aplicáveis *</Label>
+                    <Label>Diagnósticos Aplicáveis *</Label>
                     <div className="mt-2 space-y-2">
                       {diagnosisOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
@@ -334,7 +334,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>📚 Componentes Curriculares *</Label>
+                    <Label>Componentes Curriculares *</Label>
                     <div className="mt-2 space-y-2">
                       {subjectOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
@@ -352,7 +352,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>🎓 Nível de Ensino *</Label>
+                    <Label>Nível de Ensino *</Label>
                     <div className="mt-2 space-y-2">
                       {levelOptions.map(({ label }, index) => (
                         <div key={label} className="flex items-center space-x-2">
@@ -378,7 +378,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </p>
 
                   <div>
-                    <Label>📁 Arquivo Principal</Label>
+                    <Label>Arquivo Principal</Label>
                     <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
                       <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
@@ -390,7 +390,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>🖼️ Imagem de Capa/Thumbnail</Label>
+                    <Label>Imagem de Capa/Thumbnail</Label>
                     <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
                       <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
@@ -404,7 +404,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>🎥 Vídeo Demonstrativo (opcional)</Label>
+                    <Label>Vídeo Demonstrativo (opcional)</Label>
                     <Input
                       placeholder="Insira link do YouTube/Vimeo"
                       className="mt-2"
@@ -418,7 +418,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
               {step === 4 && (
                 <div className="space-y-6">
                   <div className="border rounded-lg p-4 bg-muted/50">
-                    <h3 className="font-semibold mb-2">📋 Preview do Seu Recurso</h3>
+                    <h3 className="font-semibold mb-2">Preview do Seu Recurso</h3>
                     <p className="text-sm text-muted-foreground mb-2">
                       <strong>Título:</strong> {formData.title || 'Não informado'}
                     </p>
@@ -431,7 +431,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-semibold">✅ Termos e Condições</h3>
+                    <h3 className="font-semibold">Termos e Condições</h3>
                     <p className="text-xs text-muted-foreground">Todos os itens são obrigatórios.</p>
                     <div className="space-y-2">
                       {termOptions.map((term) => (
@@ -452,7 +452,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
-                    <h4 className="font-semibold text-sm mb-2">💡 Nesta versão de demonstração:</h4>
+                    <h4 className="font-semibold text-sm mb-2">Nesta versão de demonstração:</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• O recurso aparece na biblioteca deste navegador, marcado como contribuição local</li>
                       <li>• Não há moderação, envio de arquivos nem notificação por e-mail</li>

@@ -19,7 +19,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-xl">📋 Plano Educacional Individualizado (PEI)</DialogTitle>
+            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI)</DialogTitle>
             <div className="text-sm text-muted-foreground">
               <p className="font-medium">Aluno: {studentName}</p>
               <p>Versão: PEI 2024 - 4º Trimestre | Período: Out/2024 a Dez/2024</p>
@@ -36,11 +36,11 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
 
         <Tabs defaultValue="visao-geral" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="visao-geral">📊 Visão Geral</TabsTrigger>
-            <TabsTrigger value="objetivos">🎯 Objetivos</TabsTrigger>
-            <TabsTrigger value="estrategias">📝 Estratégias</TabsTrigger>
-            <TabsTrigger value="acompanhamento">📈 Acompanhamento</TabsTrigger>
-            <TabsTrigger value="historico">📋 Histórico</TabsTrigger>
+            <TabsTrigger value="visao-geral">Visão Geral</TabsTrigger>
+            <TabsTrigger value="objetivos">Objetivos</TabsTrigger>
+            <TabsTrigger value="estrategias">Estratégias</TabsTrigger>
+            <TabsTrigger value="acompanhamento">Acompanhamento</TabsTrigger>
+            <TabsTrigger value="historico">Histórico</TabsTrigger>
           </TabsList>
 
           <TabsContent value="visao-geral" className="space-y-6 mt-6">
@@ -127,7 +127,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
 
           <TabsContent value="objetivos" className="space-y-6 mt-6">
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">📚 Língua Portuguesa (5 objetivos)</h3>
+              <h3 className="font-semibold text-lg">Língua Portuguesa (5 objetivos)</h3>
               
               <Card className="border-l-4 border-l-success">
                 <CardContent className="pt-6">
@@ -170,7 +170,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">➕ Matemática (4 objetivos)</h3>
+              <h3 className="font-semibold text-lg">Matemática (4 objetivos)</h3>
               
               <Card className="border-l-4 border-l-warning">
                 <CardContent className="pt-6">
@@ -191,7 +191,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">🤝 Habilidades Sociais (6 objetivos)</h3>
+              <h3 className="font-semibold text-lg">Habilidades Sociais (6 objetivos)</h3>
               
               <Card className="border-l-4 border-l-success">
                 <CardContent className="pt-6">

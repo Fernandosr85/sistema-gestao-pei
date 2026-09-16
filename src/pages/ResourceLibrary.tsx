@@ -98,7 +98,7 @@ export default function ResourceLibrary() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold mb-2">Biblioteca de Recursos para Educação Inclusiva 📚</h1>
+              <h1 className="text-3xl font-bold mb-2">Biblioteca de Recursos para Educação Inclusiva</h1>
               <p className="text-primary-foreground/80">
                 Materiais adaptados, estratégias e ferramentas para todos os professores
               </p>
@@ -150,7 +150,7 @@ export default function ResourceLibrary() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    🔍 Filtros
+                    Filtros
                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                       Limpar
                     </Button>
@@ -175,7 +175,7 @@ export default function ResourceLibrary() {
 
                       {/* Diagnoses */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📋 Por Diagnóstico</Label>
+                        <Label className="font-semibold mb-2 block">Por Diagnóstico</Label>
                         <div className="space-y-2">
                           {diagnoses.map(diagnosis => (
                             <div key={diagnosis} className="flex items-center space-x-2">
@@ -196,7 +196,7 @@ export default function ResourceLibrary() {
 
                       {/* Subjects */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📚 Por Componente Curricular</Label>
+                        <Label className="font-semibold mb-2 block">Por Componente Curricular</Label>
                         <div className="space-y-2">
                           {subjects.map(subject => (
                             <div key={subject} className="flex items-center space-x-2">
@@ -217,7 +217,7 @@ export default function ResourceLibrary() {
 
                       {/* Rating */}
                       <div>
-                        <Label className="font-semibold mb-2 block">⭐ Por Avaliação</Label>
+                        <Label className="font-semibold mb-2 block">Por Avaliação</Label>
                         <RadioGroup value={minRating.toString()} onValueChange={(v) => setMinRating(Number(v))}>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="0" id="rating-all" />
@@ -242,7 +242,7 @@ export default function ResourceLibrary() {
 
                       {/* Sort */}
                       <div>
-                        <Label className="font-semibold mb-2 block">📊 Ordenar por</Label>
+                        <Label className="font-semibold mb-2 block">Ordenar por</Label>
                         <RadioGroup value={sortBy} onValueChange={setSortBy}>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="recent" id="sort-recent" />
@@ -272,7 +272,7 @@ export default function ResourceLibrary() {
                 {/* My Resources Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>📚 Meus Recursos Compartilhados</CardTitle>
+                    <CardTitle>Meus Recursos Compartilhados</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">

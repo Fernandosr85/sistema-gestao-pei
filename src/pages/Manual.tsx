@@ -599,7 +599,7 @@ const Manual = () => {
       {/* Recursos Complementares */}
       <Card className="bg-primary/5 border-primary/20">
         <CardHeader>
-          <CardTitle>🔗 Recursos Complementares</CardTitle>
+          <CardTitle>Recursos Complementares</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

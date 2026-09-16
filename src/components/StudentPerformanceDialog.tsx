@@ -73,11 +73,11 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">📈 Visão Geral</TabsTrigger>
-            <TabsTrigger value="pei">🎯 Objetivos PEI</TabsTrigger>
-            <TabsTrigger value="subjects">📚 Por Matéria</TabsTrigger>
-            <TabsTrigger value="social">🤝 Socioemocionais</TabsTrigger>
-            <TabsTrigger value="compare">📊 Comparativos</TabsTrigger>
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="pei">Objetivos PEI</TabsTrigger>
+            <TabsTrigger value="subjects">Por Matéria</TabsTrigger>
+            <TabsTrigger value="social">Socioemocionais</TabsTrigger>
+            <TabsTrigger value="compare">Comparativos</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6 mt-6">
@@ -197,9 +197,13 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
                                     item.status === 'warning' ? 'secondary' : 
                                     'destructive'
                                   }
-                                  className="w-6 h-6 p-0 flex items-center justify-center"
+                                  className="px-2"
                                 >
-                                  {item.status === 'success' ? '✅' : item.status === 'warning' ? '🟡' : '🔴'}
+                                  {item.status === 'success'
+                                    ? 'Alcançado'
+                                    : item.status === 'warning'
+                                      ? 'Em progresso'
+                                      : 'Atenção'}
                                 </Badge>
                               </div>
                             </div>

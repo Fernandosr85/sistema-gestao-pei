@@ -59,7 +59,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* General Information */}
           <Card>
             <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-lg mb-4">📋 Informações Gerais</h3>
+              <h3 className="font-semibold text-lg mb-4">Informações Gerais</h3>
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Detailed Observation */}
           <Card>
             <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">📝 Observação Detalhada</h3>
+              <h3 className="font-semibold text-lg mb-4">Observação Detalhada</h3>
 
               {/* Pontos Fortes */}
               <div className="p-4 border-l-4 border-success bg-success/5 rounded-r-lg space-y-3">
@@ -297,7 +297,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Comportamentos Observados */}
           <Card>
             <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">✅ Comportamentos Observados</h3>
+              <h3 className="font-semibold text-lg mb-4">Comportamentos Observados</h3>
 
               {observation.comportamento.positivos.map((comportamento, idx) => (
                 <div key={idx} className="p-4 bg-success/5 border border-success/20 rounded-lg space-y-2">
@@ -348,7 +348,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Evidências */}
           <Card>
             <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">📎 Evidências Anexadas (3)</h3>
+              <h3 className="font-semibold text-lg mb-4">Evidências Anexadas (3)</h3>
               
               <div className="grid grid-cols-3 gap-4">
                 <div className="p-4 border rounded-lg text-center space-y-2">
@@ -377,7 +377,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Observações Adicionais */}
           <Card>
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-4">💬 Observações Adicionais</h3>
+              <h3 className="font-semibold text-lg mb-4">Observações Adicionais</h3>
               <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground space-y-2">
                 <p>
                   Esta manhã foi particularmente produtiva, com avanços
@@ -400,7 +400,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Notificações */}
           <Card>
             <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-lg mb-4">🔔 Notificações Enviadas</h3>
+              <h3 className="font-semibold text-lg mb-4">Notificações Enviadas</h3>
               
               <div className="space-y-3">
                 <div className="flex items-start gap-3 p-3 bg-success/5 border border-success/20 rounded-lg">
@@ -428,7 +428,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           {/* Metadados */}
           <Card>
             <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-4">⚙️ Metadados</h3>
+              <h3 className="font-semibold text-lg mb-4">Metadados</h3>
               <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
                 <p><strong>Criado em:</strong> {new Date(observation.data).toLocaleDateString('pt-BR')} 10:35</p>
                 <p><strong>Última edição:</strong> {new Date(observation.data).toLocaleDateString('pt-BR')} 10:40</p>

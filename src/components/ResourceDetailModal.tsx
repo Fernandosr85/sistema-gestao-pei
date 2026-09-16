@@ -138,7 +138,7 @@ export function ResourceDetailModal({
 
             {/* Description */}
             <div>
-              <h3 className="font-semibold text-lg mb-2">📝 Descrição Completa</h3>
+              <h3 className="font-semibold text-lg mb-2">Descrição Completa</h3>
               <p className="text-muted-foreground whitespace-pre-line">{resource.fullDescription}</p>
             </div>
 
@@ -146,7 +146,7 @@ export function ResourceDetailModal({
               <>
                 <Separator />
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">🎯 Objetivos de Aprendizagem</h3>
+                  <h3 className="font-semibold text-lg mb-2">Objetivos de Aprendizagem</h3>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                     {resource.objectives.map((obj, idx) => (
                       <li key={idx}>{obj}</li>
@@ -160,7 +160,7 @@ export function ResourceDetailModal({
               <>
                 <Separator />
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">📦 Materiais Inclusos</h3>
+                  <h3 className="font-semibold text-lg mb-2">Materiais Inclusos</h3>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                     {resource.materials.map((mat, idx) => (
                       <li key={idx}>{mat}</li>
@@ -174,7 +174,7 @@ export function ResourceDetailModal({
               <>
                 <Separator />
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">💡 Dicas de Uso</h3>
+                  <h3 className="font-semibold text-lg mb-2">Dicas de Uso</h3>
                   <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                     {resource.tips.map((tip, idx) => (
                       <li key={idx}>{tip}</li>
@@ -188,7 +188,7 @@ export function ResourceDetailModal({
 
             {/* Reviews */}
             <div>
-              <h3 className="font-semibold text-lg mb-4">💬 Avaliações e Comentários ({reviews.length})</h3>
+              <h3 className="font-semibold text-lg mb-4">Avaliações e Comentários ({reviews.length})</h3>
               <div className="space-y-4">
                 {reviews.map((review) => (
                   <div key={review.id} className="border rounded-lg p-4">
@@ -227,7 +227,7 @@ export function ResourceDetailModal({
 
             {/* Add Review */}
             <div className="border rounded-lg p-4 bg-muted/50">
-              <h3 className="font-semibold mb-4">⭐ Avalie este Recurso</h3>
+              <h3 className="font-semibold mb-4">Avalie este Recurso</h3>
               <div className="space-y-4">
                 {/*
                   * Eram cinco botões só com SVG: sem nome, sem estado e sem indicação de
@@ -284,7 +284,7 @@ export function ResourceDetailModal({
 
             {/* Statistics */}
             <div>
-              <h3 className="font-semibold text-lg mb-2">📊 Estatísticas</h3>
+              <h3 className="font-semibold text-lg mb-2">Estatísticas</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Downloads</p>

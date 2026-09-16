@@ -294,16 +294,22 @@ calcula layout nem contraste, que é metade do valor do axe.
    A legenda do donut **já** traz nome e porcentagem em texto: o que sobra lá é
    `cursor-pointer` e realce só por mouse, sem informação nova. Reclassificado como
    afordância falsa, não perda de informação.
-4. **Emoji com significado**: são 325 ocorrências em 32 arquivos, 314 delas em arquivos
-   montados por rota. Por natureza, e com escopo decidido pelo autor:
-   - **24 linhas em que o emoji carrega o status sozinho** (`✅🟡🔴⚠️` em
-     `BenchmarkingTable`, `ExpandedComplexityCard`, `AlertasRiscosContent`,
-     `StudentPerformanceDialog`, `lib/observation.ts` e `data/mockResources.ts`): **saem e
-     ganham texto**. É falha AA (1.4.1).
+4. **Emoji com significado** ✅ feito no commit 4. Eram 325 ocorrências em 32 arquivos, 314
+   delas em arquivos montados por rota. Por natureza, e com escopo decidido pelo autor:
+   - **Status carregado pelo emoji sozinho: saem e ganham texto.** É falha AA (1.4.1).
+     A triagem inicial por padrão de código apontou 24 linhas; verificando **uso a uso**,
+     sete delas (os `icon:` de `data/mockResources.ts`) são renderizadas junto do nome da
+     conquista, então são decorativas e ficaram. Sobraram seis lugares: o comparativo do
+     `BenchmarkingTable` ("adequado", "atenção", "crítico"), os três indicadores do
+     `ExpandedComplexityCard`, a severidade do `AlertasRiscosContent`, o objetivo do
+     `StudentPerformanceDialog` ("Alcançado", "Em progresso", "Atenção"), a conquista
+     bloqueada do `MeuPerfilDialog` e o tom da observação em `lib/observation.ts`.
+     Contar ocorrência de padrão não é o mesmo que contar defeito: só o uso decide.
    - **97 linhas em título, aba, `DialogTitle` e `Label`** (como "📋 Dados Pessoais"):
-     **saem**. O leitor de tela lê o nome do emoji antes do texto, o que polui a navegação.
-   - **155 linhas decorativas no meio de texto corrido: ficam.** Envolver cada uma em `span`
-     com `aria-hidden` seriam 155 pontos de alteração para resolver verbosidade, não
+     **saíram**. O leitor de tela lê o nome do emoji antes do texto, o que polui a
+     navegação. As 97 foram revistas uma a uma antes de aplicar.
+   - **158 linhas decorativas no meio de texto corrido: ficam.** Envolver cada uma em `span`
+     com `aria-hidden` seriam 158 pontos de alteração para resolver verbosidade, não
      barreira. O leitor anuncia o nome do emoji: é incômodo, não é falha. Registrado para
      ficar claro que foi escolha, e não esquecimento.
 5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:232-247`): cinco `<button>` só com

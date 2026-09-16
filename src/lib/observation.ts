@@ -21,10 +21,10 @@ export const quickObservationTopicOptions: Option<QuickObservationTopic>[] = [
   { value: 'communication', label: 'Comunicação' },
 ];
 
-export const quickObservationToneOptions: Array<Option<QuickObservationTone> & { emoji: string }> = [
-  { value: 'positive', label: 'Positiva', emoji: '😊' },
-  { value: 'neutral', label: 'Neutra/Informativa', emoji: 'ℹ️' },
-  { value: 'attention', label: 'Atenção necessária', emoji: '⚠️' },
+export const quickObservationToneOptions: Array<Option<QuickObservationTone>> = [
+  { value: 'positive', label: 'Positiva' },
+  { value: 'neutral', label: 'Neutra/Informativa' },
+  { value: 'attention', label: 'Atenção necessária' },
 ];
 
 export const labelFor = <T extends string>(options: Option<T>[], value: T): string =>
