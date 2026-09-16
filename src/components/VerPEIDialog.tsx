@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,9 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
         <DialogHeader>
           <div className="space-y-2">
             <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI)</DialogTitle>
+            <DialogDescription>
+              Identificação, objetivos, estratégias e acompanhamento do plano do estudante.
+            </DialogDescription>
             <div className="text-sm text-muted-foreground">
               <p className="font-medium">Aluno: {studentName}</p>
               <p>Versão: PEI 2024 - 4º Trimestre | Período: Out/2024 a Dez/2024</p>

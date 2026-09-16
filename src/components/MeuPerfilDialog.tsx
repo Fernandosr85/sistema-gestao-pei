@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { User, GraduationCap, TrendingUp, Award, Settings, Upload, Trash2, Edit, X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -94,6 +94,9 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <User className="h-6 w-6" />
             Meu Perfil - {DEMO_USER_NAME}
           </DialogTitle>
+          <DialogDescription>
+            Dados pessoais, formação, estatísticas e conquistas do profissional.
+          </DialogDescription>
         </DialogHeader>
 
         <DemoDataNotice
@@ -635,7 +638,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Award className="h-5 w-5 text-yellow-500" />
-                  Nível: 🌟 Mestre da Inclusão
+                  Nível: Mestre da Inclusão
                 </CardTitle>
                 <CardDescription>
                   XP: 2.847 / 3.000 (próximo nível: Referência Nacional)

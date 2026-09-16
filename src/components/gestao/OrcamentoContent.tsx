@@ -168,7 +168,7 @@ const OrcamentoContent = () => {
       {/* Annual Budget Summary */}
       <Card className={`border-2 ${getStatusBg(budgetSummary.status)}`}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             Resumo Orçamentário 2024
           </CardTitle>
@@ -230,7 +230,7 @@ const OrcamentoContent = () => {
       {/* Budget Execution by Category */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
             Execução por Categoria
           </CardTitle>
@@ -279,7 +279,7 @@ const OrcamentoContent = () => {
       {/* Monthly Spending Trend */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
             Tendência de Gastos Mensais
           </CardTitle>
@@ -321,7 +321,7 @@ const OrcamentoContent = () => {
         {/* Programmed Expenses */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
               Despesas Programadas
             </CardTitle>
@@ -351,7 +351,7 @@ const OrcamentoContent = () => {
         {/* Benchmarking */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle level={2} className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Comparativo com Outras Unidades
             </CardTitle>
@@ -386,7 +386,7 @@ const OrcamentoContent = () => {
       {/* Pending Approvals */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Aprovações Pendentes
           </CardTitle>
@@ -437,7 +437,7 @@ const OrcamentoContent = () => {
       {/* Budget Planning 2025 */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             Planejamento Orçamentário 2025
           </CardTitle>

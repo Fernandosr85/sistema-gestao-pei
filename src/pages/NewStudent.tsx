@@ -155,8 +155,13 @@ const NewStudent = () => {
   return (
     <div className="container mx-auto p-6 space-y-6 animate-fade-in">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/alunos')}>
-          <ArrowLeft className="h-4 w-4" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate('/alunos')}
+          aria-label="Voltar para a lista de alunos"
+        >
+          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Novo Aluno</h1>
@@ -179,7 +184,7 @@ const NewStudent = () => {
             <TabsContent value="dados-basicos" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Informações Pessoais</CardTitle>
+                  <CardTitle level={2}>Informações Pessoais</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -319,7 +324,7 @@ const NewStudent = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Dados do Responsável</CardTitle>
+                  <CardTitle level={2}>Dados do Responsável</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -386,7 +391,7 @@ const NewStudent = () => {
             <TabsContent value="comunicacao" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Comunicação</CardTitle>
+                  <CardTitle level={2}>Comunicação</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -431,7 +436,7 @@ const NewStudent = () => {
             <TabsContent value="comportamento" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Comportamento</CardTitle>
+                  <CardTitle level={2}>Comportamento</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -494,7 +499,7 @@ const NewStudent = () => {
             <TabsContent value="rotina" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Rotina Diária</CardTitle>
+                  <CardTitle level={2}>Rotina Diária</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

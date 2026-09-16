@@ -100,11 +100,15 @@ const StudentDetail = () => {
       <div className="bg-brand-blue text-white p-6">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to="/alunos">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/20">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
+            {/*
+              * Era um <a> envolvendo um <button>, aninhamento inválido, e o link não tinha
+              * nome: o leitor anunciava só "link". Com asChild sai um <a> só, nomeado.
+              */}
+            <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" asChild>
+              <Link to="/alunos" aria-label="Voltar para a lista de alunos">
+                <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+              </Link>
+            </Button>
             <h1 className="text-2xl md:text-3xl font-bold">
               Gestão de Alunos - Cadastro Completo e Individualizado
             </h1>

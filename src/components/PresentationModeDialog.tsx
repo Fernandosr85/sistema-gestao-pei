@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useEffect, useRef, useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -43,14 +43,51 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
     if (currentSlide > 1) setCurrentSlide(currentSlide - 1);
   };
 
+  /*
+   * A troca de slide não movia o foco nem era anunciada: quem usa leitor de tela ouvia o
+   * nome do botão "Próximo" e nada mais. O slide vira uma região com nome que inclui o
+   * número, e o foco vai para ela a cada troca — é o leitor lendo o nome da região que
+   * anuncia "Slide 3 de 12". Também não havia navegação por setas: só o clique nos botões.
+   */
+  const slideRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isPresenting) slideRef.current?.focus();
+  }, [currentSlide, isPresenting]);
+
+  const handleSlideKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      nextSlide();
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      prevSlide();
+    }
+  };
+
   if (isPresenting) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0" onKeyDown={handleSlideKeys}>
+          <DialogHeader className="sr-only">
+            <DialogTitle>Apresentação do progresso de {studentName}</DialogTitle>
+            <DialogDescription>
+              {totalSlides} slides de exemplo. Use as setas esquerda e direita para navegar, ou
+              os botões no rodapé.
+            </DialogDescription>
+          </DialogHeader>
+
           {/* Tela de Apresentação em Fullscreen */}
           <div className="relative w-full h-[90vh] bg-gradient-to-br from-primary/5 to-accent/5 flex flex-col">
             {/* Conteúdo do Slide */}
-            <div className="flex-1 flex items-center justify-center p-12">
+            <div
+              ref={slideRef}
+              tabIndex={-1}
+              role="region"
+              aria-roledescription="slide"
+              aria-label={`Slide ${currentSlide} de ${totalSlides}`}
+              className="flex-1 flex items-center justify-center p-12 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {currentSlide === 1 && (
                 <div className="text-center space-y-8">
                   <div className="text-6xl mb-8">👧</div>
@@ -277,7 +314,7 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentName }: Pres
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            🎥 MODO APRESENTAÇÃO PARA REUNIÃO COM FAMÍLIA
+            MODO APRESENTAÇÃO PARA REUNIÃO COM FAMÍLIA
           </DialogTitle>
           <p className="text-sm text-muted-foreground mt-2">
             Crie uma apresentação visual e acessível para compartilhar o progresso de {studentName} com a família.

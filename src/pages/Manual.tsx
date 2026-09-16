@@ -41,7 +41,7 @@ const Manual = () => {
         <TabsContent value="identificacao" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 1. Identificação e Acolhimento
               </CardTitle>
@@ -84,7 +84,7 @@ const Manual = () => {
         <TabsContent value="pei" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <FileCheck className="h-5 w-5" />
                 2. Plano Educacional Individualizado (PEI)
               </CardTitle>
@@ -223,7 +223,7 @@ const Manual = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <GraduationCap className="h-5 w-5" />
                 3. Formação de Professores
               </CardTitle>
@@ -267,7 +267,7 @@ const Manual = () => {
         <TabsContent value="equipe" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 4. Equipe Multidisciplinar
               </CardTitle>
@@ -333,7 +333,7 @@ const Manual = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <Heart className="h-5 w-5" />
                 5. Articulação com Famílias
               </CardTitle>
@@ -375,7 +375,7 @@ const Manual = () => {
         <TabsContent value="protocolos" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <ClipboardList className="h-5 w-5" />
                 6. Protocolos Específicos
               </CardTitle>
@@ -432,7 +432,7 @@ const Manual = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 9. Documentação Obrigatória
               </CardTitle>
@@ -476,7 +476,7 @@ const Manual = () => {
         <TabsContent value="avaliacao" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <FileCheck className="h-5 w-5" />
                 7. Avaliação Adaptada
               </CardTitle>
@@ -518,7 +518,7 @@ const Manual = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle level={2} className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
                 10. Indicadores de Qualidade
               </CardTitle>
@@ -559,7 +559,7 @@ const Manual = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>8. Transições</CardTitle>
+              <CardTitle level={2}>8. Transições</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
@@ -599,7 +599,7 @@ const Manual = () => {
       {/* Recursos Complementares */}
       <Card className="bg-primary/5 border-primary/20">
         <CardHeader>
-          <CardTitle>Recursos Complementares</CardTitle>
+          <CardTitle level={2}>Recursos Complementares</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>

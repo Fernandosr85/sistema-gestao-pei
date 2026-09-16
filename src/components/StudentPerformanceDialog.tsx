@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +51,9 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl">DESEMPENHO - {studentName.toUpperCase()}</DialogTitle>
+            <DialogDescription>
+              Evolução por trimestre, objetivos do PEI e desempenho por matéria.
+            </DialogDescription>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
                 <Download className="h-4 w-4 mr-2" />

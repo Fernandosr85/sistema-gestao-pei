@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -51,7 +51,9 @@ export function AnexosDialog({ open, onOpenChange, studentName, totalAnexos }: A
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Documentos e Anexos - {studentName}</DialogTitle>
-          <p className="text-sm text-muted-foreground">Total de documentos: {totalAnexos}</p>
+          <DialogDescription>
+            Documentos, fotos e PEIs deste estudante. Total de documentos: {totalAnexos}.
+          </DialogDescription>
         </DialogHeader>
 
         <DemoDataNotice

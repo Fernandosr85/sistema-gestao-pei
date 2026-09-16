@@ -165,16 +165,21 @@ const AgendaAtendimentos = () => {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
             Filtros
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4">
           <div className="flex-1 min-w-[200px]">
-            <label className="text-sm font-medium mb-2 block">Aluno</label>
+            {/*
+              * O gatilho do Select é um <button role="combobox">, que não é rotulável por
+              * <label htmlFor>. O texto vira <span> com id, e o gatilho aponta para ele:
+              * antes o leitor anunciava só "caixa de combinação".
+              */}
+            <span id="filtro-aluno" className="text-sm font-medium mb-2 block">Aluno</span>
             <Select value={filtroAluno} onValueChange={setFiltroAluno}>
-              <SelectTrigger>
+              <SelectTrigger aria-labelledby="filtro-aluno">
                 <SelectValue placeholder="Todos os alunos" />
               </SelectTrigger>
               <SelectContent>
@@ -189,9 +194,9 @@ const AgendaAtendimentos = () => {
           </div>
 
           <div className="flex-1 min-w-[200px]">
-            <label className="text-sm font-medium mb-2 block">Tipo</label>
+            <span id="filtro-tipo" className="text-sm font-medium mb-2 block">Tipo</span>
             <Select value={filtroTipo} onValueChange={setFiltroTipo}>
-              <SelectTrigger>
+              <SelectTrigger aria-labelledby="filtro-tipo">
                 <SelectValue placeholder="Todos os tipos" />
               </SelectTrigger>
               <SelectContent>
@@ -206,9 +211,9 @@ const AgendaAtendimentos = () => {
           </div>
 
           <div className="flex-1 min-w-[200px]">
-            <label className="text-sm font-medium mb-2 block">Status</label>
+            <span id="filtro-status" className="text-sm font-medium mb-2 block">Status</span>
             <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-              <SelectTrigger>
+              <SelectTrigger aria-labelledby="filtro-status">
                 <SelectValue placeholder="Todos os status" />
               </SelectTrigger>
               <SelectContent>
@@ -582,7 +587,7 @@ const AgendaAtendimentos = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-              <CardTitle className="text-base font-medium">Selecionar Data</CardTitle>
+              <CardTitle level={2} className="text-base font-medium">Selecionar Data</CardTitle>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button

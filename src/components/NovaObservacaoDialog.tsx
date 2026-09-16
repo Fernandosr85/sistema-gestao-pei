@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,6 +101,10 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl">Nova Observação - {studentName}</DialogTitle>
+          <DialogDescription>
+            Registre o que foi observado, com data, local e tipo. O registro fica salvo neste
+            navegador.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

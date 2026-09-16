@@ -337,7 +337,7 @@ const AlertasRiscosContent = () => {
       {/* Resumo de Riscos */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5" />
             Resumo de Riscos
           </CardTitle>
@@ -372,7 +372,7 @@ const AlertasRiscosContent = () => {
       {/* Matriz de Riscos */}
       <Card>
         <CardHeader>
-          <CardTitle>Matriz de Riscos (Probabilidade × Impacto)</CardTitle>
+          <CardTitle level={2}>Matriz de Riscos (Probabilidade × Impacto)</CardTitle>
           <CardDescription>Distribuição visual dos riscos identificados</CardDescription>
         </CardHeader>
         <CardContent>
@@ -442,7 +442,7 @@ const AlertasRiscosContent = () => {
 
       {/* Detalhamento de Riscos */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Detalhamento de Riscos</h3>
+        <h2 className="text-lg font-semibold">Detalhamento de Riscos</h2>
         {riscosSorted.map(risco => {
           const severity = getSeverityLevel(risco.probabilidade, risco.impacto);
           const isExpanded = expandedRisks.includes(risco.id);
@@ -480,8 +480,16 @@ const AlertasRiscosContent = () => {
                       </div>
                     </div>
                     <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label={`${isExpanded ? 'Recolher' : 'Expandir'} o detalhe do risco ${risco.id}, ${risco.titulo}`}
+                      >
+                        {isExpanded ? (
+                          <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                        )}
                       </Button>
                     </CollapsibleTrigger>
                   </div>

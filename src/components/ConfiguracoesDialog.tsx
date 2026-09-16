@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Settings, Bell, Palette, Shield, Plug, Globe, Accessibility } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +30,10 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
             <Settings className="h-6 w-6" />
             Configurações - {DEMO_USER_NAME}
           </DialogTitle>
+          <DialogDescription>
+            Preferências de notificação, aparência, privacidade, integrações, idioma e
+            acessibilidade.
+          </DialogDescription>
         </DialogHeader>
 
         <DemoDataNotice

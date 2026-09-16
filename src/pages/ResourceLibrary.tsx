@@ -149,7 +149,7 @@ export default function ResourceLibrary() {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+                  <CardTitle level={2} className="flex items-center justify-between">
                     Filtros
                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                       Limpar
@@ -272,7 +272,7 @@ export default function ResourceLibrary() {
                 {/* My Resources Stats */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Meus Recursos Compartilhados</CardTitle>
+                    <CardTitle level={2}>Meus Recursos Compartilhados</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -299,7 +299,7 @@ export default function ResourceLibrary() {
                     <div>
                       <h3 className="font-semibold mb-4 flex items-center gap-2">
                         <Award className="h-5 w-5" />
-                        🎖️ Badges Conquistadas
+                        Badges Conquistadas
                       </h3>
                       <div className="flex flex-wrap gap-3">
                         {mockBadges.filter(b => b.earnedAt).map(badge => (
@@ -315,9 +315,9 @@ export default function ResourceLibrary() {
                 {/* Leaderboard */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle level={2} className="flex items-center gap-2">
                       <Trophy className="h-5 w-5" />
-                      🏆 Ranking de Colaboradores
+                      Ranking de Colaboradores
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

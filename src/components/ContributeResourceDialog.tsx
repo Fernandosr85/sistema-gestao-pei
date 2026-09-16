@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -242,9 +242,9 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
           <div className="p-6">
             <DialogHeader>
               <DialogTitle className="text-2xl">Contribuir com Novo Recurso</DialogTitle>
-              <p className="text-sm text-muted-foreground">
+              <DialogDescription>
                 Etapa {step} de 4: {step === 1 ? 'Informações Básicas' : step === 2 ? 'Categorização' : step === 3 ? 'Upload de Arquivos' : 'Revisão e Submissão'}
-              </p>
+              </DialogDescription>
             </DialogHeader>
 
             <div className="mt-6 space-y-6">

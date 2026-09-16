@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,6 +38,10 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
             <FileText className="h-6 w-6" />
             Detalhes da Observação
           </DialogTitle>
+          <DialogDescription>
+            Registro completo da observação, com identificação do estudante, descrição e
+            metadados.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">

@@ -62,6 +62,8 @@ const Observations = () => {
       {/* Observations List */}
       {filteredObservations.length > 0 ? (
         <div className="grid grid-cols-1 gap-6">
+          {/* Cada observação é um cartão com <h3>. O título da seção evita o salto de nível. */}
+          <h2 className="sr-only">Observações registradas</h2>
           {filteredObservations.map((observation) => {
             if (observation.kind === 'quick') {
               return (

@@ -23,7 +23,7 @@ const Legislation = () => {
       {/* Legislação Federal */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <Scale className="h-5 w-5" />
             Legislação Federal
           </CardTitle>
@@ -126,7 +126,7 @@ const Legislation = () => {
       {/* Resoluções e Pareceres */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Resoluções e Pareceres do CNE
           </CardTitle>
@@ -165,7 +165,7 @@ const Legislation = () => {
       {/* Legislação Estadual */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle level={2} className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
             Legislação Estadual (São Paulo)
           </CardTitle>
