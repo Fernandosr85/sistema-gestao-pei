@@ -323,10 +323,63 @@ desabilitados foi conferido no navegador em cada commit, não pelo script.
 
 Base já feita na Etapa 0 (menu mobile, skip link, `<main>`, contraste, nomes no header).
 
-**Estado em 15/09/2026:** em andamento na branch `etapa-3/acessibilidade`, a partir do
-`a9fe84f`. Os oito itens abaixo foram revalidados contra o código depois da Etapa 2, que
-removeu mais de 1.200 linhas. Três mudaram de tamanho ou de natureza, e a revalidação
-achou quatro defeitos que não estavam no inventário.
+**Estado em 16/09/2026:** ✅ feita na branch `etapa-3/acessibilidade`, a partir do
+`a9fe84f`, em nove commits de código e quatro de documentação. Os oito itens do inventário
+foram revalidados contra o código depois da Etapa 2, que removeu mais de 1.200 linhas: três
+mudaram de tamanho ou de natureza, um estava errado quanto ao nível do critério, e a
+revalidação achou quatro defeitos que não estavam ali. O contraste, que também não estava,
+virou item próprio.
+
+| Commit | O que faz |
+|---|---|
+| `7bd77f7` Add | Ferramentas de verificação e plano revalidado |
+| `a5a38a9` Fix | Controles que só funcionavam no mouse |
+| `9005edb` Docs | Achado 2: o que a verificação automatizada não vê |
+| `9ea04e1` Chore | `.claude/` no `.gitignore` |
+| `3357f8d` Add | Equivalente textual dos gráficos e nome nas barras |
+| `4695db5` Fix | Emoji de status e de título |
+| `ab5c50c` Docs | Achado 3, o padrão, e achado 4 |
+| `41ac64b` Fix | Títulos, diálogos e controles sem nome |
+| `5a72ea7` Fix | Cores fixas viram tokens medidos |
+| `64181a7` Docs | Achados e a regra de medir contraste |
+| `f80e31b` Add | Preferências de acessibilidade |
+| `79c2890` Fix | Refluxo em 320 px e zoom de 200% |
+
+### Resultado da etapa
+
+Medido nas dezessete rotas do sistema, antes do primeiro commit e depois do último. As
+violações do axe são as de WCAG 2.1 nível A e AA; os avisos do lint são do
+`eslint-plugin-jsx-a11y`, com a configuração já depurada (ver achado 2).
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Violações do axe, somadas** | **124** | **0** |
+| — contraste de cor (1.4.3) | 47 | 0 |
+| — barra de progresso sem nome (4.1.2) | 62 | 0 |
+| — botão sem nome (4.1.2) | 14 | 0 |
+| — link sem nome (2.4.4) | 1 | 0 |
+| **Avisos do `jsx-a11y`** | **8** | **0** |
+| Controles operáveis só por mouse | 5 | 0 |
+| Gráficos sem nome nem equivalente textual | 12 | 0 |
+| Diálogos sem descrição | 10 | 0 |
+| Rotas com salto de nível de título | 12 de 17 | 0 |
+| Rotas com rolagem horizontal em 320 px | 6 de 17 | 0 |
+| Lugares com status carregado só por emoji | 6 | 0 |
+| Linhas com emoji em título, aba ou rótulo | 98 | 0 |
+| Preferências de acessibilidade que funcionam | 0 de 10 | 5, com 5 removidas |
+
+**O que o número não diz.** Sobra uma violação de contraste por rota, sempre a mesma: o axe
+não lê gradiente e acusa o "Usuário de demonstração" do cabeçalho em 1,04:1, quando o
+gradiente real vai de 10,65:1 a 5,96:1 contra branco. Está no achado 2, junto do resto do
+que a verificação automatizada não vê — inclusive o fato de que, dos cinco controles só
+operáveis por mouse, o lint viu um e o axe não viu nenhum.
+
+**O que ainda falta.** A navegação inteira só por teclado e a leitura por leitor de tela real
+não foram verificadas nesta sessão: a ferramenta de navegador usada aqui não aciona
+`<button>` por Enter ou Espaço. Os dois ficam em lista de teste manual, executada pelo autor.
+Também continuam fora dos tokens 165 classes de cor fixa e 12 literais hexadecimais que
+**passam** no contraste, registradas na Etapa 5.
+
 
 ### Ferramentas de verificação
 
@@ -362,17 +415,17 @@ calcula layout nem contraste, que é metade do valor do axe.
 
 ### Itens
 
-1. **Matriz de risco 3×3** (`gestao/AlertasRiscosContent.tsx:356-422`): nove badges
+1. **Matriz de risco 3×3** ✅ feito no commit 2 (`gestao/AlertasRiscosContent.tsx:356-422`): nove badges
    clicáveis são `<div>` (o `Badge` do shadcn), sem `role`, `tabIndex` nem handler de
    teclado, e o texto é só `{id} {emoji}`. Virar `<button>` com nome descritivo;
    probabilidade/impacto/severidade como texto, não só posição na grade e tom de cor.
-2. **Heatmap** (`reports/ObservationHeatmap.tsx`): 30 `<div>` com `cursor-pointer` e
+2. **Heatmap** ✅ feito no commit 3 (`reports/ObservationHeatmap.tsx`): 30 `<div>` com `cursor-pointer` e
    contagem só no tooltip de hover; a legenda não tem valores.
    **Decisão:** vira **tabela**, não botões. As células não têm ação nenhuma, e
    transformá-las em botão criaria controle inerte, exatamente o que a Etapa 2 passou seis
    commits eliminando. Achado junto: a grade de sete colunas começa no dia 1 sem alinhar ao
    dia da semana, então o cabeçalho Dom–Sáb está errado.
-3. **Gráficos Recharts**: sem nome acessível nem equivalente textual. Não são três, são
+3. **Gráficos Recharts** ✅ feito no commit 3: sem nome acessível nem equivalente textual. Não são três, são
    **doze em sete arquivos montados** — `ProgressChart` (3), `MeuPerfilDialog` (3),
    `OrcamentoContent` (2), `InterventionDonut`, `PEIRadarChart`,
    `StudentPerformanceDialog` e `AgendaAtendimentos` (1 cada). Somam-se os três `Progress`
@@ -398,7 +451,7 @@ calcula layout nem contraste, que é metade do valor do axe.
      com `aria-hidden` seriam 158 pontos de alteração para resolver verbosidade, não
      barreira. O leitor anuncia o nome do emoji: é incômodo, não é falha. Registrado para
      ficar claro que foi escolha, e não esquecimento.
-5. **Estrelas de avaliação** (`ResourceDetailModal.tsx:232-247`): cinco `<button>` só com
+5. **Estrelas de avaliação** ✅ feito no commit 2 (`ResourceDetailModal.tsx:232-247`): cinco `<button>` só com
    SVG, sem nome, sem estado e sem `type`. Virar radiogroup rotulado com valor textual
    visível.
 
@@ -407,12 +460,12 @@ calcula layout nem contraste, que é metade do valor do axe.
    qual estrela era qual, nem a nota selecionada, sem inspecionar o DOM. Confirma o defeito
    na prática, não só na análise estática. A ativação por teclado não foi verificada: a
    ferramenta de teste não ativa por Enter/Space nem botões com nome.
-6. **Diálogos**: `PresentationModeDialog` tem dois `DialogContent` e um só `DialogTitle` — é
+6. **Diálogos** ✅ feito no commit 5: `PresentationModeDialog` tem dois `DialogContent` e um só `DialogTitle` — é
    o modo apresentação que está sem título — e não move foco nem anuncia troca de slide.
    **Dez diálogos montados estão sem `DialogDescription`**: Anexos, Configurações,
    Contribuir, Meu Perfil, Nova Observação, Detalhe da Observação, Apresentação, Detalhe do
    Recurso, Desempenho e Ver PEI.
-7. **Hierarquia de headings**: `NewObservation` usa `<h4>` sob `<h1>`; `VisaoGeralContent`
+7. **Hierarquia de headings** ✅ feito no commit 5: `NewObservation` usa `<h4>` sob `<h1>`; `VisaoGeralContent`
    abre com `<h3>`. A causa comum é o `CardTitle`, que é `<h3>` fixo: toda página cujo `<h1>`
    é seguido de Card pula o `<h2>`, o que inclui `/agenda-atendimentos`,
    `/biblioteca-recursos`, `/gestao` e `/alunos`.
@@ -430,12 +483,12 @@ calcula layout nem contraste, que é metade do valor do axe.
    - **Ainda fora dos tokens:** 165 classes de cor fixa e 12 literais hexadecimais, em cores
      que **passam** no contraste — eixos e séries de gráfico, principalmente. Não são falha
      AA, mas continuam violando a invariante 1. Ficam para a Etapa 5, junto da limpeza.
-9. **Refluxo e zoom**, não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
+9. **Refluxo e zoom** ✅ feito no commit 7, e não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
    40 × 40 eram defeito de alvo de toque, mas o critério 2.5.5 (44 px) é **AAA**, e a meta
    do projeto é AA. O que é AA aqui é **1.4.10 Refluxo, em 320 px**, e **1.4.4
    Redimensionar texto, em zoom de 200%** — inclusive o rodapé da apresentação, que não
    quebra linha. O botão maior vira preferência opcional do item 9.
-10. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
+10. **Preferências de acessibilidade** ✅ feito no commit 6 (`ConfiguracoesDialog`, aba Acessibilidade). Alto
    contraste, aumentar o tamanho dos botões, destacar o foco do teclado, reduzir animações,
    ampliação e atalhos de teclado aparecem desabilitados desde a Etapa 2, rotulados como
    ilustrativos. Por decisão do autor, a implementação acontece aqui, e não junto dos
@@ -483,6 +536,28 @@ Esses ficam numa lista de teste manual, executada pelo autor ao fim da etapa.
 **Critério de aceite:** navegar o sistema inteiro só com teclado, sem ficar preso nem
 encontrar controle inalcançável. Toda informação disponível por cor/hover também
 disponível como texto.
+
+**Estado do critério:** a segunda metade está cumprida e medida. A primeira depende do teste
+manual, porque a ferramenta de navegador da sessão não aciona `<button>` por Enter ou
+Espaço. A lista de teste está abaixo; o que dá para afirmar sem ela é que todo controle
+entra na ordem de foco, tem nome e expõe estado.
+
+### Lista de teste manual, a executar pelo autor
+
+| | Onde | Sequência | Esperado |
+|---|---|---|---|
+| M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
+| M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
+| M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
+| M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
+| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
+| M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
+| M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
+| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
+| M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
+
+O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
+parecem não funcionar. É artefato da automação, não do app.
 
 ---
 

@@ -34,6 +34,7 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 - [Começando](#começando)
 - [Adaptando para sua instituição](#adaptando-para-sua-instituição)
 - [O que está implementado](#o-que-está-implementado)
+- [Acessibilidade](#acessibilidade)
 - [Antes de usar com dados reais](#antes-de-usar-com-dados-reais)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Contribuindo](#contribuindo)
@@ -84,7 +85,7 @@ A aplicação sobe em `http://localhost:8080`.
 | `npm run dev` | Servidor de desenvolvimento com hot reload |
 | `npm run build` | Build de produção em `dist/` |
 | `npm run preview` | Serve o build de produção localmente |
-| `npm run lint` | ESLint (deve terminar com 0 erros) |
+| `npm run lint` | ESLint, com as regras de acessibilidade do `jsx-a11y` como erro (deve terminar com 0 erros) |
 | `npm run typecheck` | Checagem de tipos sem emitir arquivos |
 
 ### Variáveis de ambiente
@@ -145,7 +146,8 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
 | Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
-| Perfil, configurações e Minha Agenda | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
+| Preferências de acessibilidade (Configurações → Acessibilidade) | ✅ Funcional: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e alvos maiores, aplicados na hora e guardados neste navegador |
+| Perfil, Minha Agenda e as demais abas de Configurações | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação de arquivo (PDF gerado pela aplicação, Excel, Word) | ❌ Não implementada |
@@ -155,12 +157,75 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Testes automatizados | ❌ Não implementados |
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
-desabilitado com o motivo na tela ou removido. Gestão, desempenho, apresentação e
-PEI continuam mostrando conteúdo fixo de demonstração, e nem toda tela desse tipo tem aviso
-ainda (ver Etapa 4 do backlog). O histórico acadêmico não tem modelo de dados e diz isso na
-tela.
+desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero
+violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
+Gestão, desempenho, apresentação e PEI continuam mostrando conteúdo fixo de demonstração, e
+nem toda tela desse tipo tem aviso ainda (ver Etapa 4 do backlog). O histórico acadêmico não
+tem modelo de dados e diz isso na tela.
 
 ---
+
+## Acessibilidade
+
+A meta é **WCAG 2.1 nível AA**. A Etapa 3 do [backlog](BACKLOG-CLAUDE-CODE.md) foi dedicada
+a isso, e estes são os números, medidos nas dezessete rotas do sistema antes do primeiro
+commit da etapa e depois do último:
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Violações do axe-core (WCAG 2.1 A e AA)** | **124** | **0** |
+| — contraste de cor (1.4.3) | 47 | 0 |
+| — barra de progresso sem nome (4.1.2) | 62 | 0 |
+| — botão sem nome (4.1.2) | 14 | 0 |
+| — link sem nome (2.4.4) | 1 | 0 |
+| **Avisos do `eslint-plugin-jsx-a11y`** | **8** | **0** |
+| Controles operáveis só por mouse | 5 | 0 |
+| Gráficos sem nome nem equivalente textual | 12 | 0 |
+| Diálogos sem descrição | 10 | 0 |
+| Rotas com salto de nível de título | 12 de 17 | 0 |
+| Rotas com rolagem horizontal em 320 px | 6 de 17 | 0 |
+| Lugares com status carregado só por emoji | 6 | 0 |
+| Linhas com emoji em título, aba ou rótulo | 98 | 0 |
+
+O que isso significa na prática:
+
+- **Teclado.** Nenhum controle depende do mouse. A matriz de riscos, os cartões de área do
+  gráfico de progresso e as estrelas de avaliação eram acionáveis só por clique.
+- **Leitor de tela.** Todo controle tem nome; os diálogos anunciam título e descrição; a
+  troca de slide na apresentação move o foco e é anunciada; os doze gráficos têm nome e
+  tabela equivalente, aberta por um `<details>`.
+- **Sem depender de cor, posição ou hover.** O status que era só emoji virou palavra, e o
+  calendário de observações virou tabela com a contagem escrita em cada célula.
+- **Contraste.** Todas as cores saem de tokens no bloco `--brand-*` do `src/index.css`, com
+  a razão medida no navegador anotada ao lado.
+- **Refluxo e zoom.** Nenhuma rota exige rolagem horizontal em 320 px nem com zoom de 200%.
+
+### Preferências de acessibilidade
+
+Em **Configurações → Acessibilidade** há cinco preferências que funcionam de verdade: alto
+contraste, tamanho da fonte, reduzir animações, destacar o foco do teclado e aumentar o
+tamanho dos botões. Elas são aplicadas na hora, ficam guardadas **neste navegador**, na
+chave `pei-a11y-preferences`, e não dependem de conta nem saem daqui. Reduzir animações
+também respeita a preferência do sistema operacional.
+
+Leitor de tela, navegação por voz, descrição de imagens em áudio e ampliação da página não
+ficam ali: são recursos do sistema operacional, da tecnologia assistiva ou do próprio
+navegador. A tela diz isso, em vez de oferecer um controle que não faria nada.
+
+### Limites conhecidos
+
+- **Uma violação de contraste por rota é falso positivo.** O axe não lê gradiente e acusa o
+  nome do usuário no cabeçalho em 1,04:1; o gradiente real vai de 10,65:1 a 5,96:1 contra
+  branco.
+- **Verificação automatizada não substitui teste manual.** Dos cinco controles que só
+  funcionavam no mouse, o lint encontrou um e o axe nenhum. A navegação completa por teclado
+  e a leitura com leitor de tela real são testadas à mão; o achado 2 do backlog registra a
+  medida disso.
+- **165 classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores
+  que passam no contraste. Estão registradas na Etapa 5 do backlog.
+
+---
+
 
 ## Antes de usar com dados reais
 
