@@ -259,6 +259,52 @@ tornam possíveis.
 
 ---
 
+## Pendências abertas
+
+Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
+etapa pode afirmar sem ele e o que **não** pode.
+
+### 1. Verificação por teclado e leitor de tela (Etapa 3) — não feita
+
+**Estado em 16/09/2026:** a Etapa 3 foi mesclada no PR #4 **sem** que os nove testes abaixo
+fossem executados. A verificação por teclado e por leitor de tela real continua não feita.
+
+**O que a medida da etapa cobre.** Os números "124 violações para 0" e "8 avisos para 0" vêm
+**só de verificação automatizada** — `axe-core` rota a rota e `eslint-plugin-jsx-a11y` — mais
+a leitura do código. Eles sustentam que todo controle entra na ordem de foco, tem nome
+acessível e expõe estado, e que nenhuma informação depende só de cor ou hover.
+
+**O que ela não cobre.** Que cada controle responde à tecla, que o foco não fica preso, e que
+o leitor de tela anuncia o que a árvore de acessibilidade promete. A ferramenta de navegador
+das sessões não aciona `<button>` por Enter nem por Espaço, então nada disso foi observado.
+O achado 2 mostra por que a diferença importa: dos cinco controles que só funcionavam no
+mouse, a verificação automatizada viu um.
+
+Enquanto os testes não forem feitos, o critério de aceite da Etapa 3 — "navegar o sistema
+inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" — está
+**cumprido pela metade**.
+
+| | Onde | Sequência | Esperado |
+|---|---|---|---|
+| M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
+| M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
+| M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
+| M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
+| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
+| M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
+| M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
+| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
+| M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
+
+O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
+parecem não funcionar. É artefato da automação, não do app.
+
+**Para fechar:** executar os nove, registrar aqui o resultado de cada um (passou, falhou e
+como) e a data. Falha vira item de correção, e a pendência só sai deste bloco quando os nove
+passarem.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -365,8 +411,10 @@ desabilitados foi conferido no navegador em cada commit, não pelo script.
 
 Base já feita na Etapa 0 (menu mobile, skip link, `<main>`, contraste, nomes no header).
 
-**Estado em 16/09/2026:** ✅ feita na branch `etapa-3/acessibilidade`, a partir do
-`a9fe84f`, em nove commits de código e quatro de documentação. Os oito itens do inventário
+**Estado em 16/09/2026:** ✅ mesclada no PR #4, a partir do `a9fe84f`, em nove commits de
+código e cinco de documentação — **com uma pendência aberta**: os nove testes de teclado e
+leitor de tela não foram executados (ver **Pendências abertas**, item 1). A medida abaixo
+cobre só verificação automatizada. Os oito itens do inventário
 foram revalidados contra o código depois da Etapa 2, que removeu mais de 1.200 linhas: três
 mudaram de tamanho ou de natureza, um estava errado quanto ao nível do critério, e a
 revalidação achou quatro defeitos que não estavam ali. O contraste, que também não estava,
@@ -386,6 +434,8 @@ virou item próprio.
 | `64181a7` Docs | Achados e a regra de medir contraste |
 | `f80e31b` Add | Preferências de acessibilidade |
 | `79c2890` Fix | Refluxo em 320 px e zoom de 200% |
+| `cfc0fec` Docs | Medida da etapa; `jsx-a11y` de aviso para erro |
+| `86a9e06` Docs | Achado 5 e a captura de tela como não-evidência |
 
 ### Resultado da etapa
 
@@ -581,26 +631,14 @@ encontrar controle inalcançável. Toda informação disponível por cor/hover t
 disponível como texto.
 
 **Estado do critério:** a segunda metade está cumprida e medida. A primeira depende do teste
-manual, porque a ferramenta de navegador da sessão não aciona `<button>` por Enter ou
-Espaço. A lista de teste está abaixo; o que dá para afirmar sem ela é que todo controle
-entra na ordem de foco, tem nome e expõe estado.
+manual, que **não foi feito**: a ferramenta de navegador da sessão não aciona `<button>` por
+Enter ou Espaço, e os nove testes ficaram como pendência aberta. O que dá para afirmar sem
+eles é que todo controle entra na ordem de foco, tem nome e expõe estado.
 
-### Lista de teste manual, a executar pelo autor
+### Lista de teste manual
 
-| | Onde | Sequência | Esperado |
-|---|---|---|---|
-| M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
-| M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
-| M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
-| M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
-| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
-| M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
-| M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
-| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
-| M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
-
-O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
-parecem não funcionar. É artefato da automação, não do app.
+Movida para **Pendências abertas**, item 1, no topo deste arquivo: os nove testes não foram
+executados antes do merge.
 
 ---
 

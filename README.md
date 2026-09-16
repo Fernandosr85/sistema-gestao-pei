@@ -219,10 +219,10 @@ navegador. A tela diz isso, em vez de oferecer um controle que não faria nada.
 - **Uma violação de contraste por rota é falso positivo.** O axe não lê gradiente e acusa o
   nome do usuário no cabeçalho em 1,04:1; o gradiente real vai de 10,65:1 a 5,96:1 contra
   branco.
-- **Verificação automatizada não substitui teste manual.** Dos cinco controles que só
-  funcionavam no mouse, o lint encontrou um e o axe nenhum. A navegação completa por teclado
-  e a leitura com leitor de tela real são testadas à mão; o achado 2 do backlog registra a
-  medida disso.
+- **Os números acima são só de verificação automatizada.** Dos cinco controles que só
+  funcionavam no mouse, o lint encontrou um e o axe nenhum — o achado 2 do backlog registra
+  a medida disso. A navegação completa por teclado e a leitura com leitor de tela real **ainda
+  não foram testadas**: os nove testes estão em "Pendências abertas" no backlog.
 - **165 classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores
   que passam no contraste. Estão registradas na Etapa 5 do backlog.
 
