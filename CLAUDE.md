@@ -25,6 +25,11 @@ npm run build       # conclui
 Rode as três antes de cada commit. Se uma quebrar, conserte antes de seguir — não
 acumule.
 
+Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
+aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
+defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letra acentuada
+neste ambiente; use script com regex Unicode.
+
 ## Invariantes — nunca violar
 
 ### 1. Nenhum vínculo institucional no código
@@ -106,6 +111,10 @@ Ao procurar dado sensível, busque por VOCABULÁRIO do domínio (clínico, compo
 saúde mental), nunca pelos termos do defeito já conhecido. Cada busca anterior desta série
 usou as palavras do caso anterior, e foi assim que 'Transtorno Global do Desenvolvimento'
 sobreviveu a duas varreduras.
+
+O cenário ilustrativo da Gestão não nomeia nenhum estudante nem família, e sua equipe não
+repete nome algum dos dados de demonstração. Ao editar qualquer tela de Gestão, verifique as
+duas coisas.
 
 ## Convenções
 

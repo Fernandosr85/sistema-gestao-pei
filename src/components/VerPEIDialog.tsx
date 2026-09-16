@@ -17,24 +17,32 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        {/*
+          * O cabeçalho dizia "Aluno: <nome do estudante> · PEI 2024 - 4º Trimestre · ✅ Ativo", e a
+          * descrição, "plano do estudante", sobre um plano fixo, igual para qualquer um: perfil com
+          * "Interação social limitada" e "Comunicação verbal reduzida", objetivos, reuniões e uma
+          * responsável nomeada, "Profª Marina Santos", que na demonstração é a regente de outra
+          * aluna; o nome dela, nas quatro ocorrências, virou "Professor(a) regente". Dos
+          * quatro diálogos de exemplo da ficha, era o único que não dizia que o conteúdo não é do
+          * estudante aberto, e o único que atribuía status ao nome dele. O nome agora aparece só
+          * para dizer isso.
+          */}
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI)</DialogTitle>
+            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI) — exemplo</DialogTitle>
             <DialogDescription>
-              Identificação, objetivos, estratégias e acompanhamento do plano do estudante.
+              Exemplo ilustrativo de PEI, o mesmo para qualquer estudante: não é o plano de {studentName}.
             </DialogDescription>
-            <div className="text-sm text-muted-foreground">
-              <p className="font-medium">Aluno: {studentName}</p>
-              <p>Versão: PEI 2024 - 4º Trimestre | Período: Out/2024 a Dez/2024</p>
-              <Badge className="bg-success mt-1">✅ Ativo</Badge>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Exemplo: PEI 2024 - 4º Trimestre | Período: Out/2024 a Dez/2024
+            </p>
           </div>
         </DialogHeader>
 
         <DemoDataNotice
           id="pei-exemplo"
-          subject="Os dados deste PEI (identificação, objetivos, estratégias, reuniões e histórico)"
-          detail="O sistema ainda não tem registro de PEI: editar, revisar, anexar evidências, abrir documentos, baixar e imprimir estão desabilitados."
+          subject="Os dados deste PEI (identificação, perfil, objetivos, estratégias, reuniões e histórico)"
+          detail={`São os mesmos para qualquer estudante: nada deste plano vem do registro de ${studentName}. O sistema ainda não tem registro de PEI: editar, revisar, anexar evidências, abrir documentos, baixar e imprimir estão desabilitados.`}
         />
 
         <Tabs defaultValue="visao-geral" className="w-full">
@@ -59,7 +67,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   </div>
                   <div>
                     <p className="text-muted-foreground">Responsável</p>
-                    <p className="font-medium">Profª Marina Santos</p>
+                    <p className="font-medium">Professor(a) regente</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Próxima revisão</p>
@@ -297,7 +305,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                     <div>
                       <Badge className="bg-success mb-2">Ativo</Badge>
                       <h4 className="font-semibold">PEI 2024 - 4º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/09/2024 - Profª Marina Santos</p>
+                      <p className="text-sm text-muted-foreground">15/09/2024 - Professor(a) regente</p>
                     </div>
                     <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
@@ -309,7 +317,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-semibold">PEI 2024 - 3º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/06/2024 - Profª Marina Santos</p>
+                      <p className="text-sm text-muted-foreground">15/06/2024 - Professor(a) regente</p>
                     </div>
                     <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
@@ -321,7 +329,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-semibold">PEI 2024 - 2º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/03/2024 - Profª Marina Santos</p>
+                      <p className="text-sm text-muted-foreground">15/03/2024 - Professor(a) regente</p>
                     </div>
                     <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
                   </div>
