@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 
 const data = [
   { subject: 'Leitura', meta: 8, atual: 9 },
@@ -18,6 +19,10 @@ const PEIRadarChart = () => {
         <CardTitle className="text-xl">OBJETIVOS DO PEI</CardTitle>
       </CardHeader>
       <CardContent>
+        <div
+          role="img"
+          aria-label="Gráfico de radar dos objetivos do PEI em sete áreas, comparando o progresso atual com a meta esperada, numa escala de 0 a 10. Os mesmos números estão na tabela abaixo."
+        >
         <ResponsiveContainer width="100%" height={350}>
           <RadarChart data={data}>
             <PolarGrid stroke="hsl(var(--border))" />
@@ -60,6 +65,13 @@ const PEIRadarChart = () => {
             />
           </RadarChart>
         </ResponsiveContainer>
+        </div>
+
+        <ChartDataTable
+          caption="Objetivos do PEI por área, de 0 a 10: progresso atual e meta esperada."
+          columns={['Área', 'Progresso atual', 'Meta esperada']}
+          rows={data.map((ponto) => [ponto.subject, ponto.atual, ponto.meta])}
+        />
       </CardContent>
     </Card>
   );

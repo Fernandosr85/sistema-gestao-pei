@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Printer, TrendingUp, Target, BookOpen, Users, Award } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 
 const progressData = [
   { trimestre: '1º Tri', valor: 65 },
@@ -84,6 +85,10 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
             <Card>
               <CardContent className="pt-6">
                 <h3 className="text-lg font-semibold mb-4">PROGRESSO GERAL NO ANO</h3>
+                <div
+                  role="img"
+                  aria-label="Gráfico de linhas da evolução do desempenho por trimestre, em porcentagem. Os mesmos números estão na tabela abaixo."
+                >
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={progressData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -99,6 +104,13 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
                     />
                   </LineChart>
                 </ResponsiveContainer>
+                </div>
+
+                <ChartDataTable
+                  caption="Desempenho por trimestre, em porcentagem."
+                  columns={['Trimestre', 'Desempenho']}
+                  rows={progressData.map((ponto) => [ponto.trimestre, `${ponto.valor}%`])}
+                />
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
                     1º Tri: 65% → 2º Tri: 72% → 3º Tri: 78% → 4º Tri: 85%

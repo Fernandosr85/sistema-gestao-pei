@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, LineChart } from 'recharts';
 import { TrendingUp, TrendingDown, Minus, Lightbulb, AlertCircle, CheckCircle2 } from 'lucide-react';
+import ChartDataTable from '@/components/ChartDataTable';
 
 const data = [
   { mes: 'Jan', progresso_real: 2, meta_esperada: 1 },
@@ -162,6 +163,10 @@ const ProgressChart = () => {
 
           {/* TAB 1: VISÃO GERAL */}
           <TabsContent value="geral">
+        <div
+          role="img"
+          aria-label="Gráfico de linhas do progresso do PEI ao longo de 2024, comparando objetivos alcançados com a meta esperada, mês a mês. Os mesmos números estão na tabela abaixo."
+        >
         <ResponsiveContainer width="100%" height={350}>
           <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
@@ -244,6 +249,13 @@ const ProgressChart = () => {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
+
+        <ChartDataTable
+          caption="Progresso do PEI em 2024, por mês: objetivos alcançados e meta esperada."
+          columns={['Mês', 'Alcançados', 'Meta esperada']}
+          rows={data.map((ponto) => [ponto.mes, ponto.progresso_real, ponto.meta_esperada])}
+        />
 
         {/* Estatísticas resumidas */}
         <div className="grid grid-cols-4 gap-4 mt-6 pt-6 border-t">
@@ -398,8 +410,8 @@ function MiniCardArea({
         {getStatusIcon()}
       </div>
 
-      {/* Mini sparkline */}
-      <div className="h-12 mb-3">
+      {/* Mini sparkline. Decorativa: o cartão já traz "7/10" e "70%" em texto logo abaixo. */}
+      <div className="h-12 mb-3" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={area.dados}>
             <Line 
@@ -459,6 +471,10 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
       {/* Gráfico */}
       <div className="px-6 pb-4">
 
+        <div
+          role="img"
+          aria-label={`Gráfico de linhas de ${area.nome} no primeiro semestre, comparando o valor alcançado com a meta de cada mês. Os mesmos números estão na tabela abaixo.`}
+        >
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
@@ -514,6 +530,13 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
+
+        <ChartDataTable
+          caption={`${area.nome}: valor alcançado e meta, mês a mês.`}
+          columns={['Mês', 'Alcançado', 'Meta']}
+          rows={area.dados.map((ponto) => [ponto.mes, ponto.valor, ponto.meta])}
+        />
       </div>
 
       {/* Métricas detalhadas */}

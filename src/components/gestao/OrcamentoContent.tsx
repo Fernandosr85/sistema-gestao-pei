@@ -23,6 +23,7 @@ import {
   FileText
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface BudgetCategory {
@@ -236,6 +237,11 @@ const OrcamentoContent = () => {
           <CardDescription>Distribuição e utilização do orçamento por área</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* O equivalente textual deste gráfico é a lista logo abaixo, com valor e porcentagem de cada categoria. */}
+          <div
+            role="img"
+            aria-label="Gráfico de barras do orçamento por categoria, comparando o valor orçado com o executado. Os mesmos valores estão na lista abaixo."
+          >
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={categoryData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" />
@@ -249,6 +255,7 @@ const OrcamentoContent = () => {
               <Bar dataKey="executado" fill="#3b82f6" name="Executado" />
             </BarChart>
           </ResponsiveContainer>
+          </div>
 
           <div className="mt-6 space-y-3">
             {categoryData.map((cat) => (
@@ -279,6 +286,10 @@ const OrcamentoContent = () => {
           <CardDescription>Comparação entre orçamento planejado e gastos reais</CardDescription>
         </CardHeader>
         <CardContent>
+          <div
+            role="img"
+            aria-label="Gráfico de linhas dos gastos mensais, comparando o orçado com o executado mês a mês. Os mesmos valores estão na tabela abaixo."
+          >
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -292,6 +303,17 @@ const OrcamentoContent = () => {
               <Line type="monotone" dataKey="executado" stroke="#3b82f6" name="Executado" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
+          </div>
+
+          <ChartDataTable
+            caption="Gastos mensais: valor orçado e valor executado, mês a mês."
+            columns={['Mês', 'Orçado', 'Executado']}
+            rows={monthlyData.map((ponto) => [
+              ponto.mes,
+              new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ponto.orcado),
+              new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(ponto.executado),
+            ])}
+          />
         </CardContent>
       </Card>
 

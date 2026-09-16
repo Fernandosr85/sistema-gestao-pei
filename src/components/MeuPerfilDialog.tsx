@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
+import ChartDataTable from '@/components/ChartDataTable';
 import { DEMO_USER_NAME } from '@/config/institution';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
@@ -429,6 +430,10 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <CardTitle>Alunos Atendidos</CardTitle>
               </CardHeader>
               <CardContent>
+                <div
+                  role="img"
+                  aria-label="Gráfico de linhas do número de alunos acompanhados por ano, de 2015 a 2024. Os mesmos números estão na tabela abaixo."
+                >
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={alunosAoLongoAnos}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -438,6 +443,13 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <Line type="monotone" dataKey="alunos" stroke="hsl(var(--primary))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+                </div>
+
+                <ChartDataTable
+                  caption="Alunos acompanhados por ano."
+                  columns={['Ano', 'Alunos']}
+                  rows={alunosAoLongoAnos.map((ponto) => [ponto.ano, ponto.alunos])}
+                />
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Total histórico</p>
@@ -460,6 +472,10 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <CardTitle>Taxa de Sucesso</CardTitle>
               </CardHeader>
               <CardContent>
+                <div
+                  role="img"
+                  aria-label="Gráfico de barras da taxa de sucesso por ano, de 2019 a 2024, em porcentagem. Os mesmos números estão na tabela abaixo."
+                >
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={taxaSucessoAnos}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -469,6 +485,13 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <Bar dataKey="taxa" fill="hsl(var(--primary))" />
                   </BarChart>
                 </ResponsiveContainer>
+                </div>
+
+                <ChartDataTable
+                  caption="Taxa de sucesso por ano, em porcentagem."
+                  columns={['Ano', 'Taxa de sucesso']}
+                  rows={taxaSucessoAnos.map((ponto) => [ponto.ano, `${ponto.taxa}%`])}
+                />
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Sua média</p>
@@ -544,6 +567,10 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <CardTitle>Satisfação e Feedback</CardTitle>
               </CardHeader>
               <CardContent>
+                <div
+                  role="img"
+                  aria-label="Gráfico de linhas da satisfação das famílias mês a mês, numa escala de 0 a 5. Os mesmos números estão na tabela abaixo."
+                >
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={satisfacaoFamilias}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -553,6 +580,13 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <Line type="monotone" dataKey="satisfacao" stroke="hsl(var(--primary))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
+                </div>
+
+                <ChartDataTable
+                  caption="Satisfação das famílias por mês, de 0 a 5."
+                  columns={['Mês', 'Satisfação']}
+                  rows={satisfacaoFamilias.map((ponto) => [ponto.mes, ponto.satisfacao])}
+                />
                 <div className="grid grid-cols-3 gap-4 mt-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Média geral</p>

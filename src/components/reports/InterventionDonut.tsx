@@ -48,8 +48,15 @@ const InterventionDonut = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Gráfico */}
-          <div className="flex justify-center">
+          {/*
+            * Gráfico. O equivalente textual é a própria legenda ao lado, que já traz nome e
+            * porcentagem de cada fatia — por isso aqui basta o nome acessível, sem tabela.
+            */}
+          <div
+            className="flex justify-center"
+            role="img"
+            aria-label="Gráfico de rosca dos tipos de intervenção, com a porcentagem de cada um. Os mesmos valores estão na lista ao lado."
+          >
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
@@ -66,10 +73,10 @@ const InterventionDonut = () => {
                   onMouseLeave={() => setActiveIndex(null)}
                 >
                   {data.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
+                    <Cell
+                      key={`cell-${index}`}
                       fill={entry.color}
-                      className="cursor-pointer transition-all"
+                      className="transition-all"
                     />
                   ))}
                 </Pie>

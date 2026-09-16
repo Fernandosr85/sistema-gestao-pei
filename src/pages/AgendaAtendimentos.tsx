@@ -450,8 +450,12 @@ const AgendaAtendimentos = () => {
                           ))}
                         </div>
                         
-                        {/* Gráfico de Donut */}
-                        <div className="h-[200px]">
+                        {/* Gráfico de Donut. O equivalente textual é a lista acima, com contagem e porcentagem por tipo. */}
+                        <div
+                          className="h-[200px]"
+                          role="img"
+                          aria-label="Gráfico de rosca da distribuição de atendimentos por tipo. Os mesmos valores estão na lista acima."
+                        >
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                               <Pie
