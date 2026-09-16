@@ -21,6 +21,7 @@ import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
 import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
+import { appointmentsWithoutMinutes } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 /*
@@ -74,9 +75,7 @@ const AgendaAtendimentos = () => {
     return diffDays >= 0 && diffDays <= 7 && isOpenAppointment(a.status);
   }).length;
 
-  const pendentesRegistro = atendimentos.filter(a => 
-    a.status === 'realizado' && !a.ata
-  ).length;
+  const pendentesRegistro = appointmentsWithoutMinutes(state);
 
   const filteredAtendimentos = atendimentos.filter(atendimento => {
     if (filtroAluno !== 'todos' && atendimento.aluno !== filtroAluno) return false;

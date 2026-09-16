@@ -8,28 +8,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { isOpenAppointment } from '@/lib/appointment';
-import { formatLocalDate, todayLocalISO, toLocalISODate } from '@/lib/date';
+import { formatLocalDate } from '@/lib/date';
+import { studentCounts, upcomingAppointments, upcomingAppointmentsWithin } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const Dashboard = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { state } = useDemoStore();
 
-  const totalStudents = state.students.length;
-  const activeStudents = state.students.filter(s => s.status === 'ativo').length;
-  const totalObservations = state.observations.length;
-
-  const today = todayLocalISO();
   const now = new Date();
-  const sevenDaysAhead = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
-  const upcomingAppointments = state.appointments
-    .filter((appointment) => isOpenAppointment(appointment.status) && appointment.data >= today)
-    .sort((a, b) => `${a.data} ${a.horarioInicio}`.localeCompare(`${b.data} ${b.horarioInicio}`));
-  const appointmentsNextSevenDays = upcomingAppointments.filter((appointment) => appointment.data <= sevenDaysAhead).length;
+  const { total: totalStudents, active: activeStudents } = studentCounts(state);
+  const totalObservations = state.observations.length;
+  const appointmentsNextSevenDays = upcomingAppointmentsWithin(state, now, 7).length;
 
   const recentStudents = state.students.slice(0, 3);
-  const nextAppointments = upcomingAppointments.slice(0, 3);
+  const nextAppointments = upcomingAppointments(state, now).slice(0, 3);
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">

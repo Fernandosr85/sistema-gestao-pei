@@ -1,0 +1,65 @@
+import type { Atendimento } from '@/types';
+import type { DemoState } from '@/types/store';
+import { isOpenAppointment } from '@/lib/appointment';
+import { toLocalISODate } from '@/lib/date';
+
+/**
+ * Seletores de métrica compartilhados (Etapa 4 do BACKLOG).
+ *
+ * Um número que aparece em mais de uma tela sai daqui, para não ter duas contas que divergem.
+ * Três regras valem para tudo neste arquivo:
+ *
+ * - **Funções puras sobre o estado.** Nada aqui lê o store nem o relógio por conta própria.
+ * - **A data de referência chega por parâmetro.** Nenhuma função chama `new Date()` sem
+ *   argumento; quem chama decide o "hoje", e o mesmo cálculo pode ser refeito para outra data.
+ * - **Data de registro é `YYYY-MM-DD` local e se compara como texto.** Nunca
+ *   `new Date('YYYY-MM-DD')`: essa forma é lida como meia-noite em UTC, e no Brasil cai no dia
+ *   anterior a partir das 21h.
+ */
+
+/** Intervalo de datas `YYYY-MM-DD`, inclusivo nas duas pontas. Vazio significa sem limite. */
+export interface DatePeriod {
+  start: string;
+  end: string;
+}
+
+/** Registros são datados `YYYY-MM-DD`, então comparar o texto segue o calendário. */
+export const isWithinPeriod = (date: string, { start, end }: DatePeriod): boolean =>
+  (!start || date >= start) && (!end || date <= end);
+
+export interface StudentCounts {
+  total: number;
+  active: number;
+}
+
+export const studentCounts = (state: DemoState): StudentCounts => ({
+  total: state.students.length,
+  active: state.students.filter((student) => student.status === 'ativo').length,
+});
+
+const byDateAndTime = (a: Atendimento, b: Atendimento): number =>
+  `${a.data} ${a.horarioInicio}`.localeCompare(`${b.data} ${b.horarioInicio}`);
+
+/** Atendimentos ainda por acontecer, de hoje em diante, em ordem de data e horário. */
+export const upcomingAppointments = (state: DemoState, reference: Date): Atendimento[] => {
+  const today = toLocalISODate(reference);
+  return state.appointments
+    .filter((appointment) => isOpenAppointment(appointment.status) && appointment.data >= today)
+    .sort(byDateAndTime);
+};
+
+/** Os atendimentos por acontecer entre hoje e hoje mais `days` dias, inclusive. */
+export const upcomingAppointmentsWithin = (
+  state: DemoState,
+  reference: Date,
+  days: number,
+): Atendimento[] => {
+  const until = toLocalISODate(
+    new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() + days),
+  );
+  return upcomingAppointments(state, reference).filter((appointment) => appointment.data <= until);
+};
+
+/** Atendimentos já realizados que ainda não têm ata registrada. */
+export const appointmentsWithoutMinutes = (state: DemoState): number =>
+  state.appointments.filter((appointment) => appointment.status === 'realizado' && !appointment.ata).length;
