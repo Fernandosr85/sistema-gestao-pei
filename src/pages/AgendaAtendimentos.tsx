@@ -23,20 +23,19 @@ import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import { useDemoStore } from '@/store/useDemoStore';
 
+/*
+ * Uma tabela só por tipo de atendimento, com a classe e o valor CSS derivados do mesmo
+ * token. Antes eram duas tabelas com cores fixas do Tailwind, e uma terceira forma
+ * improvisada: `bg-blue-500`.replace('bg-','').replace('-500','') virava a cor nomeada
+ * "blue" no estilo do calendário. Todas as cores fixas reprovavam no contraste contra o
+ * texto branco, entre 1,9:1 e 3,8:1.
+ */
 const tipoColors = {
-  'Reunião Pedagógica': 'bg-blue-500',
-  'Avaliação': 'bg-green-500',
-  'Atendimento Família': 'bg-orange-500',
-  'Multidisciplinar': 'bg-purple-500',
-  'Outros': 'bg-gray-500',
-};
-
-const tipoColorsPie = {
-  'Reunião Pedagógica': '#3B82F6',
-  'Avaliação': '#10B981',
-  'Atendimento Família': '#F59E0B',
-  'Multidisciplinar': '#8B5CF6',
-  'Outros': '#6B7280',
+  'Reunião Pedagógica': { classe: 'bg-brand-blue', css: 'hsl(var(--brand-blue))' },
+  'Avaliação': { classe: 'bg-brand-green', css: 'hsl(var(--brand-green))' },
+  'Atendimento Família': { classe: 'bg-brand-orange', css: 'hsl(var(--brand-orange))' },
+  'Multidisciplinar': { classe: 'bg-brand-purple', css: 'hsl(var(--brand-purple))' },
+  'Outros': { classe: 'bg-brand-gray', css: 'hsl(var(--brand-gray))' },
 };
 
 const statusBadgeVariant = {
@@ -105,10 +104,10 @@ const AgendaAtendimentos = () => {
   const eventStyleGetter = (event: AtendimentoEvent) => {
     const tipo = event.resource.tipo;
     const color = tipoColors[tipo as keyof typeof tipoColors];
-    
+
     return {
       style: {
-        backgroundColor: color.replace('bg-', '').replace('-500', ''),
+        backgroundColor: color.css,
         borderRadius: '4px',
         opacity: 0.9,
         color: 'white',
@@ -444,7 +443,7 @@ const AgendaAtendimentos = () => {
                               <div 
                                 className="w-3 h-3 rounded-full"
                                 style={{
-                                  backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
+                                  backgroundColor: tipoColors[tipo as keyof typeof tipoColors].css,
                                 }}
                               />
                               <span className="text-sm flex-1">{tipo}</span>
@@ -479,7 +478,7 @@ const AgendaAtendimentos = () => {
                                 {Object.keys(distribuicaoPorTipo).map((tipo) => (
                                   <Cell 
                                     key={tipo} 
-                                    fill={tipoColorsPie[tipo as keyof typeof tipoColorsPie]} 
+                                    fill={tipoColors[tipo as keyof typeof tipoColors].css}
                                   />
                                 ))}
                               </Pie>
@@ -552,7 +551,7 @@ const AgendaAtendimentos = () => {
                               <div 
                                 className="w-3 h-3 rounded-full"
                                 style={{
-                                  backgroundColor: tipoColorsPie[tipo as keyof typeof tipoColorsPie],
+                                  backgroundColor: tipoColors[tipo as keyof typeof tipoColors].css,
                                 }}
                               />
                               <span className="text-sm font-medium">{tipo}</span>
@@ -646,7 +645,7 @@ const AgendaAtendimentos = () => {
                           variant="outline" 
                           className="text-xs"
                           style={{
-                            backgroundColor: tipoColors[event.resource.tipo as keyof typeof tipoColors].replace('bg-', '').replace('-500', ''),
+                            backgroundColor: tipoColors[event.resource.tipo as keyof typeof tipoColors].css,
                             color: 'white',
                             borderColor: 'transparent'
                           }}
@@ -699,7 +698,7 @@ const AgendaAtendimentos = () => {
                 <CardContent className="p-6">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className={`w-1 h-16 rounded-full ${tipoColors[atendimento.tipo as keyof typeof tipoColors]}`} />
+                      <div className={`w-1 h-16 rounded-full ${tipoColors[atendimento.tipo as keyof typeof tipoColors].classe}`} />
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3 flex-wrap">
                           <h3 className="font-semibold text-lg">{atendimento.aluno}</h3>

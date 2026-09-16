@@ -2,12 +2,17 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
 
+/*
+ * As cores vêm dos tokens da marca, que são medidos. Como valor literal, três delas
+ * reprovavam ao pintar a porcentagem da legenda sobre o branco: 3,95:1 no roxo, 1,92:1 no
+ * amarelo e 3,59:1 no cinza.
+ */
 const data = [
-  { name: 'Adaptações Curriculares', value: 23, color: 'hsl(356 88% 46%)' },
-  { name: 'Apoio Individualizado', value: 25, color: 'hsl(271 91% 65%)' },
-  { name: 'Recursos Tec. Assistiva', value: 18, color: 'hsl(217 100% 36%)' },
-  { name: 'Material Adaptado', value: 20, color: 'hsl(42 88% 52%)' },
-  { name: 'Suporte Especializado', value: 14, color: 'hsl(0 0% 53%)' },
+  { name: 'Adaptações Curriculares', value: 23, color: 'hsl(var(--brand-red))' },
+  { name: 'Apoio Individualizado', value: 25, color: 'hsl(var(--brand-purple))' },
+  { name: 'Recursos Tec. Assistiva', value: 18, color: 'hsl(var(--brand-blue))' },
+  { name: 'Material Adaptado', value: 20, color: 'hsl(var(--brand-yellow))' },
+  { name: 'Suporte Especializado', value: 14, color: 'hsl(var(--brand-gray))' },
 ];
 
 interface ActiveShapeProps {

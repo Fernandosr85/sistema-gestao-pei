@@ -291,10 +291,12 @@ const ProgressChart = () => {
               <Lightbulb className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-foreground mb-1">
+              {/* O fundo é `bg-accent`, escuro. O texto usava as cores de fundo claro, e ficava
+                  em 2,71:1 e 1,22:1. */}
+              <p className="text-sm font-semibold text-accent-foreground mb-1">
                 💡 Leitura ilustrativa — regra fixa, nenhum modelo é executado
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-accent-foreground">
                 {diferencaPercentual >= 0 
                   ? `O aluno está ${Math.abs(diferencaPercentual).toFixed(0)}% ${diferencaPercentual > 0 ? 'acima' : 'no ritmo'} da meta esperada! Continue com as estratégias atuais e considere aumentar o nível de desafio.`
                   : `O aluno está ${Math.abs(diferencaPercentual).toFixed(0)}% abaixo da meta. Recomenda-se revisar estratégias e intensificar intervenções nas áreas de maior dificuldade.`

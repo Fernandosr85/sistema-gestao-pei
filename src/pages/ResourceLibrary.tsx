@@ -105,7 +105,7 @@ export default function ResourceLibrary() {
             </div>
             <Button
               onClick={() => setContributeDialogOpen(true)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-brand-green hover:bg-brand-green/90"
               size="lg"
             >
               <Plus className="h-5 w-5 mr-2" />

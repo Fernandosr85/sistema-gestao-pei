@@ -201,12 +201,16 @@ const AlertasRiscosContent = () => {
     return 'low';
   };
 
+  /*
+   * Cores fixas do Tailwind davam entre 3,0:1 e 4,2:1 sobre o próprio fundo tingido,
+   * abaixo do mínimo AA. Os tokens da marca são medidos e passam.
+   */
   const getSeverityColor = (severity: 'critical' | 'high' | 'medium' | 'low') => {
     switch (severity) {
-      case 'critical': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'high': return 'bg-orange-500/10 text-orange-600 border-orange-500/30';
-      case 'medium': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
-      case 'low': return 'bg-green-500/10 text-green-600 border-green-500/30';
+      case 'critical': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'high': return 'bg-brand-orange/10 text-brand-orange border-brand-orange/30';
+      case 'medium': return 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30';
+      case 'low': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
     }
   };
 
@@ -259,21 +263,21 @@ const AlertasRiscosContent = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Identificado': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'Em monitoramento': return 'bg-yellow-500/10 text-yellow-700 border-yellow-500/30';
-      case 'Em mitigação': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
-      case 'Resolvido': return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'Aceito': return 'bg-gray-500/10 text-gray-600 border-gray-500/30';
+      case 'Identificado': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'Em monitoramento': return 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/30';
+      case 'Em mitigação': return 'bg-brand-blue/10 text-brand-blue border-brand-blue/30';
+      case 'Resolvido': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
+      case 'Aceito': return 'bg-brand-gray/10 text-brand-gray border-brand-gray/30';
       default: return '';
     }
   };
 
   const getCategoriaColor = (categoria: string) => {
     switch (categoria) {
-      case 'Gestão de Pessoas': return 'bg-purple-500/10 text-purple-600 border-purple-500/30';
-      case 'Conformidade': return 'bg-red-500/10 text-red-600 border-red-500/30';
-      case 'Financeiro': return 'bg-green-500/10 text-green-600 border-green-500/30';
-      case 'Operacional': return 'bg-blue-500/10 text-blue-600 border-blue-500/30';
+      case 'Gestão de Pessoas': return 'bg-brand-purple/10 text-brand-purple border-brand-purple/30';
+      case 'Conformidade': return 'bg-brand-red/10 text-brand-red border-brand-red/30';
+      case 'Financeiro': return 'bg-brand-green/10 text-brand-green border-brand-green/30';
+      case 'Operacional': return 'bg-brand-blue/10 text-brand-blue border-brand-blue/30';
       default: return '';
     }
   };
@@ -344,25 +348,25 @@ const AlertasRiscosContent = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div className="text-center p-4 rounded-lg bg-red-500/10 border border-red-500/30">
-              <div className="text-3xl font-bold text-red-600">{countBySeverity.critical}</div>
-              <div className="text-sm text-red-600">Críticos 🔴</div>
+            <div className="text-center p-4 rounded-lg bg-brand-red/10 border border-brand-red/30">
+              <div className="text-3xl font-bold text-brand-red">{countBySeverity.critical}</div>
+              <div className="text-sm text-brand-red">Críticos 🔴</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-orange-500/10 border border-orange-500/30">
-              <div className="text-3xl font-bold text-orange-600">{countBySeverity.high}</div>
-              <div className="text-sm text-orange-600">Altos 🟡</div>
+            <div className="text-center p-4 rounded-lg bg-brand-orange/10 border border-brand-orange/30">
+              <div className="text-3xl font-bold text-brand-orange">{countBySeverity.high}</div>
+              <div className="text-sm text-brand-orange">Altos 🟡</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
-              <div className="text-3xl font-bold text-yellow-700">{countBySeverity.medium}</div>
-              <div className="text-sm text-yellow-700">Médios ⚠️</div>
+            <div className="text-center p-4 rounded-lg bg-brand-yellow/10 border border-brand-yellow/30">
+              <div className="text-3xl font-bold text-brand-yellow">{countBySeverity.medium}</div>
+              <div className="text-sm text-brand-yellow">Médios ⚠️</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-              <div className="text-3xl font-bold text-green-600">{countBySeverity.low}</div>
-              <div className="text-sm text-green-600">Baixos ✅</div>
+            <div className="text-center p-4 rounded-lg bg-brand-green/10 border border-brand-green/30">
+              <div className="text-3xl font-bold text-brand-green">{countBySeverity.low}</div>
+              <div className="text-sm text-brand-green">Baixos ✅</div>
             </div>
           </div>
-          <div className="p-4 bg-red-500/5 rounded-lg border border-red-500/20">
-            <p className="text-sm font-semibold text-red-600">
+          <div className="p-4 bg-brand-red/5 rounded-lg border border-brand-red/20">
+            <p className="text-sm font-semibold text-brand-red">
               AÇÕES IMEDIATAS NECESSÁRIAS: {acoesImediatas}
             </p>
           </div>
@@ -389,13 +393,13 @@ const AlertasRiscosContent = () => {
               {/* Linha Alto */}
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Alto</div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.alto_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-orange/30 bg-brand-orange/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.alto_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-red-500/30 bg-red-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-red/30 bg-brand-red/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.alto_alto)}
                 </div>
               </div>
@@ -403,13 +407,13 @@ const AlertasRiscosContent = () => {
               {/* Linha Médio */}
               <div className="grid grid-cols-4 gap-2 mb-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Médio</div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.medio_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.medio_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-orange-500/30 bg-orange-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-orange/30 bg-brand-orange/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.medio_alto)}
                 </div>
               </div>
@@ -417,13 +421,13 @@ const AlertasRiscosContent = () => {
               {/* Linha Baixo */}
               <div className="grid grid-cols-4 gap-2">
                 <div className="flex items-center text-sm font-semibold text-muted-foreground">Baixo</div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.baixo_baixo)}
                 </div>
-                <div className="min-h-[80px] border-2 border-green-500/30 bg-green-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-green/30 bg-brand-green/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.baixo_medio)}
                 </div>
-                <div className="min-h-[80px] border-2 border-yellow-500/30 bg-yellow-500/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
+                <div className="min-h-[80px] border-2 border-brand-yellow/30 bg-brand-yellow/5 rounded-lg p-2 flex flex-wrap gap-1 content-start">
                   {renderCelulaMatriz(positions.baixo_alto)}
                 </div>
               </div>
@@ -527,13 +531,13 @@ const AlertasRiscosContent = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
                       <div>
                         <p className="text-sm font-semibold mb-1">💰 Custo de Mitigação:</p>
-                        <p className="text-lg font-bold text-green-600">
+                        <p className="text-lg font-bold text-brand-green">
                           R$ {risco.custoMitigacao.toLocaleString('pt-BR')}/ano
                         </p>
                       </div>
                       <div>
                         <p className="text-sm font-semibold mb-1">💸 Custo se Não Mitigar:</p>
-                        <p className="text-lg font-bold text-red-600">
+                        <p className="text-lg font-bold text-brand-red">
                           R$ {risco.custoNaoMitigar.toLocaleString('pt-BR')}+
                         </p>
                       </div>

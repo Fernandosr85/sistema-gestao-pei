@@ -16,11 +16,15 @@ const MONTH = { year: 2024, month: 10 } as const; // novembro de 2024
 
 const WEEK_DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+/*
+ * O número do dia vai escrito dentro da célula, então a cor do texto acompanha a do fundo:
+ * nas faixas mais escuras, o texto padrão ficava em 2,62:1.
+ */
 const getColorForCount = (count: number) => {
-  if (count === 0) return 'bg-muted';
-  if (count <= 2) return 'bg-success/30';
-  if (count <= 4) return 'bg-success/60';
-  return 'bg-success';
+  if (count === 0) return 'bg-muted text-foreground';
+  if (count <= 2) return 'bg-success/30 text-foreground';
+  if (count <= 4) return 'bg-success/60 text-foreground';
+  return 'bg-success text-success-foreground';
 };
 
 const describeCount = (count: number) =>

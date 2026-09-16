@@ -365,12 +365,24 @@ calcula layout nem contraste, que é metade do valor do axe.
    `/biblioteca-recursos`, `/gestao` e `/alunos`.
    **Decisão:** `CardTitle` ganha nível configurável, retrocompatível, em vez de espalhar
    títulos de seção que ninguém pediu.
-8. **Refluxo e zoom**, não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
+8. **Contraste e tokens de cor** ✅ feito no commit de contraste, entre o 5 e o 6. Item que
+   não estava no inventário: a varredura do axe achou **47 falhas reais de 1.4.3** em quatro
+   rotas, todas por cor fixa do Tailwind fora do sistema de tokens, o que também viola a
+   invariante 1 do CLAUDE.md. As cores viraram token; faltavam roxo, rosa, índigo e
+   verde-azulado, criados no bloco `--brand-*`.
+   - As razões anotadas ao lado de cada token passaram a ser **medidas no navegador**, a
+     partir da cor computada. Uma delas estava errada: `--brand-yellow` dizia 6,19:1 e media
+     5,08:1. Ainda passava em AA, mas o registro mentia, e o amarelo precisou escurecer de
+     30% para 27% de luminosidade para o texto sobre o fundo tingido sair de 4,46:1.
+   - **Ainda fora dos tokens:** 165 classes de cor fixa e 12 literais hexadecimais, em cores
+     que **passam** no contraste — eixos e séries de gráfico, principalmente. Não são falha
+     AA, mas continuam violando a invariante 1. Ficam para a Etapa 5, junto da limpeza.
+9. **Refluxo e zoom**, não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
    40 × 40 eram defeito de alvo de toque, mas o critério 2.5.5 (44 px) é **AAA**, e a meta
    do projeto é AA. O que é AA aqui é **1.4.10 Refluxo, em 320 px**, e **1.4.4
    Redimensionar texto, em zoom de 200%** — inclusive o rodapé da apresentação, que não
    quebra linha. O botão maior vira preferência opcional do item 9.
-9. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
+10. **Preferências de acessibilidade** (`ConfiguracoesDialog`, aba Acessibilidade). Alto
    contraste, aumentar o tamanho dos botões, destacar o foco do teclado, reduzir animações,
    ampliação e atalhos de teclado aparecem desabilitados desde a Etapa 2, rotulados como
    ilustrativos. Por decisão do autor, a implementação acontece aqui, e não junto dos

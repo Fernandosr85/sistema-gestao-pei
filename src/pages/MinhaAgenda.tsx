@@ -25,25 +25,25 @@ const MinhaAgenda = () => {
 
   const weekEvents = {
     seg: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
       { time: '14:00-17:00', title: 'Tempo Administrativo', type: 'admin', color: 'bg-gray-500' },
     ],
     ter: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-17:00', title: 'Apoio 3º Ano A', type: 'apoio', color: 'bg-green-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-17:00', title: 'Apoio 3º Ano A', type: 'apoio', color: 'bg-brand-green' },
     ],
     qua: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-15:00', title: 'Reunião Fam. Silva', type: 'reuniao', color: 'bg-purple-500' },
-      { time: '16:00-17:00', title: 'PEI Revisão Maria', type: 'pei', color: 'bg-orange-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-15:00', title: 'Reunião Fam. Silva', type: 'reuniao', color: 'bg-brand-purple' },
+      { time: '16:00-17:00', title: 'PEI Revisão Maria', type: 'pei', color: 'bg-brand-orange' },
     ],
     qui: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '19:00-21:00', title: 'Formação TEA', type: 'formacao', color: 'bg-yellow-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '19:00-21:00', title: 'Formação TEA', type: 'formacao', color: 'bg-brand-yellow' },
     ],
     sex: [
-      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-blue-500' },
-      { time: '14:00-17:00', title: 'Observações (Pedro, João, Lucas)', type: 'observacao', color: 'bg-cyan-500' },
+      { time: '08:00-12:00', title: 'Aula 2º Ano C', type: 'aula', color: 'bg-brand-blue' },
+      { time: '14:00-17:00', title: 'Observações (Pedro, João, Lucas)', type: 'observacao', color: 'bg-brand-lightblue' },
     ],
   };
 
