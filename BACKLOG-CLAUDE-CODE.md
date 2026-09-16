@@ -315,6 +315,35 @@ tornam possíveis.
 
 ---
 
+### 6. Correção que introduz o defeito adjacente (Etapas 0 a 4)
+
+**Qualificação:** a mesma forma de erro, quatro vezes nesta série, sempre com uma correção ou
+uma verificação que acertou a camada que tocou e errou a vizinha, onde o comportamento de
+fato estava. Em todos os casos, a checagem confirmou a presença do que foi feito, e não o
+efeito observável. Os quatro nasceram no patch da Etapa 0 (`441a31e`), que o autor registra
+como erro seu; a idade foi o último a aparecer, e é o que motivou este registro.
+
+| Caso | O que a correção ou a checagem acertou | Onde estava o defeito | Como apareceu | Corrigido em |
+|---|---|---|---|---|
+| Idade | a idade deixou de ser guardada e passou a ser calculada da data de nascimento, em `calculateAge` (`441a31e`) | a mesma função lia a data com `new Date('AAAA-MM-DD')`, meia-noite em UTC: a idade subia na véspera do aniversário | varredura por qualquer `new Date(...)` com um argumento, depois de corrigir outras três leituras em UTC | `a0d36cf`, Etapa 4 |
+| Typecheck vazio | o script `typecheck` existia e passava em silêncio (`441a31e`) | rodava `tsc --noEmit` contra o `tsconfig.json` raiz, que tem `"files": []`: checava zero arquivos | ao apontar para `tsconfig.app.json`, surgiram 15 erros de tipo | `c43bdc1`, Etapa 0, ainda no PR #1 |
+| Aviso não renderizado | o `DemoDataNotice` foi importado em `PredictiveAnalysis` e a validação achou a palavra no arquivo | a substituição do patch procurava um `CardContent` com classe que o arquivo não tinha, então o aviso nunca apareceu na tela | conferência no navegador, não no código | `451abef`, Etapa 1, no PR #2 |
+| Contraste só nos tokens | os tokens `--brand-*` foram medidos e passavam, e o CLAUDE.md passou a dizer "os valores atuais foram medidos e passam" | os componentes pintavam com cores fixas do Tailwind, fora dos tokens: 47 falhas de contraste em quatro rotas; e uma das razões anotadas estava errada (`--brand-yellow`: 6,19:1 escrito, 5,08:1 medido) | varredura do axe rota a rota, com a cor computada | `5a72ea7`, Etapa 3 |
+
+**O padrão.** Nenhum dos quatro é descuido na parte corrigida: a idade passou mesmo a ser
+calculada, o script de tipo existia, o aviso estava importado, os tokens passavam. O defeito
+estava a um passo de distância — na leitura da entrada, no alvo do comando, no ponto de
+renderização, no uso real da cor —, e a verificação parou no passo que tinha sido tocado.
+
+**O que desmontou cada um foi medir o efeito, de fora:** a idade exibida com o relógio na
+véspera, a contagem de arquivos checados, o aviso visível na tela, a cor computada no
+navegador. Essa é a regra que as Etapas 3 e 4 foram deixando no CLAUDE.md — contraste medido
+da cor computada, estouro medido por `scrollWidth`, dado sensível procurado por vocabulário —,
+e este achado é a razão comum a todas: **a checagem tem de olhar para onde o usuário olha, não
+para onde o código foi alterado.**
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
