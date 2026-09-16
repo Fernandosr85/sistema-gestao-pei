@@ -217,6 +217,48 @@ ainda era uma cor.
 
 ---
 
+### 5. O que passa em cada teste isolado e falha na combinação (Etapa 3)
+
+**Qualificação:** a norma pede duas coisas separadas — refluxo em 320 px de largura (1.4.10)
+e texto redimensionável até 200% (1.4.4) — e o sistema passou nas duas. **Combinadas**, dez
+das dezessete rotas falhavam. A combinação não é exigida por nenhum critério, e é a condição
+real de uso de quem tem baixa visão: tela pequena **e** fonte ampliada, ao mesmo tempo.
+
+**Os números:**
+
+| Condição | Rotas sem rolagem horizontal |
+|---|---|
+| 320 px, texto padrão | 17 de 17 |
+| 640 px, equivalente a 200% de zoom num desktop de 1280 | 17 de 17 |
+| 320 px **com** a preferência de fonte "muito grande" | 7 de 17 |
+
+Em 320 px com a fonte a 125%, a largura útil equivale a 256 px. O estouro ia de 2 px a
+75 px, e as causas eram duas, nenhuma visível nos testes isolados: rótulo de botão que não
+quebra linha, porque o componente traz `whitespace-nowrap`, e palavra longa que não quebra,
+como um título de tela ou "R$ 850.000,00" em corpo grande, empurrando a linha flex que a
+contém.
+
+**A correção precisou de uma distinção fina.** `overflow-wrap: break-word` não resolve:
+ele quebra a palavra na hora de desenhar, mas não entra no cálculo da largura mínima do
+elemento, então a linha flex continua reservando o espaço da palavra inteira. Só
+`overflow-wrap: anywhere` afeta a largura mínima. As duas regras valem apenas para quem
+escolheu aumentar a fonte, porque no tamanho padrão o `whitespace-nowrap` do botão é
+desejável.
+
+**O teste só existiu porque a preferência foi implementada.** A combinação não era testável
+antes do commit 6 da etapa, que criou o controle de tamanho de fonte. Implementar o recurso
+de acessibilidade produziu o cenário de teste que revelou o defeito — o mesmo movimento do
+achado 3, por outro caminho: lá, tornar a informação explícita expôs um erro de dados; aqui,
+dar à pessoa o controle sobre a apresentação expôs um limite do layout.
+
+**Conclusão para o artigo:** critérios de acessibilidade são verificados um a um, e as
+pessoas usam o sistema com vários ajustes ligados ao mesmo tempo. Uma bateria que testa cada
+critério isoladamente e declara conformidade não descreve a experiência de quem depende
+deles. Vale testar as combinações que os próprios recursos de acessibilidade do produto
+tornam possíveis.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -364,6 +406,7 @@ violações do axe são as de WCAG 2.1 nível A e AA; os avisos do lint são do
 | Diálogos sem descrição | 10 | 0 |
 | Rotas com salto de nível de título | 12 de 17 | 0 |
 | Rotas com rolagem horizontal em 320 px | 6 de 17 | 0 |
+| Rotas com rolagem em 320 px **e** fonte "muito grande" | 10 de 17 | 0 |
 | Lugares com status carregado só por emoji | 6 | 0 |
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
 | Preferências de acessibilidade que funcionam | 0 de 10 | 5, com 5 removidas |

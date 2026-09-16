@@ -84,6 +84,8 @@ explicação visível, ou remova.
   para texto normal. Os valores atuais foram medidos e passam.
 - Razão de contraste anotada em comentário não é evidência. Meça da cor computada no
   navegador, no uso real do token, e anote a medição.
+- Captura de tela em viewport estreita não é evidência de estouro — o painel de ferramentas
+  corta a imagem. Meça `scrollWidth` e procure texto clipado.
 - Hierarquia de headings sem pular níveis.
 - `lang="pt-BR"` no `index.html` — não alterar.
 - A ferramenta de navegador das sessões não ativa `<button>` nativo por Enter/Space, nem

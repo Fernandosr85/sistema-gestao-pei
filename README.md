@@ -198,7 +198,9 @@ O que isso significa na prática:
   calendário de observações virou tabela com a contagem escrita em cada célula.
 - **Contraste.** Todas as cores saem de tokens no bloco `--brand-*` do `src/index.css`, com
   a razão medida no navegador anotada ao lado.
-- **Refluxo e zoom.** Nenhuma rota exige rolagem horizontal em 320 px nem com zoom de 200%.
+- **Refluxo e zoom.** Nenhuma rota exige rolagem horizontal em 320 px, nem com zoom de
+  200%, nem com as duas coisas somadas à preferência de fonte "muito grande" — a condição
+  real de quem tem baixa visão, que a norma não exige testar e em que dez rotas falhavam.
 
 ### Preferências de acessibilidade
 
