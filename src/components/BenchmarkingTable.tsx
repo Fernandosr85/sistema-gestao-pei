@@ -1,4 +1,5 @@
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { illustrativeScenario } from '@/config/institution';
 import { BarChart3, Award, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -40,7 +41,7 @@ const BenchmarkingTable = () => {
       rede: 48
     },
     {
-      indicador: 'Satisfação Famílias',
+      indicador: 'Famílias Satisfeitas',
       escola: { value: 91, status: 'success' },
       regional: 87,
       rede: 88
@@ -148,11 +149,11 @@ const BenchmarkingTable = () => {
                 
                 <div className="space-y-3 text-sm">
                   <div>
-                    <div className="font-medium text-success mb-1">✅ Sua escola está ACIMA da média em:</div>
+                    <div className="font-medium text-success mb-1">✅ A {illustrativeScenario.name} está ACIMA da média em:</div>
                     <ul className="list-disc list-inside text-muted-foreground space-y-1 ml-2">
                       <li>Progressão dos estudantes (+4 pp regional, +4 pp rede)</li>
                       <li>Formação docente (+7h regional, +4h rede)</li>
-                      <li>Satisfação das famílias (+4 pp regional, +3 pp rede)</li>
+                      <li>Famílias satisfeitas (+4 pp regional, +3 pp rede)</li>
                     </ul>
                   </div>
 

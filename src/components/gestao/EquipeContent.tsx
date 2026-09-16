@@ -16,7 +16,6 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { mockProfessionals } from '@/data/mockData';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 interface TeamMember {
@@ -58,11 +57,16 @@ interface Absence {
 const EquipeContent = () => {
   const [expandedTeacher, setExpandedTeacher] = useState<string | null>(null);
 
-  // Mock team data with workload details
+  /*
+   * Equipe do cenário ilustrativo. Quatro destes profissionais tinham o nome e o id dos
+   * profissionais do seed (`mockProfessionals`): Profª. Ana Beatriz e Prof. Carlos Lima, que
+   * também são professores regentes de alunos da demonstração, Dra. Maria Fernandes e Dr. João
+   * Santos. A carga, o contrato e as férias do cenário apareciam como se fossem deles.
+   */
   const teamMembers: TeamMember[] = [
     {
-      id: 'prof-3',
-      nome: 'Profª. Ana Beatriz',
+      id: 'equipe-1',
+      nome: 'Profª. Helena Duarte',
       tipo: 'professor',
       horasAula: 25,
       estudantesPEI: 4,
@@ -72,8 +76,8 @@ const EquipeContent = () => {
       utilizacao: 90
     },
     {
-      id: 'prof-4',
-      nome: 'Prof. Carlos Lima',
+      id: 'equipe-2',
+      nome: 'Prof. Marcos Teixeira',
       tipo: 'professor',
       horasAula: 20,
       estudantesPEI: 2,
@@ -83,7 +87,7 @@ const EquipeContent = () => {
       utilizacao: 62.5
     },
     {
-      id: 'prof-5',
+      id: 'equipe-3',
       nome: 'Profª. Juliana Mendes',
       tipo: 'professor',
       horasAula: 30,
@@ -94,8 +98,8 @@ const EquipeContent = () => {
       utilizacao: 97.5
     },
     {
-      id: 'prof-1',
-      nome: 'Dra. Maria Fernandes',
+      id: 'equipe-4',
+      nome: 'Dra. Sílvia Ramos',
       tipo: 'psicologo',
       especialidade: 'Psicologia Educacional',
       horasAula: 0,
@@ -106,8 +110,8 @@ const EquipeContent = () => {
       utilizacao: 70
     },
     {
-      id: 'prof-2',
-      nome: 'Dr. João Santos',
+      id: 'equipe-5',
+      nome: 'Dr. Renato Moura',
       tipo: 'terapeuta',
       especialidade: 'Terapia Ocupacional',
       horasAula: 0,
@@ -120,15 +124,15 @@ const EquipeContent = () => {
   ];
 
   const contractAlerts: ContractAlert[] = [
-    { id: '1', profissional: 'Dr. João Santos', tipo: 'Terapeuta', vencimento: '15/03/2025', diasRestantes: 15, urgencia: 'critica' },
-    { id: '2', profissional: 'Profª. Ana Beatriz', tipo: 'Professor', vencimento: '30/04/2025', diasRestantes: 61, urgencia: 'alta' },
+    { id: '1', profissional: 'Dr. Renato Moura', tipo: 'Terapeuta', vencimento: '15/03/2025', diasRestantes: 15, urgencia: 'critica' },
+    { id: '2', profissional: 'Profª. Helena Duarte', tipo: 'Professor', vencimento: '30/04/2025', diasRestantes: 61, urgencia: 'alta' },
     { id: '3', profissional: 'Profª. Juliana Mendes', tipo: 'Professor', vencimento: '15/05/2025', diasRestantes: 76, urgencia: 'media' }
   ];
 
   const absences: Absence[] = [
     { id: '1', profissional: 'Prof. Ricardo Alves', tipo: 'Afastamento', inicio: '10/02/2025', fim: '24/02/2025', status: 'Ativo' },
     { id: '2', profissional: 'Dra. Paula Costa', tipo: 'Afastamento', inicio: '01/01/2025', fim: '01/05/2025', status: 'Ativo' },
-    { id: '3', profissional: 'Prof. Carlos Lima', tipo: 'Férias', inicio: '20/01/2025', fim: '03/02/2025', status: 'Concluído' }
+    { id: '3', profissional: 'Prof. Marcos Teixeira', tipo: 'Férias', inicio: '20/01/2025', fim: '03/02/2025', status: 'Concluído' }
   ];
 
   const teamOverview = {

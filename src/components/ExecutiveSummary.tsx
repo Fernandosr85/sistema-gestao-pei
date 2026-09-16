@@ -1,6 +1,7 @@
 import { Users, FileText, GraduationCap, TrendingUp, Target, AlertTriangle, Heart, BarChart3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { illustrativeScenario } from '@/config/institution';
 
 interface MetricCardProps {
   icon: React.ReactNode;
@@ -50,7 +51,7 @@ const ExecutiveSummary = () => {
   const metrics = [
     {
       icon: <Users className="h-5 w-5 text-primary" />,
-      value: 45,
+      value: illustrativeScenario.studentsWithPei,
       label: 'ALUNOS',
       sublabel: 'com PEI',
       trend: 'up' as const,
@@ -61,7 +62,7 @@ const ExecutiveSummary = () => {
       icon: <FileText className="h-5 w-5 text-primary" />,
       value: '88%',
       label: 'PEIs',
-      sublabel: 'implement.',
+      sublabel: 'em implementação',
       trend: 'down' as const,
       trendValue: '🟡 -7% meta',
       status: 'warning' as const
@@ -105,8 +106,8 @@ const ExecutiveSummary = () => {
     {
       icon: <Heart className="h-5 w-5 text-primary" />,
       value: '91%',
-      label: 'SATISF',
-      sublabel: 'famílias',
+      label: 'FAMÍLIAS',
+      sublabel: 'satisfeitas',
       trend: 'up' as const,
       trendValue: '✅ +4%',
       status: 'success' as const
@@ -146,8 +147,17 @@ const ExecutiveSummary = () => {
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t">
-          <div className="text-sm text-muted-foreground">
-            <span>Valores fixos de demonstração</span>
+          {/* Os dois indicadores que a Visão Geral também mostra, lá com outro nome e outra medida. */}
+          <div className="text-sm text-muted-foreground space-y-1">
+            <p>Valores fixos de demonstração.</p>
+            <p>
+              PEIs em implementação: dos PEIs ativos, quantos têm as adaptações previstas em
+              execução. Não é a parcela de PEIs com objetivos alcançados, da Visão Geral.
+            </p>
+            <p>
+              Famílias satisfeitas: percentual das famílias que se declararam satisfeitas. Não é a
+              nota média de 1 a 5, da Visão Geral.
+            </p>
           </div>
         </div>
       </CardContent>

@@ -25,6 +25,7 @@ import {
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import ChartDataTable from '@/components/ChartDataTable';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { illustrativeScenario } from '@/config/institution';
 
 interface BudgetCategory {
   categoria: string;
@@ -103,17 +104,17 @@ const OrcamentoContent = () => {
     { id: '4', descricao: 'Equipamentos Sensoriais', categoria: 'Mat. Pedagógico', valor: 34600, data: '15/11/2024', status: 'Pendente' }
   ];
 
-  // Pending Approvals
+  // Pending Approvals. Solicitantes da equipe do cenário, e não os profissionais do seed.
   const pendingApprovals: PendingApproval[] = [
-    { id: '1', solicitante: 'Profª. Ana Beatriz', descricao: 'Livros paradidáticos adaptados', categoria: 'Mat. Pedagógico', valor: 3200, data: '25/09/2024', prioridade: 'Alta', status: 'Aguardando' },
-    { id: '2', solicitante: 'Dr. João Santos', descricao: 'Material de terapia ocupacional', categoria: 'Mat. Pedagógico', valor: 5400, data: '26/09/2024', prioridade: 'Média', status: 'Em Análise' },
-    { id: '3', solicitante: 'Coord. Maria Silva', descricao: 'Curso de LIBRAS para equipe', categoria: 'Formação Continuada', valor: 8900, data: '27/09/2024', prioridade: 'Média', status: 'Aguardando' },
-    { id: '4', solicitante: 'Prof. Carlos Lima', descricao: 'Software de comunicação alternativa', categoria: 'Tecnologia', valor: 12500, data: '28/09/2024', prioridade: 'Alta', status: 'Em Análise' }
+    { id: '1', solicitante: 'Profª. Helena Duarte', descricao: 'Livros paradidáticos adaptados', categoria: 'Mat. Pedagógico', valor: 3200, data: '25/09/2024', prioridade: 'Alta', status: 'Aguardando' },
+    { id: '2', solicitante: 'Dr. Renato Moura', descricao: 'Material de terapia ocupacional', categoria: 'Mat. Pedagógico', valor: 5400, data: '26/09/2024', prioridade: 'Média', status: 'Em Análise' },
+    { id: '3', solicitante: 'Coord. Cláudia Nunes', descricao: 'Curso de LIBRAS para equipe', categoria: 'Formação Continuada', valor: 8900, data: '27/09/2024', prioridade: 'Média', status: 'Aguardando' },
+    { id: '4', solicitante: 'Prof. Marcos Teixeira', descricao: 'Software de comunicação alternativa', categoria: 'Tecnologia', valor: 12500, data: '28/09/2024', prioridade: 'Alta', status: 'Em Análise' }
   ];
 
   // Benchmarking Data
   const benchmarkData = [
-    { unidade: 'Unidade A (Nossa)', valor: 73.3, status: 'atual' },
+    { unidade: `${illustrativeScenario.name} (este cenário)`, valor: 73.3, status: 'atual' },
     { unidade: 'Unidade B', valor: 68.5, status: 'normal' },
     { unidade: 'Unidade C', valor: 81.2, status: 'normal' },
     { unidade: 'Média da rede', valor: 75.8, status: 'media' }
@@ -376,7 +377,7 @@ const OrcamentoContent = () => {
             ))}
             <Alert className="mt-4 border-blue-200 bg-blue-50">
               <AlertDescription className="text-blue-800 text-sm">
-                Nossa unidade está 2.5 pontos percentuais abaixo da média da rede. Considerar aceleração de execução no 4º trimestre.
+                A {illustrativeScenario.name} está 2.5 pontos percentuais abaixo da média da rede. Considerar aceleração de execução no 4º trimestre.
               </AlertDescription>
             </Alert>
           </CardContent>

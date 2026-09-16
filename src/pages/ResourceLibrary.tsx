@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { ResourceCard } from '@/components/ResourceCard';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import { ResourceDetailModal } from '@/components/ResourceDetailModal';
 import { ContributeResourceDialog } from '@/components/ContributeResourceDialog';
 import { mockBadges } from '@/data/mockResources';
@@ -18,7 +19,7 @@ import { earnedBadges, formatRating, localContributionCount, localContributionsR
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 import { Resource } from '@/types/resource';
-import { Search, Plus, Trophy, Award } from 'lucide-react';
+import { Search, Plus, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function ResourceLibrary() {
@@ -143,6 +144,11 @@ export default function ResourceLibrary() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        <DemoDataNotice
+          subject="Os recursos que vêm com a demonstração, com seus autores, escolas e avaliações iniciais,"
+          detail="A nota e o número de avaliações de cada recurso são calculados das avaliações registradas, e as badges, das contribuições feitas neste navegador."
+          className="mb-6"
+        />
         {/* Tabs */}
         <div className="flex flex-wrap gap-4 mb-6">
           <Button
@@ -335,40 +341,12 @@ export default function ResourceLibrary() {
                   </CardContent>
                 </Card>
 
-                {/* Leaderboard */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle level={2} className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5" />
-                      Ranking de Colaboradores
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {[
-                        { pos: '🥇', name: 'Ana Silva', resources: 47, badge: '💎' },
-                        { pos: '🥈', name: 'João Santos', resources: 38, badge: '🥇' },
-                        { pos: '🥉', name: 'Maria Oliveira', resources: 29, badge: '🥇' },
-                        { pos: '4', name: 'Pedro Costa', resources: 24, badge: '🥈' },
-                        // Saiu a linha "Você: 12 recursos", que contradizia a contagem calculada acima.
-                      ].map(item => (
-                        <div
-                          key={item.pos}
-                          className="flex items-center justify-between p-3 rounded-lg bg-muted"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-2xl">{item.pos}</span>
-                            <span className="font-semibold">{item.name}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground">{item.resources} recursos</span>
-                            <span className="text-xl">{item.badge}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                {/*
+                  * Saiu o "Ranking de Colaboradores": quatro pessoas fictícias, com 47, 38, 29 e 24
+                  * recursos, apresentadas como classificação de contribuição real — e com nomes que
+                  * se confundiam com pessoas da demonstração. Não há outros colaboradores com quem
+                  * comparar, então nem a posição deste navegador faria sentido.
+                  */}
               </div>
             ) : (
               <>

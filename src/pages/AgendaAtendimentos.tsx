@@ -17,6 +17,7 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import StatCard from '@/components/StatCard';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
 import { appointmentTypes } from '@/lib/appointment';
@@ -32,6 +33,7 @@ import {
   upcomingAppointmentsWithin,
   weekPeriod,
 } from '@/lib/metrics';
+import type { PeriodChange } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 /*
@@ -60,6 +62,38 @@ moment.locale('pt-br');
 const localizer = momentLocalizer(moment);
 
 const diaEMes: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit' };
+
+/** Para ordenar as variações entre semanas: sem base primeiro, depois da maior para a menor. */
+const changeMagnitude = (change: PeriodChange) =>
+  change.kind === 'noBaseline' ? Number.POSITIVE_INFINITY : Math.abs(change.percent);
+
+/** Selo da variação entre semanas. Sem base de comparação, diz isso em vez de dar um percentual. */
+const renderWeekChange = (change: PeriodChange, className?: string) => {
+  if (change.kind === 'noBaseline') {
+    return (
+      <Badge variant="secondary" className={cn('gap-1', className)}>
+        <Minus className="h-3 w-3" />
+        sem base<span className="sr-only"> de comparação com a semana anterior</span>
+      </Badge>
+    );
+  }
+  const { percent } = change;
+  return (
+    <Badge
+      variant={percent > 0 ? 'default' : percent < 0 ? 'destructive' : 'secondary'}
+      className={cn('gap-1', className)}
+    >
+      {percent > 0 ? (
+        <TrendingUp className="h-3 w-3" />
+      ) : percent < 0 ? (
+        <TrendingDown className="h-3 w-3" />
+      ) : (
+        <Minus className="h-3 w-3" />
+      )}
+      {percent > 0 ? '+' : ''}{percent}%
+    </Badge>
+  );
+};
 
 const AgendaAtendimentos = () => {
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
@@ -149,6 +183,11 @@ const AgendaAtendimentos = () => {
           Novo Atendimento
         </Button>
       </div>
+
+      <DemoDataNotice
+        subject="Os atendimentos que vêm com a demonstração"
+        detail="Os números e as comparações desta tela são calculados desses atendimentos e dos que forem cadastrados neste navegador. Os atendimentos iniciais são de novembro e dezembro de 2025: por isso as contagens deste mês e dos próximos 7 dias ficam em zero enquanto não houver atendimento com data nesses períodos."
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -381,15 +420,15 @@ const AgendaAtendimentos = () => {
               ...Object.keys(distribuicaoSemanaAnterior)
             ]);
 
+            /*
+             * Sem atendimento na semana anterior não há base de comparação. Esse caso aparecia
+             * como "+100%", no total e em cada tipo, qualquer que fosse o número da semana atual.
+             */
             const comparacoes = Array.from(tiposUnicos).map(tipo => {
               const atual = distribuicaoSemanaAtual[tipo] || 0;
               const anterior = distribuicaoSemanaAnterior[tipo] || 0;
-              const variacao = anterior === 0 
-                ? (atual > 0 ? 100 : 0) 
-                : Math.round(((atual - anterior) / anterior) * 100);
-              
-              return { tipo, atual, anterior, variacao };
-            }).sort((a, b) => Math.abs(b.variacao) - Math.abs(a.variacao));
+              return { tipo, atual, anterior, variacao: periodChange(atual, anterior) };
+            }).sort((a, b) => changeMagnitude(b.variacao) - changeMagnitude(a.variacao));
 
             return totalAtendimentos > 0 ? (
               <>
@@ -519,26 +558,7 @@ const AgendaAtendimentos = () => {
                               <span className="text-sm text-muted-foreground">
                                 {atendimentosSemanaAnterior.length} → {atendimentosSemanaAtual.length}
                               </span>
-                              {(() => {
-                                const variacaoTotal = atendimentosSemanaAnterior.length === 0 
-                                  ? 100 
-                                  : Math.round(((atendimentosSemanaAtual.length - atendimentosSemanaAnterior.length) / atendimentosSemanaAnterior.length) * 100);
-                                return (
-                                  <Badge 
-                                    variant={variacaoTotal > 0 ? "default" : variacaoTotal < 0 ? "destructive" : "secondary"}
-                                    className="gap-1"
-                                  >
-                                    {variacaoTotal > 0 ? (
-                                      <TrendingUp className="h-3 w-3" />
-                                    ) : variacaoTotal < 0 ? (
-                                      <TrendingDown className="h-3 w-3" />
-                                    ) : (
-                                      <Minus className="h-3 w-3" />
-                                    )}
-                                    {variacaoTotal > 0 ? '+' : ''}{variacaoTotal}%
-                                  </Badge>
-                                );
-                              })()}
+                              {renderWeekChange(periodChange(atendimentosSemanaAtual.length, atendimentosSemanaAnterior.length))}
                             </div>
                           </div>
                         </div>
@@ -559,19 +579,7 @@ const AgendaAtendimentos = () => {
                               <span className="text-sm text-muted-foreground">
                                 {anterior} → {atual}
                               </span>
-                              <Badge 
-                                variant={variacao > 0 ? "default" : variacao < 0 ? "destructive" : "secondary"}
-                                className="gap-1 min-w-[70px] justify-center"
-                              >
-                                {variacao > 0 ? (
-                                  <TrendingUp className="h-3 w-3" />
-                                ) : variacao < 0 ? (
-                                  <TrendingDown className="h-3 w-3" />
-                                ) : (
-                                  <Minus className="h-3 w-3" />
-                                )}
-                                {variacao > 0 ? '+' : ''}{variacao}%
-                              </Badge>
+                              {renderWeekChange(variacao, 'min-w-[70px] justify-center')}
                             </div>
                           </div>
                         ))}

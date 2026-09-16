@@ -1,6 +1,7 @@
 import { Users, ClipboardList, FileText, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import StatCard from '@/components/StatCard';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import StudentCard from '@/components/StudentCard';
 import QuickActions from '@/components/QuickActions';
 import { GenerateReportDialog } from '@/components/GenerateReportDialog';
@@ -69,6 +70,11 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
+
+      <DemoDataNotice
+        subject="Os alunos, observações e atendimentos que vêm com a demonstração"
+        detail="Os números desta tela são calculados desses registros e dos que forem cadastrados neste navegador. As observações e os atendimentos iniciais são de novembro e dezembro de 2025: por isso as contagens deste mês e dos próximos 7 dias ficam em zero enquanto não houver registro com data nesses períodos."
+      />
 
       {/* Stats Grid */}
       {/*

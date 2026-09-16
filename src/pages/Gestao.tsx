@@ -8,6 +8,7 @@ import VisaoGeralContent from '@/components/gestao/VisaoGeralContent';
 import AlertasRiscosContent from '@/components/gestao/AlertasRiscosContent';
 import EquipeContent from '@/components/gestao/EquipeContent';
 import OrcamentoContent from '@/components/gestao/OrcamentoContent';
+import IllustrativeScenarioNotice from '@/components/gestao/IllustrativeScenarioNotice';
 
 const Gestao = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,6 +49,7 @@ const Gestao = () => {
 
       {/* Tabs Container */}
       <div className="container mx-auto px-6 py-6">
+        <IllustrativeScenarioNotice className="mb-6" />
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 mb-6">
             <TabsTrigger value="visao-geral" className="gap-2">

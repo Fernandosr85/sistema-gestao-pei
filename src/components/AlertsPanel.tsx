@@ -12,22 +12,24 @@ interface Alert {
 }
 
 const AlertsPanel = () => {
+  // Sem nome de aluno: o cenário ilustrativo não nomeia aluno. "Pedro Costa" lembrava o aluno
+  // Pedro Oliveira Costa da demonstração.
   const alerts: Alert[] = [
     {
       id: '1',
       type: 'critical',
-      title: 'PEI de João Silva não atualizado há 120 dias',
+      title: 'PEI não atualizado há 120 dias',
       description: 'Ação Imediata Necessária',
       details: [
         '⏱️ Vencido há: 30 dias',
         '📅 Última revisão: 15/07/2024',
-        '👤 Responsável: Prof. Ana Santos'
+        '👤 Responsável: Profª. Helena Duarte'
       ],
     },
     {
       id: '2',
       type: 'critical',
-      title: 'Maria Oliveira: Frequência abaixo de 60%',
+      title: 'Um aluno com frequência abaixo de 60%',
       description: 'Intervenção Necessária',
       details: [
         '📊 Presença: 58% (12 faltas no mês)',
@@ -38,7 +40,7 @@ const AlertsPanel = () => {
     {
       id: '3',
       type: 'warning',
-      title: 'Pedro Costa: Sem progresso há 8 semanas',
+      title: 'Um aluno sem progresso há 8 semanas',
       description: 'Monitoramento Necessário',
       details: [
         '📊 Objetivos estagnados: 4 de 7',

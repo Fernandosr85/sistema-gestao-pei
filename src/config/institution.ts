@@ -46,3 +46,16 @@ export const DEMO_MODE = true;
 
 /** Name shown for the person using the prototype while there is no authentication. */
 export const DEMO_USER_NAME = "Usuário de demonstração";
+
+/**
+ * Fictional school behind the management panel (Gestão). Its numbers, team, alerts and budget
+ * are a fixed illustrative scenario, kept apart from the students in the demo store so that
+ * nobody reads them as data about this browser's school. The scenario names no student and no
+ * family, and its team shares no name with the people in the demo data.
+ */
+export const illustrativeScenario = {
+  /** Deliberately generic, so it cannot be taken for a real school or for the demo store. */
+  name: "Escola Ilustrativa",
+  /** Students with a PEI in the scenario. Unrelated to the students in the store. */
+  studentsWithPei: 45,
+} as const;

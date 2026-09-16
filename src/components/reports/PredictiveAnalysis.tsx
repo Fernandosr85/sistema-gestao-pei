@@ -96,11 +96,11 @@ const PredictiveAnalysis = () => {
           detail="Nenhum modelo estatístico ou de machine learning é executado nesta tela, e nenhuma inferência sobre um aluno individual pode ser tirada dela."
         />
 
-        {/* Resumo - Sempre visível */}
+        {/* Resumo - Sempre visível. Sem nome de aluno: o cenário ilustrativo não nomeia aluno. */}
         <div className="mb-6">
           <p className="text-foreground mb-4">
             Com base nos dados dos últimos <strong>3 meses</strong>, prevê-se que o 
-            aluno <strong>João Silva</strong> alcance o objetivo de
+            aluno do exemplo alcance o objetivo de
             <strong className="text-primary"> "leitura fluente de textos curtos"</strong> em 
             aproximadamente <strong>4 meses</strong>, mantendo o ritmo atual de evolução.
           </p>
@@ -423,7 +423,7 @@ function CasosSimilaresDetalhado() {
       <div className="bg-primary/5 rounded-lg p-4 border border-primary/20">
         <p className="text-sm text-foreground">
           📊 Encontramos <strong>156 casos similares</strong> na rede (dados fictícios) (2021-2024) 
-          com perfil próximo ao de João Silva. Veja os 3 casos mais relevantes:
+          com perfil próximo ao do aluno do exemplo. Veja os 3 casos mais relevantes:
         </p>
       </div>
 

@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 interface KPI {
   id: string;
   title: string;
+  /** What the indicator measures, when its name alone could be read as another one. */
+  description?: string;
   icon: React.ReactNode;
   meta: number;
   realizado: number;
@@ -21,6 +23,7 @@ const QualityIndicators = () => {
     {
       id: '1',
       title: 'Taxa de Implementação dos PEIs',
+      description: 'Dos PEIs ativos, quantos têm as adaptações previstas em execução. Não é a parcela de PEIs com objetivos alcançados, da Visão Geral.',
       icon: <FileText className="h-5 w-5" />,
       meta: 95,
       realizado: 88,
@@ -53,7 +56,8 @@ const QualityIndicators = () => {
     },
     {
       id: '4',
-      title: 'Satisfação das Famílias',
+      title: 'Famílias Satisfeitas',
+      description: 'Percentual das famílias que se declararam satisfeitas. Não é a nota média de 1 a 5, da Visão Geral.',
       icon: <Heart className="h-5 w-5" />,
       meta: 85,
       realizado: 91,
@@ -111,6 +115,9 @@ const QualityIndicators = () => {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-foreground mb-1">{kpi.title}</h3>
+              {kpi.description && (
+                <p className="text-xs text-muted-foreground">{kpi.description}</p>
+              )}
             </div>
           </div>
 

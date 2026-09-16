@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Download, Share2, Printer, TrendingUp, Target, BookOpen, Users, Award } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ChartDataTable from '@/components/ChartDataTable';
+import DemoDataNotice from '@/components/DemoDataNotice';
 
 const progressData = [
   { trimestre: '1º Tri', valor: 65 },
@@ -55,7 +56,7 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl">DESEMPENHO - {studentName.toUpperCase()}</DialogTitle>
             <DialogDescription>
-              Evolução por trimestre, objetivos do PEI e desempenho por matéria.
+              Exemplo ilustrativo de evolução por trimestre e de objetivos do PEI, igual para qualquer estudante.
             </DialogDescription>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled aria-describedby="desempenho-acoes-indisponiveis">
@@ -76,6 +77,16 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
             Exportar, compartilhar e imprimir não estão implementados neste protótipo.
           </p>
         </DialogHeader>
+
+        {/*
+          * Tudo neste diálogo é fixo e aparece sob o nome de qualquer estudante. Sem o aviso, os 85%
+          * e os "12/15 alcançados" liam-se como números do estudante, ao lado do progresso
+          * calculado que a ficha mostra.
+          */}
+        <DemoDataNotice
+          subject="A evolução por trimestre, os objetivos, a presença, a integração e as conquistas deste diálogo"
+          detail="São os mesmos para qualquer estudante e não vêm das avaliações registradas. O progresso calculado das avaliações está na ficha, em “Progresso médio dos objetivos na avaliação mais recente”."
+        />
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
