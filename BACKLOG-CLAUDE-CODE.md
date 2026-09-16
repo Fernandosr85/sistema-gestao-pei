@@ -105,11 +105,25 @@ garantia não é uma busca melhor, é a Etapa 4 terminar: quando tudo o que a fi
 do estudante mostram vier do registro dele ou de um cenário explicitamente nomeado, deixa de
 haver texto fixo para atribuir a alguém.
 
-**Ficaram de fora, para decisão:** menções a prancha de CAA como **estratégia** pedagógica em
-telas que já têm aviso de exemplo (Ver PEI, Apresentação, Detalhe da observação e a lista de
-exemplos de Anexos), e licenças médica e maternidade de profissionais com nome fictício na aba
-Equipe da Gestão. Não são atribuídas a um estudante, mas a regra "aviso não justifica
-prontuário de terceiro" pode alcançá-las.
+**Critério, decidido pelo autor na Etapa 4: o que decide é a atribuição a uma pessoa
+nomeada.** Não é ser fictício, e não é ter aviso de exemplo. Dois casos que ficaram para
+decisão mostram a distinção:
+
+| Caso | Onde | Atribuído a pessoa nomeada? | Decisão |
+|---|---|---|---|
+| Prancha de CAA como estratégia pedagógica | Ver PEI, Apresentação, Detalhe da observação, exemplos de Anexos | não: recurso de comunicação descrito genericamente, em tela com aviso | **fica** — é conteúdo ilustrativo do domínio, da mesma natureza da legislação e do manual |
+| "Licença Médica" e "Licença Maternidade" | aba Equipe da Gestão | sim: Prof. Ricardo Alves e Dra. Paula Costa | **sai** — vira "Afastamento", que diz o mesmo para a gestão sem o motivo médico |
+
+A aba Equipe tem aviso de dados fictícios, e ele cobre os afastamentos. Não mudou a decisão:
+sob o critério, o aviso é irrelevante.
+
+Aplicado o critério com a varredura por vocabulário nas telas de gestão, apareceram mais dois
+casos, na Visão Geral: **"Crises Hoje: Pedro, 9h - Ansiedade"** e **"Intercorrência: Pedro
+(crise)"** — crise de saúde mental atribuída a um aluno nomeado, e o seed tem um aluno chamado
+Pedro Oliveira Costa. Saíram junto com as licenças: o cartão diz "1 registro, às 9h" e a linha
+do tempo diz "Intercorrência registrada". Ficaram, por não serem atribuídos a ninguém, "2
+professoras [...] com histórico de afastamentos por estresse" e "Afastamentos médicos" nos
+riscos, e as especialidades clínicas do profissional em Meu Perfil.
 
 **Ainda aberto:** Ver PEI, Detalhe da observação e Apresentação continuam com conteúdo fixo de
 exemplo, agora com aviso e sem dado de saúde nem identificação de outra estudante. A troca

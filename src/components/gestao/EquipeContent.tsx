@@ -44,7 +44,12 @@ interface ContractAlert {
 interface Absence {
   id: string;
   profissional: string;
-  tipo: 'Férias' | 'Licença Médica' | 'Licença Maternidade' | 'Afastamento';
+  /*
+   * Sem motivo médico. "Licença Médica" e "Licença Maternidade" diziam a condição de saúde
+   * de profissionais nomeados; "Afastamento" diz o mesmo para a gestão — a pessoa não está
+   * disponível nesse período — sem expor por quê.
+   */
+  tipo: 'Férias' | 'Afastamento';
   inicio: string;
   fim: string;
   status: 'Ativo' | 'Concluído' | 'Planejado';
@@ -121,8 +126,8 @@ const EquipeContent = () => {
   ];
 
   const absences: Absence[] = [
-    { id: '1', profissional: 'Prof. Ricardo Alves', tipo: 'Licença Médica', inicio: '10/02/2025', fim: '24/02/2025', status: 'Ativo' },
-    { id: '2', profissional: 'Dra. Paula Costa', tipo: 'Licença Maternidade', inicio: '01/01/2025', fim: '01/05/2025', status: 'Ativo' },
+    { id: '1', profissional: 'Prof. Ricardo Alves', tipo: 'Afastamento', inicio: '10/02/2025', fim: '24/02/2025', status: 'Ativo' },
+    { id: '2', profissional: 'Dra. Paula Costa', tipo: 'Afastamento', inicio: '01/01/2025', fim: '01/05/2025', status: 'Ativo' },
     { id: '3', profissional: 'Prof. Carlos Lima', tipo: 'Férias', inicio: '20/01/2025', fim: '03/02/2025', status: 'Concluído' }
   ];
 

@@ -143,7 +143,8 @@ const VisaoGeralContent = () => {
                 <span className="text-2xl font-bold">1</span>
               </div>
               <p className="text-sm font-medium mb-1">Crises Hoje</p>
-              <p className="text-xs text-muted-foreground mb-2">Pedro, 9h - Ansiedade</p>
+              {/* Saiu "Pedro, 9h - Ansiedade": crise de saúde mental atribuída a um aluno nomeado. */}
+              <p className="text-xs text-muted-foreground mb-2">1 registro, às 9h</p>
               <div className="flex items-center gap-1 text-xs">
                 <TrendingDown className="h-3 w-3 text-success" />
                 <span className="text-success">Média: 2 eventos</span>
@@ -239,7 +240,8 @@ const VisaoGeralContent = () => {
               {[
                 { time: '08:00', icon: Users, text: 'Reunião pedagógica - Sala 3', color: 'text-primary' },
                 { time: '09:30', icon: Bell, text: 'Lembrete: Responder família Silva', color: 'text-warning' },
-                { time: '10:00', icon: AlertTriangle, text: 'Intercorrência: Pedro (crise)', color: 'text-destructive' },
+                // Era "Intercorrência: Pedro (crise)", com o nome do aluno.
+                { time: '10:00', icon: AlertTriangle, text: 'Intercorrência registrada', color: 'text-destructive' },
                 { time: '14:00', icon: FileText, text: 'Revisar relatório mensal', color: 'text-info' },
                 { time: '15:30', icon: Users, text: 'Atendimento: Família Costa', color: 'text-success' },
               ].map((event, index) => (
