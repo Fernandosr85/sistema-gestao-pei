@@ -10,6 +10,7 @@ import {
   Edit, FileDown, Mail, Trash2
 } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { formatLocalDate } from '@/lib/date';
 import { classLabelOf } from '@/lib/report';
 import { useDemoStore } from '@/store/useDemoStore';
 import { StructuredObservation } from '@/types';
@@ -69,7 +70,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">
-                    <strong>Data:</strong> {new Date(observation.data).toLocaleDateString('pt-BR')}
+                    <strong>Data:</strong> {formatLocalDate(observation.data)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -410,7 +411,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="flex items-start gap-3 p-3 bg-success/5 border border-success/20 rounded-lg">
                   <Bell className="h-5 w-5 text-success mt-0.5" />
                   <div className="flex-1 text-sm">
-                    <p className="font-medium">Família - {new Date(observation.data).toLocaleDateString('pt-BR')} 10:45</p>
+                    <p className="font-medium">Família - {formatLocalDate(observation.data)} 10:45</p>
                     <p className="text-muted-foreground">Status: Visualizado às 11:30</p>
                     <p className="mt-2 p-2 bg-background rounded">
                       💬 Resposta: "Obrigada pelo retorno! Vamos implementar o timer em casa também."
@@ -421,7 +422,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
                 <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
                   <Bell className="h-5 w-5 text-muted-foreground mt-0.5" />
                   <div className="flex-1 text-sm">
-                    <p className="font-medium">Coordenação Pedagógica - {new Date(observation.data).toLocaleDateString('pt-BR')} 10:45</p>
+                    <p className="font-medium">Coordenação Pedagógica - {formatLocalDate(observation.data)} 10:45</p>
                     <p className="text-muted-foreground">Status: Visualizado às 14:20</p>
                   </div>
                 </div>
@@ -434,8 +435,8 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
             <CardContent className="pt-6">
               <h3 className="font-semibold text-lg mb-4">Metadados</h3>
               <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-                <p><strong>Criado em:</strong> {new Date(observation.data).toLocaleDateString('pt-BR')} 10:35</p>
-                <p><strong>Última edição:</strong> {new Date(observation.data).toLocaleDateString('pt-BR')} 10:40</p>
+                <p><strong>Criado em:</strong> {formatLocalDate(observation.data)} 10:35</p>
+                <p><strong>Última edição:</strong> {formatLocalDate(observation.data)} 10:40</p>
                 <p><strong>Editado por:</strong> {observation.observador}</p>
                 <p><strong>Visibilidade:</strong> Equipe pedagógica + Família</p>
               </div>

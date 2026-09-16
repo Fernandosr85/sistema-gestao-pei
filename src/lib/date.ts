@@ -6,8 +6,10 @@ import { institution } from '@/config/institution';
  * and stayed 8 forever.
  */
 export const calculateAge = (birthDate: string, reference: Date = new Date()): number => {
-  const birth = new Date(birthDate);
-  if (Number.isNaN(birth.getTime())) return 0;
+  // `new Date(birthDate)` lia a data como meia-noite em UTC, e no Brasil o nascimento caía no
+  // dia anterior: a idade subia na véspera do aniversário.
+  const birth = parseLocalDate(birthDate);
+  if (!birth) return 0;
 
   let age = reference.getFullYear() - birth.getFullYear();
   const monthDiff = reference.getMonth() - birth.getMonth();

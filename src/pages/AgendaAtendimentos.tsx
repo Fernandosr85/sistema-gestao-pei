@@ -19,9 +19,15 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import StatCard from '@/components/StatCard';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
-import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
+import { appointmentTypes } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
-import { appointmentsWithoutMinutes } from '@/lib/metrics';
+import {
+  appointmentsWithoutMinutes,
+  isWithinPeriod,
+  previousWeekPeriod,
+  upcomingAppointmentsWithin,
+  weekPeriod,
+} from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 /*
@@ -49,6 +55,8 @@ const statusBadgeVariant = {
 moment.locale('pt-br');
 const localizer = momentLocalizer(moment);
 
+const diaEMes: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit' };
+
 const AgendaAtendimentos = () => {
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
   const [detalhesOpen, setDetalhesOpen] = useState(false);
@@ -67,13 +75,12 @@ const AgendaAtendimentos = () => {
   const { state } = useDemoStore();
   const atendimentos = state.appointments;
 
-  const proximosSete = atendimentos.filter(a => {
-    const today = new Date();
-    const atendimentoDate = new Date(a.data);
-    const diffTime = atendimentoDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 7 && isOpenAppointment(a.status);
-  }).length;
+  /*
+   * Mesmo seletor do Dashboard. A conta antiga fazia `new Date(a.data)`, que é meia-noite em
+   * UTC: a partir das 21h no Brasil, a Agenda deixava de contar os atendimentos de hoje e
+   * passava a contar os do oitavo dia, e o número divergia do Dashboard.
+   */
+  const proximosSete = upcomingAppointmentsWithin(state, new Date(), 7).length;
 
   const pendentesRegistro = appointmentsWithoutMinutes(state);
 
@@ -343,28 +350,12 @@ const AgendaAtendimentos = () => {
               return acc;
             }, {} as Record<string, number>);
 
-            // Cálculo para semana atual e anterior
-            const selectedDate = new Date(currentDate);
-            const dayOfWeek = selectedDate.getDay();
-            const startOfWeek = new Date(selectedDate);
-            startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            // Semana atual e anterior, como datas YYYY-MM-DD comparadas por texto.
+            const semanaAtual = weekPeriod(currentDate);
+            const semanaAnterior = previousWeekPeriod(currentDate);
 
-            const startOfPreviousWeek = new Date(startOfWeek);
-            startOfPreviousWeek.setDate(startOfWeek.getDate() - 7);
-            const endOfPreviousWeek = new Date(startOfPreviousWeek);
-            endOfPreviousWeek.setDate(startOfPreviousWeek.getDate() + 6);
-
-            const atendimentosSemanaAtual = filteredAtendimentos.filter(a => {
-              const dataAtendimento = new Date(a.data);
-              return dataAtendimento >= startOfWeek && dataAtendimento <= endOfWeek;
-            });
-
-            const atendimentosSemanaAnterior = filteredAtendimentos.filter(a => {
-              const dataAtendimento = new Date(a.data);
-              return dataAtendimento >= startOfPreviousWeek && dataAtendimento <= endOfPreviousWeek;
-            });
+            const atendimentosSemanaAtual = filteredAtendimentos.filter(a => isWithinPeriod(a.data, semanaAtual));
+            const atendimentosSemanaAnterior = filteredAtendimentos.filter(a => isWithinPeriod(a.data, semanaAnterior));
 
             const distribuicaoSemanaAtual = atendimentosSemanaAtual.reduce((acc, a) => {
               acc[a.tipo] = (acc[a.tipo] || 0) + 1;
@@ -505,8 +496,8 @@ const AgendaAtendimentos = () => {
                         Comparação: Semana Atual vs. Semana Anterior
                       </CardTitle>
                       <p className="text-sm text-muted-foreground">
-                        Semana atual: {format(startOfWeek, "dd/MM")} - {format(endOfWeek, "dd/MM")} | 
-                        Semana anterior: {format(startOfPreviousWeek, "dd/MM")} - {format(endOfPreviousWeek, "dd/MM")}
+                        Semana atual: {formatLocalDate(semanaAtual.start, diaEMes)} - {formatLocalDate(semanaAtual.end, diaEMes)} |{' '}
+                        Semana anterior: {formatLocalDate(semanaAnterior.start, diaEMes)} - {formatLocalDate(semanaAnterior.end, diaEMes)}
                       </p>
                     </CardHeader>
                     <CardContent>

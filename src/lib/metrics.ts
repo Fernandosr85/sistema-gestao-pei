@@ -60,6 +60,21 @@ export const upcomingAppointmentsWithin = (
   return upcomingAppointments(state, reference).filter((appointment) => appointment.data <= until);
 };
 
+/**
+ * A semana, de domingo a sábado, que contém a data de referência, e a anterior.
+ *
+ * Devolve datas `YYYY-MM-DD`, e não objetos `Date`: comparar um `Date` com hora do dia contra
+ * `new Date('YYYY-MM-DD')` fazia o atendimento de domingo sumir das duas semanas.
+ */
+export const weekPeriod = (reference: Date): DatePeriod => {
+  const start = new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() - reference.getDay());
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+  return { start: toLocalISODate(start), end: toLocalISODate(end) };
+};
+
+export const previousWeekPeriod = (reference: Date): DatePeriod =>
+  weekPeriod(new Date(reference.getFullYear(), reference.getMonth(), reference.getDate() - 7));
+
 /** Atendimentos já realizados que ainda não têm ata registrada. */
 export const appointmentsWithoutMinutes = (state: DemoState): number =>
   state.appointments.filter((appointment) => appointment.status === 'realizado' && !appointment.ata).length;

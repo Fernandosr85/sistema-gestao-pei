@@ -728,6 +728,34 @@ estudante ou como se tivesse sido medido.
     favoritos deste navegador, "Usado em 18 escolas" é inventado e "N pessoas acharam útil"
     vem das fixtures.
 
+**Datas lidas em UTC — confirmado e corrigido no commit 3.** `new Date('AAAA-MM-DD')` é
+meia-noite em UTC, e em `America/Sao_Paulo` (UTC−3) isso é 21h do dia anterior. Quatro lugares
+faziam essa leitura:
+
+| Onde | Efeito | Antes | Depois |
+|---|---|---|---|
+| Agenda, "Próximos 7 dias" | a partir das 21h, deixa de contar os atendimentos de hoje e passa a contar os do oitavo dia, divergindo do Dashboard | relógio 24/11/2025 21h30: Dashboard 3, Agenda **4**; relógio 28/11/2025 21h30: Dashboard 4, Agenda **3** | 3 e 3; 4 e 4 |
+| Agenda, visão de dia, comparação entre semanas | o atendimento de domingo some das duas semanas, porque a semana guardava a hora do relógio e a data do atendimento caía no sábado às 21h | relógio no domingo 30/11/2025 10h: "Total Geral 3 → **1**, −67%", sem a linha de Atendimento Família | "3 → 2, −33%", com "Atendimento Família 0 → 1" |
+| Detalhe da observação, cinco datas | a observação de 19/11/2025 aparece como 18/11 | 18/11/2025 | 19/11/2025 |
+| `calculateAge`, em `src/lib/date.ts` | a idade sobe na véspera do aniversário | nascida em 15/03/2016, relógio em 14/03/2026: **10 anos** | 9 anos em 14/03; 10 anos em 15/03 |
+
+- **Como foi confirmado.** A divergência dos "Próximos 7 dias" foi primeiro verificada em
+  Node, rodando as duas fórmulas copiadas do código com `TZ=America/Sao_Paulo`. Depois, no
+  navegador, cujo fuso é `America/Sao_Paulo`, com o relógio emulado: `window.Date` substituído
+  por uma subclasse que devolve um instante fixo quando chamada sem argumento, e a rota
+  renderizada de novo. Às 10h do mesmo dia, os dois números batiam — o controle. As quatro
+  linhas da tabela foram medidas assim, antes e depois, com o servidor reiniciado e o módulo
+  servido conferido.
+- **O de `calculateAge` não estava no inventário.** Apareceu numa varredura por qualquer
+  `new Date(...)` com um argumento só, feita depois de corrigir os três conhecidos. É a função
+  que o CLAUDE.md manda usar para toda idade.
+- **Regra adotada, escrita no topo de `src/lib/metrics.ts`:** data de registro se compara como
+  texto `YYYY-MM-DD`; para exibir, `formatLocalDate`; para calcular, `parseLocalDate`. Nunca
+  `new Date('AAAA-MM-DD')`.
+- **Por que nenhum teste de dia pegou:** os quatro defeitos dependem de hora da noite, de
+  domingo ou de véspera de aniversário. Com o relógio real, às 8h de uma quarta-feira, as dez
+  rotas medidas mostram exatamente os mesmos números antes e depois da correção.
+
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
 telas diferentes.
 
