@@ -13,7 +13,7 @@ Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementa
 Defeitos cuja gravidade vai além do controle em que apareceram. É material para o artigo:
 cada item registra o que acontecia, como foi confirmado e o que ainda está aberto.
 
-### 1. Vazamento de dados de saúde entre estudantes (Etapa 2)
+### 1. Vazamento de dados de saúde entre estudantes (Etapas 2 e 4)
 
 **Qualificação:** o defeito não era um formulário mal inicializado, e sim a exibição dos
 dados de saúde de uma estudante na ficha de outros. Os dados eram fictícios. Com dados
@@ -68,6 +68,48 @@ A remontagem a cada abertura importa. No teste, com o painel do navegador oculto
 animação de saída não terminou e o conteúdo fechado continuou montado. O diálogo reabriu
 com o estado anterior. Um formulário que depende da desmontagem para limpar o estado pode
 exibir dados de uma abertura na seguinte.
+
+**Terceira aparição, na Etapa 4.** Depois do Editar Cadastro e do Histórico, a mesma classe de
+defeito — dado de saúde fixo atribuído a qualquer estudante — apareceu de novo, em três telas
+que as duas correções anteriores não alcançaram:
+
+| Onda | Etapa e commit | Telas | O que aparecia para qualquer estudante |
+|---|---|---|---|
+| 1 | Etapa 2, `2fb404d` | `EditarCadastroDialog`; card "Perfil de Saúde" da ficha | médico, CID-10, medicação e alergias de Ana Carolina |
+| 2 | Etapa 2, `338ed54` | `StudentHistoryDialog`, `VerPEIDialog`, `AnexosDialog`, `ObservationDetailDialog`, `PresentationModeDialog` | laudos, médica, diagnóstico com CID, turma e nome da mãe |
+| 3 | Etapa 4, este commit | ficha, card "Necessidades Específicas"; `StudentPerformanceDialog`; `NovaObservacaoDialog` | o diagnóstico "Transtorno Global do Desenvolvimento" e a necessidade "Comunicação alternativa visual"; "Redução de 60% nas crises de ansiedade" e "Uso autônomo da prancha de CAA" como conquistas; e três "observações anteriores relacionadas", uma sobre uso de prancha de comunicação |
+
+Nenhuma das três telas da onda 3 tinha aviso de exemplo cobrindo o conteúdo. A ficha tem um
+aviso na página, mas ele pertence ao cartão de comparativo ilustrativo, não aos de
+necessidades nem à linha do tempo.
+
+**Como foi confirmado:** no navegador, antes da correção, criei no store uma aluna de teste
+com diagnóstico **"Dislexia"**. Na ficha dela, o cartão de saúde mostrava "Dislexia", vindo
+do cadastro, e o cartão ao lado dizia "Tipo: Transtorno Global do Desenvolvimento" e
+"Recursos: Comunicação alternativa visual". O Desempenho listava as crises de ansiedade, e a
+Nova Observação mostrava três observações anteriores — de uma aluna que não tinha nenhuma
+observação registrada. Depois da correção, nenhum dos cinco textos aparece, e o cartão de
+necessidades mostra só o nível de suporte do cadastro.
+
+**Por que voltou.** Cada onda foi encontrada por busca de texto a partir da anterior. A busca
+da onda 2 procurou nome da médica, matrícula, CID, turma e nome da estudante — os termos da
+onda 1. "Transtorno Global do Desenvolvimento" não contém nenhum deles, nem "prancha de CAA",
+nem "crises de ansiedade". A onda 3 só apareceu porque a busca mudou de natureza: em vez dos
+termos do defeito anterior, um vocabulário clínico (transtorno, diagnóstico, laudo, CID,
+comunicação alternativa, terapia e afins). E mesmo essa primeira varredura não achou as crises
+de ansiedade: foi uma segunda, com termos de saúde mental e comportamento, que as encontrou.
+
+**O que isso não garante.** Varredura por vocabulário acha o que usa as palavras procuradas.
+Um dado de saúde escrito sem nenhuma delas continua podendo estar em alguma tela. O que muda a
+garantia não é uma busca melhor, é a Etapa 4 terminar: quando tudo o que a ficha e os diálogos
+do estudante mostram vier do registro dele ou de um cenário explicitamente nomeado, deixa de
+haver texto fixo para atribuir a alguém.
+
+**Ficaram de fora, para decisão:** menções a prancha de CAA como **estratégia** pedagógica em
+telas que já têm aviso de exemplo (Ver PEI, Apresentação, Detalhe da observação e a lista de
+exemplos de Anexos), e licenças médica e maternidade de profissionais com nome fictício na aba
+Equipe da Gestão. Não são atribuídas a um estudante, mas a regra "aviso não justifica
+prontuário de terceiro" pode alcançá-las.
 
 **Ainda aberto:** Ver PEI, Detalhe da observação e Apresentação continuam com conteúdo fixo de
 exemplo, agora com aviso e sem dado de saúde nem identificação de outra estudante. A troca

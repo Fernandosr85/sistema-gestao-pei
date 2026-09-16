@@ -6,8 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card, CardContent } from '@/components/ui/card';
-import { Camera, Video, FileText, AlertCircle } from 'lucide-react';
+import { Camera, Video, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { DEMO_USER_NAME } from '@/config/institution';
 import { currentLocalTime, todayLocalISO } from '@/lib/date';
@@ -219,21 +218,11 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
             </p>
           </div>
 
-          <Card className="bg-muted/50">
-            <CardContent className="pt-6">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-primary mt-0.5" />
-                <div>
-                  <p className="font-medium text-sm mb-2">💡 Observações anteriores relacionadas (3):</p>
-                  <ul className="text-sm space-y-1 text-muted-foreground">
-                    <li>• 18/11 - Participação ativa em trabalho em grupo</li>
-                    <li>• 15/11 - Uso espontâneo da prancha CAA</li>
-                    <li>• 10/11 - Interesse em atividade de ciências</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/*
+            * Saiu o bloco "Observações anteriores relacionadas (3)": três observações fixas,
+            * uma delas sobre uso de prancha de comunicação, apresentadas como histórico do
+            * estudante deste diálogo, qualquer que fosse ele.
+            */}
         </div>
 
         {error && (

@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, User, Calendar, Phone, Mail, FileText, Activity, TrendingUp,
-  Edit, FileCheck, Clipboard, BarChart3, Lock, Shield, GraduationCap,
-  Heart, BookOpen, Users, AlertCircle, Clock, CheckCircle, School
+  Edit, FileCheck, Clipboard, BarChart3, Lock, GraduationCap,
+  Heart, BookOpen, Users, AlertCircle, CheckCircle, School
 } from 'lucide-react';
 import { StudentPerformanceDialog } from '@/components/StudentPerformanceDialog';
 import { StudentHistoryDialog } from '@/components/StudentHistoryDialog';
@@ -25,7 +25,7 @@ import { institution } from '@/config/institution';
 import StudentObservationsCard from '@/components/StudentObservationsCard';
 import StudentAssessmentsCard from '@/components/StudentAssessmentsCard';
 import StudentProfileCard from '@/components/StudentProfileCard';
-import { studentStatusLabel } from '@/lib/student';
+import { studentStatusLabel, supportLevelLabel } from '@/lib/student';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const StudentDetail = () => {
@@ -71,10 +71,14 @@ const StudentDetail = () => {
     perfilSaude: {
       diagnosticos: student.diagnostico
     },
+    /*
+     * Havia aqui um "tipo" fixo, "Transtorno Global do Desenvolvimento", e um recurso fixo,
+     * "Comunicação alternativa visual", exibidos para qualquer estudante: um diagnóstico e uma
+     * necessidade de comunicação atribuídos a quem não os tem. O diagnóstico registrado já
+     * aparece no cartão de saúde, vindo do cadastro. Fica só o nível de suporte, que é do aluno.
+     */
     necessidadesEspecificas: {
-      tipo: "Transtorno Global do Desenvolvimento",
       grau: student.nivelSuporte,
-      recursos: ["Comunicação alternativa visual"]
     },
     contextoFamiliar: {
       responsaveis: `${student.responsavel.nome} (${student.responsavel.parentesco})`,
@@ -87,8 +91,8 @@ const StudentDetail = () => {
       { tipo: "pei", texto: "Primeiro PEI elaborado", data: "2023", icone: FileText, cor: "text-success" },
       { tipo: "revisao", texto: "Revisões realizadas: 3", icone: TrendingUp, cor: "text-info" },
       { tipo: "progressao", texto: "Progressões/retenções: Nenhuma", icone: CheckCircle, cor: "text-success" },
-      { tipo: "historico", texto: "Histórico completo desde o ingresso", icone: Clock, cor: "text-muted-foreground" },
-      { tipo: "acesso", texto: "Acesso controlado por perfil", icone: Shield, cor: "text-muted-foreground" }
+      // Saíram "Histórico completo desde o ingresso" e "Acesso controlado por perfil": o
+      // histórico acadêmico não existe e o sistema não tem autenticação nem perfis.
     ],
     documentacaoEmDia: student.progresso,
     ultimaAtualizacao: "30/03/2024"
@@ -282,26 +286,14 @@ const StudentDetail = () => {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Tipo</p>
-                    <p className="font-medium">{alunoCompleto.necessidadesEspecificas.tipo}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Grau</p>
+                    <p className="text-muted-foreground">Nível de suporte</p>
                     <Badge variant={
                       alunoCompleto.necessidadesEspecificas.grau === 'baixo' ? 'default' :
                       alunoCompleto.necessidadesEspecificas.grau === 'medio' ? 'secondary' :
                       'destructive'
-                    } className="capitalize">
-                      {alunoCompleto.necessidadesEspecificas.grau}
+                    }>
+                      {supportLevelLabel(alunoCompleto.necessidadesEspecificas.grau)}
                     </Badge>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Recursos</p>
-                    <ul className="list-disc list-inside">
-                      {alunoCompleto.necessidadesEspecificas.recursos.map((recurso, idx) => (
-                        <li key={idx} className="font-medium">{recurso}</li>
-                      ))}
-                    </ul>
                   </div>
                 </CardContent>
               </Card>

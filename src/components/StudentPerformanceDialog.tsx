@@ -31,11 +31,14 @@ const objectives = [
   ]},
 ];
 
+/*
+ * Saíram "Uso autônomo da prancha de CAA" e "Redução de 60% nas crises de ansiedade":
+ * uma necessidade de comunicação e um quadro de saúde mental, com número inventado,
+ * exibidos como conquista de qualquer estudante que abrisse este diálogo.
+ */
 const achievements = [
   'Leitura independente de textos curtos',
   'Participação ativa em trabalhos em grupo',
-  'Uso autônomo da prancha de CAA',
-  'Redução de 60% nas crises de ansiedade',
 ];
 
 interface StudentPerformanceDialogProps {
