@@ -131,6 +131,39 @@ sessão não ativa `<button>` por Enter ou Space.
 
 ---
 
+### 3. Correção de acessibilidade revelando defeito funcional (Etapa 3)
+
+**Qualificação:** o calendário de frequência de observações exibia as contagens **sob o dia
+da semana errado**, desde o commit inicial do projeto. Não é defeito de acessibilidade: é
+defeito de dados, numa tela de acompanhamento pedagógico. Quem lesse "3 observações" numa
+coluna pensaria estar lendo uma quarta-feira.
+
+**O que acontecia:** `ObservationHeatmap` desenhava um cabeçalho fixo de Dom a Sáb e, abaixo,
+uma grade de sete colunas que começava o mês na primeira coluna, sempre. O dia 1 caía sempre
+sob "Dom". A série é de novembro de 2024, e **1º de novembro de 2024 foi uma sexta-feira**:
+todo o mês aparecia deslocado em cinco colunas.
+
+**Por que passou:** a contagem só existia no tooltip de hover. Ninguém que olhasse a tela via
+"dia 1, sexta-feira, 0 observações" — via um quadrado colorido numa grade, e o número só
+aparecia com o mouse parado em cima. Um deslocamento de coluna não tem sintoma visível quando
+não há nada escrito para conferir contra o cabeçalho.
+
+**Como apareceu:** o item 2 da Etapa 3 mandava trocar a grade de `<div>` por tabela, porque a
+informação estava presa ao hover. Escrever a contagem em cada célula, e dar ao dia da semana
+o papel de cabeçalho de coluna, obrigou a alinhar o dia 1 com o dia da semana real — e o
+desalinhamento apareceu na primeira renderização.
+
+**Três revisões não pegaram:** a auditoria estática do Claude, a auditoria complementar do
+Codex e a leitura do autor. Nenhuma das três olha para o que o dado significa na tela; todas
+olham para o código, onde `DEMO_COUNTS.map((count, i) => ...)` parece correto.
+
+**Conclusão para o artigo:** tornar a informação acessível é, antes de tudo, torná-la
+explícita. Um dado que só existe como cor, posição ou hover não pode ser conferido — nem por
+quem usa leitor de tela, nem por quem enxerga. Acessibilidade aqui não foi um custo pago
+depois da funcionalidade: foi o que revelou que a funcionalidade estava errada.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
