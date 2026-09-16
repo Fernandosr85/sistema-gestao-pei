@@ -75,6 +75,62 @@ por dados reais está na Etapa 4 e, no caso do PEI, na Etapa 9.
 
 ---
 
+### 2. O que a verificação automatizada de acessibilidade não vê (Etapa 3)
+
+**Qualificação:** as duas ferramentas padrão do mercado, juntas, encontraram **um** dos cinco
+controles inalcançáveis por teclado corrigidos no commit 2 da Etapa 3. Um projeto que
+tratasse "lint limpo + axe limpo" como critério de aceite teria declarado a tela acessível
+com quatro controles que o teclado não alcança. O achado não é sobre as ferramentas serem
+ruins — elas acham o que outro método não acha —, é sobre o que cada método enxerga.
+
+**Os cinco controles e o que cada ferramenta pegou:**
+
+| Controle | Como estava | `jsx-a11y` | `axe-core` | Por quê |
+|---|---|---|---|---|
+| Matriz de riscos, 9 células (`gestao/AlertasRiscosContent`) | `<Badge onClick>` | não | não | `Badge` é componente, não elemento; o lint só casa nome de elemento |
+| Cartões de área (`reports/ProgressChart`) | `<div onClick>` | **sim** | não | único caso escrito como elemento do DOM literal |
+| Estrelas de avaliação (`ResourceDetailModal`) | `<button>` só com SVG | não | não | é `<button>` de verdade; o defeito era nome e estado ausentes, dentro de um diálogo fechado |
+| Cartão da agenda (`pages/AgendaAtendimentos`) | `<Card onClick>` | não | não | `Card` é componente |
+| Legenda do donut (`reports/InterventionDonut`) | `<div>` com `cursor-pointer` | não | não | afordância só visual, sem handler de clique: não há o que detectar |
+
+- **`eslint-plugin-jsx-a11y` (estático):** 1 de 5. Não atravessa abstração de componente. É o
+  mesmo ponto cego da varredura de `<Button>` da Etapa 2, que também só via o componente com
+  esse nome exato.
+- **`axe-core` (em execução):** 0 de 5. Ele julga a árvore de acessibilidade do que existe na
+  página. Um `<div>` com handler de clique é, para ele, um `<div>`: não há regra que diga
+  "isto deveria ser um controle". E só vê o que está montado — dos cinco, dois estavam dentro
+  de diálogo fechado ou de aba não selecionada.
+- **Leitura do código:** 5 de 5. Os cinco saíram de uma busca por handler de clique em
+  elemento não interativo, cruzada com a lista de arquivos que alguma rota monta.
+
+**Erro na direção contrária.** Na primeira varredura, o axe acusou contraste de 1,04:1 em
+"Usuário de demonstração", no cabeçalho, com branco sobre `#f8fafc`. O cabeçalho é um
+gradiente, que o axe não sabe ler: ele desistiu do elemento e usou o fundo da página. O
+gradiente vai de 10,65:1 a 5,96:1 contra branco, os dois acima de 4,5:1. Aceitar o veredito
+teria produzido uma correção desnecessária numa cor que já passava.
+
+**A configuração também precisa ser auditada.** A primeira execução do `jsx-a11y` marcou 100
+avisos. Desses, **85 eram falsos**, todos da regra `label-has-for`, que o preset `recommended`
+desliga de propósito: ela está obsoleta desde a versão 6.1, foi substituída por
+`label-has-associated-control` e exige aninhamento **e** `htmlFor` ao mesmo tempo, então
+acusava rótulos corretos. O erro era meu: a função que rebaixava a severidade das regras para
+aviso reescrevia também as regras desligadas. Depois de preservar o `off`, sobraram 8 avisos
+reais.
+
+Isso importa para a medida da etapa. O número que vale, 8 no início e 6 depois do commit 2,
+só significa alguma coisa porque a configuração foi depurada antes de virar linha de base.
+Uma contagem tirada da primeira execução teria registrado uma queda de 100 para 91 sem
+nenhuma relação com acessibilidade.
+
+**Conclusão para o artigo:** as três formas de verificação usadas aqui são complementares e
+nenhuma substitui a outra. O estático acha o que está escrito de forma reconhecível; o
+dinâmico acha o que a árvore de acessibilidade mostra, e só do que está montado; a leitura do
+código acha intenção. E falta a quarta, que nenhuma das três cobre: ativação por teclado e
+leitor de tela reais, que ficam em lista de teste manual porque a ferramenta de navegador da
+sessão não ativa `<button>` por Enter ou Space.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -188,7 +244,8 @@ achou quatro defeitos que não estavam no inventário.
 
 ### Ferramentas de verificação
 
-Duas dependências de desenvolvimento, com funções distintas, aprovadas nesta etapa.
+Duas dependências de desenvolvimento, com funções distintas, aprovadas nesta etapa. O que
+cada uma achou e deixou de achar está no **achado 2**, no topo deste arquivo.
 
 - **`eslint-plugin-jsx-a11y`**, dentro do `npm run lint` que já existe, portanto também no
   CI. As regras entram como **aviso** (`JSX_A11Y_SEVERITY` no `eslint.config.js`) para
