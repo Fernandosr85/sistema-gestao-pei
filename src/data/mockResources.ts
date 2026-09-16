@@ -24,10 +24,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['TEA', 'Deficiência Intelectual'],
     subjects: ['Língua Portuguesa'],
     educationLevels: ['Fundamental 1'],
-    rating: 4.8,
-    reviewCount: 47,
-    downloadCount: 234,
-    favoriteCount: 67,
     author: {
       name: 'Prof. Ana Silva',
       school: 'Escola Exemplo A'
@@ -63,10 +59,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['TDAH', 'Discalculia', 'Deficiência Visual'],
     subjects: ['Matemática'],
     educationLevels: ['Educação Infantil', 'Fundamental 1'],
-    rating: 4.9,
-    reviewCount: 62,
-    downloadCount: 412,
-    favoriteCount: 98,
     author: {
       name: 'Prof. Carlos Mendes',
       school: 'Escola Exemplo B'
@@ -97,10 +89,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['TEA', 'TDAH'],
     subjects: ['Atividades de Vida Diária'],
     educationLevels: ['Educação Infantil', 'Fundamental 1', 'Fundamental 2'],
-    rating: 4.7,
-    reviewCount: 89,
-    downloadCount: 567,
-    favoriteCount: 134,
     author: {
       name: 'Prof. Marina Costa',
       school: 'Escola Exemplo C'
@@ -126,10 +114,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['TEA', 'Paralisia Cerebral', 'Deficiência Auditiva'],
     subjects: ['Habilidades Socioemocionais'],
     educationLevels: ['Educação Infantil', 'Fundamental 1'],
-    rating: 4.6,
-    reviewCount: 34,
-    downloadCount: 189,
-    favoriteCount: 45,
     author: {
       name: 'Prof. Juliana Freitas',
       school: 'Escola Exemplo D'
@@ -150,10 +134,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['Dislexia', 'Deficiência Intelectual', 'TEA'],
     subjects: ['Ciências da Natureza'],
     educationLevels: ['Fundamental 1'],
-    rating: 4.5,
-    reviewCount: 28,
-    downloadCount: 156,
-    favoriteCount: 38,
     author: {
       name: 'Prof. Roberto Lima',
       school: 'Escola Exemplo E'
@@ -174,10 +154,6 @@ export const mockResources: Resource[] = [
     diagnoses: ['TEA'],
     subjects: ['Habilidades Socioemocionais', 'Atividades de Vida Diária'],
     educationLevels: ['Educação Infantil', 'Fundamental 1'],
-    rating: 4.9,
-    reviewCount: 52,
-    downloadCount: 298,
-    favoriteCount: 76,
     author: {
       name: 'Prof. Patricia Santos',
       school: 'Escola Exemplo F'
@@ -196,8 +172,7 @@ export const mockReviews: ResourceReview[] = [
     author: 'Prof. Carla',
     rating: 5,
     comment: 'Funcionou muito bem com minha turma! Os alunos com TEA adoraram as cores e pictogramas.',
-    date: '2024-10-23',
-    helpfulCount: 12
+    date: '2024-10-23'
   },
   {
     id: '2',
@@ -205,8 +180,7 @@ export const mockReviews: ResourceReview[] = [
     author: 'Prof. João',
     rating: 4,
     comment: 'Excelente recurso! Apenas precisei adaptar alguns pictogramas para meu contexto.',
-    date: '2024-10-20',
-    helpfulCount: 8
+    date: '2024-10-20'
   },
   {
     id: '3',
@@ -214,56 +188,50 @@ export const mockReviews: ResourceReview[] = [
     author: 'Prof. Fernanda',
     rating: 5,
     comment: 'Material de alta qualidade. Meus alunos progrediram significativamente na leitura.',
-    date: '2024-10-18',
-    helpfulCount: 15
+    date: '2024-10-18'
   }
 ];
 
+/*
+ * As badges eram dadas como conquistadas por data fixa (`earnedAt`), com zero contribuições.
+ * Agora cada uma exige um número de contribuições feitas neste navegador. Saíram "1000+
+ * Downloads" (download não existe) e "Recurso em Destaque" (contribuição local não passa por
+ * moderação, então nunca é destacada).
+ */
 export const mockBadges: Badge[] = [
   {
     id: 'first-contribution',
     name: 'Primeira Contribuição',
     description: 'Compartilhou seu primeiro recurso',
     icon: '🌱',
-    earnedAt: '2024-01-15'
+    requiredContributions: 1
+  },
+  {
+    id: 'bronze',
+    name: 'Colaborador Bronze',
+    description: '5 recursos publicados',
+    icon: '🥉',
+    requiredContributions: 5
   },
   {
     id: '10-resources',
     name: '10 Recursos Publicados',
     description: 'Contribuiu com 10 recursos para a biblioteca',
     icon: '🌟',
-    earnedAt: '2024-05-20'
-  },
-  {
-    id: 'featured-resource',
-    name: 'Recurso em Destaque',
-    description: 'Teve um recurso destacado pela comunidade',
-    icon: '🔥',
-    earnedAt: '2024-08-10'
-  },
-  {
-    id: '1000-downloads',
-    name: '1000+ Downloads',
-    description: 'Seus recursos alcançaram 1000 downloads',
-    icon: '💎',
-    earnedAt: '2024-10-01'
-  },
-  {
-    id: 'bronze',
-    name: 'Colaborador Bronze',
-    description: '5 recursos publicados',
-    icon: '🥉'
+    requiredContributions: 10
   },
   {
     id: 'silver',
     name: 'Colaborador Prata',
     description: '15 recursos publicados',
-    icon: '🥈'
+    icon: '🥈',
+    requiredContributions: 15
   },
   {
     id: 'gold',
     name: 'Colaborador Ouro',
     description: '30 recursos publicados',
-    icon: '🥇'
+    icon: '🥇',
+    requiredContributions: 30
   }
 ];

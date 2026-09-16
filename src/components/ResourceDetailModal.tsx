@@ -5,13 +5,14 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Resource, ResourceReview } from '@/types/resource';
-import { Heart, Download, Star, ThumbsUp } from 'lucide-react';
+import { Heart, Download, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { DEMO_USER_NAME } from '@/config/institution';
 import { formatLocalDate, todayLocalISO } from '@/lib/date';
 import { createId } from '@/lib/id';
+import { formatRating, summarizeRatings } from '@/lib/metrics';
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 
@@ -38,6 +39,8 @@ export function ResourceDetailModal({
 
   if (!resource) return null;
 
+  const rating = summarizeRatings(reviews);
+
   const handleSubmitReview = () => {
     if (userRating === 0) return;
     const review: ResourceReview = {
@@ -47,7 +50,6 @@ export function ResourceDetailModal({
       rating: userRating,
       comment: userComment.trim(),
       date: todayLocalISO(),
-      helpfulCount: 0,
     };
     const result = dispatch({ type: 'review/add', review });
     toast.success('Avaliação registrada', { description: describeSaveLocation(result) });
@@ -106,24 +108,31 @@ export function ResourceDetailModal({
                 ))}
               </div>
 
+              {/* Nota calculada das avaliações listadas abaixo, e não mais a da fixture. Saiu o
+                  número de downloads: download não existe desde a Etapa 2. */}
               <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={cn(
-                        'h-5 w-5',
-                        i < Math.floor(resource.rating)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
-                      )}
-                    />
-                  ))}
-                  <span className="ml-1 font-semibold">{resource.rating}</span>
-                  <span className="text-muted-foreground">({resource.reviewCount} avaliações)</span>
-                </div>
-                <Separator orientation="vertical" className="h-4" />
-                <span>📥 {resource.downloadCount} downloads</span>
+                {rating.average === null ? (
+                  <span className="text-muted-foreground">Sem avaliações</span>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        aria-hidden="true"
+                        className={cn(
+                          'h-5 w-5',
+                          i < Math.round(rating.average ?? 0)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300'
+                        )}
+                      />
+                    ))}
+                    <span className="ml-1 font-semibold">{formatRating(rating.average)}</span>
+                    <span className="text-muted-foreground">
+                      ({rating.count} {rating.count === 1 ? 'avaliação' : 'avaliações'})
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="text-sm text-muted-foreground">
@@ -215,12 +224,7 @@ export function ResourceDetailModal({
                       </span>
                     </div>
                     <p className="text-muted-foreground mb-2">{review.comment}</p>
-                    {review.helpfulCount > 0 && (
-                      <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <ThumbsUp className="h-4 w-4" aria-hidden="true" />
-                        {review.helpfulCount} pessoas acharam útil
-                      </p>
-                    )}
+
                   </div>
                 ))}
               </div>
@@ -283,30 +287,11 @@ export function ResourceDetailModal({
               </div>
             </div>
 
-            <Separator />
-
-            {/* Statistics */}
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Estatísticas</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Downloads</p>
-                  <p className="text-2xl font-bold">{resource.downloadCount}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Favoritado por</p>
-                  <p className="text-2xl font-bold">{resource.favoriteCount}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Taxa de satisfação</p>
-                  <p className="text-2xl font-bold">{Math.round((resource.rating / 5) * 100)}%</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Usado em</p>
-                  <p className="text-2xl font-bold">18 escolas</p>
-                </div>
-              </div>
-            </div>
+            {/*
+              * Saiu a seção "Estatísticas": downloads (não existem), "Favoritado por" (não há
+              * usuários, só os favoritos deste navegador), "Taxa de satisfação" (a nota da fixture
+              * convertida em porcentagem) e "Usado em 18 escolas" (não há escola como entidade).
+              */}
           </div>
         </ScrollArea>
       </DialogContent>

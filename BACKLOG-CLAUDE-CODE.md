@@ -13,7 +13,7 @@ Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementa
 Defeitos cuja gravidade vai além do controle em que apareceram. É material para o artigo:
 cada item registra o que acontecia, como foi confirmado e o que ainda está aberto.
 
-### 1. Vazamento de dados de saúde entre estudantes (Etapa 2)
+### 1. Vazamento de dados de saúde entre estudantes (Etapas 2 e 4)
 
 **Qualificação:** o defeito não era um formulário mal inicializado, e sim a exibição dos
 dados de saúde de uma estudante na ficha de outros. Os dados eram fictícios. Com dados
@@ -69,9 +69,86 @@ animação de saída não terminou e o conteúdo fechado continuou montado. O di
 com o estado anterior. Um formulário que depende da desmontagem para limpar o estado pode
 exibir dados de uma abertura na seguinte.
 
-**Ainda aberto:** Ver PEI, Detalhe da observação e Apresentação continuam com conteúdo fixo de
-exemplo, agora com aviso e sem dado de saúde nem identificação de outra estudante. A troca
-por dados reais está na Etapa 4 e, no caso do PEI, na Etapa 9.
+**Terceira e quarta aparições, na Etapa 4.** Depois do Editar Cadastro e do Histórico, a mesma
+classe de defeito apareceu mais duas vezes: primeiro em três telas do estudante que as duas
+correções anteriores não alcançaram, com dado de saúde fixo atribuído a qualquer estudante;
+depois num painel de gestão, com o nome do aluno.
+
+| Onda | Etapa e commit | Telas | O que aparecia |
+|---|---|---|---|
+| 1 | Etapa 2, `2fb404d` | `EditarCadastroDialog`; card "Perfil de Saúde" da ficha | para qualquer estudante: médico, CID-10, medicação e alergias de Ana Carolina |
+| 2 | Etapa 2, `338ed54` | `StudentHistoryDialog`, `VerPEIDialog`, `AnexosDialog`, `ObservationDetailDialog`, `PresentationModeDialog` | para qualquer estudante: laudos, médica, diagnóstico com CID, turma e nome da mãe |
+| 3 | Etapa 4, `e43150f` | ficha, card "Necessidades Específicas"; `StudentPerformanceDialog`; `NovaObservacaoDialog` | para qualquer estudante: o diagnóstico "Transtorno Global do Desenvolvimento" e a necessidade "Comunicação alternativa visual"; "Redução de 60% nas crises de ansiedade" e "Uso autônomo da prancha de CAA" como conquistas; e três "observações anteriores relacionadas", uma sobre uso de prancha de comunicação |
+| 4 | Etapa 4, `9273891` | Gestão, Visão Geral: cartão "Crises Hoje" e linha do tempo | "Pedro, 9h - Ansiedade" e "Intercorrência: Pedro (crise)": o quadro de saúde mental de um aluno nomeado, num painel de gestão |
+
+Nenhuma das três telas da onda 3 tinha aviso de exemplo cobrindo o conteúdo. A ficha tem um
+aviso na página, mas ele pertence ao cartão de comparativo ilustrativo, não aos de
+necessidades nem à linha do tempo.
+
+**Como foi confirmado:** no navegador, antes da correção, criei no store uma aluna de teste
+com diagnóstico **"Dislexia"**. Na ficha dela, o cartão de saúde mostrava "Dislexia", vindo
+do cadastro, e o cartão ao lado dizia "Tipo: Transtorno Global do Desenvolvimento" e
+"Recursos: Comunicação alternativa visual". O Desempenho listava as crises de ansiedade, e a
+Nova Observação mostrava três observações anteriores — de uma aluna que não tinha nenhuma
+observação registrada. Depois da correção, nenhum dos cinco textos aparece, e o cartão de
+necessidades mostra só o nível de suporte do cadastro.
+
+**Por que voltou.** Cada onda foi encontrada por busca de texto a partir da anterior. A busca
+da onda 2 procurou nome da médica, matrícula, CID, turma e nome da estudante — os termos da
+onda 1. "Transtorno Global do Desenvolvimento" não contém nenhum deles, nem "prancha de CAA",
+nem "crises de ansiedade". A onda 3 só apareceu porque a busca mudou de natureza: em vez dos
+termos do defeito anterior, um vocabulário clínico (transtorno, diagnóstico, laudo, CID,
+comunicação alternativa, terapia e afins). E mesmo essa primeira varredura não achou as crises
+de ansiedade: foi uma segunda, com termos de saúde mental e comportamento, que as encontrou.
+
+**O que isso não garante.** Varredura por vocabulário acha o que usa as palavras procuradas.
+Um dado de saúde escrito sem nenhuma delas continua podendo estar em alguma tela. O que muda a
+garantia não é uma busca melhor, é a Etapa 4 terminar: quando tudo o que a ficha e os diálogos
+do estudante mostram vier do registro dele ou de um cenário explicitamente nomeado, deixa de
+haver texto fixo para atribuir a alguém. A Etapa 4 terminou sem chegar lá: Desempenho,
+Apresentação, Ver PEI e Detalhe da observação ainda mostram conteúdo fixo sob o nome do
+estudante, com aviso (ver **Ainda aberto**, abaixo).
+
+**Critério, decidido pelo autor na Etapa 4: o que decide é a atribuição a uma pessoa
+nomeada.** Não é ser fictício, e não é ter aviso de exemplo. Dois casos que ficaram para
+decisão mostram a distinção:
+
+| Caso | Onde | Atribuído a pessoa nomeada? | Decisão |
+|---|---|---|---|
+| Prancha de CAA como estratégia pedagógica | Ver PEI, Apresentação, Detalhe da observação, exemplos de Anexos | não: recurso de comunicação descrito genericamente, em tela com aviso | **fica** — é conteúdo ilustrativo do domínio, da mesma natureza da legislação e do manual |
+| "Licença Médica" e "Licença Maternidade" | aba Equipe da Gestão | sim: Prof. Ricardo Alves e Dra. Paula Costa | **sai** — vira "Afastamento", que diz o mesmo para a gestão sem o motivo médico |
+
+A aba Equipe tem aviso de dados fictícios, e ele cobre os afastamentos. Não mudou a decisão:
+sob o critério, o aviso é irrelevante.
+
+**Quarta onda — a mais grave até aqui.** Na Visão Geral da Gestão, o cartão "Crises Hoje"
+dizia **"Pedro, 9h - Ansiedade"**, e a linha do tempo, **"Intercorrência: Pedro (crise)"**. As
+três primeiras ondas exibiam dado de saúde fixo sob o nome de *qualquer* estudante que
+estivesse aberto. Esta **nomeia a pessoa e o quadro de saúde mental na mesma linha**, num
+**painel de gestão**, a tela em que coordenação e direção acompanham a escola inteira. O seed
+tem um aluno chamado Pedro Oliveira Costa. A Visão Geral tinha aviso de dados fictícios desde a
+Etapa 2, e sob o critério acima isso não muda nada. Corrigido em `9273891`, junto com as
+licenças: o cartão diz "1 registro, às 9h", e a linha do tempo, "Intercorrência registrada".
+
+- **Encontrada por vocabulário, na primeira aplicação da regra.** O autor formulou a regra da
+  varredura por vocabulário numa mensagem de 16/09/2026, às 10h31. A varredura seguinte, com
+  termos de saúde, afastamento e saúde mental ("licença", "atestado", "estresse", "ansiedade",
+  "depress", "laudo", "transtorno" e afins) sobre as telas de gestão, devolveu a linha às
+  10h32. A correção entrou às 10h35 (`9273891`), e a regra entrou no CLAUDE.md às 10h36
+  (`7faa8f2`). A regra se pagou na mesma sessão em que foi escrita, antes de ser versionada.
+- **Estava à vista desde a Etapa 2.** Em 14/09/2026, às 19h44, `VisaoGeralContent.tsx` foi lido
+  inteiro, com a linha, na busca por ações sem destino da Etapa 2 — um minuto depois do commit
+  que pôs o aviso de dados fictícios na Gestão (`e80a93d`). A leitura procurava outra coisa, e a
+  linha passou. Ler o arquivo não achou; procurar pelas palavras do domínio achou.
+- **Ficaram, por não serem atribuídos a ninguém:** "2 professoras [...] com histórico de
+  afastamentos por estresse" e "Afastamentos médicos" nos riscos, e as especialidades clínicas
+  do profissional em Meu Perfil.
+
+**Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
+conteúdo fixo de exemplo sob o nome do estudante, todos com aviso e sem dado de saúde nem
+identificação de outra pessoa. A Etapa 4 terminou sem trocá-los: o que mostram — PEI,
+trimestres, presença, conquistas — não tem registro de origem no modelo. Ficam para a Etapa 9,
+com a entidade PEI.
 
 ---
 
@@ -259,6 +336,92 @@ tornam possíveis.
 
 ---
 
+### 6. Correção que introduz o defeito adjacente (Etapas 0 a 4)
+
+**Qualificação:** a mesma forma de erro, quatro vezes nesta série, sempre com uma correção ou
+uma verificação que acertou a camada que tocou e errou a vizinha, onde o comportamento de
+fato estava. Em todos os casos, a checagem confirmou a presença do que foi feito, e não o
+efeito observável. Os quatro nasceram no patch da Etapa 0 (`441a31e`), que o autor registra
+como erro seu; a idade foi o último a aparecer, e é o que motivou este registro.
+
+| Caso | O que a correção ou a checagem acertou | Onde estava o defeito | Como apareceu | Corrigido em |
+|---|---|---|---|---|
+| Idade | a idade deixou de ser guardada e passou a ser calculada da data de nascimento, em `calculateAge` (`441a31e`) | a mesma função lia a data com `new Date('AAAA-MM-DD')`, meia-noite em UTC: a idade subia na véspera do aniversário | varredura por qualquer `new Date(...)` com um argumento, depois de corrigir outras três leituras em UTC | `a0d36cf`, Etapa 4 |
+| Typecheck vazio | o script `typecheck` existia e passava em silêncio (`441a31e`) | rodava `tsc --noEmit` contra o `tsconfig.json` raiz, que tem `"files": []`: checava zero arquivos | ao apontar para `tsconfig.app.json`, surgiram 15 erros de tipo | `c43bdc1`, Etapa 0, ainda no PR #1 |
+| Aviso não renderizado | o `DemoDataNotice` foi importado em `PredictiveAnalysis` e a validação achou a palavra no arquivo | a substituição do patch procurava um `CardContent` com classe que o arquivo não tinha, então o aviso nunca apareceu na tela | conferência no navegador, não no código | `451abef`, Etapa 1, no PR #2 |
+| Contraste só nos tokens | os tokens `--brand-*` foram medidos e passavam, e o CLAUDE.md passou a dizer "os valores atuais foram medidos e passam" | os componentes pintavam com cores fixas do Tailwind, fora dos tokens: 47 falhas de contraste em quatro rotas; e uma das razões anotadas estava errada (`--brand-yellow`: 6,19:1 escrito, 5,08:1 medido) | varredura do axe rota a rota, com a cor computada | `5a72ea7`, Etapa 3 |
+
+**Um caso a mais, da própria Etapa 4, que não nasceu de correção.** Na visão Dia da Agenda, a
+comparação entre semanas mostrava "+100%" sempre que a semana anterior não tinha atendimento
+— no total e em cada tipo, qualquer que fosse o número da semana atual. Dois commits desta
+etapa passaram perto do selo sem vê-lo. O `a0d36cf` corrigiu as datas das semanas e registrou
+o resultado como "3 → 2, −33%, com Atendimento Família 0 → 1"; ao lado desse "0 → 1", o código
+daquele commit calcula o selo "+100%", e a mensagem transcreve a linha sem ele. O `9cbeb7d`
+criou o estado "sem base de comparação" para os cartões do mês, no topo do mesmo arquivo. O
+selo apareceu no commit 7 (`7039784`), ao reler a Agenda para pôr o aviso, e passou a dizer
+"sem base". Mesma forma: a checagem conferiu o número que tinha sido corrigido, e não o que
+estava ao lado dele.
+
+**O padrão.** Nenhum dos quatro é descuido na parte corrigida: a idade passou mesmo a ser
+calculada, o script de tipo existia, o aviso estava importado, os tokens passavam. O defeito
+estava a um passo de distância — na leitura da entrada, no alvo do comando, no ponto de
+renderização, no uso real da cor —, e a verificação parou no passo que tinha sido tocado.
+
+**O que desmontou cada um foi medir o efeito, de fora:** a idade exibida com o relógio na
+véspera, a contagem de arquivos checados, o aviso visível na tela, a cor computada no
+navegador. Essa é a regra que as Etapas 3 e 4 foram deixando no CLAUDE.md — contraste medido
+da cor computada, estouro medido por `scrollWidth`, dado sensível procurado por vocabulário —,
+e este achado é a razão comum a todas: **a checagem tem de olhar para onde o usuário olha, não
+para onde o código foi alterado.**
+
+---
+
+## Pendências abertas
+
+Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
+etapa pode afirmar sem ele e o que **não** pode.
+
+### 1. Verificação por teclado e leitor de tela (Etapa 3) — não feita
+
+**Estado em 16/09/2026:** a Etapa 3 foi mesclada no PR #4 **sem** que os nove testes abaixo
+fossem executados. A verificação por teclado e por leitor de tela real continua não feita.
+
+**O que a medida da etapa cobre.** Os números "124 violações para 0" e "8 avisos para 0" vêm
+**só de verificação automatizada** — `axe-core` rota a rota e `eslint-plugin-jsx-a11y` — mais
+a leitura do código. Eles sustentam que todo controle entra na ordem de foco, tem nome
+acessível e expõe estado, e que nenhuma informação depende só de cor ou hover.
+
+**O que ela não cobre.** Que cada controle responde à tecla, que o foco não fica preso, e que
+o leitor de tela anuncia o que a árvore de acessibilidade promete. A ferramenta de navegador
+das sessões não aciona `<button>` por Enter nem por Espaço, então nada disso foi observado.
+O achado 2 mostra por que a diferença importa: dos cinco controles que só funcionavam no
+mouse, a verificação automatizada viu um.
+
+Enquanto os testes não forem feitos, o critério de aceite da Etapa 3 — "navegar o sistema
+inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" — está
+**cumprido pela metade**.
+
+| | Onde | Sequência | Esperado |
+|---|---|---|---|
+| M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
+| M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
+| M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
+| M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
+| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
+| M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
+| M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
+| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
+| M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
+
+O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
+parecem não funcionar. É artefato da automação, não do app.
+
+**Para fechar:** executar os nove, registrar aqui o resultado de cada um (passou, falhou e
+como) e a data. Falha vira item de correção, e a pendência só sai deste bloco quando os nove
+passarem.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.
@@ -365,8 +528,10 @@ desabilitados foi conferido no navegador em cada commit, não pelo script.
 
 Base já feita na Etapa 0 (menu mobile, skip link, `<main>`, contraste, nomes no header).
 
-**Estado em 16/09/2026:** ✅ feita na branch `etapa-3/acessibilidade`, a partir do
-`a9fe84f`, em nove commits de código e quatro de documentação. Os oito itens do inventário
+**Estado em 16/09/2026:** ✅ mesclada no PR #4, a partir do `a9fe84f`, em nove commits de
+código e cinco de documentação — **com uma pendência aberta**: os nove testes de teclado e
+leitor de tela não foram executados (ver **Pendências abertas**, item 1). A medida abaixo
+cobre só verificação automatizada. Os oito itens do inventário
 foram revalidados contra o código depois da Etapa 2, que removeu mais de 1.200 linhas: três
 mudaram de tamanho ou de natureza, um estava errado quanto ao nível do critério, e a
 revalidação achou quatro defeitos que não estavam ali. O contraste, que também não estava,
@@ -386,6 +551,8 @@ virou item próprio.
 | `64181a7` Docs | Achados e a regra de medir contraste |
 | `f80e31b` Add | Preferências de acessibilidade |
 | `79c2890` Fix | Refluxo em 320 px e zoom de 200% |
+| `cfc0fec` Docs | Medida da etapa; `jsx-a11y` de aviso para erro |
+| `86a9e06` Docs | Achado 5 e a captura de tela como não-evidência |
 
 ### Resultado da etapa
 
@@ -581,30 +748,115 @@ encontrar controle inalcançável. Toda informação disponível por cor/hover t
 disponível como texto.
 
 **Estado do critério:** a segunda metade está cumprida e medida. A primeira depende do teste
-manual, porque a ferramenta de navegador da sessão não aciona `<button>` por Enter ou
-Espaço. A lista de teste está abaixo; o que dá para afirmar sem ela é que todo controle
-entra na ordem de foco, tem nome e expõe estado.
+manual, que **não foi feito**: a ferramenta de navegador da sessão não aciona `<button>` por
+Enter ou Espaço, e os nove testes ficaram como pendência aberta. O que dá para afirmar sem
+eles é que todo controle entra na ordem de foco, tem nome e expõe estado.
 
-### Lista de teste manual, a executar pelo autor
+### Lista de teste manual
 
-| | Onde | Sequência | Esperado |
-|---|---|---|---|
-| M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
-| M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
-| M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
-| M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
-| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
-| M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
-| M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
-| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
-| M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
-
-O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
-parecem não funcionar. É artefato da automação, não do app.
+Movida para **Pendências abertas**, item 1, no topo deste arquivo: os nove testes não foram
+executados antes do merge.
 
 ---
 
 ## Etapa 4 — Números coerentes
+
+**Estado em 16/09/2026:** pronta para revisão, em oito commits de código e três de
+documentação, a partir do `6875c1a`. O merge é do autor. A regra da etapa: número que
+descreve os registros se calcula a partir deles, em `src/lib/metrics.ts`; número que não tem
+registro de origem vira cenário com nome próprio, com aviso, ou sai. As decisões D1 a D6 são
+do autor e estão no plano aprovado; os commits citam cada uma onde ela se aplica.
+
+| Commit | O que faz |
+|---|---|
+| `52a7b54` Docs | Pendência aberta: os testes manuais da Etapa 3 não foram feitos |
+| `e43150f` Fix | Terceira onda do achado 1: dado de saúde fixo na ficha, no Desempenho e na Nova Observação |
+| `06eed98` Refactor | `src/lib/metrics.ts` com os seletores que já existiam, sem mudar número |
+| `a0d36cf` Fix | Datas lidas em UTC que mudavam números à noite, aos domingos e na véspera de aniversário |
+| `9273891` Fix | Licenças de profissionais nomeados e a quarta onda do achado 1 |
+| `7faa8f2` Docs | Achado 6 e a regra da varredura por vocabulário no CLAUDE.md |
+| `9cbeb7d` Fix | Contagens do mês e variações calculadas, com "sem base de comparação" (D2) |
+| `46ae545` Fix | Ficha: progresso calculado das avaliações (D3) e campos inventados fora |
+| `6c502da` Fix | Biblioteca: nota das avaliações (D4), downloads fora (D5), badges por contribuição |
+| `7039784` Fix | Gestão como cenário nomeado (D1), o 88% (D6), avisos, ranking fora, "+100%" da Agenda |
+| este `Docs:` | Medida da etapa, quarta onda do achado 1, caso a mais do achado 6, README |
+
+### Resultado da etapa
+
+Medido no navegador antes e depois de cada commit, com o relógio emulado quando o defeito
+dependia de data ou hora. Os detalhes de cada linha estão na mensagem do commit.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Dado de saúde fixo atribuído a estudante ou a pessoa nomeada** | **9** | **0** |
+| — sob o nome de qualquer estudante: ficha, Desempenho, Nova Observação | 5 | 0 |
+| — de pessoa nomeada, na Gestão: duas licenças, "Pedro, 9h - Ansiedade", "Pedro (crise)" | 4 | 0 |
+| Afirmações falsas de funcionalidade na ficha ("Acesso controlado por perfil", "Histórico completo") | 2 | 0 |
+| **Números digitados apresentados como medida** | | |
+| — tendências sem base (Dashboard ↑12% e ↑8%; Agenda +12%) | 3 | 0 |
+| — selos "+100%" sem semana anterior na Agenda (visão Dia em 25/11/2025) | 3 | 0 |
+| — números sem entidade de origem ("12 relatórios pendentes", "21" anexos) | 2 | 0 |
+| Cartões "este mês" que contavam registros de qualquer data | 2 | 0 |
+| Leituras de data em UTC (Agenda: 7 dias e semanas; detalhe da observação; `calculateAge`) | 4 | 0 |
+| "Próximos 7 dias", Dashboard × Agenda, às 21h30 de 24/11/2025 | 3 × 4 | 3 × 3 |
+| Alunos com progresso exibido sem ter avaliação | 3 de 4 | 0 |
+| Campos e selos inventados na ficha, iguais para qualquer estudante | 13 | 0 |
+| Recursos com nota e contagem da fixture, e não das avaliações | 6 de 6 | 0 |
+| Cards de recurso com número de download | 6 | 0 |
+| Estatísticas sem origem no detalhe do recurso ("Favoritado por", "Taxa de satisfação", "18 escolas", "acharam útil") | 4 | 0 |
+| Números fixos em Meus Recursos (12 publicados, 1.234 downloads, 4,7, 234 favoritados) | 4 | 0 |
+| Badges conquistadas com zero contribuições | 4 | 0 |
+| Ranking de pessoas fictícias apresentado como classificação real | 1 | 0 |
+| Pessoas do seed dentro do cenário de Gestão | 4 | 0 |
+| Alunos e famílias nomeados no cenário de Gestão | 8 | 0 |
+| Indicadores da Gestão com o mesmo nome e valor ou veredicto diferente (88%; satisfação) | 2 | 0 |
+| Telas com número sem aviso de dados fictícios (Dashboard, Agenda, Desempenho, Biblioteca) | 4 | 0 |
+
+Os 13 campos e selos da ficha: ano letivo, turno e professor(a) de apoio; composição e
+observações da família; os cinco itens do "Histórico" (pendências, ingresso, primeiro PEI,
+revisões, progressões); "Última atualização"; e os selos "Desempenho em dia" e "Documentação
+em dia". Os 8 nomes da Gestão: os alunos "Ana Silva", "Pedro Santos", "Maria Costa", "João
+Silva", "Maria Oliveira" e "Pedro Costa", e as famílias "Silva" e "Costa". As 4 pessoas do
+seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João Santos.
+
+**O que o número não diz.**
+- **O critério de aceite está cumprido com uma ressalva.** Os indicadores calculados do aluno
+  saem de seletores de `metrics.ts`: o progresso aparece igual no card e na ficha, e as
+  contagens da ficha e do relatório vêm dos mesmos registros (o relatório, no período
+  escolhido). Mas Desempenho, Apresentação, Ver PEI e Detalhe da observação ainda
+  mostram números fixos sob o nome do estudante: o Desempenho da Maria diz 85% no 4º
+  trimestre, e a ficha, 60%. Agora o diálogo diz, em aviso e na descrição, que o conteúdo é
+  igual para qualquer estudante e que o progresso calculado está na ficha. Os números deixaram
+  de ser apresentados como dela, mas continuam na tela. Trocar por dado real depende da
+  entidade PEI (Etapa 9).
+- **Zero "neste mês" é resultado, não defeito** (D2). As observações e os atendimentos do seed
+  são de novembro e dezembro de 2025. O README e os avisos do Dashboard e da Agenda dizem isso.
+- **O cenário de Gestão continua inventado**, agora com nome e separado dos registros (D1).
+  Coerência interna do cenário só foi tratada onde havia contradição à vista: o 88% e a
+  satisfação.
+
+### O que ainda falta
+
+Encontrado durante a etapa e deixado de fora, de propósito:
+- **Vocabulário de previsão sobre dado estático.** `PredictiveAnalysis` ("prevê-se",
+  "Probabilidade") e `BenchmarkingPanel` ("Baseado em N casos similares, há X% de chance de
+  melhoria") usam o vocabulário que a invariante 2 do CLAUDE.md proíbe para dados estáticos. As
+  duas telas têm aviso dizendo que nenhum modelo é executado. Estava registrado desde a Etapa 2
+  e não entrou no plano desta etapa. Precisa de decisão: reescrever o texto ou tirar as telas.
+- **Contradições internas do cenário além do 88%.** O Resumo Executivo diz "17 alertas ativos,
+  5 críticos", e o painel de alertas logo abaixo, na mesma aba, lista 5 alertas, 2 críticos.
+  `MeuPerfilDialog`, fora da Gestão e com aviso, ainda mostra "Taxa média de sucesso: 88%".
+- **Acessibilidade, achado na verificação do commit 7.** Na aba Orçamento, abaixo de ~800 px
+  de largura, a tabela "Aprovações Pendentes" transborda num contêiner com rolagem que não
+  recebe foco, e o axe acusa `scrollable-region-focusable` (2.1.1). Não é da Etapa 4: com os
+  nomes antigos recolocados no DOM, a tabela transborda igual. A medida da Etapa 3 deu 0 nessa
+  rota, e a largura em que o axe rodou não ficou registrada. A mesma regra deve ser medida nas
+  outras tabelas em largura estreita.
+- **Calendário da Agenda em inglês.** A visão Lista mostra "Tue Nov 25", "2:00 pm" e
+  "11/25/2025". Visto de passagem; não investigado.
+- **Código morto novo:** `mockProfessionals` ficou sem uso (Etapa 5, item 11).
+
+### Inventário e plano original
 
 **Problema:** `ExecutiveSummary` exibe 45 alunos; o Dashboard conta 4 do fixture;
 `VisaoGeralContent` diz 42/45; `BenchmarkingTable` tem outro conjunto fixo. Valores
@@ -648,8 +900,38 @@ estudante ou como se tivesse sido medido.
     favoritos deste navegador, "Usado em 18 escolas" é inventado e "N pessoas acharam útil"
     vem das fixtures.
 
+**Datas lidas em UTC — confirmado e corrigido no commit 3.** `new Date('AAAA-MM-DD')` é
+meia-noite em UTC, e em `America/Sao_Paulo` (UTC−3) isso é 21h do dia anterior. Quatro lugares
+faziam essa leitura:
+
+| Onde | Efeito | Antes | Depois |
+|---|---|---|---|
+| Agenda, "Próximos 7 dias" | a partir das 21h, deixa de contar os atendimentos de hoje e passa a contar os do oitavo dia, divergindo do Dashboard | relógio 24/11/2025 21h30: Dashboard 3, Agenda **4**; relógio 28/11/2025 21h30: Dashboard 4, Agenda **3** | 3 e 3; 4 e 4 |
+| Agenda, visão de dia, comparação entre semanas | o atendimento de domingo some das duas semanas, porque a semana guardava a hora do relógio e a data do atendimento caía no sábado às 21h | relógio no domingo 30/11/2025 10h: "Total Geral 3 → **1**, −67%", sem a linha de Atendimento Família | "3 → 2, −33%", com "Atendimento Família 0 → 1" |
+| Detalhe da observação, cinco datas | a observação de 19/11/2025 aparece como 18/11 | 18/11/2025 | 19/11/2025 |
+| `calculateAge`, em `src/lib/date.ts` | a idade sobe na véspera do aniversário | nascida em 15/03/2016, relógio em 14/03/2026: **10 anos** | 9 anos em 14/03; 10 anos em 15/03 |
+
+- **Como foi confirmado.** A divergência dos "Próximos 7 dias" foi primeiro verificada em
+  Node, rodando as duas fórmulas copiadas do código com `TZ=America/Sao_Paulo`. Depois, no
+  navegador, cujo fuso é `America/Sao_Paulo`, com o relógio emulado: `window.Date` substituído
+  por uma subclasse que devolve um instante fixo quando chamada sem argumento, e a rota
+  renderizada de novo. Às 10h do mesmo dia, os dois números batiam — o controle. As quatro
+  linhas da tabela foram medidas assim, antes e depois, com o servidor reiniciado e o módulo
+  servido conferido.
+- **O de `calculateAge` não estava no inventário.** Apareceu numa varredura por qualquer
+  `new Date(...)` com um argumento só, feita depois de corrigir os três conhecidos. É a função
+  que o CLAUDE.md manda usar para toda idade.
+- **Regra adotada, escrita no topo de `src/lib/metrics.ts`:** data de registro se compara como
+  texto `YYYY-MM-DD`; para exibir, `formatLocalDate`; para calcular, `parseLocalDate`. Nunca
+  `new Date('AAAA-MM-DD')`.
+- **Por que nenhum teste de dia pegou:** os quatro defeitos dependem de hora da noite, de
+  domingo ou de véspera de aniversário. Com o relógio real, às 8h de uma quarta-feira, as dez
+  rotas medidas mostram exatamente os mesmos números antes e depois da correção.
+
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
-telas diferentes.
+telas diferentes. **Estado:** cumprido com uma ressalva, descrita em **O que o número não diz**,
+no topo desta etapa: os diálogos de exemplo ainda mostram números fixos sob o nome do
+estudante, agora com aviso de que não são dele.
 
 ---
 
@@ -686,13 +968,16 @@ telas diferentes.
     - `VisaoGeralContent.tsx:37` usa a chave de objeto `MÉDIA`, com acento;
     - `VisaoGeralContent` e `MeuPerfilDialog` põem `Badge` (um `<div>`) dentro de `<p>`, e o
       React acusa aninhamento inválido;
-    - `ObservationDetailDialog` formata a data com `new Date('AAAA-MM-DD')`, que é UTC: a
-      observação de 19/11/2025 aparece como 18/11/2025 no Brasil;
+    - ~~`ObservationDetailDialog` formata a data com `new Date('AAAA-MM-DD')`, que é UTC: a
+      observação de 19/11/2025 aparece como 18/11/2025 no Brasil;~~ corrigido na Etapa 4
+      (`a0d36cf`);
     - em `AgendaAtendimentos`, as visões de semana e de dia passam `view` ao
       `react-big-calendar` sem `onView`, e o console avisa;
     - `App.tsx`, `StudentDetail`, `ObservationDetailDialog`, `StudentHistoryDialog`,
       `PresentationModeDialog`, `MeuPerfilDialog`, `AgendaAtendimentos` e `Dashboard` têm
       imports sem uso anteriores à Etapa 2.
+11. `mockProfessionals`, em `mockData.ts`, ficou sem nenhum uso na Etapa 4 (`7039784`), quando
+    a aba Equipe da Gestão deixou de repetir os profissionais do seed.
 
 **Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
 

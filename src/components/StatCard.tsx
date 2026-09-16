@@ -1,17 +1,28 @@
 import { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import type { PeriodChange } from '@/lib/metrics';
 
 interface StatCardProps {
   title: string;
   value: string | number;
   icon: LucideIcon;
   description?: string;
-  trend?: {
-    value: number;
-    isPositive: boolean;
-  };
+  /**
+   * Variação em relação ao mês anterior, calculada por `periodChange`. Antes era um número
+   * digitado na chamada (+12%, +8%), sem nenhum registro por trás.
+   */
+  trend?: PeriodChange;
   variant?: 'default' | 'primary' | 'success' | 'warning' | 'info';
 }
+
+/** Em palavras, e não só em seta e cor: "alta de 12%" diz o mesmo para quem não vê a cor. */
+const describeTrend = (trend: PeriodChange): string => {
+  if (trend.kind === 'noBaseline') return 'Sem base de comparação com o mês anterior';
+  if (trend.percent === 0) return 'Igual ao mês anterior';
+  return trend.percent > 0
+    ? `Alta de ${trend.percent}% em relação ao mês anterior`
+    : `Queda de ${Math.abs(trend.percent)}% em relação ao mês anterior`;
+};
 
 const StatCard = ({ 
   title, 
@@ -47,14 +58,7 @@ const StatCard = ({
             {description && (
               <p className="text-xs text-muted-foreground mt-1">{description}</p>
             )}
-            {trend && (
-              <div className="flex items-center gap-1 mt-2">
-                <span className={`text-xs font-medium ${trend.isPositive ? 'text-success' : 'text-destructive'}`}>
-                  {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
-                </span>
-                <span className="text-xs text-muted-foreground">vs. mês anterior</span>
-              </div>
-            )}
+            {trend && <p className="mt-2 text-xs text-muted-foreground">{describeTrend(trend)}</p>}
           </div>
           <div className={`${bgVariantClasses[variant]} p-4 rounded-xl`}>
             <Icon className={`h-8 w-8 ${variantClasses[variant]}`} />

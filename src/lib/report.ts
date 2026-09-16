@@ -1,19 +1,12 @@
 import { institution } from '@/config/institution';
 import type { Assessment, Atendimento, Observation, Student } from '@/types';
 import type { DemoState } from '@/types/store';
+import { isWithinPeriod, type DatePeriod } from '@/lib/metrics';
 
 export type ReportKind = 'student' | 'class';
 
-export interface ReportPeriod {
-  /** YYYY-MM-DD, inclusive. Empty means no lower bound. */
-  start: string;
-  /** YYYY-MM-DD, inclusive. Empty means no upper bound. */
-  end: string;
-}
-
-/** Records are dated YYYY-MM-DD, so comparing the strings follows the calendar. */
-export const isWithinPeriod = (date: string, { start, end }: ReportPeriod): boolean =>
-  (!start || date >= start) && (!end || date <= end);
+/** O período do relatório é o mesmo intervalo de datas usado pelas métricas. */
+export type ReportPeriod = DatePeriod;
 
 /** A class is a grade plus a group; neither identifies it on its own. */
 export const classKeyOf = (student: Pick<Student, 'serie' | 'turma'>): string => `${student.serie}|${student.turma}`;

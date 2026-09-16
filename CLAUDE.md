@@ -102,6 +102,11 @@ Se implementar armazenamento local (localStorage/IndexedDB), a UI deve avisar
 explicitamente que os dados ficam no navegador e que o modo demo não é adequado para
 dados reais.
 
+Ao procurar dado sensível, busque por VOCABULÁRIO do domínio (clínico, comportamental, de
+saúde mental), nunca pelos termos do defeito já conhecido. Cada busca anterior desta série
+usou as palavras do caso anterior, e foi assim que 'Transtorno Global do Desenvolvimento'
+sobreviveu a duas varreduras.
+
 ## Convenções
 
 - Identificadores novos: inglês, ASCII, camelCase/PascalCase. Português apenas em textos

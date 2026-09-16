@@ -10,7 +10,6 @@ export interface Student {
   diagnostico: string;
   nivelSuporte: 'baixo' | 'medio' | 'alto';
   professorResponsavel: string;
-  progresso?: number;
   status: StudentStatus;
   dataCadastro: string;
   responsavel: {

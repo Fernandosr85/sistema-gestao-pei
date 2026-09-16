@@ -17,10 +17,23 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import StatCard from '@/components/StatCard';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
-import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
+import { appointmentTypes } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
+import {
+  appointmentsInPeriod,
+  appointmentsWithoutMinutes,
+  isWithinPeriod,
+  monthPeriod,
+  periodChange,
+  previousMonthPeriod,
+  previousWeekPeriod,
+  upcomingAppointmentsWithin,
+  weekPeriod,
+} from '@/lib/metrics';
+import type { PeriodChange } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 /*
@@ -48,6 +61,40 @@ const statusBadgeVariant = {
 moment.locale('pt-br');
 const localizer = momentLocalizer(moment);
 
+const diaEMes: Intl.DateTimeFormatOptions = { day: '2-digit', month: '2-digit' };
+
+/** Para ordenar as variações entre semanas: sem base primeiro, depois da maior para a menor. */
+const changeMagnitude = (change: PeriodChange) =>
+  change.kind === 'noBaseline' ? Number.POSITIVE_INFINITY : Math.abs(change.percent);
+
+/** Selo da variação entre semanas. Sem base de comparação, diz isso em vez de dar um percentual. */
+const renderWeekChange = (change: PeriodChange, className?: string) => {
+  if (change.kind === 'noBaseline') {
+    return (
+      <Badge variant="secondary" className={cn('gap-1', className)}>
+        <Minus className="h-3 w-3" />
+        sem base<span className="sr-only"> de comparação com a semana anterior</span>
+      </Badge>
+    );
+  }
+  const { percent } = change;
+  return (
+    <Badge
+      variant={percent > 0 ? 'default' : percent < 0 ? 'destructive' : 'secondary'}
+      className={cn('gap-1', className)}
+    >
+      {percent > 0 ? (
+        <TrendingUp className="h-3 w-3" />
+      ) : percent < 0 ? (
+        <TrendingDown className="h-3 w-3" />
+      ) : (
+        <Minus className="h-3 w-3" />
+      )}
+      {percent > 0 ? '+' : ''}{percent}%
+    </Badge>
+  );
+};
+
 const AgendaAtendimentos = () => {
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
   const [detalhesOpen, setDetalhesOpen] = useState(false);
@@ -66,17 +113,19 @@ const AgendaAtendimentos = () => {
   const { state } = useDemoStore();
   const atendimentos = state.appointments;
 
-  const proximosSete = atendimentos.filter(a => {
-    const today = new Date();
-    const atendimentoDate = new Date(a.data);
-    const diffTime = atendimentoDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 7 && isOpenAppointment(a.status);
-  }).length;
+  /*
+   * Mesmo seletor do Dashboard. A conta antiga fazia `new Date(a.data)`, que é meia-noite em
+   * UTC: a partir das 21h no Brasil, a Agenda deixava de contar os atendimentos de hoje e
+   * passava a contar os do oitavo dia, e o número divergia do Dashboard.
+   */
+  const hoje = new Date();
+  const proximosSete = upcomingAppointmentsWithin(state, hoje, 7).length;
 
-  const pendentesRegistro = atendimentos.filter(a => 
-    a.status === 'realizado' && !a.ata
-  ).length;
+  const pendentesRegistro = appointmentsWithoutMinutes(state);
+
+  // "Este Mês" contava todos os atendimentos, de qualquer data, e mostrava "+12%" digitado.
+  const atendimentosEsteMes = appointmentsInPeriod(state, monthPeriod(hoje));
+  const atendimentosMesAnterior = appointmentsInPeriod(state, previousMonthPeriod(hoje));
 
   const filteredAtendimentos = atendimentos.filter(atendimento => {
     if (filtroAluno !== 'todos' && atendimento.aluno !== filtroAluno) return false;
@@ -135,6 +184,11 @@ const AgendaAtendimentos = () => {
         </Button>
       </div>
 
+      <DemoDataNotice
+        subject="Os atendimentos que vêm com a demonstração"
+        detail="Os números e as comparações desta tela são calculados desses atendimentos e dos que forem cadastrados neste navegador. Os atendimentos iniciais são de novembro e dezembro de 2025: por isso as contagens deste mês e dos próximos 7 dias ficam em zero enquanto não houver atendimento com data nesses períodos."
+      />
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
@@ -146,10 +200,10 @@ const AgendaAtendimentos = () => {
         />
         <StatCard
           title="Este Mês"
-          value={atendimentos.length}
+          value={atendimentosEsteMes}
           icon={CalendarRange}
-          description="+12% vs. mês anterior"
-          trend={{ value: 12, isPositive: true }}
+          description="Com data neste mês, inclusive cancelados"
+          trend={periodChange(atendimentosEsteMes, atendimentosMesAnterior)}
           variant="success"
         />
         <StatCard
@@ -344,28 +398,12 @@ const AgendaAtendimentos = () => {
               return acc;
             }, {} as Record<string, number>);
 
-            // Cálculo para semana atual e anterior
-            const selectedDate = new Date(currentDate);
-            const dayOfWeek = selectedDate.getDay();
-            const startOfWeek = new Date(selectedDate);
-            startOfWeek.setDate(selectedDate.getDate() - dayOfWeek);
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            // Semana atual e anterior, como datas YYYY-MM-DD comparadas por texto.
+            const semanaAtual = weekPeriod(currentDate);
+            const semanaAnterior = previousWeekPeriod(currentDate);
 
-            const startOfPreviousWeek = new Date(startOfWeek);
-            startOfPreviousWeek.setDate(startOfWeek.getDate() - 7);
-            const endOfPreviousWeek = new Date(startOfPreviousWeek);
-            endOfPreviousWeek.setDate(startOfPreviousWeek.getDate() + 6);
-
-            const atendimentosSemanaAtual = filteredAtendimentos.filter(a => {
-              const dataAtendimento = new Date(a.data);
-              return dataAtendimento >= startOfWeek && dataAtendimento <= endOfWeek;
-            });
-
-            const atendimentosSemanaAnterior = filteredAtendimentos.filter(a => {
-              const dataAtendimento = new Date(a.data);
-              return dataAtendimento >= startOfPreviousWeek && dataAtendimento <= endOfPreviousWeek;
-            });
+            const atendimentosSemanaAtual = filteredAtendimentos.filter(a => isWithinPeriod(a.data, semanaAtual));
+            const atendimentosSemanaAnterior = filteredAtendimentos.filter(a => isWithinPeriod(a.data, semanaAnterior));
 
             const distribuicaoSemanaAtual = atendimentosSemanaAtual.reduce((acc, a) => {
               acc[a.tipo] = (acc[a.tipo] || 0) + 1;
@@ -382,15 +420,15 @@ const AgendaAtendimentos = () => {
               ...Object.keys(distribuicaoSemanaAnterior)
             ]);
 
+            /*
+             * Sem atendimento na semana anterior não há base de comparação. Esse caso aparecia
+             * como "+100%", no total e em cada tipo, qualquer que fosse o número da semana atual.
+             */
             const comparacoes = Array.from(tiposUnicos).map(tipo => {
               const atual = distribuicaoSemanaAtual[tipo] || 0;
               const anterior = distribuicaoSemanaAnterior[tipo] || 0;
-              const variacao = anterior === 0 
-                ? (atual > 0 ? 100 : 0) 
-                : Math.round(((atual - anterior) / anterior) * 100);
-              
-              return { tipo, atual, anterior, variacao };
-            }).sort((a, b) => Math.abs(b.variacao) - Math.abs(a.variacao));
+              return { tipo, atual, anterior, variacao: periodChange(atual, anterior) };
+            }).sort((a, b) => changeMagnitude(b.variacao) - changeMagnitude(a.variacao));
 
             return totalAtendimentos > 0 ? (
               <>
@@ -506,8 +544,8 @@ const AgendaAtendimentos = () => {
                         Comparação: Semana Atual vs. Semana Anterior
                       </CardTitle>
                       <p className="text-sm text-muted-foreground">
-                        Semana atual: {format(startOfWeek, "dd/MM")} - {format(endOfWeek, "dd/MM")} | 
-                        Semana anterior: {format(startOfPreviousWeek, "dd/MM")} - {format(endOfPreviousWeek, "dd/MM")}
+                        Semana atual: {formatLocalDate(semanaAtual.start, diaEMes)} - {formatLocalDate(semanaAtual.end, diaEMes)} |{' '}
+                        Semana anterior: {formatLocalDate(semanaAnterior.start, diaEMes)} - {formatLocalDate(semanaAnterior.end, diaEMes)}
                       </p>
                     </CardHeader>
                     <CardContent>
@@ -520,26 +558,7 @@ const AgendaAtendimentos = () => {
                               <span className="text-sm text-muted-foreground">
                                 {atendimentosSemanaAnterior.length} → {atendimentosSemanaAtual.length}
                               </span>
-                              {(() => {
-                                const variacaoTotal = atendimentosSemanaAnterior.length === 0 
-                                  ? 100 
-                                  : Math.round(((atendimentosSemanaAtual.length - atendimentosSemanaAnterior.length) / atendimentosSemanaAnterior.length) * 100);
-                                return (
-                                  <Badge 
-                                    variant={variacaoTotal > 0 ? "default" : variacaoTotal < 0 ? "destructive" : "secondary"}
-                                    className="gap-1"
-                                  >
-                                    {variacaoTotal > 0 ? (
-                                      <TrendingUp className="h-3 w-3" />
-                                    ) : variacaoTotal < 0 ? (
-                                      <TrendingDown className="h-3 w-3" />
-                                    ) : (
-                                      <Minus className="h-3 w-3" />
-                                    )}
-                                    {variacaoTotal > 0 ? '+' : ''}{variacaoTotal}%
-                                  </Badge>
-                                );
-                              })()}
+                              {renderWeekChange(periodChange(atendimentosSemanaAtual.length, atendimentosSemanaAnterior.length))}
                             </div>
                           </div>
                         </div>
@@ -560,19 +579,7 @@ const AgendaAtendimentos = () => {
                               <span className="text-sm text-muted-foreground">
                                 {anterior} → {atual}
                               </span>
-                              <Badge 
-                                variant={variacao > 0 ? "default" : variacao < 0 ? "destructive" : "secondary"}
-                                className="gap-1 min-w-[70px] justify-center"
-                              >
-                                {variacao > 0 ? (
-                                  <TrendingUp className="h-3 w-3" />
-                                ) : variacao < 0 ? (
-                                  <TrendingDown className="h-3 w-3" />
-                                ) : (
-                                  <Minus className="h-3 w-3" />
-                                )}
-                                {variacao > 0 ? '+' : ''}{variacao}%
-                              </Badge>
+                              {renderWeekChange(variacao, 'min-w-[70px] justify-center')}
                             </div>
                           </div>
                         ))}

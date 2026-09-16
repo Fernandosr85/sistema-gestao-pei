@@ -1,6 +1,7 @@
 import { Users, ClipboardList, FileText, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import StatCard from '@/components/StatCard';
+import DemoDataNotice from '@/components/DemoDataNotice';
 import StudentCard from '@/components/StudentCard';
 import QuickActions from '@/components/QuickActions';
 import { GenerateReportDialog } from '@/components/GenerateReportDialog';
@@ -8,28 +9,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { isOpenAppointment } from '@/lib/appointment';
-import { formatLocalDate, todayLocalISO, toLocalISODate } from '@/lib/date';
+import { formatLocalDate } from '@/lib/date';
+import {
+  monthPeriod,
+  observationsInPeriod,
+  periodChange,
+  previousMonthPeriod,
+  studentCounts,
+  upcomingAppointments,
+  upcomingAppointmentsWithin,
+} from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const Dashboard = () => {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const { state } = useDemoStore();
 
-  const totalStudents = state.students.length;
-  const activeStudents = state.students.filter(s => s.status === 'ativo').length;
-  const totalObservations = state.observations.length;
-
-  const today = todayLocalISO();
   const now = new Date();
-  const sevenDaysAhead = toLocalISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7));
-  const upcomingAppointments = state.appointments
-    .filter((appointment) => isOpenAppointment(appointment.status) && appointment.data >= today)
-    .sort((a, b) => `${a.data} ${a.horarioInicio}`.localeCompare(`${b.data} ${b.horarioInicio}`));
-  const appointmentsNextSevenDays = upcomingAppointments.filter((appointment) => appointment.data <= sevenDaysAhead).length;
+  const { total: totalStudents, active: activeStudents } = studentCounts(state);
+  // "Este mês" contava todas as observações já registradas, de qualquer data.
+  const observationsThisMonth = observationsInPeriod(state, monthPeriod(now));
+  const observationsLastMonth = observationsInPeriod(state, previousMonthPeriod(now));
+  const appointmentsNextSevenDays = upcomingAppointmentsWithin(state, now, 7).length;
 
   const recentStudents = state.students.slice(0, 3);
-  const nextAppointments = upcomingAppointments.slice(0, 3);
+  const nextAppointments = upcomingAppointments(state, now).slice(0, 3);
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-in">
@@ -67,22 +71,31 @@ const Dashboard = () => {
         </div>
       </section>
 
+      <DemoDataNotice
+        subject="Os alunos, observações e atendimentos que vêm com a demonstração"
+        detail="Os números desta tela são calculados desses registros e dos que forem cadastrados neste navegador. As observações e os atendimentos iniciais são de novembro e dezembro de 2025: por isso as contagens deste mês e dos próximos 7 dias ficam em zero enquanto não houver registro com data nesses períodos."
+      />
+
       {/* Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/*
+        * Sem tendência em "Alunos Ativos": o store não guarda o histórico de status, então não
+        * há como saber quantos estavam ativos no mês anterior. Saiu também o cartão
+        * "Relatórios: 12 pendentes": não existe entidade de relatório para contar.
+        */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Alunos Ativos"
           value={activeStudents}
           icon={Users}
           description={`${totalStudents} total`}
-          trend={{ value: 12, isPositive: true }}
           variant="primary"
         />
         <StatCard
           title="Observações"
-          value={totalObservations}
+          value={observationsThisMonth}
           icon={ClipboardList}
-          description="Este mês"
-          trend={{ value: 8, isPositive: true }}
+          description="Registradas neste mês"
+          trend={periodChange(observationsThisMonth, observationsLastMonth)}
           variant="success"
         />
         <StatCard
@@ -91,13 +104,6 @@ const Dashboard = () => {
           icon={Calendar}
           description="Próximos 7 dias"
           variant="warning"
-        />
-        <StatCard
-          title="Relatórios"
-          value={12}
-          icon={FileText}
-          description="Pendentes"
-          variant="info"
         />
       </section>
 

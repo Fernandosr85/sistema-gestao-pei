@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { illustrativeScenario } from '@/config/institution';
 import { 
   AlertTriangle, 
   Users, 
@@ -46,7 +47,7 @@ const VisaoGeralContent = () => {
 
       <DemoDataNotice
         subject="Os alertas, prioridades, indicadores e notificações desta visão geral"
-        detail="Os nomes citados não correspondem aos alunos cadastrados no sistema."
+        detail="O painel não nomeia alunos nem famílias; os profissionais citados são da equipe do cenário."
       />
 
       {/* Alertas Críticos */}
@@ -64,11 +65,13 @@ const VisaoGeralContent = () => {
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
+                  {/* Saíram os nomes dos alunos: o cenário não nomeia aluno. "Pedro Santos" e
+                      "Maria Costa" se confundiam com alunos da demonstração. */}
                   <p className="font-semibold mb-2">PEIs Vencidos</p>
                   <ul className="text-sm space-y-1">
-                    <li>• Ana Silva - 12 dias de atraso</li>
-                    <li>• Pedro Santos - 8 dias de atraso</li>
-                    <li>• Maria Costa - 5 dias de atraso</li>
+                    <li>• Um PEI com 12 dias de atraso</li>
+                    <li>• Um PEI com 8 dias de atraso</li>
+                    <li>• Um PEI com 5 dias de atraso</li>
                   </ul>
                 </div>
               </div>
@@ -86,8 +89,10 @@ const VisaoGeralContent = () => {
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">2</Badge>
                   </p>
                   <ul className="text-sm space-y-1">
-                    <li>• Profª Marina Silva - 92% de carga (Turma C)</li>
-                    <li>• Prof. João Pereira - 87% de carga (Turma D)</li>
+                    {/* Os dois da aba Equipe com carga de 90% ou mais. Antes eram outros dois, um
+                        deles "Profª Marina", como a professora regente de um aluno da demonstração. */}
+                    <li>• Profª. Juliana Mendes - 97.5% de carga</li>
+                    <li>• Profª. Helena Duarte - 90% de carga</li>
                   </ul>
                 </div>
               </div>
@@ -124,7 +129,7 @@ const VisaoGeralContent = () => {
                 <span className="text-2xl font-bold">93%</span>
               </div>
               <p className="text-sm font-medium mb-1">Presença PEI</p>
-              <p className="text-xs text-muted-foreground mb-2">42/45 alunos</p>
+              <p className="text-xs text-muted-foreground mb-2">42/{illustrativeScenario.studentsWithPei} alunos</p>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Meta: 95%</span>
@@ -143,7 +148,8 @@ const VisaoGeralContent = () => {
                 <span className="text-2xl font-bold">1</span>
               </div>
               <p className="text-sm font-medium mb-1">Crises Hoje</p>
-              <p className="text-xs text-muted-foreground mb-2">Pedro, 9h - Ansiedade</p>
+              {/* Saiu "Pedro, 9h - Ansiedade": crise de saúde mental atribuída a um aluno nomeado. */}
+              <p className="text-xs text-muted-foreground mb-2">1 registro, às 9h</p>
               <div className="flex items-center gap-1 text-xs">
                 <TrendingDown className="h-3 w-3 text-success" />
                 <span className="text-success">Média: 2 eventos</span>
@@ -174,8 +180,9 @@ const VisaoGeralContent = () => {
                 <Award className="h-8 w-8 text-success" />
                 <span className="text-2xl font-bold">4.7</span>
               </div>
-              <p className="text-sm font-medium mb-1">Satisfação Geral</p>
-              <p className="text-xs text-muted-foreground mb-2">Feedback famílias</p>
+              {/* Era "Satisfação Geral": nome dos 91% da aba Análise, que medem outra coisa. */}
+              <p className="text-sm font-medium mb-1">Nota das famílias</p>
+              <p className="text-xs text-muted-foreground mb-2">Média de 1 a 5</p>
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span>Meta: 4.5</span>
@@ -238,10 +245,12 @@ const VisaoGeralContent = () => {
             <div className="space-y-4">
               {[
                 { time: '08:00', icon: Users, text: 'Reunião pedagógica - Sala 3', color: 'text-primary' },
-                { time: '09:30', icon: Bell, text: 'Lembrete: Responder família Silva', color: 'text-warning' },
-                { time: '10:00', icon: AlertTriangle, text: 'Intercorrência: Pedro (crise)', color: 'text-destructive' },
+                // Sem nome de família: "Silva" e "Costa" são sobrenomes de alunos da demonstração.
+                { time: '09:30', icon: Bell, text: 'Lembrete: responder a uma família', color: 'text-warning' },
+                // Era "Intercorrência: Pedro (crise)", com o nome do aluno.
+                { time: '10:00', icon: AlertTriangle, text: 'Intercorrência registrada', color: 'text-destructive' },
                 { time: '14:00', icon: FileText, text: 'Revisar relatório mensal', color: 'text-info' },
-                { time: '15:30', icon: Users, text: 'Atendimento: Família Costa', color: 'text-success' },
+                { time: '15:30', icon: Users, text: 'Atendimento a uma família', color: 'text-success' },
               ].map((event, index) => (
                 <div key={index} className="flex gap-3 relative">
                   {index < 4 && (
@@ -276,8 +285,8 @@ const VisaoGeralContent = () => {
           <CardContent>
             <div className="space-y-3">
               {[
-                { icon: AlertTriangle, text: 'Profª Marina solicitou reunião urgente', time: 'há 15 min', unread: true, color: 'text-destructive' },
-                { icon: Calendar, text: 'Família Silva reagendou reunião', time: 'há 2h', unread: true, color: 'text-info' },
+                { icon: AlertTriangle, text: 'Profª. Juliana Mendes solicitou reunião urgente', time: 'há 15 min', unread: true, color: 'text-destructive' },
+                { icon: Calendar, text: 'Uma família reagendou reunião', time: 'há 2h', unread: true, color: 'text-info' },
                 { icon: CheckCircle2, text: 'Nova matrícula PEI aprovada - TEA', time: 'há 4h', unread: false, color: 'text-success' },
                 { icon: FileText, text: 'Relatório mensal disponível', time: 'ontem', unread: false, color: 'text-primary' },
                 { icon: Bell, text: 'Lembrete: Visita Secretaria em 4 dias', time: 'ontem', unread: false, color: 'text-warning' },
@@ -307,26 +316,40 @@ const VisaoGeralContent = () => {
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Desempenho da Escola
+              Desempenho da {illustrativeScenario.name}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/*
+              * Era "Taxa de sucesso PEI": 88%, meta de 85% e aprovado, enquanto a aba Análise mostra
+              * "Taxa de Implementação dos PEIs", também 88%, com meta de 95% e em atenção. Nada no
+              * cenário diz que são o mesmo indicador, então cada um ganha nome próprio e diz o que
+              * mede. O mesmo com a satisfação: a nota de 1 a 5 daqui e os 91% da Análise.
+              */}
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Taxa de sucesso PEI</span>
+                <span className="text-sm font-medium">PEIs com objetivos alcançados</span>
                 <span className="text-sm font-bold text-success">88% ✅</span>
               </div>
               <Progress value={88} className="h-2" />
               <p className="text-xs text-muted-foreground mt-1">Meta: 85%</p>
+              <p className="text-xs text-muted-foreground">
+                Dos PEIs revisados no ano, quantos tiveram a maior parte dos objetivos alcançada. Não é
+                a implementação dos PEIs, da aba Análise.
+              </p>
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium">Satisfação famílias</span>
+                <span className="text-sm font-medium">Nota das famílias</span>
                 <span className="text-sm font-bold text-success">4.7/5.0 ✅</span>
               </div>
               <Progress value={94} className="h-2" />
               <p className="text-xs text-muted-foreground mt-1">Meta: 4.5</p>
+              <p className="text-xs text-muted-foreground">
+                Média das notas de 1 a 5 dadas pelas famílias. Não é o percentual de famílias
+                satisfeitas, da aba Análise.
+              </p>
             </div>
 
             <div>
