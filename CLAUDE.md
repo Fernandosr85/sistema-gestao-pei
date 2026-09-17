@@ -137,6 +137,9 @@ Prefixos: `Add:`, `Fix:`, `Update:`, `Docs:`, `Style:`, `Refactor:`, `Test:`.
 Um commit por etapa concluída e verificada. Não misture refatoração com mudança de
 comportamento.
 
+Antes de commitar numa branch que já tem PR aberto, confira o estado do PR. Se já foi mesclado,
+saia para uma branch nova a partir do main atualizado.
+
 ## O que perguntar antes de fazer
 
 Não decida sozinho, pergunte:
