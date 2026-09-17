@@ -17,7 +17,7 @@ diagnósticos e dados de saúde. Isso governa várias regras abaixo.
 Nenhuma alteração é considerada pronta antes de as três passarem:
 
 ```bash
-npm run lint        # 0 erros. Warnings react-refresh em src/components/ui/ são aceitos.
+npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
 npm run build       # conclui
 ```
