@@ -9,8 +9,6 @@ import StudentDetail from "./pages/StudentDetail";
 import NewStudent from "./pages/NewStudent";
 import Observations from "./pages/Observations";
 import NewObservation from "./pages/NewObservation";
-import Reports from "./pages/Reports";
-import ComplexityAnalysis from "./pages/ComplexityAnalysis";
 import Legislation from "./pages/Legislation";
 import Manual from "./pages/Manual";
 import ResourceLibrary from "./pages/ResourceLibrary";
