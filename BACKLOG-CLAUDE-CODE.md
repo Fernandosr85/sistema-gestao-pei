@@ -159,27 +159,35 @@ métodos:
   afastamentos por estresse" e "Afastamentos médicos" nos riscos, e as especialidades clínicas
   do profissional em Meu Perfil.
 
-**Mais um caso de atribuição cruzada, encontrado fora de qualquer lista: o Ver PEI.** O diálogo
-de PEI de exemplo, aberto da ficha de qualquer estudante, dava como responsável pelo plano, quatro
-vezes (identificação e histórico), "Profª Marina Santos" — na demonstração, a professora regente
-de outra aluna, Ana Carolina Souza. E o fazia sob o cabeçalho "Aluno: <nome do estudante aberto>
-· PEI 2024 - 4º Trimestre · ✅ Ativo", com um perfil fixo que inclui "Interação social limitada" e
-"Comunicação verbal reduzida". É a mesma forma da onda 1: dado de uma pessoa da demonstração
-exibido no registro de outra. E é o mesmo diálogo que, até a onda 2, exibia para qualquer
-estudante o diagnóstico de Ana Carolina, "TEA Nível 1 (F84.0)": a responsável que ficou é
-justamente a regente dela. A busca da onda 2 procurou nome da médica, matrícula, CID, turma e
-nome da estudante; o nome da professora não estava nessa lista. Não veio de varredura: nenhuma lista incluía nomes de professores
-nos diálogos da ficha, e a busca de nomes do commit 7 cobria só a Gestão. Apareceu na leitura do
-arquivo para corrigir o cabeçalho, com a tarefa já sendo atribuição a pessoa nomeada. Corrigido
-em `bd93507`: "Professor(a) regente" no lugar do nome, e o nome do estudante só aparece para dizer
-que o plano não é dele.
+> **Destaque — o ciclo fecha no mesmo arquivo: a correção tirou o diagnóstico e manteve a
+> pessoa vinculada a ele.**
+>
+> `VerPEIDialog.tsx` é o mesmo diálogo da onda 2. Até `338ed54`, ele exibia para qualquer
+> estudante o diagnóstico de Ana Carolina Souza, "TEA Nível 1 (F84.0)". O `338ed54` removeu o
+> diagnóstico e deixou, quatro vezes (identificação e histórico), "Profª Marina Santos" como
+> responsável pelo plano — na demonstração, a professora regente exatamente daquela aluna. O
+> nome não estava na lista de termos da busca da onda 2 (nome da médica, matrícula, CID, turma e
+> nome da estudante), e ficou. De `338ed54` a `bd93507`, o diálogo mostrou, sob "Aluno: <nome do
+> estudante aberto> · PEI 2024 - 4º Trimestre · ✅ Ativo", a professora de outra aluna e um
+> perfil fixo com "Interação social limitada" e "Comunicação verbal reduzida". Corrigido em
+> `bd93507`: "Professor(a) regente" no lugar do nome, e o nome do estudante só aparece para dizer
+> que o plano não é dele.
+>
+> Dois achados da série acontecem aqui, no mesmo arquivo:
+> - **Achado 6 — corrigir a instância, não a classe.** A correção tirou o dado que a busca
+>   apontou e manteve a pessoa vinculada a ele.
+> - **Achado 7 — lista de termos em vez de vocabulário.** A busca procurou os termos do caso já
+>   conhecido, e o nome da professora não era um deles.
+>
+> Não veio de varredura. Nenhuma lista incluía nomes de professores nos diálogos da ficha, e a
+> busca de nomes do commit 7 cobria só a Gestão. Apareceu na leitura do arquivo para corrigir o
+> cabeçalho do Ver PEI, com a tarefa já sendo atribuição a pessoa nomeada.
 
 **Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
 conteúdo fixo de exemplo sob o nome do estudante, todos com aviso de que o conteúdo não é dele e
 sem dado de saúde. O Ver PEI identificava outra pessoa da demonstração até `bd93507`. A Etapa 4
-terminou sem trocá-los: o que mostram — PEI,
-trimestres, presença, conquistas — não tem registro de origem no modelo. Ficam para a Etapa 9,
-com a entidade PEI.
+terminou sem trocá-los: o que mostram — PEI, trimestres, presença, conquistas — não tem registro
+de origem no modelo. Ficam para a Etapa 9, com a entidade PEI.
 
 ---
 
@@ -393,6 +401,10 @@ selo apareceu no commit 7 (`7039784`), ao reler a Agenda para pôr o aviso, e pa
 "sem base". Mesma forma: a checagem conferiu o número que tinha sido corrigido, e não o que
 estava ao lado dele.
 
+**E o ciclo do Ver PEI** (achado 1, destaque): a correção da onda 2 (`338ed54`) tirou o
+diagnóstico de Ana Carolina do diálogo e deixou a professora regente dela como responsável pelo
+plano de qualquer estudante, até `bd93507`. A instância saiu; a pessoa vinculada a ela ficou.
+
 **O padrão.** Nenhum dos quatro é descuido na parte corrigida: a idade passou mesmo a ser
 calculada, o script de tipo existia, o aviso estava importado, os tokens passavam. O defeito
 estava a um passo de distância — na leitura da entrada, no alvo do comando, no ponto de
@@ -481,6 +493,9 @@ buscas. Não é o número de buscas afetadas; o número é o da tabela acima.
     ("prevê-se" tem acento, mas "predi" não o casaria de qualquer forma). Nenhuma ferramenta os
     acharia com aquela lista. O autor registra esta causa como sua. É a do achado 1: procurar
     pelos termos já conhecidos em vez do vocabulário do domínio.
+  - **A mesma causa, fora do `grep` e fora da Etapa 1:** a busca da onda 2 (`338ed54`) procurou
+    os termos do caso conhecido e não o nome da professora regente da aluna, que ficou no Ver
+    PEI até `bd93507`. Ver o destaque no achado 1.
 - **O "8 → 0" de nomes na tabela da Etapa 4** só vale a partir de `0c2be34`.
 - **As varreduras de dado de saúde por vocabulário não perderam nada.** As da terceira onda do
   achado 1 não usaram classe acentuada nem `-i` com acento; a da quarta onda usou `-i` com
