@@ -159,9 +159,25 @@ métodos:
   afastamentos por estresse" e "Afastamentos médicos" nos riscos, e as especialidades clínicas
   do profissional em Meu Perfil.
 
+**Mais um caso de atribuição cruzada, encontrado fora de qualquer lista: o Ver PEI.** O diálogo
+de PEI de exemplo, aberto da ficha de qualquer estudante, dava como responsável pelo plano, quatro
+vezes (identificação e histórico), "Profª Marina Santos" — na demonstração, a professora regente
+de outra aluna, Ana Carolina Souza. E o fazia sob o cabeçalho "Aluno: <nome do estudante aberto>
+· PEI 2024 - 4º Trimestre · ✅ Ativo", com um perfil fixo que inclui "Interação social limitada" e
+"Comunicação verbal reduzida". É a mesma forma da onda 1: dado de uma pessoa da demonstração
+exibido no registro de outra. E é o mesmo diálogo que, até a onda 2, exibia para qualquer
+estudante o diagnóstico de Ana Carolina, "TEA Nível 1 (F84.0)": a responsável que ficou é
+justamente a regente dela. A busca da onda 2 procurou nome da médica, matrícula, CID, turma e
+nome da estudante; o nome da professora não estava nessa lista. Não veio de varredura: nenhuma lista incluía nomes de professores
+nos diálogos da ficha, e a busca de nomes do commit 7 cobria só a Gestão. Apareceu na leitura do
+arquivo para corrigir o cabeçalho, com a tarefa já sendo atribuição a pessoa nomeada. Corrigido
+em `bd93507`: "Professor(a) regente" no lugar do nome, e o nome do estudante só aparece para dizer
+que o plano não é dele.
+
 **Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
-conteúdo fixo de exemplo sob o nome do estudante, todos com aviso e sem dado de saúde nem
-identificação de outra pessoa. A Etapa 4 terminou sem trocá-los: o que mostram — PEI,
+conteúdo fixo de exemplo sob o nome do estudante, todos com aviso de que o conteúdo não é dele e
+sem dado de saúde. O Ver PEI identificava outra pessoa da demonstração até `bd93507`. A Etapa 4
+terminou sem trocá-los: o que mostram — PEI,
 trimestres, presença, conquistas — não tem registro de origem no modelo. Ficam para a Etapa 9,
 com a entidade PEI.
 
@@ -391,13 +407,24 @@ para onde o código foi alterado.**
 
 ---
 
-### 7. Varredura que não vê o que procura, por defeito da própria busca (Etapas 1 a 4)
+### 7. Resultado parcial que parece completo: a varredura que não vê o que procura (Etapas 1 a 4)
 
 **Qualificação:** o autor classificou este como o achado mais importante da série, porque
-reclassifica resultados anteriores. Uma busca que não casa parte do que procura devolve uma
-saída com resultados, e uma saída com resultados parece completa. Nada nela distingue "não há
-mais" de "a busca não vê o resto". O achado 1 mostra que a busca por vocabulário pega o que a
+reclassifica resultados anteriores. O achado 1 mostra que a busca por vocabulário pega o que a
 leitura não pega; este mostra que a busca também precisa ser verificada.
+
+> **O modo de falha não foi zero. Foi resultado parcial que parece completo.**
+>
+> Nenhuma das buscas afetadas devolveu zero. Todas devolveram parte do que deviam, e a parte que
+> faltava era a das formas acentuadas. Um zero por defeito da ferramenta chama atenção: quem
+> procura um termo que sabe existir e não acha desconfia. Uma saída com resultados não chama:
+> lê-se como a lista completa, e nada nela distingue "não há mais" de "a busca não vê o resto".
+> Foi por isso que as buscas passaram.
+>
+> A primeira formulação deste achado, na conversa, dizia o contrário — "31 varreduras retornaram
+> zero por defeito da ferramenta". O número era meu, contado errado (ver **O número 31**), e o
+> modo de falha também estava errado. O controle positivo da regra do CLAUDE.md pega os dois: um
+> termo que se sabe existir e falta na saída denuncia tanto o zero quanto o parcial.
 
 **O defeito, em duas formas.** No shell das sessões (Git Bash no Windows, com `LANG` vazio), o
 `grep` trabalha com bytes, e letra acentuada tem dois bytes em UTF-8.
@@ -442,16 +469,18 @@ incluía corpos de heredoc com colchetes e entradas duplicadas do log, e contava
 buscas. Não é o número de buscas afetadas; o número é o da tabela acima.
 
 **O que isto reclassifica.**
-- **A limpeza de "IA" da Etapa 1 fica registrada como incompleta.** Foi declarada completa com
-  uma busca que não via forma acentuada das palavras procuradas: devolveu 15 das 20 linhas que
-  devia. "Confiança IA" foi pega pela outra parte do mesmo comando, `\bIA\b`; as três linhas de
-  "eficácia" não foram, e "% eficácia" continuou na ficha do aluno até `0c2be34`.
-- **Mas a maior parte do que sobreviveu à Etapa 1 não tem relação com acento.** "prevê-se",
-  "Probabilidade", "chance de melhoria", "Encontramos 156 casos similares" e "taxa de sucesso"
-  não estavam na lista de termos daquela busca. Foram duas causas: a ferramenta e a lista. A
-  segunda é a do achado 1 — procurar pelos termos já conhecidos.
-- **Nenhuma busca devolveu zero por causa do defeito.** Todas devolveram parte do que deviam, e a
-  parte que faltava era a acentuada. É por isso que passou: a saída tinha resultados.
+- **A limpeza de "IA" da Etapa 1 fica registrada como incompleta, por duas causas separadas.**
+  A lista de termos foi dada pelo autor na mensagem de 13/09/2026, 15h45 — "IA, Inteligência,
+  predi, confiança, algoritmo, machine learning, preciso, acurácia, eficácia" —, e o `grep` foi
+  montado por mim a partir dela, com os colchetes acentuados.
+  - **Causa menor, a ferramenta.** A busca devolveu 15 das 20 linhas que devia. "Confiança IA"
+    foi pega pela outra parte do mesmo comando, `\bIA\b`; as três linhas de "eficácia" não
+    foram, e "% eficácia" continuou na ficha do aluno até `0c2be34`.
+  - **Causa maior, a lista.** "prevê-se", "Probabilidade", "chance de melhoria", "Encontramos
+    156 casos similares" e "taxa de sucesso" não contêm nenhum termo da lista, com ou sem acento
+    ("prevê-se" tem acento, mas "predi" não o casaria de qualquer forma). Nenhuma ferramenta os
+    acharia com aquela lista. O autor registra esta causa como sua. É a do achado 1: procurar
+    pelos termos já conhecidos em vez do vocabulário do domínio.
 - **O "8 → 0" de nomes na tabela da Etapa 4** só vale a partir de `0c2be34`.
 - **As varreduras de dado de saúde por vocabulário não perderam nada.** As da terceira onda do
   achado 1 não usaram classe acentuada nem `-i` com acento; a da quarta onda usou `-i` com
@@ -469,10 +498,10 @@ passa a dizer isso.
 **Regra, aprovada pelo autor e no CLAUDE.md**, em "Verificação obrigatória", com o texto dele:
 toda varredura inclui um controle positivo, uma ocorrência que se sabe existir e precisa aparecer
 na saída; classe de caractere com acento não casa a letra acentuada neste ambiente, e o caminho é
-script com regex Unicode. A segunda forma do defeito, `-i` sem trocar a caixa de letra
-acentuada, não está no texto da regra; fica registrada aqui, para o autor decidir se entra. É a
-forma do achado 6 aplicada à ferramenta de verificação: a checagem confirmou que o comando
-rodou, não que ele casava.
+script com regex Unicode; e `grep -i` não muda a caixa de letra acentuada, o que vale para
+qualquer busca por termo em maiúsculas em código escrito em português. É a forma do achado 6
+aplicada à ferramenta de verificação: a checagem confirmou que o comando rodou, não que ele
+casava.
 
 **Como a recontagem foi verificada.** O script de reexecução também errou duas vezes antes de
 valer: a primeira emulação do `grep` quebrava o `\b` e as classes, e a segunda comparava com um
