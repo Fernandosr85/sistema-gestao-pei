@@ -548,6 +548,25 @@ valer: a primeira emulação do `grep` quebrava o `\b` e as classes, e a segunda
 objeto em vez de uma expressão, casando quase tudo. Os controles que desmontaram os dois erros
 foram casos conhecidos: "Patricia", sem acento, tinha de casar; "eficácia" e "LICENÇA", não.
 
+**Mesma família, sem `grep` nenhum: o `TS6192` (Etapa 6).** A sonda de identificadores sem uso
+da Etapa 5 filtrava a saída do compilador por `TS6133|TS6196`. O TypeScript emite um terceiro
+código para o caso de **toda** a declaração de import estar sem uso, `TS6192`, e ele não estava
+na lista. Três declarações escaparam — `Tabs` em `ObservationDetailDialog`, `Select` em
+`PresentationModeDialog` e `Dialog` em `StudentDetail` —, e a Etapa 5 registrou "32 -> 2" quando
+o certo era "32 -> 5". Corrigido na tabela da Etapa 5 e removidas em `0605cf4`.
+
+Não é defeito de ferramenta: o compilador reportou os três. É a mesma causa de sempre, **lista
+em vez de classe** — a busca cobriu os códigos que eu conhecia, e não a classe "identificador
+declarado e não lido". Vale a regra do achado 1 aplicada a saída de ferramenta: filtrar por
+categoria, não por enumeração do que já se viu.
+
+**E uma afirmação minha que caiu junto.** Registrei na Etapa 5 que os dois `_props` de
+`ui/calendar.tsx` "precisariam de `argsIgnorePattern`". Errado por duas razões, as duas
+medidas: `argsIgnorePattern` é opção do ESLint e não do `tsc`; e a isenção do prefixo `_` no
+`tsc` vale para **parâmetro**, não para elemento rest em desestruturação. Testado lado a lado:
+`(_param: number) => 1` não é acusado, `({ ..._rest }) => 2` é acusado com `TS6133`. A correção
+não era padrão de ignore nenhum: era apagar a desestruturação inútil.
+
 ---
 
 ### 8. O instrumento que não media o que dizia medir (Etapa 5)
@@ -576,6 +595,28 @@ de devolver uma lista de superfícies que se lê como regressão.
 
 **A forma comum aos dois:** o instrumento produzia um número que parecia resultado. É a mesma
 família do achado 7 — resultado parcial que parece completo —, agora do lado de quem mede.
+
+> **Destaque — o terceiro caso, e o mais perto de passar (Etapa 6): a flag que não liga.**
+>
+> `--strict` na linha de comando **não anula** um `"noImplicitAny": false` escrito no
+> `tsconfig`. O `tsconfig.app.json` declarava `strict`, `noImplicitAny`, `noUnusedLocals` e
+> `noUnusedParameters` como `false`, explicitamente. Acrescentar `"strict": true` sem apagar
+> essas linhas não liga nada.
+>
+> **Sem esse achado, a Etapa 6 teria terminado com o typecheck verde, a flag "ligada" no
+> arquivo e nenhuma verificação nova.** Seria o typecheck vazio da Etapa 0 outra vez — aquele
+> que rodava sobre nenhum arquivo e passava —, por outro mecanismo, dois meses depois. A
+> mesma forma: uma verificação que não verifica, e cuja saída é indistinguível da saída de uma
+> que verifica.
+>
+> **O que revelou foi o CONTROLE POSITIVO FALHANDO.** Plantei três erros que as flags deviam
+> pegar; dois foram acusados e o do `any` implícito, não. Se eu tivesse aceitado o verde do
+> `npm run typecheck` como resposta, não haveria nada a notar. O controle positivo não serviu
+> para confirmar o que eu já achava — serviu para derrubar.
+>
+> Daí a regra que entrou no CLAUDE.md nesta etapa: ao ligar uma opção de compilador ou de
+> lint, o controle positivo é sobre a **opção**, não sobre o código. Cada um dos quatro lotes
+> da Etapa 6 plantou o erro que a sua flag devia pegar, depois de gravá-la no `tsconfig`.
 
 ### 9. Uma correção proposta que não cobria o defeito que dizia cobrir (Etapa 5)
 
@@ -617,6 +658,16 @@ corrigida antes do push, com a correção registrada no próprio commit.
 É o par do que já tinha acontecido na Etapa 4, quando repeti "31 varreduras retornaram zero"
 como se fosse medida. Mensagem de commit com verificação falsa é pior que mensagem sem
 verificação nenhuma: a segunda não afirma nada, a primeira afirma o que não checou.
+
+**O achado evitou a própria repetição, uma etapa depois.** No lote 4 da Etapa 6 eu ia conferir
+o módulo servido procurando `SectorProps` — e a busca deu `false`, porque o esbuild apaga
+import e anotação de tipo. Era exatamente a mesma checagem inválida: daria `false` nos dois
+estados, antes e depois. Troquei por `?? 0`, que sobrevive à compilação, e a checagem passou a
+distinguir.
+
+É a primeira vez nesta série que um achado anterior **evitou** a repetição em vez de explicá-la
+depois. Vale registrar porque é o que se espera de um registro de achados: que a segunda vez
+custe menos que a primeira.
 
 ---
 
@@ -1322,7 +1373,7 @@ detalhes de cada linha estão na mensagem do commit correspondente.
 | `QueryClientProvider` montado sem nenhuma query | 1 | 0 |
 | Exports mortos em `mockData.ts` (`mockProfessionals`, `dadosAnalisePreditiva`) | 2 | 0 |
 | Estado sem interface em `ResourceLibrary` | 4 | 0 |
-| Identificadores sem uso (`tsc --noUnusedLocals --noUnusedParameters`) | 32 | 2 |
+| Identificadores sem uso (`tsc --noUnusedLocals --noUnusedParameters`) | 32 | 5¹ |
 | **Coleções que guardavam cópia do nome do estudante** | **3** | **0** |
 | — **atendimentos escondidos pelo filtro por aluno, com nome gravado desatualizado** | **todos** | **0** |
 | Violação `scrollable-region-focusable` em 320 px (Orçamento, Benchmarking) | 1 | 0 |
@@ -1333,8 +1384,14 @@ detalhes de cada linha estão na mensagem do commit correspondente.
 | Literais hexadecimais fora dos tokens | 12 | 12 |
 | Arquivos acima de 400 linhas | 19 | 17 |
 
-**Os dois `_props` que sobram** são parâmetros deliberadamente prefixados com `_` em
-`ui/calendar.tsx`, componente do shadcn. Não são defeito.
+¹ **Correção feita na Etapa 6.** O número registrado aqui era "2", e estava errado: a sonda
+que o produziu filtrava `TS6133|TS6196` e não incluía `TS6192`, o código de "todos os imports
+da declaração estão sem uso". Escaparam três declarações — `Tabs` em `ObservationDetailDialog`,
+`Select` em `PresentationModeDialog` e `Dialog` em `StudentDetail` —, removidas em `0605cf4`.
+Lista de códigos em vez de classe: é o achado 7, e está registrado lá.
+
+**Os dois `_props` que sobravam** em `ui/calendar.tsx` foram removidos na Etapa 6, e o registro
+de que "precisariam de `argsIgnorePattern`" estava errado — ver o achado 7.
 
 **Os 12 hexadecimais que sobram** estão todos em gráfico: 4 em `OrcamentoContent` e 8 em
 `ProgressChart`. Passam no contraste e continuam violando a invariante 1. Ficam para quando a
@@ -1431,10 +1488,12 @@ string. Nada mais: nem campo obrigatório, nem tipo de campo. `isDemoStateV1` ac
   `StudentAssessmentsCard`. Dado corrompido no `localStorage` de um navegador real produziria
   a mesma tela em branco, e o modo demonstração não tem fronteira de erro.
 
-**Pendência, para a Etapa 6 ou 7:** validação de forma no carregamento do store — campo
-obrigatório e tipo, não só `id` —, decidindo o que fazer com o registro que não passa
-(descartar o registro, descartar o estado, ou carregar com aviso). Combina com a Etapa 6, que
-liga o `strict`, e com a Etapa 7, que traz teste. **Não aberta agora.**
+~~**Pendência, para a Etapa 6 ou 7:** validação de forma no carregamento do store.~~
+✅ **Feita na Etapa 6** (`b1d14f2`): sete esquemas `zod` em `src/store/schemas.ts`, descartando
+o registro e não o estado, com cascata para referência órfã e contagem por coleção na tela. O
+argumento que decidiu a etapa: ligar o `strict` e deixar sem validação justamente o único ponto
+por onde dado não tipado entra fecha 95% e para na parte que produziu a única tela em branco
+medida.
 
 ### A prova de regressão
 
@@ -1473,16 +1532,77 @@ corrigir o bug, não o tipo.
 sem uso em `1c84b6f` e 2 em `54f3675`. Sobram os dois `_props` de `ui/calendar.tsx`, que são
 deliberados e vão precisar de `argsIgnorePattern`.
 
-**Junto vem a validação de forma no carregamento do store** (registrada na Etapa 5). Hoje
-`isRecordList`, em `src/store/persistence.ts`, aceita qualquer objeto que tenha `id` string —
-nem campo obrigatório, nem tipo de campo. A frouxidão tem dois efeitos opostos, os dois
-medidos: barateou a remoção do nome duplicado, que não precisou de v4, e deixa passar registro
-malformado que **quebra a tela** (um `Student` sem `dataCadastro` derruba o `StudentDetail`).
-Decidir o que fazer com o registro que não passa: descartar o registro, descartar o estado, ou
-carregar com aviso. Alternativa: fronteira de erro por rota, que é remendo e não validação.
-Pode ir para a Etapa 7, junto do teste, se ficar grande demais aqui.
+~~**Junto vem a validação de forma no carregamento do store.**~~ ✅ feita, em `b1d14f2`. A
+decisão foi descartar o registro, com cascata e contagem visível. A alternativa considerada e
+recusada — fronteira de erro por rota — é remendo e não validação: esconderia a quebra em vez
+de impedir que o dado ruim entre.
 
-**Critério de aceite:** `npm run typecheck` limpo com strict ligado.
+**Critério de aceite:** `npm run typecheck` limpo com strict ligado. ✅ atendido.
+
+### Resultado da etapa
+
+Medido pela linha de comando antes do primeiro commit, com as cinco flags passadas
+explicitamente e sem editar nada, e de novo depois do último.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Erros com as cinco flags, em `tsconfig.app.json`** | **41** | **0** |
+| — `noUnusedLocals` + `noUnusedParameters` | 5 | 0 |
+| — `strictNullChecks` | 27 | 0 |
+| — `noImplicitAny` | 8¹ | 0 |
+| — o que só o `strict` traz além disso | 1 | 0 |
+| Erros com as cinco flags, em `tsconfig.node.json` | 0 | 0 |
+| Flags declaradas como `false` nos três `tsconfig` | 11 | 0 |
+| Coleções do store validadas por forma na carga | 0 de 7 | 7 de 7 |
+| Registro malformado que derruba a tela | sim | não² |
+
+¹ Uma nona ocorrência, em `ObservationHeatmap.tsx`, era artefato de ligar `noImplicitAny`
+sozinho: `() => null` alarga para `any` sem `strictNullChecks`. Com as duas ligadas, some.
+
+² Medido: a mesma carga (semente com `dataCadastro` removido) dava tela em branco em
+`/alunos/1` — 0 caractere de texto — e passa a carregar com 511, descartando o registro e
+dizendo quantos.
+
+**Distribuição dos 41.** Vinte e sete num arquivo só, `DetalhesAtendimentoDialog.tsx`; oito em
+`AgendaAtendimentos.tsx`, todos vindos de `react-big-calendar` não ter tipos; três de
+declaração de import sem uso; dois `_props`; um de `activeShape` do Recharts.
+
+### Ruído e bug: a classificação, e o que ela mostrou
+
+**Bugs de runtime que quebrariam a tela hoje: zero.** Nenhum dos 41 erros é acesso a
+`undefined` que ocorra na prática — e dizer o contrário seria inflar gravidade.
+
+**Os 27 do `DetalhesAtendimentoDialog` são armadilha latente, nem ruído nem bug.** A prop era
+`Atendimento | null` e a primeira linha do corpo desreferenciava `atendimento.id` sem guarda.
+Não quebra hoje porque o único ponto de chamada renderiza dentro de
+`{selectedAtendimento && ...}`. O que o compilador apontou foi um **contrato que mente sobre o
+próprio uso**: o componente declarava aceitar `null` e não sobrevivia a `null`.
+
+**Os 8 do calendário são ruído com consequência:** sem tipos, `event.resource` — passado direto
+ao manipulador de clique — não era checado por nada.
+
+**Os 6 restantes são ruído puro**, e três deles eram sobra da Etapa 5 (ver achado 7).
+
+**O bug de verdade não estava entre os 41.** A única tela em branco medida nesta série vem de
+registro malformado no `localStorage`, e **nenhuma das cinco flags a pega**: o tipo declara
+`dataCadastro: string` e o validador só olhava o `id`. O `strict` faz o compilador exigir os
+tipos declarados em todo lugar menos no único ponto em que dado não tipado entra. Foi por isso
+que a validação de forma entrou nesta etapa, e não na seguinte.
+
+### A validação de forma no carregamento
+
+`src/store/schemas.ts`, sete esquemas `zod` — dependência que já existia e já era usada em dois
+formulários. Cada um anotado como `z.ZodType<T>`, com o tipo de `@/types` como fonte: tirar um
+campo do esquema faz o compilador reprovar, o que foi medido.
+
+**Descarta o registro, não o estado**, com cascata para referência órfã, e **a contagem por
+coleção aparece na tela**. Um registro estragado não deve custar tudo o que a pessoa digitou; e
+descarte silencioso é perda de dado sem aviso. "Descartei 3 observações" e "sumiram 3
+observações" são coisas diferentes, e é o número que separa as duas.
+
+**Derivar o tipo do esquema com `z.infer`** seria o desenho certo — uma fonte só, em vez de
+duas mantidas em acordo pelo compilador. Reescreve `types/index.ts` inteiro e está registrado
+na Etapa 9.
 
 ---
 
@@ -1555,6 +1675,11 @@ Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema
    - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
      imprimível.
    - Exige mudar o modelo de dados e subir a versão do store, com migração.
+   - **Junto vai o `z.infer`**: a Etapa 6 criou `src/store/schemas.ts` com sete esquemas `zod`
+     anotados como `z.ZodType<T>`, com os tipos de `@/types` como fonte. São duas declarações
+     do mesmo formato, mantidas em acordo pelo compilador. O desenho certo é uma fonte só, com
+     o tipo derivado do esquema por `z.infer`; isso reescreve `types/index.ts` inteiro e cabe
+     junto da modelagem do PEI, não antes dela.
    - **Junto vai o `AppointmentType`** (`AgendaAtendimentos.tsx:47-49`): `'Reunião Pedagógica'`,
      `'Avaliação'` e `'Atendimento Família'` são chaves de objeto com acento, contra a
      convenção, e ao mesmo tempo campo do modelo, texto de tela, chave do mapa de cores e dado

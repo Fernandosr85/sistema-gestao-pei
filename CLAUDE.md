@@ -37,6 +37,13 @@ sendo verificada — foi o que aconteceu com o `useSidebar` da busca institucion
 controle: insira a ocorrência num arquivo de teste, confirme que o comando a encontra, e só
 então confie no zero.
 
+Prova que não se consegue fazer não vale como prova. Quando a verificação de uma simplificação
+falha por limite de ferramenta, desfaça a simplificação em vez de assumir equivalência.
+
+Ao ligar uma opção de compilador ou de lint, o controle positivo é sobre a OPÇÃO, não sobre o
+código: plante um erro que ela deve pegar e confirme que a verificação reprova. Verde com a
+opção desligada é indistinguível de verde com o código correto.
+
 ## Invariantes — nunca violar
 
 ### 1. Nenhum vínculo institucional no código
