@@ -1,4 +1,4 @@
-import type { Assessment, Atendimento, Observation, Student } from '@/types';
+import type { Atendimento, Student } from '@/types';
 import type { DemoAction, DemoState } from '@/types/store';
 import { createSeedState } from './seed';
 
