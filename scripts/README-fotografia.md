@@ -44,7 +44,11 @@ const antes = (await __foto.estavel()).foto
 __foto.comparar(antes, await __foto.tudo())
 ```
 
-Deixe o `localStorage` vazio antes de começar: a fotografia mede o que o store contém.
+Deixe o `localStorage` vazio antes de começar: a fotografia mede o que o store contém. E
+fixe a largura da janela, a mesma nas duas pontas: a medida `numeros` inclui os rótulos de
+eixo dos gráficos, e o Recharts escolhe quantos cabem conforme o espaço. A largura entra na
+fotografia, e `comparar` recusa comparação entre larguras diferentes em vez de devolver uma
+lista de superfícies que parece regressão.
 
 ## Os dois controles, e por que nenhum é opcional
 

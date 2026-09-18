@@ -233,7 +233,15 @@
     const saida = {};
     for (const s of superficies) {
       await ir(s);
-      saida[s] = { ...hashes(), url: window.location.pathname + window.location.search };
+      saida[s] = {
+        ...hashes(),
+        url: window.location.pathname + window.location.search,
+        // A largura entra na fotografia porque a medida numeros depende dela: o Recharts
+        // escolhe os rótulos de eixo conforme o espaço, e "R$ 0k / R$ 150k / R$ 300k" são
+        // números como quaisquer outros. Comparar larguras diferentes acusa diferença que
+        // não é do código.
+        largura: window.innerWidth,
+      };
     }
     return saida;
   };
@@ -298,10 +306,12 @@
     return { todosOk, resultado };
   };
 
+  const MEDIDAS = ['a11y', 'numeros', 'foco', 'titulos', 'url', 'largura'];
+
   const difEntre = (a, b, rotulo) => {
     const difs = [];
     for (const k of Object.keys(a)) {
-      for (const m of ['a11y', 'numeros', 'foco', 'titulos', 'url']) {
+      for (const m of MEDIDAS) {
         if (a[k][m] !== b[k][m]) difs.push(`${rotulo} :: ${k} :: ${m} :: ${a[k][m]} -> ${b[k][m]}`);
       }
     }
@@ -339,10 +349,23 @@
   const comparar = (antes, depois) => {
     const difs = [];
     const chaves = new Set([...Object.keys(antes), ...Object.keys(depois)]);
+
+    // Largura diferente invalida a comparação inteira: a diferença que aparecer não será do
+    // código. Isso vem primeiro, para não se ler uma lista de superfícies como regressão.
+    const larguras = (foto) => [...new Set(Object.values(foto).map((v) => v.largura))];
+    const [la, ld] = [larguras(antes), larguras(depois)];
+    if (la.length > 1 || ld.length > 1 || (la[0] !== undefined && la[0] !== ld[0])) {
+      return {
+        igual: false,
+        larguraIncompativel: true,
+        difs: [`largura :: antes ${la.join('/')} :: depois ${ld.join('/')} — comparação inválida, refaça na mesma largura`],
+      };
+    }
+
     for (const k of chaves) {
       if (!antes[k]) { difs.push(`${k} :: superfície nova`); continue; }
       if (!depois[k]) { difs.push(`${k} :: superfície sumiu`); continue; }
-      for (const m of ['a11y', 'numeros', 'foco', 'titulos', 'url']) {
+      for (const m of MEDIDAS) {
         if (antes[k][m] !== depois[k][m]) difs.push(`${k} :: ${m} :: ${antes[k][m]} -> ${depois[k][m]}`);
       }
     }
