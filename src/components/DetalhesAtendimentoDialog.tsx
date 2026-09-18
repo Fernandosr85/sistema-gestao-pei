@@ -27,7 +27,12 @@ import { useDemoStore } from '@/store/useDemoStore';
 interface DetalhesAtendimentoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  atendimento: Atendimento | null;
+  /**
+   * Não aceita null: o único ponto de chamada renderiza o diálogo dentro de
+   * {selectedAtendimento && ...}, e a linha abaixo desreferencia atendimento.id sem guarda.
+   * O tipo antigo dizia aceitar null e o componente não sobrevivia a null.
+   */
+  atendimento: Atendimento;
 }
 
 const statusBadgeVariant = {

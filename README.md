@@ -320,11 +320,13 @@ arreio está em [`scripts/fotografia.js`](scripts/fotografia.js), com o protocol
 | `dependencies` no `package.json` | 51 | 37 |
 | `index.js` do bundle, em bytes | 1.000.212 | 971.582 |
 | Coleções que guardavam cópia do nome do estudante | 3 | 0 |
-| Identificadores sem uso | 32 | 2² |
+| Identificadores sem uso | 32 | 5² |
 | Violação de foco em contêiner rolável, em 320 px | 1 | 0 |
 
 ¹ `vite-env.d.ts`, declaração de tipo puxada pelo `tsconfig`, não por import.
-² Parâmetros deliberadamente prefixados com `_` num componente do shadcn.
+² Corrigido na Etapa 6: o número registrado aqui era 2, e a sonda que o produziu não
+filtrava o código `TS6192`. Três declarações de import sem uso escaparam. Ver o achado 7 no
+backlog.
 
 Do primeiro ao último commit da etapa, a fotografia deu **diferença zero nas 23 superfícies**.
 Nos commits que só removiam código morto, os quatro arquivos do bundle saíram byte a byte
@@ -338,6 +340,32 @@ registro cujo nome gravado estivesse desatualizado simplesmente **não aparecia*
 aquele aluno — sem erro e sem aviso. Medido com as duas expressões sobre o mesmo estado: a
 antiga esconde o atendimento, a nova o mantém. Era um defeito ativo, esperando alguém renomear
 um estudante.
+
+### TypeScript estrito e validação do armazenamento (Etapa 6)
+
+`strict`, `strictNullChecks`, `noImplicitAny`, `noUnusedLocals` e `noUnusedParameters` ligados
+nos três `tsconfig`. Medido antes: **41 erros**; depois: **0**.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Erros com as cinco flags | 41 | 0 |
+| Flags declaradas como `false` nos `tsconfig` | 11 | 0 |
+| Coleções do store validadas por forma na carga | 0 de 7 | 7 de 7 |
+
+**Nenhum dos 41 era bug de runtime**, e o bug de verdade não estava entre eles. A única tela em
+branco medida nesta série vem de registro malformado no `localStorage` — e nenhuma flag a pega,
+porque o tipo declara o campo e o validador antigo só olhava o `id`. O `strict` cobre tudo menos
+o ponto por onde dado não tipado entra.
+
+Por isso a etapa fecha esse ponto: `src/store/schemas.ts` valida a forma dos sete tipos de
+registro na carga, **descarta o registro e não o estado**, remove em cascata o que ficou
+apontando para um registro descartado, e **diz na tela quantos saíram e de onde**. Um registro
+estragado não custa tudo o que foi digitado, e descarte silencioso seria perda de dado sem
+aviso.
+
+Medido com a semente e um campo removido: a ficha que antes abria em branco passa a carregar,
+sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 observação,
+1 atendimento, 1 avaliação".
 
 ### Limites conhecidos
 
@@ -355,6 +383,9 @@ um estudante.
 - **17 arquivos acima de 400 linhas.** A convenção pede quebrá-los em commits de refatoração
   dedicados; fazer isso na etapa de limpeza destruiria a prova de regressão. Inventariados no
   backlog, com o número de linhas de cada um.
+- **Os esquemas de validação e os tipos são duas declarações do mesmo formato**, mantidas em
+  acordo pelo compilador. Uma fonte só, com o tipo derivado do esquema, é o desenho certo e
+  está registrado para quando a entidade PEI for modelada.
 
 ---
 

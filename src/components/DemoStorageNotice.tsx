@@ -13,6 +13,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useDemoStore } from '@/store/useDemoStore';
+import type { DiscardedCounts } from '@/types/store';
+
+/*
+ * Nomes das coleções em português, no singular e no plural, para a contagem do que foi
+ * descartado na carga. A contagem aparece na tela de propósito: "descartei 3 observações" e
+ * "sumiram 3 observações" são coisas diferentes, e é o número que separa as duas.
+ */
+const COLLECTION_LABELS: Record<keyof DiscardedCounts, [string, string]> = {
+  students: ['estudante', 'estudantes'],
+  observations: ['observação', 'observações'],
+  appointments: ['atendimento', 'atendimentos'],
+  assessments: ['avaliação', 'avaliações'],
+  resources: ['recurso', 'recursos'],
+  reviews: ['avaliação de recurso', 'avaliações de recurso'],
+  favorites: ['favorito', 'favoritos'],
+};
+
+const describeDiscarded = (counts: DiscardedCounts): string =>
+  (Object.keys(COLLECTION_LABELS) as Array<keyof DiscardedCounts>)
+    .filter((key) => counts[key] > 0)
+    .map((key) => `${counts[key]} ${COLLECTION_LABELS[key][counts[key] === 1 ? 0 : 1]}`)
+    .join(', ');
 
 /**
  * Required by CLAUDE.md for any local storage: states that records stay in this
@@ -20,7 +42,7 @@ import { useDemoStore } from '@/store/useDemoStore';
  * off, because then nothing is written to the browser.
  */
 const DemoStorageNotice = () => {
-  const { persistence, discardedStoredData, dispatch } = useDemoStore();
+  const { persistence, discardedStoredData, discardedRecords, dispatch } = useDemoStore();
   const { toast } = useToast();
 
   if (persistence === 'disabled') return null;
@@ -56,6 +78,16 @@ const DemoStorageNotice = () => {
               : ''}
           </span>
         </p>
+        {discardedRecords ? (
+          <p className="flex items-start gap-2 text-sm leading-relaxed md:order-last md:w-full">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+            <span>
+              <strong>Registros descartados na abertura:</strong> {describeDiscarded(discardedRecords)}.
+              Estavam salvos neste navegador em formato que não corresponde ao esperado, ou apontavam
+              para um registro descartado. O resto foi carregado normalmente.
+            </span>
+          </p>
+        ) : null}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="outline" className="shrink-0">

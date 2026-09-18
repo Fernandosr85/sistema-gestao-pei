@@ -15,9 +15,16 @@ const createInitialSnapshot = (persist: boolean): DemoStoreSnapshot => {
 
   const loaded = loadState();
   if (loaded.status === 'loaded') {
-    // A migrated record is written back right away, so storage holds the current version.
-    const persisted = loaded.migratedFrom === undefined || saveState(loaded.state);
-    return { state: loaded.state, persistence: persisted ? 'browser' : 'memoryOnly', discardedStoredData: false };
+    // A migrated record, or one with records dropped, is written back right away, so storage
+    // holds the current version and stops carrying what was discarded.
+    const rewrite = loaded.migratedFrom !== undefined || loaded.discarded !== undefined;
+    const persisted = !rewrite || saveState(loaded.state);
+    return {
+      state: loaded.state,
+      persistence: persisted ? 'browser' : 'memoryOnly',
+      discardedStoredData: false,
+      discardedRecords: loaded.discarded,
+    };
   }
   if (loaded.status === 'discarded') {
     return {
@@ -55,6 +62,7 @@ export const createDemoStore = ({ persist }: CreateDemoStoreOptions): DemoStore 
       state,
       persistence,
       discardedStoredData: action.type === 'demo/reset' ? false : snapshot.discardedStoredData,
+      discardedRecords: action.type === 'demo/reset' ? undefined : snapshot.discardedRecords,
     };
     listeners.forEach((listener) => listener());
     return { persistence };

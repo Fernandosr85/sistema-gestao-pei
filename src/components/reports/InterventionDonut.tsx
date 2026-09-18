@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector, type SectorProps } from 'recharts';
 
 /*
  * As cores vêm dos tokens da marca, que são medidos. Como valor literal, três delas
@@ -15,33 +15,30 @@ const data = [
   { name: 'Suporte Especializado', value: 14, color: 'hsl(var(--brand-gray))' },
 ];
 
-interface ActiveShapeProps {
-  cx: number;
-  cy: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-}
-
-const renderActiveShape = (props: ActiveShapeProps) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
-  
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius + 8}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-    </g>
-  );
-};
+/*
+ * O tipo vem do Recharts, não de uma interface local. A interface que estava aqui declarava
+ * os sete campos como obrigatórios; o Recharts os declara opcionais, e por isso a função não
+ * era atribuível a activeShape. Declarar obrigatório o que a biblioteca entrega opcional é
+ * afirmar sobre dado de terceiro o que não se pode garantir.
+ *
+ * Os sete props passados ao Sector são os mesmos de antes, de propósito: trocar a lista
+ * explícita por {...props} passaria ao Sector tudo o que o Recharts manda, que é mais do que
+ * chegava antes, e isso seria mudança de comportamento sem necessidade. A única diferença é
+ * o `?? 0`: com outerRadius ausente, a conta antiga dava NaN e a nova dá 8.
+ */
+const renderActiveShape = ({ cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill }: SectorProps) => (
+  <g>
+    <Sector
+      cx={cx}
+      cy={cy}
+      innerRadius={innerRadius}
+      outerRadius={(outerRadius ?? 0) + 8}
+      startAngle={startAngle}
+      endAngle={endAngle}
+      fill={fill}
+    />
+  </g>
+);
 
 const InterventionDonut = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);

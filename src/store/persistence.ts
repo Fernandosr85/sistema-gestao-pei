@@ -1,6 +1,15 @@
 import type { ResourceFavorite } from '@/types/resource';
-import type { DemoState, DemoStateV1, DemoStateV2 } from '@/types/store';
+import type { DemoState, DemoStateV1, DemoStateV2, DiscardedCounts } from '@/types/store';
 import { migrateV1ToV2, migrateV2ToV3 } from './migrations';
+import {
+  appointmentSchema,
+  assessmentSchema,
+  favoriteSchema,
+  observationSchema,
+  resourceSchema,
+  reviewSchema,
+  studentSchema,
+} from './schemas';
 
 const STORAGE_KEY = 'pei-demo-store';
 const STORAGE_VERSION = 3;
@@ -12,7 +21,7 @@ interface StoredEnvelope {
 }
 
 export type LoadResult =
-  | { status: 'loaded'; state: DemoState; migratedFrom?: number }
+  | { status: 'loaded'; state: DemoState; migratedFrom?: number; discarded?: DiscardedCounts }
   | { status: 'empty' }
   | { status: 'discarded' }
   | { status: 'unavailable' };
@@ -51,6 +60,81 @@ const isFavoriteList = (value: unknown): value is ResourceFavorite[] =>
 const isDemoStateV3 = (value: unknown): value is DemoState =>
   isDemoStateV2(value) && isFavoriteList((value as unknown as Record<string, unknown>).favorites);
 
+/** Keeps the records that match the declared shape and counts the ones dropped. */
+const keepValid = <T>(list: unknown[], schema: { safeParse: (value: unknown) => { success: boolean; data?: unknown } }): { kept: T[]; dropped: number } => {
+  const kept: T[] = [];
+  let dropped = 0;
+  for (const item of list) {
+    const parsed = schema.safeParse(item);
+    if (parsed.success) kept.push(parsed.data as T);
+    else dropped += 1;
+  }
+  return { kept, dropped };
+};
+
+/**
+ * Drops every stored record that does not match its declared shape, and then every record
+ * left pointing at one that was dropped.
+ *
+ * Discarding the record and not the whole state is a decision: one damaged record should not
+ * cost everything the person typed. The price is dangling references, which the cascade below
+ * removes, and silent data loss, which the count prevents — the notice says how many went and
+ * from where. "Descartei 3 observações" and "sumiram 3 observações" are different things, and
+ * only the count separates them.
+ */
+const validateState = (state: DemoState): { state: DemoState; discarded: DiscardedCounts } => {
+  const students = keepValid<DemoState['students'][number]>(state.students, studentSchema);
+  const observations = keepValid<DemoState['observations'][number]>(state.observations, observationSchema);
+  const appointments = keepValid<DemoState['appointments'][number]>(state.appointments, appointmentSchema);
+  const assessments = keepValid<DemoState['assessments'][number]>(state.assessments, assessmentSchema);
+  const resources = keepValid<DemoState['resources'][number]>(state.resources, resourceSchema);
+  const reviews = keepValid<DemoState['reviews'][number]>(state.reviews, reviewSchema);
+  const favorites = keepValid<DemoState['favorites'][number]>(state.favorites, favoriteSchema);
+
+  const studentIds = new Set(students.kept.map((student) => student.id));
+  const resourceIds = new Set(resources.kept.map((resource) => resource.id));
+
+  const byStudent = <T extends { studentId: string }>(items: T[]) => items.filter((item) => studentIds.has(item.studentId));
+  const byResource = <T extends { resourceId: string }>(items: T[]) => items.filter((item) => resourceIds.has(item.resourceId));
+
+  const observationsKept = byStudent(observations.kept);
+  const appointmentsKept = byStudent(appointments.kept);
+  const assessmentsKept = byStudent(assessments.kept);
+  const reviewsKept = byResource(reviews.kept);
+  const favoritesKept = byResource(favorites.kept);
+
+  return {
+    state: {
+      students: students.kept,
+      observations: observationsKept,
+      appointments: appointmentsKept,
+      assessments: assessmentsKept,
+      resources: resources.kept,
+      reviews: reviewsKept,
+      favorites: favoritesKept,
+    },
+    discarded: {
+      students: students.dropped,
+      observations: observations.dropped + (observations.kept.length - observationsKept.length),
+      appointments: appointments.dropped + (appointments.kept.length - appointmentsKept.length),
+      assessments: assessments.dropped + (assessments.kept.length - assessmentsKept.length),
+      resources: resources.dropped,
+      reviews: reviews.dropped + (reviews.kept.length - reviewsKept.length),
+      favorites: favorites.dropped + (favorites.kept.length - favoritesKept.length),
+    },
+  };
+};
+
+const totalDiscarded = (counts: DiscardedCounts): number =>
+  Object.values(counts).reduce((total, count) => total + count, 0);
+
+/** Wraps a loaded state in the shape check, keeping the count only when something was dropped. */
+const loaded = (state: DemoState, migratedFrom?: number): LoadResult => {
+  const checked = validateState(state);
+  const discarded = totalDiscarded(checked.discarded) > 0 ? checked.discarded : undefined;
+  return { status: 'loaded', state: checked.state, migratedFrom, discarded };
+};
+
 /**
  * Callers must only use this module when DEMO_MODE is on.
  *
@@ -71,13 +155,13 @@ export const loadState = (): LoadResult => {
     const envelope = JSON.parse(raw) as Partial<StoredEnvelope>;
     const stored = envelope.state;
     if (envelope.version === STORAGE_VERSION && isDemoStateV3(stored)) {
-      return { status: 'loaded', state: stored };
+      return loaded(stored);
     }
     if (envelope.version === 2 && isDemoStateV2(stored)) {
-      return { status: 'loaded', state: migrateV2ToV3(stored), migratedFrom: 2 };
+      return loaded(migrateV2ToV3(stored), 2);
     }
     if (envelope.version === 1 && isDemoStateV1(stored)) {
-      return { status: 'loaded', state: migrateV2ToV3(migrateV1ToV2(stored)), migratedFrom: 1 };
+      return loaded(migrateV2ToV3(migrateV1ToV2(stored)), 1);
     }
   } catch {
     // Unparseable JSON is treated like data from an unknown version.
