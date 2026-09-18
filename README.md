@@ -331,9 +331,13 @@ Nos commits que só removiam código morto, os quatro arquivos do bundle saíram
 idênticos — o empacotador já não os embarcava.
 
 **O nome do estudante deixou de ser copiado** nas observações, avaliações e atendimentos: era
-guardado em três coleções e propagado a cada edição. Agora é resolvido pelo `id`. O filtro por
-aluno da Agenda comparava nome com nome e escondia registro cujo nome gravado estivesse
-desatualizado; passou a comparar `id`.
+guardado em três coleções e propagado a cada edição. Agora é resolvido pelo `id`.
+
+Isso **não foi só deduplicação**. O filtro por aluno da Agenda comparava nome com nome, e um
+registro cujo nome gravado estivesse desatualizado simplesmente **não aparecia** na busca por
+aquele aluno — sem erro e sem aviso. Medido com as duas expressões sobre o mesmo estado: a
+antiga esconde o atendimento, a nova o mantém. Era um defeito ativo, esperando alguém renomear
+um estudante.
 
 ### Limites conhecidos
 
