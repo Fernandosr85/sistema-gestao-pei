@@ -17,6 +17,14 @@ export default mergeConfig(
   viteConfig({ command: 'serve', mode: 'test' }),
   defineConfig({
     test: {
+      /*
+       * Fuso FIXO, e não o da máquina. Os defeitos de data da Etapa 4 só existem a oeste de
+       * UTC: 'new Date(AAAA-MM-DD)' é meia-noite em UTC e cai no dia anterior. O CI roda em
+       * ubuntu-latest, que é UTC — medido: com TZ=UTC a suíte de datas passa sem exercitar
+       * um único caso do defeito. Sem este pino, o teste ficaria verde no CI justamente onde
+       * o bug não pode aparecer.
+       */
+      env: { TZ: 'America/Sao_Paulo' },
       environment: 'jsdom',
       globals: true,
       setupFiles: ['./src/test/setup.ts'],
