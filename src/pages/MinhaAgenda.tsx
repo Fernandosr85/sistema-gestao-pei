@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Clock, MapPin, Users, Plus, FileText, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { Clock, Plus, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import { CALENDAR_INTEGRATION_UNAVAILABLE, useCalendarSync } from '@/hooks/useCalendarSync';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ import { DEMO_USER_NAME } from '@/config/institution';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
 const MinhaAgenda = () => {
-  const [currentMonth, setCurrentMonth] = useState('Novembro 2024');
+  const [currentMonth] = useState('Novembro 2024');
   const [selectedView, setSelectedView] = useState('semana');
   const [isNewEventDialogOpen, setIsNewEventDialogOpen] = useState(false);
   

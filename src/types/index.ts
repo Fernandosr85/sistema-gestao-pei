@@ -126,14 +126,6 @@ export interface Assessment {
   };
 }
 
-export interface Professional {
-  id: string;
-  nome: string;
-  tipo: 'professor' | 'psicologo' | 'terapeuta' | 'fonoaudiologo' | 'coordenador';
-  especialidade?: string;
-  estudantes: string[];
-}
-
 export type AppointmentType = 'Reunião Pedagógica' | 'Avaliação' | 'Atendimento Família' | 'Multidisciplinar' | 'Outros';
 
 export type AppointmentStatus = 'agendado' | 'remarcado' | 'realizado' | 'cancelado';

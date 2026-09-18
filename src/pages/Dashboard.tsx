@@ -1,4 +1,4 @@
-import { Users, ClipboardList, FileText, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
+import { Users, ClipboardList, FileText, Calendar, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import StatCard from '@/components/StatCard';
 import DemoDataNotice from '@/components/DemoDataNotice';

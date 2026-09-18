@@ -2,8 +2,8 @@ import { calculateAge, formatLocalDate } from '@/lib/date';
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
-  ArrowLeft, User, Calendar, Phone, Mail, FileText, Activity, TrendingUp,
-  Edit, FileCheck, Clipboard, BarChart3, Lock, GraduationCap,
+  ArrowLeft, User, Calendar, FileText, Activity, TrendingUp,
+  Edit, Clipboard, BarChart3, GraduationCap,
   Heart, BookOpen, Users, School
 } from 'lucide-react';
 import { StudentPerformanceDialog } from '@/components/StudentPerformanceDialog';
@@ -17,7 +17,6 @@ import { BenchmarkingPanel } from '@/components/BenchmarkingPanel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

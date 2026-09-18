@@ -15,7 +15,7 @@ import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import StatCard from '@/components/StatCard';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
