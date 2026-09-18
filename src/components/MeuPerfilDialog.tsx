@@ -413,8 +413,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
                 <div className="border-t pt-4 mt-4">
                   <p className="text-sm mb-2">Total acumulado: <strong>124 horas</strong></p>
-                  <p className="text-sm mb-4">Meta anual: 40 horas <Badge variant="default" className="bg-green-500 ml-2">+84h acima!</Badge></p>
-                  <Progress value={310} className="mb-4" />
+                  <div className="text-sm mb-4">Meta anual: 40 horas <Badge variant="default" className="bg-green-500 ml-2">+84h acima!</Badge></div>
+                  <Progress value={100} aria-label="Meta anual de formação atingida: 124 horas de 40" className="mb-4" />
                 </div>
 
                 <div className="flex gap-2">
@@ -538,7 +538,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Tempo médio de revisão</p>
                     <p className="text-2xl font-bold mb-1">38 dias</p>
-                    <p className="text-sm">Meta da rede: 45 dias <Badge variant="default" className="bg-green-500 ml-1">✅</Badge></p>
+                    <div className="text-sm">Meta da rede: 45 dias <Badge variant="default" className="bg-green-500 ml-1"><span aria-hidden="true">✅</span> dentro da meta</Badge></div>
                   </div>
                 </div>
               </CardContent>

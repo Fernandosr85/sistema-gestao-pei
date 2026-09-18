@@ -84,10 +84,10 @@ const VisaoGeralContent = () => {
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold mb-2 flex items-center gap-2">
+                  <div className="font-semibold mb-2 flex items-center gap-2">
                     Professores em Sobrecarga
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">2</Badge>
-                  </p>
+                  </div>
                   <ul className="text-sm space-y-1">
                     {/* Os dois da aba Equipe com carga de 90% ou mais. Antes eram outros dois, um
                         deles "Profª Marina", como a professora regente de um aluno da demonstração. */}
@@ -105,10 +105,10 @@ const VisaoGeralContent = () => {
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold mb-2 flex items-center gap-2">
+                  <div className="font-semibold mb-2 flex items-center gap-2">
                     Famílias Sem Resposta
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">4</Badge>
-                  </p>
+                  </div>
                   <p className="text-sm">4 famílias sem contato há mais de 15 dias</p>
                 </div>
               </div>

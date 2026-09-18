@@ -350,7 +350,7 @@ const AgendaAtendimentos = () => {
                   endAccessor="end"
                   style={{ height: '100%' }}
                   views={['week']}
-                  view="week"
+                  defaultView="week"
                   date={currentDate}
                   onNavigate={setCurrentDate}
                   onSelectEvent={(event) => handleAtendimentoClick(event.resource)}
@@ -626,7 +626,7 @@ const AgendaAtendimentos = () => {
                   endAccessor="end"
                   style={{ height: '100%' }}
                   views={['agenda']}
-                  view="agenda"
+                  defaultView="agenda"
                   date={currentDate}
                   onNavigate={setCurrentDate}
                   onSelectEvent={(event) => handleAtendimentoClick(event.resource)}
