@@ -39,7 +39,6 @@ export interface Student {
 interface ObservationBase {
   id: string;
   studentId: string;
-  studentName: string;
   data: string;
   observador: string;
 }
@@ -97,7 +96,6 @@ export type PerformanceLevel = 1 | 2 | 3 | 4 | 5;
 export interface Assessment {
   id: string;
   studentId: string;
-  studentName: string;
   date: string;
   assessor: string;
   kind: AssessmentKind;
@@ -133,7 +131,6 @@ export type AppointmentStatus = 'agendado' | 'remarcado' | 'realizado' | 'cancel
 export interface Atendimento {
   id: string;
   studentId: string;
-  aluno: string;
   tipo: AppointmentType;
   data: string;
   horarioInicio: string;

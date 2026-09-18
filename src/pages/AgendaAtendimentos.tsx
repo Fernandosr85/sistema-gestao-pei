@@ -30,6 +30,7 @@ import {
   periodChange,
   previousMonthPeriod,
   previousWeekPeriod,
+  studentNameOf,
   upcomingAppointmentsWithin,
   weekPeriod,
 } from '@/lib/metrics';
@@ -128,7 +129,7 @@ const AgendaAtendimentos = () => {
   const atendimentosMesAnterior = appointmentsInPeriod(state, previousMonthPeriod(hoje));
 
   const filteredAtendimentos = atendimentos.filter(atendimento => {
-    if (filtroAluno !== 'todos' && atendimento.aluno !== filtroAluno) return false;
+    if (filtroAluno !== 'todos' && atendimento.studentId !== filtroAluno) return false;
     if (filtroTipo !== 'todos' && atendimento.tipo !== filtroTipo) return false;
     if (filtroStatus !== 'todos' && atendimento.status !== filtroStatus) return false;
     return true;
@@ -142,13 +143,15 @@ const AgendaAtendimentos = () => {
       
       return {
         id: atendimento.id,
-        title: atendimento.aluno,
+        title: studentNameOf(state, atendimento.studentId),
         start: new Date(year, month - 1, day, startHour, startMinute),
         end: new Date(year, month - 1, day, endHour, endMinute),
         resource: atendimento,
       };
     });
-  }, [filteredAtendimentos]);
+    // `state` entra na lista porque o título do evento passou a ser resolvido pelo id: sem
+    // ele, editar o nome de um estudante não atualizaria o calendário.
+  }, [filteredAtendimentos, state]);
 
   const eventStyleGetter = (event: AtendimentoEvent) => {
     const tipo = event.resource.tipo;
@@ -238,7 +241,7 @@ const AgendaAtendimentos = () => {
               <SelectContent>
                 <SelectItem value="todos">Todos os alunos</SelectItem>
                 {state.students.map((student) => (
-                  <SelectItem key={student.id} value={student.nomeCompleto}>
+                  <SelectItem key={student.id} value={student.id}>
                     {student.nomeCompleto}
                   </SelectItem>
                 ))}
@@ -708,7 +711,7 @@ const AgendaAtendimentos = () => {
                       <div className={`w-1 h-16 rounded-full ${tipoColors[atendimento.tipo as keyof typeof tipoColors].classe}`} />
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-3 flex-wrap">
-                          <h3 className="font-semibold text-lg">{atendimento.aluno}</h3>
+                          <h3 className="font-semibold text-lg">{studentNameOf(state, atendimento.studentId)}</h3>
                           <Badge variant={statusBadgeVariant[atendimento.status as keyof typeof statusBadgeVariant]}>
                             {atendimento.status}
                           </Badge>

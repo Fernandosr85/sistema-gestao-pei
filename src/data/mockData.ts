@@ -93,7 +93,6 @@ export const mockObservations: Observation[] = [
     kind: 'structured',
     id: 'obs-1',
     studentId: '1',
-    studentName: 'Maria Silva Santos',
     data: '2025-11-19',
     periodo: 'manha',
     duracao: 120,
@@ -126,7 +125,6 @@ export const mockAssessments: Assessment[] = [
   {
     id: 'avl-1',
     studentId: '1',
-    studentName: 'Maria Silva Santos',
     date: '2025-11-01',
     assessor: 'Profª. Ana Beatriz',
     kind: 'quarterly',
@@ -162,7 +160,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-1',
     studentId: '3',
-    aluno: 'Ana Carolina Souza',
     tipo: 'Reunião Pedagógica',
     data: '2025-11-28',
     horarioInicio: '14:00',
@@ -175,7 +172,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-2',
     studentId: '2',
-    aluno: 'Pedro Oliveira Costa',
     tipo: 'Avaliação',
     data: '2025-11-29',
     horarioInicio: '10:00',
@@ -188,7 +184,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-3',
     studentId: '1',
-    aluno: 'Maria Silva Santos',
     tipo: 'Atendimento Família',
     data: '2025-11-30',
     horarioInicio: '16:00',
@@ -201,7 +196,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-4',
     studentId: '4',
-    aluno: 'Lucas Ferreira Lima',
     tipo: 'Multidisciplinar',
     data: '2025-12-02',
     horarioInicio: '13:00',
@@ -214,7 +208,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-5',
     studentId: '3',
-    aluno: 'Ana Carolina Souza',
     tipo: 'Reunião Pedagógica',
     data: '2025-11-25',
     horarioInicio: '14:00',

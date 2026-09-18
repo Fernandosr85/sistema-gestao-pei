@@ -102,7 +102,6 @@ const NewObservation = () => {
       kind: 'structured',
       id: createId('obs'),
       studentId: student.id,
-      studentName: student.nomeCompleto,
       data: data.data,
       periodo: data.periodo,
       duracao: Number(data.duracao),

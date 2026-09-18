@@ -16,6 +16,7 @@ import {
   periodChange,
   previousMonthPeriod,
   studentCounts,
+  studentNameOf,
   upcomingAppointments,
   upcomingAppointmentsWithin,
 } from '@/lib/metrics';
@@ -148,7 +149,7 @@ const Dashboard = () => {
                 <div key={appointment.id} className="pb-4 border-b last:border-0 last:pb-0">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
-                      <p className="font-semibold text-sm">{appointment.aluno}</p>
+                      <p className="font-semibold text-sm">{studentNameOf(state, appointment.studentId)}</p>
                       <p className="text-xs text-muted-foreground">
                         {formatLocalDate(appointment.data)} às {appointment.horarioInicio}
                       </p>

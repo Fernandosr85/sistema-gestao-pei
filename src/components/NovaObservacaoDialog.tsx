@@ -78,7 +78,6 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
       kind: 'quick',
       id: createId('obs'),
       studentId,
-      studentName,
       data: date,
       time,
       observador: DEMO_USER_NAME,

@@ -14,6 +14,7 @@ import {
   quickObservationToneOptions,
   quickObservationTopicOptions,
 } from '@/lib/observation';
+import { studentNameOf } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 
 const Observations = () => {
@@ -23,7 +24,7 @@ const Observations = () => {
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   const filteredObservations = state.observations.filter((obs) =>
-    obs.studentName.toLowerCase().includes(searchTerm.toLowerCase())
+    studentNameOf(state, obs.studentId).toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -69,7 +70,7 @@ const Observations = () => {
               return (
                 <Card key={observation.id} className="card-hover">
                   <CardHeader>
-                    <CardTitle className="text-xl">{observation.studentName}</CardTitle>
+                    <CardTitle className="text-xl">{studentNameOf(state, observation.studentId)}</CardTitle>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       <Badge variant="outline">
                         <Calendar className="mr-1 h-3 w-3" />
@@ -120,7 +121,7 @@ const Observations = () => {
                 <CardHeader>
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
-                      <CardTitle className="text-xl">{observation.studentName}</CardTitle>
+                      <CardTitle className="text-xl">{studentNameOf(state, observation.studentId)}</CardTitle>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant="outline">
                           <Calendar className="mr-1 h-3 w-3" />

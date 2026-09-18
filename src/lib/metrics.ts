@@ -122,6 +122,14 @@ export const studentProgress = (state: DemoState, studentId: string): number | u
   return Math.round(total / latest.objectives.length);
 };
 
+/**
+ * Nome do estudante resolvido pelo id. Antes cada observação, avaliação e atendimento
+ * guardava uma cópia do nome, e o reducer propagava a edição para as três coleções. A cópia
+ * era o dado que podia divergir; resolver pelo id remove a divergência possível.
+ */
+export const studentNameOf = (state: DemoState, studentId: string): string =>
+  state.students.find((student) => student.id === studentId)?.nomeCompleto ?? 'Estudante não encontrado';
+
 export interface StudentRecordSummary {
   observations: number;
   assessments: number;
