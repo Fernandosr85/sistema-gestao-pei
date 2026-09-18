@@ -45,11 +45,20 @@ export type DemoAction =
  */
 export type PersistenceStatus = 'browser' | 'memoryOnly' | 'disabled';
 
+/** Quantos registros foram descartados na carga, por coleção. */
+export type DiscardedCounts = Record<keyof DemoState, number>;
+
 export interface DemoStoreSnapshot {
   state: DemoState;
   persistence: PersistenceStatus;
   /** Data found in localStorage was unreadable or from another version and was dropped. */
   discardedStoredData: boolean;
+  /**
+   * Records dropped on load for not matching the declared shape, or for pointing at a record
+   * that was. Undefined when nothing was dropped. The count is what separates "descartei" from
+   * "sumiu", so it is shown, not just logged.
+   */
+  discardedRecords?: DiscardedCounts;
 }
 
 export interface DispatchResult {
