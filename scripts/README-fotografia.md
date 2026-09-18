@@ -38,7 +38,7 @@ console (ou `eval(await (await fetch('/scripts/fotografia.js')).text())`), e ent
 
 ```js
 await __foto.controles()   // 1. a ferramenta enxerga?
-await __foto.estavel()     // 2. a fotografia se repete?
+await __foto.estavel()     // 2. repete? e não depende da ordem?
 const antes = (await __foto.estavel()).foto
 // ... troca de commit, recarrega a página, cola de novo ...
 __foto.comparar(antes, await __foto.tudo())
@@ -54,12 +54,34 @@ número (`numeros`), tira um link da ordem de tabulação (`foco`), rebaixa um h
 (`titulos`). Uma comparação que sempre devolve "igual" não é evidência de que nada mudou;
 pode ser a ferramenta que não vê. É o achado 7 aplicado ao próprio instrumento.
 
-**`__foto.estavel()` — a fotografia se repete?** Duas passagens seguidas têm de dar o
-mesmo resultado. Se discordam, a comparação entre commits mede ruído, não código.
+**`__foto.estavel()` — a fotografia se repete, e não depende da ordem?** Três passagens.
+Duas na ordem normal: se discordam, a comparação entre commits mede ruído, não código. A
+terceira com as superfícies em **ordem inversa**: se discorda das outras duas, alguma coisa
+sobrevive de uma superfície para a seguinte, e a fotografia passa a depender de quantas
+vezes foi chamada antes.
 
-Este segundo controle pegou um defeito real na primeira vez que rodou: entrar numa rota
-em que já se está não re-renderiza, e a primeira leitura de `/` saía do render anterior ao
+Este segundo controle pegou o primeiro defeito do próprio arreio: entrar numa rota em que já
+se está não dispara render, e a primeira leitura de `/` saía do render anterior ao
 congelamento do relógio. Daí a rota neutra entre uma superfície e a seguinte.
+
+## O que fica de fora da medição, e por quê
+
+O Recharts mantém um `span#recharts_measurement_span` fora do `#root`, em `y = -20000`, com o
+último rótulo que mediu. Tem layout, entra no `innerText` e virava número na medida
+`numeros`. Como o Orçamento é a última superfície, a passagem que capturou a primeira linha
+de base não o via, e toda passagem posterior o via: **25 superfícies acusaram diferença num
+commit que não tinha mexido em nenhuma delas.**
+
+A regra que resolve é de classe, não de instância: descarta-se **qualquer filho direto do
+`body` estacionado fora da tela** (caixa inteiramente acima ou à esquerda por mais de
+1000 px). Vale para a próxima biblioteca que pendurar rascunho no `body`, sem precisar
+descobrir o nome dela antes. Medido nos dois sentidos: com a regra ligada, a rota inexistente
+mede `404`; com ela desligada, mede `404 20` — o `20` é o "R$ 20k" do gráfico do Orçamento.
+
+**A passagem em ordem inversa não pega este caso, e isso foi medido.** Em qualquer ordem o
+rascunho acaba guardando algum rótulo, e as três passagens concordam. Ela pega outra coisa:
+resíduo cujo *conteúdo* depende de qual superfície veio antes — estado no documento, portal
+que não desmonta, foco preso. As duas coberturas são diferentes e nenhuma substitui a outra.
 
 ## O relógio
 

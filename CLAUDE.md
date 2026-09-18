@@ -32,6 +32,11 @@ neste ambiente; use script com regex Unicode. grep -i não muda o caso de letra 
 'licença' não casa 'LICENÇA'. Vale para qualquer busca por termo em maiúsculas em código
 escrito em português.
 
+Controle positivo incidental não serve: ele pode desaparecer com a própria mudança que está
+sendo verificada — foi o que aconteceu com o `useSidebar` da busca institucional. Plante o
+controle: insira a ocorrência num arquivo de teste, confirme que o comando a encontra, e só
+então confie no zero.
+
 ## Invariantes — nunca violar
 
 ### 1. Nenhum vínculo institucional no código

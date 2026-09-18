@@ -99,22 +99,51 @@
     'a[href]', 'button', 'input', 'select', 'textarea', '[tabindex]', 'summary', '[contenteditable="true"]',
   ].join(',');
 
+  /* ---------- o que não é interface ---------- */
+
+  // Biblioteca que pendura rascunho no <body>, fora do #root, estacionado fora da tela.
+  // O Recharts mantém um span#recharts_measurement_span em y = -20000 com o último rótulo
+  // que mediu: tem layout, entra no innerText e vira número na fotografia. Não é interface e
+  // não pertence a nenhuma tela — e, por guardar "o último", contamina toda medição posterior
+  // à primeira.
+  //
+  // A regra aqui é de classe, não de instância: em vez do id conhecido, descarta-se qualquer
+  // filho direto do body estacionado fora da tela. Vale para a próxima biblioteca que fizer o
+  // mesmo, sem precisar descobrir o nome dela antes.
+  const FORA_DA_TELA = -1000;
+  const estacionadoForaDaTela = (el) => {
+    const r = el.getBoundingClientRect();
+    return r.bottom < FORA_DA_TELA || r.right < FORA_DA_TELA;
+  };
+
+  // Blocos que contam: a raiz da aplicação e os portais (diálogos e toasts do Radix são
+  // filhos diretos do body), menos rascunho de biblioteca, script e style.
+  const blocos = () =>
+    [...document.body.children].filter(
+      (el) => el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE' && !estacionadoForaDaTela(el),
+    );
+
+  const buscar = (seletor) => blocos().flatMap((b) => [
+    ...(b.matches(seletor) ? [b] : []),
+    ...b.querySelectorAll(seletor),
+  ]);
+
   /* ---------- as quatro medidas ---------- */
 
   // 1. Árvore de acessibilidade reduzida a papel|nome|estado, em ordem de documento.
   const medidaA11y = () =>
-    [...document.querySelectorAll(SELETOR_SEMANTICO)]
+    buscar(SELETOR_SEMANTICO)
       .filter(visivel)
       .map((el) => `${papel(el)}|${nomeAcessivel(el)}|${estado(el)}`)
       .join('\n');
 
   // 2. Sequência de números do texto renderizado. É a fotografia usada na Etapa 4.
   const medidaNumeros = () =>
-    (document.body.innerText.match(/\d+(?:[.,]\d+)*/g) || []).join(' ');
+    (blocos().map((el) => el.innerText || '').join('\n').match(/\d+(?:[.,]\d+)*/g) || []).join(' ');
 
   // 3. Ordem de tabulação: o que recebe foco e com que nome.
   const medidaFoco = () =>
-    [...document.querySelectorAll(FOCAVEL)]
+    buscar(FOCAVEL)
       .filter((el) => visivel(el) && !el.disabled && el.getAttribute('tabindex') !== '-1')
       .map((el) => `${el.tagName.toLowerCase()}[${el.getAttribute('tabindex') ?? ''}]|${nomeAcessivel(el)}`)
       .join('\n');
@@ -123,7 +152,7 @@
   const medidaTitulos = () =>
     [`title=${document.title}`]
       .concat(
-        [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]
+        buscar('h1,h2,h3,h4,h5,h6')
           .filter(visivel)
           .map((el) => `${el.tagName}:${limpar(el.innerText)}`),
       )
@@ -199,10 +228,10 @@
 
   const SUPERFICIES = [...ROTAS, ...REDIRECIONAMENTOS, ...CURINGA, ...ABAS];
 
-  const tudo = async ({ relogio = RELOGIO_PADRAO } = {}) => {
+  const tudo = async ({ relogio = RELOGIO_PADRAO, superficies = SUPERFICIES } = {}) => {
     congelarRelogio(relogio);
     const saida = {};
-    for (const s of SUPERFICIES) {
+    for (const s of superficies) {
       await ir(s);
       saida[s] = { ...hashes(), url: window.location.pathname + window.location.search };
     }
@@ -269,18 +298,41 @@
     return { todosOk, resultado };
   };
 
-  // Segundo controle: a fotografia tem de se repetir. Se duas passagens seguidas
-  // discordam, a comparação entre commits não mede código — mede ruído.
-  const estavel = async () => {
-    const a = await tudo();
-    const b = await tudo();
+  const difEntre = (a, b, rotulo) => {
     const difs = [];
     for (const k of Object.keys(a)) {
       for (const m of ['a11y', 'numeros', 'foco', 'titulos', 'url']) {
-        if (a[k][m] !== b[k][m]) difs.push(`${k} :: ${m} :: ${a[k][m]} -> ${b[k][m]}`);
+        if (a[k][m] !== b[k][m]) difs.push(`${rotulo} :: ${k} :: ${m} :: ${a[k][m]} -> ${b[k][m]}`);
       }
     }
-    return { estavel: difs.length === 0, difs, foto: b };
+    return difs;
+  };
+
+  // Segundo controle: a fotografia tem de se repetir, e não pode depender da ordem.
+  //
+  // Três passagens. Duas na ordem normal: se discordam, a comparação entre commits mede
+  // ruído, não código. A terceira com as superfícies em ordem INVERSA: se discorda das
+  // outras duas, alguma coisa que uma superfície deixa para trás muda o que a seguinte mede
+  // — estado no documento, portal que não desmonta, foco preso.
+  //
+  // O que a ordem inversa NÃO pega, e foi medido: resíduo cujo conteúdo é o mesmo em
+  // qualquer ordem. O rascunho do Recharts é assim — em qualquer ordem ele acaba guardando
+  // um rótulo, e as três passagens concordam. Contra esse, o que vale é a regra de descartar
+  // o que está estacionado fora da tela, acima. As duas coberturas são diferentes e nenhuma
+  // substitui a outra.
+  const estavel = async () => {
+    const a = await tudo();
+    const b = await tudo();
+    const c = await tudo({ superficies: [...SUPERFICIES].reverse() });
+    const difsRepeticao = difEntre(a, b, 'repetição');
+    const difsOrdem = difEntre(b, c, 'ordem inversa');
+    return {
+      estavel: difsRepeticao.length === 0 && difsOrdem.length === 0,
+      difsRepeticao,
+      difsOrdem,
+      difs: [...difsRepeticao, ...difsOrdem],
+      foto: b,
+    };
   };
 
   // Compara uma fotografia nova com uma guardada.
