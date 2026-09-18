@@ -1324,6 +1324,7 @@ detalhes de cada linha estão na mensagem do commit correspondente.
 | Estado sem interface em `ResourceLibrary` | 4 | 0 |
 | Identificadores sem uso (`tsc --noUnusedLocals --noUnusedParameters`) | 32 | 2 |
 | **Coleções que guardavam cópia do nome do estudante** | **3** | **0** |
+| — **atendimentos escondidos pelo filtro por aluno, com nome gravado desatualizado** | **todos** | **0** |
 | Violação `scrollable-region-focusable` em 320 px (Orçamento, Benchmarking) | 1 | 0 |
 | Defeitos pequenos da Etapa 2 (caminho de doc, `value={310}`, `Badge` em `<p>`, `view` sem `onView`) | 4 | 0 |
 | Selo com significado só no emoji, achado ao editar uma das linhas acima | 1 | 0 |
@@ -1367,6 +1368,33 @@ arquivos e 8 pontos.
 Decisão do autor: **vão para a Etapa 9, com a entidade PEI.** Migração v4 no meio de uma etapa
 de limpeza misturaria remoção com mudança de modelo e contaminaria a prova ponta a ponta.
 
+### O commit do nome do estudante não foi refatoração: era defeito ativo
+
+`2c6a428` entrou na etapa como deduplicação — o nome ficava copiado em três coleções e o
+reducer propagava a edição. O contrafactual medido no filtro por aluno da Agenda mostra que
+era mais que isso.
+
+Com um registro cujo nome gravado estava desatualizado, a comparação antiga, **nome contra
+nome**, devolve falso: o Select oferece o nome do cadastro e o registro guarda outro. O
+atendimento **não aparecia**. A comparação nova, id contra id, devolve verdadeiro.
+
+| | nome gravado no registro | nome no cadastro | filtro mantém? |
+|---|---|---|---:|
+| Lógica antiga (nome × nome) | `NOME ANTIGO GRAVADO` | `Nome Atual Do Cadastro` | **não** |
+| Lógica nova (id × id) | idem | idem | sim |
+
+Não é hipótese: é a saída das duas expressões sobre o mesmo estado carregado.
+
+**O que isso muda.** A propagação do `updateStudent` mantinha as três cópias em dia **a partir
+do momento em que passou a existir** (`2fb404d`, Etapa 1). Qualquer registro gravado antes
+disso, ou por qualquer caminho que não passasse por `student/update`, ficava com o nome velho
+— e o filtro da Agenda deixava de mostrá-lo, sem erro, sem aviso, sem nada na tela. Um
+atendimento existente sumia de uma busca por aluno.
+
+O defeito estava **ativo e esperando alguém renomear um estudante**. A etapa de limpeza, que
+não existia para caçar defeito, entregou a correção de um. Fica registrado com essa
+qualificação porque muda o que a Etapa 5 entregou: não foram só remoção e deduplicação.
+
 ### O inventário dos 17 arquivos acima de 400 linhas
 
 O BACKLOG listava 6 arquivos, com números defasados. São 17, depois da remoção de
@@ -1385,6 +1413,28 @@ move a fotografia por motivo legítimo. Ficam registrados com o número de hoje:
 | `AlertasRiscosContent.tsx` | 575 | | `EquipeContent.tsx` | 412 |
 | `ConfiguracoesDialog.tsx` | 574 | | `NovoAtendimentoDialog.tsx` | 411 |
 | `NewObservation.tsx` | 511 | | | |
+
+### O validador do store aceita qualquer objeto com `id`
+
+A mesma frouxidão, com dois efeitos opostos, os dois medidos nesta etapa.
+
+`isRecordList`, em `src/store/persistence.ts`, checa que cada registro é objeto e tem `id`
+string. Nada mais: nem campo obrigatório, nem tipo de campo. `isDemoStateV1` acrescenta só o
+`kind` das observações.
+
+- **Efeito bom:** foi isso que tornou o commit `2c6a428` barato. Remover `studentName` e
+  `aluno` dos tipos não invalidou nada gravado — o campo extra continua no armazenamento e é
+  ignorado —, e por isso **não precisou de v4**.
+- **Efeito ruim:** duas cargas sintéticas malformadas, montadas à mão para o teste de ida e
+  volta, passaram pelo validador e **quebraram a tela**. Um `Student` sem `dataCadastro` derruba
+  o `StudentDetail` em `formatLocalDate`; um `Assessment` sem `summary` derruba o
+  `StudentAssessmentsCard`. Dado corrompido no `localStorage` de um navegador real produziria
+  a mesma tela em branco, e o modo demonstração não tem fronteira de erro.
+
+**Pendência, para a Etapa 6 ou 7:** validação de forma no carregamento do store — campo
+obrigatório e tipo, não só `id` —, decidindo o que fazer com o registro que não passa
+(descartar o registro, descartar o estado, ou carregar com aviso). Combina com a Etapa 6, que
+liga o `strict`, e com a Etapa 7, que traz teste. **Não aberta agora.**
 
 ### A prova de regressão
 
@@ -1418,6 +1468,19 @@ Ligar em `tsconfig.json` e `tsconfig.app.json`: `strict`, `strictNullChecks`,
 Vai gerar muitos erros. Corrigir **por arquivo**, com commit por lote — não silenciar com
 `any` nem `@ts-ignore`. Se um erro revelar bug real (acesso a possivelmente `undefined`),
 corrigir o bug, não o tipo.
+
+`noUnusedLocals` e `noUnusedParameters` já estão limpos: a Etapa 5 removeu 30 identificadores
+sem uso em `1c84b6f` e 2 em `54f3675`. Sobram os dois `_props` de `ui/calendar.tsx`, que são
+deliberados e vão precisar de `argsIgnorePattern`.
+
+**Junto vem a validação de forma no carregamento do store** (registrada na Etapa 5). Hoje
+`isRecordList`, em `src/store/persistence.ts`, aceita qualquer objeto que tenha `id` string —
+nem campo obrigatório, nem tipo de campo. A frouxidão tem dois efeitos opostos, os dois
+medidos: barateou a remoção do nome duplicado, que não precisou de v4, e deixa passar registro
+malformado que **quebra a tela** (um `Student` sem `dataCadastro` derruba o `StudentDetail`).
+Decidir o que fazer com o registro que não passa: descartar o registro, descartar o estado, ou
+carregar com aviso. Alternativa: fronteira de erro por rota, que é remendo e não validação.
+Pode ir para a Etapa 7, junto do teste, se ficar grande demais aqui.
 
 **Critério de aceite:** `npm run typecheck` limpo com strict ligado.
 
