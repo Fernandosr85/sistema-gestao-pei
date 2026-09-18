@@ -305,9 +305,39 @@ O que isso significa na prática:
 - **Datas locais.** Data de registro se compara como texto `AAAA-MM-DD`; nenhuma conta usa
   `new Date('AAAA-MM-DD')`, que é meia-noite em UTC e, no Brasil, 21h do dia anterior.
 
+### Limpeza (Etapa 5)
+
+A etapa seguinte removeu o que não era alcançável e resolveu duplicação. Como ela **remove**
+código, a verificação principal é de regressão: uma fotografia de quatro medidas por tela —
+árvore de acessibilidade, sequência de números, ordem de tabulação e esqueleto de títulos —,
+em 23 superfícies, com a regra de que um commit que só remove produz **diferença zero**. O
+arreio está em [`scripts/fotografia.js`](scripts/fotografia.js), com o protocolo ao lado.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Arquivos em `src/` inalcançáveis a partir de `main.tsx` | 25 | 1¹ |
+| Arquivos em `src/` | 155 | 127 |
+| `dependencies` no `package.json` | 51 | 37 |
+| `index.js` do bundle, em bytes | 1.000.212 | 971.582 |
+| Coleções que guardavam cópia do nome do estudante | 3 | 0 |
+| Identificadores sem uso | 32 | 2² |
+| Violação de foco em contêiner rolável, em 320 px | 1 | 0 |
+
+¹ `vite-env.d.ts`, declaração de tipo puxada pelo `tsconfig`, não por import.
+² Parâmetros deliberadamente prefixados com `_` num componente do shadcn.
+
+Do primeiro ao último commit da etapa, a fotografia deu **diferença zero nas 23 superfícies**.
+Nos commits que só removiam código morto, os quatro arquivos do bundle saíram byte a byte
+idênticos — o empacotador já não os embarcava.
+
+**O nome do estudante deixou de ser copiado** nas observações, avaliações e atendimentos: era
+guardado em três coleções e propagado a cada edição. Agora é resolvido pelo `id`. O filtro por
+aluno da Agenda comparava nome com nome e escondia registro cujo nome gravado estivesse
+desatualizado; passou a comparar `id`.
+
 ### Limites conhecidos
 
-- **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação, Ver PEI e
+- **Diálogos de exemplo sob o nome do estudante.**Desempenho, Modo Apresentação, Ver PEI e
   Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante. O
   Desempenho de uma aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Trocar por
   dado real depende da entidade PEI. Os quatro dizem na tela que o conteúdo não é do estudante
@@ -315,6 +345,12 @@ O que isso significa na prática:
   no cabeçalho.
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
+- **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de
+  gráfico. Passam no contraste. O número de classes de cor fixa depende da regra de contagem
+  — 147 pela estreita, 164 pela larga —, e está registrado com a regra no backlog.
+- **17 arquivos acima de 400 linhas.** A convenção pede quebrá-los em commits de refatoração
+  dedicados; fazer isso na etapa de limpeza destruiria a prova de regressão. Inventariados no
+  backlog, com o número de linhas de cada um.
 
 ---
 
@@ -367,6 +403,7 @@ sistema-gestao-pei/
 │   ├── App.tsx
 │   └── main.tsx
 ├── docs/                   # Documentação técnica
+├── scripts/                # Arreio de fotografia de superfície (prova de regressão)
 ├── .env.example
 ├── LICENSE
 └── package.json
