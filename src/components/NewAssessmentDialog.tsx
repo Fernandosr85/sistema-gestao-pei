@@ -121,7 +121,6 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
     const assessment: Assessment = {
       id: createId('avl'),
       studentId: student.id,
-      studentName: student.nomeCompleto,
       date: toLocalISODate(assessmentDate),
       assessor: DEMO_USER_NAME,
       kind,

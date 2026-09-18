@@ -27,18 +27,6 @@ src/components/
 
 ---
 
-### NavigationBar
-
-**Tipo:** Layout  
-**Descrição:** Barra de navegação responsiva da aplicação.
-
-#### Responsabilidades
-- Navegação entre módulos
-- Adaptação para diferentes tamanhos de tela
-- Melhorar a usabilidade geral
-
----
-
 ### StatCard
 
 **Tipo:** Dashboard  
@@ -73,18 +61,6 @@ type StatCardProps = {
 - Nível de suporte
 - Indicador de progresso
 - Responsável ou resumo visual
-
----
-
-### ComplexityCard
-
-**Tipo:** Análise  
-**Descrição:** Card para análise de complexidade.
-
-#### Uso
-- Apoio à distribuição de carga
-- Visualização de nível de suporte
-- Resumo para painel de gestão
 
 ---
 
@@ -211,9 +187,6 @@ Gráfico radar das áreas do PEI.
 ### InterventionDonut
 Distribuição dos tipos de intervenção.
 
-### ActionPanel
-Painel de ações sugeridas.
-
 ## Boas Práticas para Componentes
 
 - Manter componentes pequenos e reutilizáveis
@@ -225,6 +198,10 @@ Painel de ações sugeridas.
 - Preferir composição em vez de componentes monolíticos
 
 ## Observações
+
+`NavigationBar`, `ComplexityCard` e `ActionPanel` foram descritos aqui até a Etapa 5, quando
+saíram do repositório por não serem alcançáveis a partir de `main.tsx`. As descrições foram
+removidas junto: guia que descreve componente inexistente é afirmação falsa de funcionalidade.
 
 Este guia foi montado com base na documentação disponível.  
 Para documentação mais detalhada por componente, o ideal é complementar com exemplos reais de uso, props completas e capturas de tela.

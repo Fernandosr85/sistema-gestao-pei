@@ -59,7 +59,7 @@ const EquipeContent = () => {
 
   /*
    * Equipe do cenário ilustrativo. Quatro destes profissionais tinham o nome e o id dos
-   * profissionais do seed (`mockProfessionals`): Profª. Ana Beatriz e Prof. Carlos Lima, que
+   * profissionais do seed: Profª. Ana Beatriz e Prof. Carlos Lima, que
    * também são professores regentes de alunos da demonstração, Dra. Maria Fernandes e Dr. João
    * Santos. A carga, o contrato e as férias do cenário apareciam como se fossem deles.
    */

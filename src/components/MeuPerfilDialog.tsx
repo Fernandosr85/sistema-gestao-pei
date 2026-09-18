@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { User, GraduationCap, TrendingUp, Award, Settings, Upload, Trash2, Edit, X } from 'lucide-react';
+import { User, GraduationCap, TrendingUp, Award, Settings, Upload, Trash2, Edit } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
 import ChartDataTable from '@/components/ChartDataTable';
 import { DEMO_USER_NAME } from '@/config/institution';
 import DemoDataNotice from '@/components/DemoDataNotice';
@@ -413,8 +413,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
 
                 <div className="border-t pt-4 mt-4">
                   <p className="text-sm mb-2">Total acumulado: <strong>124 horas</strong></p>
-                  <p className="text-sm mb-4">Meta anual: 40 horas <Badge variant="default" className="bg-green-500 ml-2">+84h acima!</Badge></p>
-                  <Progress value={310} className="mb-4" />
+                  <div className="text-sm mb-4">Meta anual: 40 horas <Badge variant="default" className="bg-green-500 ml-2">+84h acima!</Badge></div>
+                  <Progress value={100} aria-label="Meta anual de formação atingida: 124 horas de 40" className="mb-4" />
                 </div>
 
                 <div className="flex gap-2">
@@ -538,7 +538,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">Tempo médio de revisão</p>
                     <p className="text-2xl font-bold mb-1">38 dias</p>
-                    <p className="text-sm">Meta da rede: 45 dias <Badge variant="default" className="bg-green-500 ml-1">✅</Badge></p>
+                    <div className="text-sm">Meta da rede: 45 dias <Badge variant="default" className="bg-green-500 ml-1"><span aria-hidden="true">✅</span> dentro da meta</Badge></div>
                   </div>
                 </div>
               </CardContent>

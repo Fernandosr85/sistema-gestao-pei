@@ -107,7 +107,7 @@ const BenchmarkingTable = () => {
           className="mb-6"
         />
         <div className="border rounded-lg overflow-hidden mb-6">
-          <Table>
+          <Table regionLabel="Comparativos e benchmarking">
             <TableHeader>
               <TableRow>
                 <TableHead className="font-bold">INDICADOR</TableHead>

@@ -27,8 +27,6 @@ export default function ResourceLibrary() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDiagnoses, setSelectedDiagnoses] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [minRating, setMinRating] = useState<number>(0);
   const [sortBy, setSortBy] = useState('recent');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
@@ -40,8 +38,6 @@ export default function ResourceLibrary() {
 
   const diagnoses = ['TEA', 'TDAH', 'Dislexia', 'Discalculia', 'Deficiência Intelectual', 'Síndrome de Down', 'Deficiência Visual', 'Deficiência Auditiva', 'Paralisia Cerebral', 'Superdotação'];
   const subjects = ['Língua Portuguesa', 'Matemática', 'Ciências da Natureza', 'Geografia', 'História', 'Arte', 'Educação Física', 'Inglês', 'Habilidades Socioemocionais'];
-  const types = ['Material Impresso', 'Vídeo', 'Jogo', 'Aplicativo', 'Prancha CAA', 'Sequência Didática', 'Avaliação Adaptada'];
-  const levels = ['Educação Infantil', 'Fundamental 1', 'Fundamental 2', 'Ensino Médio', 'EJA'];
 
   const toggleFilter = (value: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     setter(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
@@ -50,8 +46,6 @@ export default function ResourceLibrary() {
   const clearFilters = () => {
     setSelectedDiagnoses([]);
     setSelectedSubjects([]);
-    setSelectedTypes([]);
-    setSelectedLevels([]);
     setMinRating(0);
     setOnlyFavorites(false);
   };

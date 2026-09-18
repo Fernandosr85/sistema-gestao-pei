@@ -5,21 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Target, ChevronDown, ChevronUp, TrendingUp, Users, Lightbulb, AlertCircle, AlertTriangle } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
 
-const projectionData = [
-  { month: 'Jan', historico: 2, projecao: null },
-  { month: 'Fev', historico: 3, projecao: null },
-  { month: 'Mar', historico: 3.5, projecao: null },
-  { month: 'Abr', historico: 4, projecao: null },
-  { month: 'Mai', historico: 5, projecao: null },
-  { month: 'Jun', historico: 6, projecao: null },
-  { month: 'Jul', historico: 7, projecao: null },
-  { month: 'Ago', historico: 8, projecao: null },
-  { month: 'Set', historico: null, projecao: 8 },
-  { month: 'Out', historico: null, projecao: 9 },
-  { month: 'Nov', historico: null, projecao: 9.5 },
-  { month: 'Dez', historico: null, projecao: 10 },
-];
-
 interface AreaProgressoProps {
   nome: string;
   atual: number;

@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate, parseLocalDate, toLocalISODate } from '@/lib/date';
 import { createId } from '@/lib/id';
+import { studentNameOf } from '@/lib/metrics';
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 import type { AppointmentType, Atendimento } from '@/types';
@@ -121,7 +122,7 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
       });
       toast({
         title: 'Atendimento remarcado',
-        description: `${appointment.aluno}, ${format(date, 'dd/MM/yyyy')} às ${horarioInicio}. ${describeSaveLocation(result)}`,
+        description: `${studentNameOf(state, appointment.studentId)}, ${format(date, 'dd/MM/yyyy')} às ${horarioInicio}. ${describeSaveLocation(result)}`,
       });
       onOpenChange(false);
       return;
@@ -135,7 +136,6 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
         appointment: {
           ...appointment,
           studentId: student.id,
-          aluno: student.nomeCompleto,
           tipo,
           profissionais: selectedProfissionais,
           local: local.trim() || 'A definir',
@@ -156,7 +156,6 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
     const newAppointment: Atendimento = {
       id: createId('atd'),
       studentId: student.id,
-      aluno: student.nomeCompleto,
       tipo,
       data: toLocalISODate(date),
       horarioInicio,
@@ -199,7 +198,7 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
         <div className="space-y-6 py-4">
           {editing === 'reschedule' && appointment && (
             <p className="rounded-md bg-muted p-3 text-sm">
-              <strong>{appointment.aluno}</strong> · {appointment.tipo}
+              <strong>{studentNameOf(state, appointment.studentId)}</strong> · {appointment.tipo}
               <br />
               Data atual: {formatLocalDate(appointment.data)}, {appointment.horarioInicio} - {appointment.horarioFim}
             </p>

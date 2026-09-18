@@ -1,17 +1,17 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Calendar, Clock, MapPin, User, FileText, Target, 
   TrendingUp, TrendingDown, Wrench, CheckCircle2, 
-  AlertCircle, Camera, Video, FileIcon, Bell,
+  AlertCircle, Camera, Video, Bell,
   Edit, FileDown, Mail, Trash2
 } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { formatLocalDate } from '@/lib/date';
 import { classLabelOf } from '@/lib/report';
+import { studentNameOf } from '@/lib/metrics';
 import { useDemoStore } from '@/store/useDemoStore';
 import { StructuredObservation } from '@/types';
 
@@ -48,7 +48,7 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
         <div className="space-y-6">
           {/* Student Info */}
           <div className="p-4 bg-muted/50 rounded-lg">
-            <h2 className="text-xl font-bold">{observation.studentName}</h2>
+            <h2 className="text-xl font-bold">{studentNameOf(state, observation.studentId)}</h2>
             {student && (
               <p className="text-sm text-muted-foreground">
                 {classLabelOf(student)} | Matrícula: {student.matricula}

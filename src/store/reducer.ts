@@ -1,23 +1,15 @@
-import type { Assessment, Atendimento, Observation, Student } from '@/types';
+import type { Atendimento, Student } from '@/types';
 import type { DemoAction, DemoState } from '@/types/store';
 import { createSeedState } from './seed';
 
-/** Linked records keep a copy of the student's name, so an edit updates those copies too. */
+/*
+ * Linked records resolve the student's name by id, so editing a student needs no propagation.
+ * This function used to copy the new name into observations, appointments and assessments,
+ * which existed only because those three collections stored a duplicate of the name.
+ */
 const updateStudent = (state: DemoState, student: Student): DemoState => ({
   ...state,
   students: state.students.map((item) => (item.id === student.id ? student : item)),
-  observations: state.observations.map(
-    (observation): Observation =>
-      observation.studentId === student.id ? { ...observation, studentName: student.nomeCompleto } : observation,
-  ),
-  appointments: state.appointments.map(
-    (appointment): Atendimento =>
-      appointment.studentId === student.id ? { ...appointment, aluno: student.nomeCompleto } : appointment,
-  ),
-  assessments: state.assessments.map(
-    (assessment): Assessment =>
-      assessment.studentId === student.id ? { ...assessment, studentName: student.nomeCompleto } : assessment,
-  ),
 });
 
 export const demoReducer = (state: DemoState, action: DemoAction): DemoState => {

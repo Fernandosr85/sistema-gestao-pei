@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { BarChart3, AlertTriangle, TrendingUp, FileText, Users, DollarSign } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ComplexityAnalysisContent from '@/components/gestao/ComplexityAnalysisContent';
@@ -12,7 +12,6 @@ import IllustrativeScenarioNotice from '@/components/gestao/IllustrativeScenario
 
 const Gestao = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const tabParam = searchParams.get('tab') || 'visao-geral';
   const [activeTab, setActiveTab] = useState(tabParam);
 

@@ -1,7 +1,6 @@
-import { Star, FileText, GraduationCap, Heart, Users, Clock, TrendingUp, TrendingDown } from 'lucide-react';
+import { Star, FileText, GraduationCap, Heart, Users, Clock, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface KPI {

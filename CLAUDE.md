@@ -17,7 +17,7 @@ diagnósticos e dados de saúde. Isso governa várias regras abaixo.
 Nenhuma alteração é considerada pronta antes de as três passarem:
 
 ```bash
-npm run lint        # 0 erros. Warnings react-refresh em src/components/ui/ são aceitos.
+npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
 npm run build       # conclui
 ```
@@ -31,6 +31,11 @@ defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letr
 neste ambiente; use script com regex Unicode. grep -i não muda o caso de letra acentuada:
 'licença' não casa 'LICENÇA'. Vale para qualquer busca por termo em maiúsculas em código
 escrito em português.
+
+Controle positivo incidental não serve: ele pode desaparecer com a própria mudança que está
+sendo verificada — foi o que aconteceu com o `useSidebar` da busca institucional. Plante o
+controle: insira a ocorrência num arquivo de teste, confirme que o comando a encontra, e só
+então confie no zero.
 
 ## Invariantes — nunca violar
 

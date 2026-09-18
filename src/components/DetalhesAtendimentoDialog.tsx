@@ -20,6 +20,7 @@ import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { useToast } from '@/hooks/use-toast';
 import { isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
+import { studentNameOf } from '@/lib/metrics';
 import { describeSaveLocation } from '@/store/saveFeedback';
 import { useDemoStore } from '@/store/useDemoStore';
 
@@ -105,7 +106,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
               Aluno
             </h3>
             <Link to={`/alunos/${current.studentId}`} className="text-primary hover:underline">
-              {current.aluno}
+              {studentNameOf(state, current.studentId)}
             </Link>
           </div>
 
@@ -268,7 +269,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
             <AlertDialogHeader>
               <AlertDialogTitle>Cancelar este atendimento?</AlertDialogTitle>
               <AlertDialogDescription>
-                {current.aluno}, {formatLocalDate(current.data)} às {current.horarioInicio}. O atendimento passa a
+                {studentNameOf(state, current.studentId)}, {formatLocalDate(current.data)} às {current.horarioInicio}. O atendimento passa a
                 constar como cancelado; o registro não é excluído e continua na agenda.
               </AlertDialogDescription>
             </AlertDialogHeader>

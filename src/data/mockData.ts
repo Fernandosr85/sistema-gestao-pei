@@ -1,4 +1,4 @@
-import { Student, Observation, Assessment, Atendimento, Professional } from '@/types';
+import { Student, Observation, Assessment, Atendimento } from '@/types';
 
 export const mockStudents: Student[] = [
   {
@@ -93,7 +93,6 @@ export const mockObservations: Observation[] = [
     kind: 'structured',
     id: 'obs-1',
     studentId: '1',
-    studentName: 'Maria Silva Santos',
     data: '2025-11-19',
     periodo: 'manha',
     duracao: 120,
@@ -126,7 +125,6 @@ export const mockAssessments: Assessment[] = [
   {
     id: 'avl-1',
     studentId: '1',
-    studentName: 'Maria Silva Santos',
     date: '2025-11-01',
     assessor: 'Profª. Ana Beatriz',
     kind: 'quarterly',
@@ -162,7 +160,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-1',
     studentId: '3',
-    aluno: 'Ana Carolina Souza',
     tipo: 'Reunião Pedagógica',
     data: '2025-11-28',
     horarioInicio: '14:00',
@@ -175,7 +172,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-2',
     studentId: '2',
-    aluno: 'Pedro Oliveira Costa',
     tipo: 'Avaliação',
     data: '2025-11-29',
     horarioInicio: '10:00',
@@ -188,7 +184,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-3',
     studentId: '1',
-    aluno: 'Maria Silva Santos',
     tipo: 'Atendimento Família',
     data: '2025-11-30',
     horarioInicio: '16:00',
@@ -201,7 +196,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-4',
     studentId: '4',
-    aluno: 'Lucas Ferreira Lima',
     tipo: 'Multidisciplinar',
     data: '2025-12-02',
     horarioInicio: '13:00',
@@ -214,7 +208,6 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-5',
     studentId: '3',
-    aluno: 'Ana Carolina Souza',
     tipo: 'Reunião Pedagógica',
     data: '2025-11-25',
     horarioInicio: '14:00',
@@ -226,235 +219,3 @@ export const mockAppointments: Atendimento[] = [
     ata: '',
   },
 ];
-
-export const mockProfessionals: Professional[] = [
-  {
-    id: 'prof-1',
-    nome: 'Dra. Maria Fernandes',
-    tipo: 'psicologo',
-    especialidade: 'Psicologia Educacional',
-    estudantes: ['1', '3'],
-  },
-  {
-    id: 'prof-2',
-    nome: 'Dr. João Santos',
-    tipo: 'terapeuta',
-    especialidade: 'Terapia Ocupacional',
-    estudantes: ['2'],
-  },
-  {
-    id: 'prof-3',
-    nome: 'Profª. Ana Beatriz',
-    tipo: 'professor',
-    estudantes: ['1'],
-  },
-  {
-    id: 'prof-4',
-    nome: 'Prof. Carlos Lima',
-    tipo: 'professor',
-    estudantes: ['2'],
-  },
-];
-
-export const dadosAnalisePreditiva = {
-  aluno: {
-    id: 'aluno-123',
-    nome: 'João Silva',
-    diagnostico: 'TEA Nível 2',
-    ano_escolar: '4º ano'
-  },
-  
-  projecao: {
-    confianca: 87,
-    objetivos_atuais: 6,
-    objetivos_totais: 12,
-    objetivos_projetados_fim_ano: 10,
-    meses_analise: 3,
-    
-    areas: [
-      {
-        nome: 'Comunicação',
-        progresso_atual: 70,
-        projecao_fim_ano: 85,
-        tendencia: 'positiva',
-        risco: 'baixo',
-        ganho_esperado: 15
-      },
-      {
-        nome: 'Alfabetização',
-        progresso_atual: 35,
-        projecao_fim_ano: 50,
-        tendencia: 'lenta',
-        risco: 'alto',
-        ganho_esperado: 15
-      },
-      {
-        nome: 'Matemática',
-        progresso_atual: 55,
-        projecao_fim_ano: 75,
-        tendencia: 'positiva',
-        risco: 'baixo',
-        ganho_esperado: 20
-      },
-      {
-        nome: 'Socialização',
-        progresso_atual: 45,
-        projecao_fim_ano: 65,
-        tendencia: 'moderada',
-        risco: 'médio',
-        ganho_esperado: 20
-      },
-      {
-        nome: 'Autonomia',
-        progresso_atual: 80,
-        projecao_fim_ano: 90,
-        tendencia: 'positiva',
-        risco: 'baixo',
-        ganho_esperado: 10
-      }
-    ],
-    
-    cenarios: {
-      conservador: {
-        objetivos: 8,
-        percentual: 67,
-        probabilidade: 15
-      },
-      esperado: {
-        objetivos: 10,
-        percentual: 83,
-        probabilidade: 87
-      },
-      otimista: {
-        objetivos: 11,
-        percentual: 92,
-        probabilidade: 35
-      }
-    }
-  },
-  
-  casos_similares: [
-    {
-      id: 1,
-      similaridade: 94,
-      escola: 'Escola Exemplo A',
-      ano_letivo: 2023,
-      resultado: {
-        objetivos_alcancados: 11,
-        objetivos_totais: 12,
-        percentual: 92
-      },
-      estrategias: [
-        'Rotina visual com timer',
-        'Reforço positivo sistemático',
-        'Parceria intensiva com família'
-      ],
-      tempo_resultados: '4 meses'
-    },
-    {
-      id: 2,
-      similaridade: 92,
-      escola: 'Escola Exemplo B',
-      ano_letivo: 2023,
-      resultado: {
-        objetivos_alcancados: 10,
-        objetivos_totais: 12,
-        percentual: 83
-      },
-      estrategias: [
-        'Agenda visual estruturada',
-        'Sistema de recompensas',
-        'Comunicação aumentativa'
-      ],
-      tempo_resultados: '5 meses'
-    },
-    {
-      id: 3,
-      similaridade: 91,
-      escola: 'Escola Exemplo C',
-      ano_letivo: 2022,
-      resultado: {
-        objetivos_alcancados: 11,
-        objetivos_totais: 12,
-        percentual: 92
-      },
-      estrategias: [
-        'Ensino estruturado TEACCH',
-        'Apoio de mediador',
-        'Integração sensorial'
-      ],
-      tempo_resultados: '4 meses'
-    }
-  ],
-  
-  estrategias_recomendadas: [
-    {
-      id: 1,
-      nome: 'Método Fônico Multissensorial',
-      area: 'Alfabetização',
-      taxa_sucesso: 89,
-      casos_sucesso: 67,
-      casos_totais: 75,
-      prioridade: 'alta',
-      tempo_implementacao: '3-4 semanas',
-      custo: 'baixo'
-    },
-    {
-      id: 2,
-      nome: 'Zona de Descompressão + Timer Visual',
-      area: 'Regulação Emocional',
-      taxa_sucesso: 94,
-      casos_sucesso: 85,
-      casos_totais: 90,
-      prioridade: 'alta',
-      tempo_implementacao: '2-3 semanas',
-      custo: 'baixo'
-    },
-    {
-      id: 3,
-      nome: 'Grupos Estruturados (2-3 alunos)',
-      area: 'Socialização',
-      taxa_sucesso: 82,
-      casos_sucesso: 58,
-      casos_totais: 71,
-      prioridade: 'média',
-      tempo_implementacao: '4-6 semanas',
-      custo: 'médio'
-    }
-  ],
-  
-  alertas: [
-    {
-      id: 1,
-      tipo: 'urgente',
-      area: 'Alfabetização',
-      titulo: 'Progresso abaixo do esperado',
-      metricas: {
-        esperado: 60,
-        atual: 35,
-        diferenca: -25
-      },
-      acoes: [
-        'Implementar método fônico intensivo',
-        'Agendar reunião com coordenação',
-        'Solicitar avaliação fonoaudiológica'
-      ]
-    },
-    {
-      id: 2,
-      tipo: 'atencao',
-      area: 'Socialização',
-      titulo: 'Regressão em interações sociais',
-      metricas: {
-        esperado: 50,
-        atual: 35,
-        diferenca: -15
-      },
-      acoes: [
-        'Investigar mudanças recentes no ambiente',
-        'Aumentar oportunidades de interação estruturada',
-        'Consultar equipe multidisciplinar'
-      ]
-    }
-  ]
-};

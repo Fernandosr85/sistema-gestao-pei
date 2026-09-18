@@ -25,17 +25,22 @@ const VisaoGeralContent = () => {
   const [, setSearchParams] = useSearchParams();
 
   const priorities = [
-    { id: 1, text: 'Resolver 3 PEIs vencidos', deadline: 'hoje', urgency: 'URGENTE' },
-    { id: 2, text: 'Reunião mensal coordenadores', deadline: 'quarta, 14h', urgency: 'ALTA' },
-    { id: 3, text: 'Aprovar orçamento 2025', deadline: 'vence sexta', urgency: 'ALTA' },
-    { id: 4, text: 'Visita Secretaria de Educação', deadline: 'sexta, 10h', urgency: 'MÉDIA' },
-    { id: 5, text: 'Planejar formação dez/jan', deadline: '8 novos professores', urgency: 'MÉDIA' },
-  ];
+    { id: 1, text: 'Resolver 3 PEIs vencidos', deadline: 'hoje', urgency: 'urgente' },
+    { id: 2, text: 'Reunião mensal coordenadores', deadline: 'quarta, 14h', urgency: 'alta' },
+    { id: 3, text: 'Aprovar orçamento 2025', deadline: 'vence sexta', urgency: 'alta' },
+    { id: 4, text: 'Visita Secretaria de Educação', deadline: 'sexta, 10h', urgency: 'media' },
+    { id: 5, text: 'Planejar formação dez/jan', deadline: '8 novos professores', urgency: 'media' },
+  ] as const;
 
-  const urgencyColors = {
-    URGENTE: 'bg-destructive text-destructive-foreground',
-    ALTA: 'bg-warning text-warning-foreground',
-    MÉDIA: 'bg-info text-info-foreground',
+  /*
+   * A chave identifica, o rótulo aparece na tela. Antes o mesmo valor fazia as duas coisas, e
+   * a chave do mapa tinha acento — "MÉDIA" — contra a convenção de identificador ASCII. Com
+   * os dois separados, a chave fica ASCII e o texto na tela continua acentuado.
+   */
+  const urgencies = {
+    urgente: { label: 'URGENTE', className: 'bg-destructive text-destructive-foreground' },
+    alta: { label: 'ALTA', className: 'bg-warning text-warning-foreground' },
+    media: { label: 'MÉDIA', className: 'bg-info text-info-foreground' },
   };
 
   return (
@@ -84,10 +89,10 @@ const VisaoGeralContent = () => {
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold mb-2 flex items-center gap-2">
+                  <div className="font-semibold mb-2 flex items-center gap-2">
                     Professores em Sobrecarga
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">2</Badge>
-                  </p>
+                  </div>
                   <ul className="text-sm space-y-1">
                     {/* Os dois da aba Equipe com carga de 90% ou mais. Antes eram outros dois, um
                         deles "Profª Marina", como a professora regente de um aluno da demonstração. */}
@@ -105,10 +110,10 @@ const VisaoGeralContent = () => {
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-semibold mb-2 flex items-center gap-2">
+                  <div className="font-semibold mb-2 flex items-center gap-2">
                     Famílias Sem Resposta
                     <Badge variant="secondary" className="bg-warning text-warning-foreground">4</Badge>
-                  </p>
+                  </div>
                   <p className="text-sm">4 famílias sem contato há mais de 15 dias</p>
                 </div>
               </div>
@@ -218,11 +223,11 @@ const VisaoGeralContent = () => {
                       {priority.text}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge 
-                        variant="secondary" 
-                        className={urgencyColors[priority.urgency as keyof typeof urgencyColors]}
+                      <Badge
+                        variant="secondary"
+                        className={urgencies[priority.urgency].className}
                       >
-                        {priority.urgency}
+                        {urgencies[priority.urgency].label}
                       </Badge>
                       <span className="text-xs text-muted-foreground">{priority.deadline}</span>
                     </div>

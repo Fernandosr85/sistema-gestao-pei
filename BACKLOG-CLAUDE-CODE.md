@@ -183,6 +183,31 @@ métodos:
 > busca de nomes do commit 7 cobria só a Gestão. Apareceu na leitura do arquivo para corrigir o
 > cabeçalho do Ver PEI, com a tarefa já sendo atribuição a pessoa nomeada.
 
+> **Quinta onda — a varredura por efeito não cobre o que não tem efeito (Etapa 5).** Dois
+> casos, uma causa só, achados ao remover código morto:
+>
+> - `CoordinationDashboard.tsx`, importado por arquivo nenhum: **"Formação sobre TEA para
+>   Prof. Ana Costa"** — pessoa nomeada e condição de saúde na mesma linha, a forma exata da
+>   quarta onda —, mais "Revisar PEI de Maria Silva", "Agendar reunião com família João
+>   Santos", "TDAH: 4", "TEA: 5" e dez percentuais fixos sem aviso.
+> - `dadosAnalisePreditiva`, em `mockData.ts`, export que nunca foi importado: "João Silva",
+>   um diagnóstico, e o vocabulário de "Predição", "probabilidade" e "confiança" que
+>   `0c2be34` reescreveu nas telas vivas da Etapa 4.
+>
+> Nenhum dos dois renderizava. Por isso **nenhuma verificação por efeito os alcançou**: as
+> varreduras das Etapas 1 a 4 conferiam no navegador, e o que não tem tela não aparece no
+> navegador. Mas código não renderizado continua sendo **código publicado**: os dois estavam
+> legíveis no repositório público desde `a031785`, o primeiro commit, de 24/11/2025.
+>
+> Removidos em `06542d6` (o arquivo) e em `1c84b6f` (o export). O conteúdo segue documentável
+> por hash depois de apagado, porque o git guarda o blob:
+> `0a1762ebfede302feee3b07177f1e74ee200cecf` para o `CoordinationDashboard`.
+>
+> **A lição de método:** "verifique o efeito, não a presença do código" é regra desta série e
+> continua certa. O limite dela é que ela só cobre o que tem efeito. Para código sem tela, a
+> varredura tem de ser no texto do repositório, e o critério de alcance é o grafo de imports,
+> não a navegação.
+
 **Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
 conteúdo fixo de exemplo sob o nome do estudante, todos com aviso de que o conteúdo não é dele e
 sem dado de saúde. O Ver PEI identificava outra pessoa da demonstração até `bd93507`. A Etapa 4
@@ -525,6 +550,76 @@ foram casos conhecidos: "Patricia", sem acento, tinha de casar; "eficácia" e "L
 
 ---
 
+### 8. O instrumento que não media o que dizia medir (Etapa 5)
+
+Dois defeitos do arreio de regressão, os dois achados em uso, e nenhum deles no código do
+aplicativo. Ficam registrados porque a etapa inteira depende do instrumento: uma fotografia
+errada teria produzido caça a bug em código correto, ou pior, um "está tudo igual" falso.
+
+**Primeiro — o rascunho que a biblioteca pendura no `body`.** O Recharts mantém um
+`span#recharts_measurement_span` fora do `#root`, em `y = -20000`, guardando o último rótulo
+que mediu. Tem layout, entra no `innerText` e virava número na medida `numeros`. Como o
+Orçamento é a última superfície da lista, a passagem que capturou a linha de base não o via e
+toda passagem posterior via: **25 superfícies acusaram diferença num commit que não tinha
+tocado em nenhuma delas.**
+
+O que separou instrumento de código foi um teste isolado: guardar a alteração, voltar a
+árvore ao commit anterior, conferir pelo módulo servido que era mesmo o estado antigo, e
+medir de novo. **As mesmas 25 diferenças apareceram.** O que mudou não era o código.
+
+**Segundo — a largura da janela.** A medida `numeros` inclui os rótulos de eixo dos gráficos
+("R$ 0k", "R$ 150k", "R$ 300k"), e o Recharts escolhe quantos cabem conforme o espaço. A
+fotografia depende da largura, e isso não estava escrito. Apareceu quando a medição migrou
+para uma aba que tinha ficado em 743 px dos testes de axe. Corrigido do mesmo jeito: a
+largura entra na fotografia, e a comparação entre larguras diferentes é **recusada**, em vez
+de devolver uma lista de superfícies que se lê como regressão.
+
+**A forma comum aos dois:** o instrumento produzia um número que parecia resultado. É a mesma
+família do achado 7 — resultado parcial que parece completo —, agora do lado de quem mede.
+
+### 9. Uma correção proposta que não cobria o defeito que dizia cobrir (Etapa 5)
+
+Achado do defeito acima, e é metodológico.
+
+Diante do rascunho do Recharts, o autor propôs a correção de classe: acrescentar ao controle
+de estabilidade uma terceira passagem com as superfícies em **ordem inversa**, exigindo
+resultado idêntico, "porque dependência de ordem aparece na hora". O raciocínio é bom e a
+regra é boa. **Ela não pega este defeito, e isso foi medido.**
+
+O teste: desligar a exclusão do rascunho e rodar o controle de estabilidade. As três passagens
+continuaram concordando. Em qualquer ordem o rascunho acaba guardando algum rótulo, então a
+ordem não o revela. O que pega é outra regra — descartar qualquer filho direto do `body`
+estacionado fora da tela —, conferida nos dois sentidos: com ela ligada a rota inexistente
+mede `404`; desligada, mede `404 20`.
+
+A passagem em ordem inversa ficou, porque cobre outra coisa: resíduo cujo **conteúdo** depende
+de qual superfície veio antes. As duas coberturas são diferentes e nenhuma substitui a outra,
+e o README diz isso.
+
+**O que o achado registra** não é que a sugestão estava errada. É que uma correção proposta foi
+**testada isoladamente contra o defeito que dizia cobrir**, em vez de aceita porque o
+raciocínio convencia — e não sustentou. É a terceira vez nesta série que uma correção do autor
+foi verificada e não se sustentou, e as três só apareceram porque alguém foi medir.
+
+### 10. Mensagem de commit com verificação que não verificava (Etapa 5)
+
+No commit que removeu as duplicatas sem rota, escrevi como prova: "o `App.tsx` servido pelo
+Vite não tem mais `pages/Reports` nem `pages/ComplexityAnalysis`". A frase é verdadeira e
+**não é prova**: o módulo servido passa pelo esbuild, que elimina import sem uso, então no
+commit anterior o arquivo em disco tinha os dois imports e o módulo servido já não tinha. A
+checagem não distinguia antes de depois.
+
+Achado ao medir a linha de base no commit anterior e ver `temReports: false` onde tinha de ser
+`true`. Trocada pela checagem que distingue — `/src/pages/Reports.tsx` deixa de ser servido
+como módulo, com `/src/pages/Dashboard.tsx` de controle positivo —, e a mensagem foi
+corrigida antes do push, com a correção registrada no próprio commit.
+
+É o par do que já tinha acontecido na Etapa 4, quando repeti "31 varreduras retornaram zero"
+como se fosse medida. Mensagem de commit com verificação falsa é pior que mensagem sem
+verificação nenhuma: a segunda não afirma nada, a primeira afirma o que não checou.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -752,8 +847,10 @@ operáveis por mouse, o lint viu um e o axe não viu nenhum.
 **O que ainda falta.** A navegação inteira só por teclado e a leitura por leitor de tela real
 não foram verificadas nesta sessão: a ferramenta de navegador usada aqui não aciona
 `<button>` por Enter ou Espaço. Os dois ficam em lista de teste manual, executada pelo autor.
-Também continuam fora dos tokens 165 classes de cor fixa e 12 literais hexadecimais que
-**passam** no contraste, registradas na Etapa 5.
+Também continuam fora dos tokens as classes de cor fixa e os 12 literais hexadecimais que
+**passam** no contraste, tratados na Etapa 5. O número "165" que estava aqui não sai de
+nenhuma regra escrita, e a recontagem da Etapa 5 dá 153 ou 170 conforme a regra — ver "A
+regra de contagem das cores, e os três números", lá.
 
 
 ### Ferramentas de verificação
@@ -855,9 +952,11 @@ calcula layout nem contraste, que é metade do valor do axe.
      partir da cor computada. Uma delas estava errada: `--brand-yellow` dizia 6,19:1 e media
      5,08:1. Ainda passava em AA, mas o registro mentia, e o amarelo precisou escurecer de
      30% para 27% de luminosidade para o texto sobre o fundo tingido sair de 4,46:1.
-   - **Ainda fora dos tokens:** 165 classes de cor fixa e 12 literais hexadecimais, em cores
+   - **Ainda fora dos tokens:** classes de cor fixa e 12 literais hexadecimais, em cores
      que **passam** no contraste — eixos e séries de gráfico, principalmente. Não são falha
-     AA, mas continuam violando a invariante 1. Ficam para a Etapa 5, junto da limpeza.
+     AA, mas continuam violando a invariante 1. O "165" registrado aqui foi recontado na
+     Etapa 5 e não é reproduzível: 153 pela regra estreita, 170 pela larga. Os 12
+     hexadecimais conferem, e continuam nos gráficos.
 9. **Refluxo e zoom** ✅ feito no commit 7, e não alvo de toque. O item dizia que botões `sm` de 36 px e ícones de
    40 × 40 eram defeito de alvo de toque, mas o critério 2.5.5 (44 px) é **AAA**, e a meta
    do projeto é AA. O que é AA aqui é **1.4.10 Refluxo, em 320 px**, e **1.4.4
@@ -1192,13 +1291,122 @@ desde `bd93507`.
       imports sem uso anteriores à Etapa 2.
 11. `mockProfessionals`, em `mockData.ts`, ficou sem nenhum uso na Etapa 4 (`7039784`), quando
     a aba Equipe da Gestão deixou de repetir os profissionais do seed.
-12. Tabela "Aprovações Pendentes" da aba Orçamento, trazida da Etapa 4 por decisão do autor:
-    abaixo de ~800 px de largura, transborda num contêiner com rolagem que não recebe foco, e o
-    axe acusa `scrollable-region-focusable` (2.1.1). Medido em 743 px e em 320 px. Anterior à
-    Etapa 4: com os nomes antigos recolocados no DOM, a violação continua. Conferir a mesma regra
-    nas outras tabelas em largura estreita.
+12. ~~Tabela "Aprovações Pendentes" da aba Orçamento: abaixo de ~800 px transborda num
+    contêiner com rolagem que não recebe foco, e o axe acusa `scrollable-region-focusable`
+    (2.1.1).~~ ✅ corrigido em `536b374`. Não havia instâncias a conferir nas outras tabelas:
+    o contêiner é do wrapper compartilhado `ui/table.tsx`, e uma correção lá cobre todas. É o
+    achado 6 lido do lado certo — corrigir a classe, não a instância.
 
-**Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto.
+**Critério de aceite:** build não encolhe em funcionalidade; nenhum arquivo morto. ✅ atendido:
+nenhum arquivo inalcançável além da declaração de tipo do Vite, e a fotografia de superfície
+deu diferença zero do primeiro ao último commit.
+
+### Resultado da etapa
+
+Medido no repositório e no navegador, antes do primeiro commit e depois do último. Os
+detalhes de cada linha estão na mensagem do commit correspondente.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Arquivos em `src/` inalcançáveis a partir de `main.tsx`** | **25** | **1** |
+| — importados por ninguém (`CoordinationDashboard`, `NavigationBar`, `ComplexityCard`, `NavLink`) | 4 | 0 |
+| — importados por `App.tsx` mas sem rota (`pages/Reports`, `pages/ComplexityAnalysis`) | 2 | 0 |
+| — alcançáveis só pelos anteriores (`reports/ActionPanel`) | 1 | 0 |
+| — componentes de `ui/` sem uso fora de `ui/`, mais `hooks/use-mobile` | 21 | 0 |
+| — o que resta: `vite-env.d.ts`, declaração de tipo puxada pelo tsconfig, não por import | 1 | 1 |
+| Arquivos em `src/` | 155 | 127 |
+| Linhas de código removidas (líquido) | — | −3.464 |
+| `dependencies` no `package.json` | 51 | 37 |
+| `index.js` do bundle, em bytes | 1.000.212 | 971.582 |
+| Avisos de react-refresh aceitos no lint | 7 | 4 |
+| `QueryClientProvider` montado sem nenhuma query | 1 | 0 |
+| Exports mortos em `mockData.ts` (`mockProfessionals`, `dadosAnalisePreditiva`) | 2 | 0 |
+| Estado sem interface em `ResourceLibrary` | 4 | 0 |
+| Identificadores sem uso (`tsc --noUnusedLocals --noUnusedParameters`) | 32 | 2 |
+| **Coleções que guardavam cópia do nome do estudante** | **3** | **0** |
+| Violação `scrollable-region-focusable` em 320 px (Orçamento, Benchmarking) | 1 | 0 |
+| Defeitos pequenos da Etapa 2 (caminho de doc, `value={310}`, `Badge` em `<p>`, `view` sem `onView`) | 4 | 0 |
+| Selo com significado só no emoji, achado ao editar uma das linhas acima | 1 | 0 |
+| Chaves de objeto com acento (medido pela AST, não por regex) | 4 | 3 |
+| Classes de cor fixa fora dos tokens (regra larga; ver abaixo) | 170 | 164 |
+| Literais hexadecimais fora dos tokens | 12 | 12 |
+| Arquivos acima de 400 linhas | 19 | 17 |
+
+**Os dois `_props` que sobram** são parâmetros deliberadamente prefixados com `_` em
+`ui/calendar.tsx`, componente do shadcn. Não são defeito.
+
+**Os 12 hexadecimais que sobram** estão todos em gráfico: 4 em `OrcamentoContent` e 8 em
+`ProgressChart`. Passam no contraste e continuam violando a invariante 1. Ficam para quando a
+migração de tokens for o assunto da etapa.
+
+### A regra de contagem das cores, e os três números
+
+O número "165 classes de cor fixa", registrado na Etapa 3 e repetido depois, **não sai de
+nenhuma regra escrita**. Recontado nesta etapa, com a regra dita:
+
+| Regra de contagem | Antes da etapa | Depois |
+|---|---:|---:|
+| `bg-`, `text-`, `border-` + cor da paleta + tom | 153 | 147 |
+| **165, o número registrado** | — | — |
+| Todas as propriedades de cor (`bg`, `text`, `border`, `ring`, `fill`, `stroke`, `from`, `to`, `via`, `shadow`, `divide`, `outline`, `accent`, `caret`, `placeholder`, `decoration`) | 170 | 164 |
+
+O 165 não é reproduzível por nenhuma das duas. É número sem método, e a regra que o autor
+acrescentou ao CLAUDE.md nesta etapa existe por causa dele: todo número registrado vem
+acompanhado da regra que o produz.
+
+### As três chaves acentuadas que ficaram, e por quê
+
+`AgendaAtendimentos.tsx:47-49` mantém `'Reunião Pedagógica'`, `'Avaliação'` e
+`'Atendimento Família'` como chaves de objeto, contra a convenção. **Não é esquecimento.**
+
+Esses valores são o tipo `AppointmentType`: são campo do modelo (`Atendimento.tipo`), texto
+que aparece na tela, chave do mapa de cores **e dado gravado no `localStorage` de quem já
+usou o sistema**. Trocá-los é mudança de modelo com migração de versão do store para v4, em 4
+arquivos e 8 pontos.
+
+Decisão do autor: **vão para a Etapa 9, com a entidade PEI.** Migração v4 no meio de uma etapa
+de limpeza misturaria remoção com mudança de modelo e contaminaria a prova ponta a ponta.
+
+### O inventário dos 17 arquivos acima de 400 linhas
+
+O BACKLOG listava 6 arquivos, com números defasados. São 17, depois da remoção de
+`ui/sidebar.tsx`. A convenção do CLAUDE.md manda quebrá-los em commits de refatoração
+dedicados; quebrar 17 dentro desta etapa destruiria a prova de regressão, porque cada quebra
+move a fotografia por motivo legítimo. Ficam registrados com o número de hoje:
+
+| Arquivo | Linhas | | Arquivo | Linhas |
+|---|---:|---|---|---:|
+| `MeuPerfilDialog.tsx` | 817 | | `ContributeResourceDialog.tsx` | 494 |
+| `AgendaAtendimentos.tsx` | 770 | | `StudentDetail.tsx` | 492 |
+| `Manual.tsx` | 640 | | `ObservationDetailDialog.tsx` | 479 |
+| `NewStudent.tsx` | 610 | | `OrcamentoContent.tsx` | 459 |
+| `PredictiveAnalysis.tsx` | 604 | | `NewAssessmentDialog.tsx` | 454 |
+| `ProgressChart.tsx` | 593 | | `MinhaAgenda.tsx` | 446 |
+| `AlertasRiscosContent.tsx` | 575 | | `EquipeContent.tsx` | 412 |
+| `ConfiguracoesDialog.tsx` | 574 | | `NovoAtendimentoDialog.tsx` | 411 |
+| `NewObservation.tsx` | 511 | | | |
+
+### A prova de regressão
+
+A etapa remove código, então a verificação principal não é "o novo funciona": é "nada deixou
+de funcionar". O arreio está em `scripts/fotografia.js`, com o protocolo no README ao lado.
+
+Quatro medidas por superfície — árvore de acessibilidade reduzida a `papel│nome│estado`,
+sequência de números do texto renderizado, ordem de tabulação com o nome de cada parada, e
+esqueleto de headings com o `title` —, em 23 superfícies: 13 rotas reais, os 3
+redirecionamentos, a rota curinga e as 6 abas de Gestão.
+
+**Regra:** commit que só remove produz diferença zero nas quatro medidas. Commit que corrige
+declara antes qual superfície e qual medida podem mexer. Foi cumprida: dos nove commits de
+código, sete deram zero e os dois que mudaram alguma coisa mudaram só o que tinham declarado.
+
+**Prova ponta a ponta:** o estado anterior ao primeiro commit da etapa, comparado com o
+estado depois da última remoção, deu **diferença zero nas 23 superfícies**.
+
+**Prova de bundle:** para os três commits de remoção de código morto, os quatro chunks saíram
+byte a byte idênticos por SHA-256 — o Rollup já não os embarcava, e é isso que separa
+"apaguei código morto" de "apaguei código vivo". No commit que tirou o `QueryClientProvider`,
+`index.js` encolheu 28.657 bytes e **nenhum dos 761 textos de prosa do bundle sumiu**.
 
 ---
 
@@ -1284,6 +1492,13 @@ Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema
    - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
      imprimível.
    - Exige mudar o modelo de dados e subir a versão do store, com migração.
+   - **Junto vai o `AppointmentType`** (`AgendaAtendimentos.tsx:47-49`): `'Reunião Pedagógica'`,
+     `'Avaliação'` e `'Atendimento Família'` são chaves de objeto com acento, contra a
+     convenção, e ao mesmo tempo campo do modelo, texto de tela, chave do mapa de cores e dado
+     gravado no `localStorage` de quem já usou. Separar identificador de rótulo exige migração
+     para a v4. Deixado fora da Etapa 5 por decisão do autor: migração de modelo no meio de uma
+     etapa de limpeza misturaria remoção com mudança de modelo e contaminaria a prova de
+     regressão. Não é esquecimento.
 
 2. **Minha Agenda.** Na Etapa 2, a tela ficou como exemplo rotulado, com todas as ações
    desabilitadas. A opção preferida é a (a'): mostrar os atendimentos do store e tirar o

@@ -2,9 +2,25 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  /**
+   * Nome do contêiner rolável que envolve a tabela. Em largura estreita esse contêiner
+   * rola, e um contêiner rolável precisa receber foco de teclado (WCAG 2.1.1) — sem isso
+   * o conteúdo transbordado só é alcançável com o mouse. Com rótulo ele vira uma região
+   * nomeada; sem rótulo continua focável, mas sem papel, porque região sem nome acessível
+   * é outra violação.
+   */
+  regionLabel?: string;
+}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, regionLabel, ...props }, ref) => (
+    <div
+      className="relative w-full overflow-auto"
+      tabIndex={0}
+      role={regionLabel ? "region" : undefined}
+      aria-label={regionLabel}
+    >
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   ),
