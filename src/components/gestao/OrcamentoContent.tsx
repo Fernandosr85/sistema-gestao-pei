@@ -396,7 +396,7 @@ const OrcamentoContent = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table regionLabel="Aprovações pendentes">
             <TableHeader>
               <TableRow>
                 <TableHead>Solicitante</TableHead>
