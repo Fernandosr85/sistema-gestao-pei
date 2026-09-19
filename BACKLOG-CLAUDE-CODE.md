@@ -692,11 +692,11 @@ custe menos que a primeira.
 
 ### 11. A verificação com defeito antes do código (Etapa 7)
 
-Dois casos da mesma etapa, nenhum deles no aplicativo. Ficam registrados porque uma etapa de
+Três casos da mesma etapa, nenhum deles no aplicativo. Ficam registrados porque uma etapa de
 testes é uma etapa inteira de ferramentas de verificação: se o defeito está nelas, tudo o que
 elas dizem passa a não valer.
 
-**Antes dos dois — o controle que não foi plantado, no planejamento.** Ao propor a varredura de
+**Antes dos outros dois — o controle que não foi plantado, no planejamento.** Ao propor a varredura de
 rotas na Parte B, rodei-a, deu 0 órfãos, e plantei um destino quebrado para conferir: continuou
 dando 0. O `replace` mirava `navigate('/alunos/novo')` em `Students.tsx`, que usa `<Link>` — o
 trecho não existia no arquivo escolhido, a quebra nunca entrou, e eu li o zero como confirmação.
@@ -725,20 +725,6 @@ casa segmento de parâmetro da rota. Com um teste de controle que fixa a distin�
 depois, com o teste de rotas rodando sozinho: apagar `/alunos/novo`, `/observacoes/nova` ou
 `/alunos/:id` do `App.tsx` reprova nos três casos.
 
-**E o mesmo padrão outra vez, no fim da etapa.** Na verificação final — reexecutar todas as
-mutações contra a árvore pronta —, a mutação da rota **abortou**: o padrão do script tinha 12
-espaços de indentação e o arquivo tem 10, então casou zero vezes. A asserção de que a
-substituição casa exatamente uma vez é o que transformou isso em "mutação NÃO plantada" em vez
-de um resultado. Sem ela, um script que não altera nada roda a suíte, vê verde, e o verde é
-lido como "o teste não pega" — ou, pior, nem chega a ser lido. Refeita com o padrão corrigido e
-com duas rotas a mais, as três são acusadas.
-
-**Uma contagem minha corrigida junto.** Relatei ao autor "18 mutações, 17 acusadas" ao fechar o
-lote 5. Recontado a partir dos próprios scripts, que ficaram guardados: são **27** no total da
-etapa, e uma das entradas que eu contava (`toLocalISODate` de volta ao `toISOString`) estava
-marcada como `extra` e nunca rodou. Número sem regra de contagem não é medida — a regra aqui é:
-entradas de mutação que foram plantadas e executadas, contadas por script.
-
 **Segundo — o código de saída lido depois de um cano.** O controle da camada 1 pergunta se a
 suíte reprova quando não encontra teste nenhum. Rodei `npm test | tail` e li `$?`: **zero**,
 que é a saída do `tail`, não a do `npm`. Quase registrei "o controle não funciona" e segui.
@@ -749,6 +735,43 @@ instrumento, antes do código, e em todos os casos a saída do instrumento defei
 indistinguível da saída correta. A diferença aqui é o custo: numa etapa de testes, instrumento
 defeituoso não produz um número errado — produz uma suíte inteira que ninguém tem motivo para
 desconfiar.
+
+#### A asserção de casamento único se pagou três vezes na mesma etapa
+
+As duas coisas abaixo são o mesmo caso visto de dois ângulos, e por isso ficam juntas.
+
+**A recontagem, 18 → 27.** Relatei ao autor "18 mutações, 17 acusadas" ao fechar o lote 5. Os
+scripts ficaram guardados, e recontar por eles dá **27** — 4 na persistência e migrações, 3 nas
+datas, 6 nos seletores, 5 no reducer, 3 nas rotas e 6 no fluxo. Uma das entradas que eu contava
+(`toLocalISODate` de volta ao `toISOString`) estava marcada `extra: true` e o laço a pulava:
+nunca rodou. A regra de contagem, que faltava, é: **entrada de mutação que foi plantada e
+executada, contada por script.** Sem a regra, o número não era medida — e não era reproduzível
+nem por mim.
+
+**A mutação da rota abortando por indentação.** Na reexecução final contra a árvore pronta, a
+mutação que apaga `<Route path="/alunos/novo">` casou **zero** vezes: o padrão do script tinha
+12 espaços e o `App.tsx` tem 10. Era o mesmo trecho que, no lote 5, tinha revelado o defeito do
+teste — ou seja, o resultado mais importante da etapa vinha de um script cuja entrada, nessa
+forma, não casava nada. A asserção de `n !== 1` transformou isso em **"mutação NÃO plantada"**
+em vez de um resultado. Refeita com o padrão correto e com duas rotas a mais, as três são
+acusadas, com o teste de rotas rodando sozinho.
+
+**A conta da etapa, então:** a mesma regra apareceu três vezes, duas pela ausência e uma pela
+presença.
+
+1. **No planejamento**, sem a asserção: o `replace` mirou arquivo errado, a quebra nunca entrou,
+   e o zero da varredura foi lido como confirmação.
+2. **No lote 5**, sem ela: a contagem das mutações virou um número que eu não conseguia
+   reproduzir, e o script da rota carregava um padrão que não casava.
+3. **No fechamento**, com ela: o abort impediu que "nada foi alterado, a suíte passou" virasse
+   "o teste não pega".
+
+Uma regra de três linhas que custa um `if` por script e pagou três vezes em uma etapa não é
+disciplina: é a diferença entre registro e ficção. **E uma quarta vez, na Parte B da Etapa 8**,
+fora de mutação: o medidor que conta destinos de navegação nasceu cego (o regex exigia dois
+espaços onde havia um) e devolveu "2 sítios, 13 capturados" — números impossíveis. Foi o
+controle plantado junto dele, com a asserção de que a quebra aparece, que disse "o medidor está
+cego" antes de o número ser usado.
 
 ---
 
