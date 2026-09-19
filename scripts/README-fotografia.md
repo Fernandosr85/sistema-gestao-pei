@@ -98,3 +98,18 @@ antes de qualquer medida, e `__foto.soltarRelogio()` devolve o original.
 Diálogos. São 15, alcançáveis por caminhos diferentes, e dirigi-los de forma genérica
 custaria mais do que vale nesta etapa: nenhum commit da Etapa 5 remove diálogo. Se uma
 etapa futura mexer neles, o arreio precisa crescer antes.
+
+## Por que a suíte de testes não substitui isto (Etapa 7)
+
+A Etapa 7 trouxe `npm test` (Vitest + jsdom), e **as quatro medidas deste arreio não migram
+para lá**. O motivo é medido, não estimado: as quatro dependem de `checkVisibility`,
+`innerText` e `getBoundingClientRect`, e jsdom não calcula layout. Na aba Orçamento, 28 dos 79
+elementos semânticos e 13 dos 96 números só ficam de fora da contagem porque o navegador
+calcula layout e o Radix mantém montado o conteúdo das abas fechadas. Em jsdom essas medidas
+não ficariam piores — mediriam outra coisa.
+
+Rodar o arreio num navegador headless no CI também ficou de fora, por decisão registrada no
+backlog: o valor dele é o hash que muda, e hash que muda diz *que* algo mudou, não *o quê*.
+Como portão automático, reprovaria o build a cada mudança legítima de interface — e portão que
+reprova com razão o tempo todo é portão que se aprende a ignorar. Este instrumento funciona
+porque é conduzido: quem roda declara antes qual superfície pode mover, e por quê.

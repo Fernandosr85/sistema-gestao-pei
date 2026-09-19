@@ -100,6 +100,8 @@ A aplicação sobe em `http://localhost:8080`.
 | `npm run preview` | Serve o build de produção localmente |
 | `npm run lint` | ESLint, com as regras de acessibilidade do `jsx-a11y` como erro (deve terminar com 0 erros) |
 | `npm run typecheck` | Checagem de tipos sem emitir arquivos |
+| `npm test` | Suíte em Vitest + jsdom, uma passagem (é o que o CI roda) |
+| `npm run test:watch` | A mesma suíte, reexecutando a cada alteração |
 
 ### Variáveis de ambiente
 
@@ -367,6 +369,41 @@ Medido com a semente e um campo removido: a ficha que antes abria em branco pass
 sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 observação,
 1 atendimento, 1 avaliação".
 
+### Testes automatizados (Etapa 7)
+
+Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`.
+
+| Arquivo | Testes | O que trava |
+|---|---:|---|
+| `src/store/persistence.test.ts` | 14 | envelope do localStorage, migrações v1→v3, descarte de registro inválido e cascata de órfãos |
+| `src/lib/metrics.test.ts` | 19 | os seletores de métrica corrigidos nas Etapas 4 e 5 |
+| `src/lib/date.test.ts` | 13 | data local, idade na véspera e no dia do aniversário, e o dia anterior que o fuso produzia |
+| `src/store/reducer.test.ts` | 12 | as ações do store, inclusive a que não deve tocar nas coleções vinculadas |
+| `src/test/rotas.test.ts` | 5 | todo destino de `Link`/`navigate()` resolve para uma rota declarada |
+| `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
+| `src/test/arreio.test.ts` | 3 | o andaime: que a suíte discrimina, e que jsdom não calcula layout |
+
+**O risco, com o número absoluto: são 70 testes, cobrindo as correções das Etapas 1 a 6. O
+restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
+cobertura mede linha executada, e linha executada não é defeito travado.
+
+Três decisões que dizem o que a suíte significa:
+
+- **Teste de defeito corrigido assevera o valor errado antigo.** `calculateAge` é comparado com
+  a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
+  significa "o defeito não voltou", e não "o código rodou".
+- **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
+  código de produção e a suíte teve de reprovar: **27 mutações, todas acusadas na verificação
+  final.** Uma delas revelou defeito no próprio teste, e está registrada no backlog.
+- **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
+  defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
+
+Regressão de tela **não** está na suíte: jsdom não calcula layout, e isso foi medido (na aba
+Orçamento, 28 dos 79 elementos semânticos e 13 dos 96 números só ficam de fora da contagem
+porque o navegador calcula layout). Continua no arreio de
+[`scripts/fotografia.js`](scripts/fotografia.js), conduzido à mão, por decisão registrada no
+backlog e não por esquecimento.
+
 ### Limites conhecidos
 
 - **Diálogos de exemplo sob o nome do estudante.**Desempenho, Modo Apresentação, Ver PEI e
@@ -386,6 +423,10 @@ sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 obse
 - **Os esquemas de validação e os tipos são duas declarações do mesmo formato**, mantidas em
   acordo pelo compilador. Uma fonte só, com o tipo derivado do esquema, é o desenho certo e
   está registrado para quando a entidade PEI for modelada.
+- **A suíte cobre o que foi corrigido, não o código todo.** Tela, diálogo e gráfico só têm a
+  cobertura indireta do teste de fluxo; o resto da renderização depende do arreio, que é
+  conduzido à mão. Varredura de acessibilidade automatizada no CI exigiria navegador headless e
+  está avaliada, com o custo e o argumento, no backlog.
 
 ---
 
@@ -434,6 +475,7 @@ sistema-gestao-pei/
 │   │                       # ResourceLibrary, Legislation, Manual,
 │   │                       # AgendaAtendimentos, MinhaAgenda, PrintableReport, NotFound
 │   ├── store/              # Store de demonstração (reducer + localStorage em DEMO_MODE)
+│   ├── test/               # Andaime da suíte, remendos de jsdom, rotas e fluxo
 │   ├── types/
 │   ├── App.tsx
 │   └── main.tsx
@@ -453,7 +495,8 @@ testes.
 
 1. Fork
 2. `git checkout -b feature/minha-contribuicao`
-3. Garanta que `npm run lint`, `npm run typecheck` e `npm run build` passam
+3. Garanta que `npm run lint`, `npm run typecheck`, `npm test` e `npm run build` passam
+   — e, se a alteração corrige um defeito, que existe um teste que **reprova** sem a correção
 4. Commit (`Add:`, `Fix:`, `Update:`, `Docs:`, `Refactor:`, `Test:`)
 5. Abra um Pull Request
 

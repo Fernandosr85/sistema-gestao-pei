@@ -14,15 +14,16 @@ diagnósticos e dados de saúde. Isso governa várias regras abaixo.
 
 ## Verificação obrigatória
 
-Nenhuma alteração é considerada pronta antes de as três passarem:
+Nenhuma alteração é considerada pronta antes de as quatro passarem:
 
 ```bash
 npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
+npm test            # 70 testes, 7 arquivos. Zero teste encontrado reprova.
 npm run build       # conclui
 ```
 
-Rode as três antes de cada commit. Se uma quebrar, conserte antes de seguir — não
+Rode as quatro antes de cada commit. Se uma quebrar, conserte antes de seguir — não
 acumule.
 
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
@@ -37,12 +38,44 @@ sendo verificada — foi o que aconteceu com o `useSidebar` da busca institucion
 controle: insira a ocorrência num arquivo de teste, confirme que o comando a encontra, e só
 então confie no zero.
 
+O controle plantado precisa **asseverar que a quebra foi plantada**, não só executar a
+substituição. Na Etapa 7 um `replace` mirou um trecho que não existia no arquivo escolhido: a
+quebra nunca entrou, a varredura continuou devolvendo zero, e o zero foi lido como "a
+varredura funciona". Conte as ocorrências, exija exatamente uma, e só então rode.
+
+Todo número registrado vem acompanhado da regra que o produz. Número sem regra de contagem
+não é medida e não deve ser repetido.
+
 Prova que não se consegue fazer não vale como prova. Quando a verificação de uma simplificação
 falha por limite de ferramenta, desfaça a simplificação em vez de assumir equivalência.
 
 Ao ligar uma opção de compilador ou de lint, o controle positivo é sobre a OPÇÃO, não sobre o
 código: plante um erro que ela deve pegar e confirme que a verificação reprova. Verde com a
 opção desligada é indistinguível de verde com o código correto.
+
+Teste de defeito corrigido assevera também o valor errado antigo, comparando com a conta que
+produzia o defeito. Assim "o teste passa" significa "o defeito não voltou", e não "o código
+rodou".
+
+Asserção dentro de condicional pode nunca executar. Teste que depende de ambiente (fuso,
+locale, largura) fixa o ambiente no config e assevera incondicionalmente. Confirme que o pino
+vence a variável externa.
+
+## Testes
+
+`npm test` roda a suíte em Vitest + jsdom (`vitest.config.ts`). Ela cobre **o que as Etapas 1
+a 6 corrigiram** — persistência do store, datas, seletores de métrica, reducer, grafo de rotas
+e o fluxo de cadastro até a listagem —, e não o código todo. Arquivo sem teste não é arquivo
+verificado; a lista do que ficou de fora está no README.
+
+- O ambiente é fixado no config (`TZ=America/Sao_Paulo`), porque em UTC os defeitos de data
+  não existem e a suíte passaria sem exercitar um caso sequer.
+- Renderização visual não vem para cá: jsdom não calcula layout, e isso foi medido (a conta
+  está em `src/test/setup.ts`). Regressão de tela continua no arreio de `scripts/fotografia.js`.
+- Antes de confiar num teste novo, plante no código de produção o defeito que ele deve pegar,
+  confirme que a suíte **reprova**, e restaure. Teste que nunca reprovou não provou nada.
+- Remendo de jsdom fica em `src/test/lacunas-jsdom.ts`, cada um com o erro exato que evita, e
+  só é importado por quem monta componente.
 
 ## Invariantes — nunca violar
 
