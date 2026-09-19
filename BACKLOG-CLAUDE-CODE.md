@@ -618,6 +618,27 @@ família do achado 7 — resultado parcial que parece completo —, agora do lad
 > lint, o controle positivo é sobre a **opção**, não sobre o código. Cada um dos quatro lotes
 > da Etapa 6 plantou o erro que a sua flag devia pegar, depois de gravá-la no `tsconfig`.
 
+> **Destaque — o quarto caso, e o terceiro mecanismo da mesma forma (Etapa 7): o fuso.**
+>
+> A suíte de datas nasceu verde: 12 asserções, 12 passando. As comparações com a conta
+> defeituosa antiga, porém, estavam dentro de `if (offset > 0)` — e o defeito só existe a oeste
+> de Greenwich, porque é ali que `new Date('2025-11-19')`, lido como UTC, cai no dia 18. A
+> máquina de desenvolvimento é UTC−3, onde o defeito existe. **O CI roda em UTC, onde ele não
+> existe.** Lá a condicional é falsa, nenhuma comparação executa, e a suíte escrita para travar
+> o defeito de data entraria no repositório sem exercitar um caso sequer.
+>
+> Medido, rodando com `TZ=UTC`: **12 asserções verdes, 0 casos exercitados.** A correção é o
+> pino no `vitest.config.ts` (`env: { TZ: 'America/Sao_Paulo' }`), as condicionais apagadas e um
+> teste que trava o próprio pino (`getTimezoneOffset()` igual a 180, `new Date('2025-11-19')`
+> caindo no dia 18). Conferido depois com `TZ=UTC` por fora: o pino vence a variável de
+> ambiente, e a suíte dá o mesmo resultado nos dois ambientes.
+>
+> É a mesma forma do typecheck vazio da Etapa 0 e da flag que não liga da Etapa 6 — verificação
+> cuja saída verde é indistinguível da saída de uma verificação que verifica —, agora pelo
+> terceiro mecanismo: **o ambiente em que a verificação roda**. Os dois primeiros eram a
+> ferramenta configurada para não olhar; este é a ferramenta olhando onde não há o que ver.
+> Daí a regra do CLAUDE.md sobre asserção dentro de condicional.
+
 ### 9. Uma correção proposta que não cobria o defeito que dizia cobrir (Etapa 5)
 
 Achado do defeito acima, e é metodológico.
@@ -668,6 +689,66 @@ distinguir.
 É a primeira vez nesta série que um achado anterior **evitou** a repetição em vez de explicá-la
 depois. Vale registrar porque é o que se espera de um registro de achados: que a segunda vez
 custe menos que a primeira.
+
+### 11. A verificação com defeito antes do código (Etapa 7)
+
+Dois casos da mesma etapa, nenhum deles no aplicativo. Ficam registrados porque uma etapa de
+testes é uma etapa inteira de ferramentas de verificação: se o defeito está nelas, tudo o que
+elas dizem passa a não valer.
+
+**Antes dos dois — o controle que não foi plantado, no planejamento.** Ao propor a varredura de
+rotas na Parte B, rodei-a, deu 0 órfãos, e plantei um destino quebrado para conferir: continuou
+dando 0. O `replace` mirava `navigate('/alunos/novo')` em `Students.tsx`, que usa `<Link>` — o
+trecho não existia no arquivo escolhido, a quebra nunca entrou, e eu li o zero como confirmação.
+É a mesma família do controle positivo incidental do `useSidebar` (achado 7): o controle que não
+está lá, e cuja ausência se parece com aprovação. A regra que entrou no CLAUDE.md por causa
+disto é que o controle plantado precisa **asseverar que a quebra foi plantada**, contando as
+ocorrências e exigindo exatamente uma.
+
+**Primeiro — a mutação achou defeito no TESTE, não no código.** O teste do grafo de rotas lê o
+código-fonte e exige que todo destino de `<Link>`/`navigate()` resolva para uma `<Route>`
+declarada. Passava, com controle próprio de que enxergava rotas e destinos de verdade. Ao
+plantar a mutação — apagar `<Route path="/alunos/novo">` de `App.tsx` —, **a suíte continuou
+passando**. A regra de casamento deixava segmento literal casar segmento de parâmetro, então
+`/alunos/novo` passava a resolver contra `/alunos/:id` e nada ficava órfão. No aplicativo, esse
+destino abriria a ficha do estudante com `id = "novo"`.
+
+O teste existia exatamente para pegar essa classe de erro: rota de navegação apagada. Sem a
+mutação, ele teria ficado no repositório dando falso negativo para o único defeito que era sua
+função detectar, e o verde dele seria lido como cobertura. **É o caso que justifica a camada 2
+inteira** — a de plantar o defeito no código de produção e exigir que a suíte reprove. Camada
+1 (a suíte roda e o vazio reprova) e camada 3 (asserções de falsificação dentro de cada
+arquivo) não pegariam isto: as duas olham para o teste a partir do teste.
+
+Corrigido: segmento literal só casa segmento literal igual; segmento de parâmetro do destino só
+casa segmento de parâmetro da rota. Com um teste de controle que fixa a distinção. Medido
+depois, com o teste de rotas rodando sozinho: apagar `/alunos/novo`, `/observacoes/nova` ou
+`/alunos/:id` do `App.tsx` reprova nos três casos.
+
+**E o mesmo padrão outra vez, no fim da etapa.** Na verificação final — reexecutar todas as
+mutações contra a árvore pronta —, a mutação da rota **abortou**: o padrão do script tinha 12
+espaços de indentação e o arquivo tem 10, então casou zero vezes. A asserção de que a
+substituição casa exatamente uma vez é o que transformou isso em "mutação NÃO plantada" em vez
+de um resultado. Sem ela, um script que não altera nada roda a suíte, vê verde, e o verde é
+lido como "o teste não pega" — ou, pior, nem chega a ser lido. Refeita com o padrão corrigido e
+com duas rotas a mais, as três são acusadas.
+
+**Uma contagem minha corrigida junto.** Relatei ao autor "18 mutações, 17 acusadas" ao fechar o
+lote 5. Recontado a partir dos próprios scripts, que ficaram guardados: são **27** no total da
+etapa, e uma das entradas que eu contava (`toLocalISODate` de volta ao `toISOString`) estava
+marcada como `extra` e nunca rodou. Número sem regra de contagem não é medida — a regra aqui é:
+entradas de mutação que foram plantadas e executadas, contadas por script.
+
+**Segundo — o código de saída lido depois de um cano.** O controle da camada 1 pergunta se a
+suíte reprova quando não encontra teste nenhum. Rodei `npm test | tail` e li `$?`: **zero**,
+que é a saída do `tail`, não a do `npm`. Quase registrei "o controle não funciona" e segui.
+Medido de novo sem cano: zero teste encontrado devolve 1, e o controle funciona.
+
+**A forma comum.** É a mesma família do achado 8 e do achado 10: o que falhou foi o
+instrumento, antes do código, e em todos os casos a saída do instrumento defeituoso era
+indistinguível da saída correta. A diferença aqui é o custo: numa etapa de testes, instrumento
+defeituoso não produz um número errado — produz uma suíte inteira que ninguém tem motivo para
+desconfiar.
 
 ---
 
@@ -1608,22 +1689,94 @@ na Etapa 9.
 
 ## Etapa 7 — Testes
 
-Vitest + Testing Library. Cobrir, no mínimo:
-- seletores de métrica da Etapa 4
-- `calculateAge` incluindo aniversário no mesmo dia e data inválida
-- fluxo de criação de aluno e observação até aparecer na listagem
-- teste de rotas: todo destino de `Link`/`navigate()` resolve para rota declarada
+Vitest 3.2 + Testing Library + jsdom. `npm test` entra no CI entre o `typecheck` e o `build`.
 
-Adicionar `npm test` ao workflow de CI.
+### Resultado da etapa
 
-**Varredura de acessibilidade no CI** (vindo da Etapa 3). O `axe-core` entrou como
-dependência de desenvolvimento e roda rota a rota na sessão, servido pelo Vite, **fora do
-CI**. Automatizá-lo exige navegador headless — Playwright ou Puppeteer —, porque o jsdom não
-calcula layout nem contraste, que é metade do valor da ferramenta. São três a quatro
-dependências novas e um tempo de CI bem maior, então isso pertence a esta etapa, junto do
-runner. Duas lições da Etapa 3 valem para o desenho do teste: o axe erra nas duas direções
-(acusou contraste 1,04:1 num gradiente que na verdade vai de 10,65:1 a 5,96:1), e o
-resultado precisa de revisão humana em vez de virar critério de aprovação cego.
+**70 testes em 7 arquivos**, um lote por commit.
+
+| Commit | Arquivo | Testes | O que cobre |
+|---|---|---:|---|
+| `c152869` | `src/test/arreio.test.ts` | 3 | o andaime: falsificação, e a medida de que jsdom não calcula layout |
+| `348d77c` | `src/store/persistence.test.ts` | 14 | envelope, migrações v1→v2→v3, chave acentuada legada, descarte de registro, cascata, contagem por coleção |
+| `78eeb41` | `src/lib/date.test.ts` | 13 | `parseLocalDate`, `calculateAge`, `toLocalISODate`, `formatLocalDate`, e o pino de fuso |
+| `f40f9e4` | `src/lib/metrics.test.ts` | 19 | `periodChange`, períodos, `studentProgress`, `studentNameOf`, notas, `earnedBadges` |
+| `8ccdc43` | `src/store/reducer.test.ts` + `src/test/rotas.test.ts` | 17 | 14 ações do reducer e o grafo de navegação |
+| `4d41796` | `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
+
+### O escopo: só o que as Etapas 1 a 6 corrigiram
+
+Decisão do autor, com o argumento registrado porque limita o que a suíte pode afirmar.
+
+Cobrir o código todo seria começar pelo que nunca deu defeito e terminar no meio. Cobrir o que
+foi corrigido tem um critério claro — cada teste nasce de um defeito que existiu, com o valor
+errado antigo asseverado — e uma dívida explícita: **o resto do código não tem teste**. Não há
+porcentagem de cobertura neste registro nem no README, de propósito: cobertura mede linha
+executada, e linha executada não é defeito travado. O número que vale é o absoluto, e a frase
+que o acompanha é o que ficou de fora.
+
+### As três camadas de controle positivo
+
+1. **A suíte reprova quando não há teste.** `passWithNoTests: false` no config, medido: com o
+   `include` apontando para um padrão que não casa nada, `npm test` sai com código 1.
+2. **Mutação no código de produção.** Antes de aceitar cada lote, o defeito que o teste diz
+   pegar é plantado no código real, a suíte tem de **reprovar**, e o arquivo volta ao original.
+   **27 mutações na etapa, todas acusadas na verificação final** — 4 na persistência e nas
+   migrações, 3 nas datas, 6 nos seletores, 5 no reducer, 3 nas rotas e 6 no fluxo. Uma delas,
+   a que apaga uma rota, **não** foi acusada quando foi plantada pela primeira vez, e o que ela
+   revelou foi defeito no próprio teste (achado 11). Cada mutação assevera que a substituição
+   casou exatamente uma vez, senão aborta: substituição que não casa é quebra que nunca foi
+   plantada.
+3. **Falsificação dentro de cada arquivo.** Todo teste de correção assevera também o valor
+   errado antigo — `calculateAge` comparado com a conta que produzia o defeito, `periodChange`
+   comparado com o `+100%` inventado —, e as varreduras asseveram que enxergam o que procuram
+   antes de afirmar que não acharam nada.
+
+### O que continua no arreio, e não virou teste
+
+A fotografia de superfície (`scripts/fotografia.js`) **não migra** para a suíte, e o motivo é
+medido, não estimado: as quatro medidas dela dependem de `checkVisibility`, `innerText` e
+`getBoundingClientRect`, e jsdom não calcula layout. Na aba Orçamento, **28 dos 79 elementos
+semânticos e 13 dos 96 números** só ficam de fora da contagem porque o navegador calcula layout
+e o Radix mantém montado o conteúdo das abas fechadas. Em jsdom essas medidas não discriminam:
+não é que ficariam piores, é que mediriam outra coisa. A conta está em `src/test/setup.ts`.
+
+### A decisão do navegador headless: fica separada
+
+**Playwright/Puppeteer no CI não entra nesta etapa, e não é esquecimento.** O argumento, para
+quem ler depois:
+
+- O que um headless acrescentaria aqui é a fotografia de superfície rodando sozinha. Mas o
+  valor dela é o **hash que muda**, e hash que muda diz *que* algo mudou, não *o quê*. Como
+  portão de CI, cada mudança legítima de interface reprovaria o build, e um portão que reprova
+  por motivo legítimo com frequência é um portão que as pessoas aprendem a ignorar.
+- O arreio é o instrumento mais confiável do projeto — é o que pegou o próprio defeito duas
+  vezes — e ele funciona porque é **conduzido**: quem roda declara antes qual superfície pode
+  mover e por quê. Automatizar tira exatamente essa parte.
+- A varredura de acessibilidade com `axe-core` (vinda da Etapa 3) tem o mesmo problema mais um:
+  o axe erra nas duas direções (acusou contraste 1,04:1 num gradiente que vai de 10,65:1 a
+  5,96:1), então precisa de revisão humana em vez de virar critério de aprovação cego.
+
+Decisão: **depois de a suíte existir**, avaliar headless como etapa própria, com o
+custo declarado (três a quatro dependências novas, tempo de CI bem maior) e o desenho de como
+evitar o portão barulhento. Não é pendência desta etapa.
+
+### Mutação automatizada: candidata a etapa futura
+
+As 18 mutações desta etapa foram escritas à mão, uma a uma, com o alvo escolhido pelo que o
+teste diz pegar. Uma ferramenta de mutação (Stryker) geraria centenas automaticamente e mediria
+quantas a suíte sobrevive — que é a medida honesta de força de suíte, no lugar da porcentagem
+de cobertura. É trabalho de uma etapa inteira sozinha (configuração, tempo de execução, triagem
+de mutantes equivalentes), e fica registrada como **candidata**, não como pendência: a suíte
+atual não depende dela para valer o que afirma.
+
+### A versão do Vitest, e o que a destrava
+
+`vitest` 5 exige `vite` ^6 e o projeto está no `vite` 5.4.21 — o `npm install` reprova com
+ERESOLVE. `vitest` 4 instalaria um **segundo `vite`** no `node_modules`, o que faria a suíte
+rodar sobre uma resolução de módulos diferente da do aplicativo. Escolhido `vitest` 3.2.x, que
+reusa o `vite` do projeto (conferido: um `vite` instalado). Nenhum `--legacy-peer-deps`. Subir
+o `vite` na Etapa 8 destrava o `vitest` 5.
 
 ---
 
@@ -1648,6 +1801,11 @@ Correção só com major: `vite` 8.x e `react-router-dom` 7.18+. Na mesma instal
 **Regras:**
 - Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as três
   verificações e `npm test` passando.
+- **Subir o `vite` destrava o `vitest` 5.** A Etapa 7 ficou no `vitest` 3.2.x porque o 5 exige
+  `vite` ^6 (o projeto está no 5.4.21, e o `npm install` reprova com ERESOLVE) e o 4 instalaria
+  um segundo `vite` no `node_modules`, fazendo a suíte rodar sobre outra resolução de módulos
+  que não a do aplicativo. Ao subir o `vite`, suba o `vitest` no mesmo commit e confira que
+  continua existindo **um** `vite` instalado.
 - Começar por `react-router-dom`, a única advisory que chega ao bundle. Antes, verificar
   se algum destino de `Link`/`navigate()` vem de entrada do usuário ou de parâmetro de URL.
 - `recharts` v3 mexe nos gráficos da Etapa 3: conferir de novo nome acessível e tabela
