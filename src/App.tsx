@@ -23,7 +23,15 @@ const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
-    <BrowserRouter>
+    {/*
+      * As duas mudanças de comportamento do react-router 7, ligadas ainda na versão 6.
+      * `v7_startTransition` envolve a troca de rota em startTransition; `v7_relativeSplatPath`
+      * muda como caminho relativo resolve dentro de rota curinga. No 7 elas são o padrão e não
+      * se desligam — ligá-las aqui separa "mudou o comportamento do roteador" de "mudou a
+      * versão do pacote", de modo que, se alguma coisa quebrar, quebre com uma causa só.
+      * Este bloco sai no commit que sobe para o 7, onde ele passa a ser redundante.
+      */}
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="min-h-screen bg-background">
         <a
           href="#main-content"
