@@ -1808,37 +1808,135 @@ o `vite` na Etapa 8 destrava o `vitest` 5.
 Só depois da Etapa 7. Todas as correções exigem versão major, e sem testes a quebra
 passa por lint, typecheck e build sem ser vista.
 
-**Estado em 13/09/2026** (`npm audit` sobre o lockfile regerado na Etapa 0): 4
-vulnerabilidades, 1 alta e 3 moderadas.
+### Estado medido em 19/09/2026: 6 entradas, 5 moderadas e 1 alta
+
+Eram 4 em 13/09. A regra de contagem: entradas que o `npm audit` lista, uma por pacote
+afetado, contadas do `npm audit --json`.
 
 | Pacote | Severidade | Advisories | Onde age |
 |---|---|---|---|
-| `vite` 5.4.21 (direto) | alta | GHSA-4w7w-66w2-5vf9, GHSA-v6wh-96g9-6wx3, GHSA-fx2h-pf6j-xcff | servidor de desenvolvimento; não entra no `dist/` |
+| `vite` 5.4.21 (direto) | **alta** | GHSA-fx2h-pf6j-xcff (`server.fs.deny` em caminho alternativo no Windows), GHSA-4w7w-66w2-5vf9, GHSA-v6wh-96g9-6wx3 | servidor de desenvolvimento; não entra no `dist/` |
 | `esbuild` (via `vite`) | moderada | GHSA-67mh-4wv8-2f99 | servidor de desenvolvimento |
-| `react-router` (via `react-router-dom`) | moderada | GHSA-wrjc-x8rr-h8h6 (open redirect com `\` em `<Link>`/`useNavigate`); GHSA-337j-9hxr-rhxg (hidratação SSR) | a primeira **chega ao bundle de produção**; a segunda não se aplica, o projeto não faz SSR |
-| `react-router-dom` 6.30.6 (direto) | moderada | herdadas de `react-router` | idem |
+| `react-router` / `react-router-dom` 6.30.6 | moderada ×2 | GHSA-wrjc-x8rr-h8h6 (open redirect com `\`); GHSA-337j-9hxr-rhxg (hidratação SSR) | a primeira **chega ao bundle de produção**; a segunda não se aplica |
+| `vitest` / `@vitest/mocker` 3.2.7 | moderada ×2 | GHSA-82fw-gwwq-j7x9 (path traversal no mock redirect) | **novas** |
 
-Correção só com major: `vite` 8.x e `react-router-dom` 7.18+. Na mesma instalação,
-`eslint` 9.39.5 aparece como fora de suporte e `recharts` 2.x como branch inativa (v3).
+**As duas novas vieram da Etapa 7.** A etapa que trouxe a suíte de testes trouxe advisory
+junto: `vitest` e `@vitest/mocker` não existiam no `node_modules` antes dela. São de
+desenvolvimento e não chegam ao `dist/`, mas ficam registradas sem suavização, porque são
+parte honesta do custo de adicionar ferramenta. Quem acrescenta dependência acrescenta
+superfície, inclusive a dependência que serve para verificar o resto.
+
+**E uma correção de número, pela regra de que todo número vem com a regra que o produz.**
+Estava registrado aqui que "a correção só vem com `vite` 8.x". Esse número era o
+`fixAvailable` do `npm audit`, que aponta a **última** versão, não a **mínima** que corrige.
+O intervalo vulnerável medido é `vite <= 6.4.2`: quem zera as quatro advisories de
+vite/esbuild é o **`vite` 6.4.3**, que traz `esbuild ^0.25`. Ir ao 8 custaria
+`@vitejs/plugin-react-swc` 4 e `vitest` 5 no mesmo commit — três majors de uma vez, por um
+número que ninguém tinha perguntado de onde vinha.
+
+Na mesma instalação, `eslint` 9.39.5 aparece como fora de suporte e `recharts` 2.x como
+branch inativa (v3). Nenhum dos dois tem advisory.
+
+### O gatilho do open redirect: medido, continua latente
+
+A Etapa 4 registrou que a advisory de open redirect é **latente**, e passa a valer no instante
+em que um destino de navegação deixar de ser literal. As Etapas 5, 6 e 7 mexeram em rotas, então
+a condição foi medida antes de subir o pacote:
+
+```
+sítios <Link to=>: 16 | capturados pela varredura da Etapa 7: 13
+sítios navigate():  11 | capturados: 11
+```
+
+Os três não capturados são `to={item.path}` (Header, ×2) e `to={resource.link.to}`
+(ResourcesPanel) — **os três vêm de arrays literais no próprio arquivo**. Nenhum destino vem de
+entrada do usuário, de parâmetro de URL ou de texto livre do store, e os dinâmicos
+(`/alunos/${id}`, `/relatorio?${params}`) têm prefixo literal, então não podem começar com `\`,
+que é o vetor. **O gatilho não foi puxado.**
+
+Mas a medição achou o buraco no instrumento: **a varredura de rotas da Etapa 7 é cega justamente
+à forma que tornaria a advisory viva** — `to={variavel}` e `navigate(variavel)` não casam os
+regexes dela e somem sem avisar. Por isso a asserção de "sítios × capturados" entra nesta etapa,
+com os três conhecidos listados nominalmente, em vez de ficar para a Etapa 9: deixar para depois
+é manter o gatilho dependendo de alguém lembrar dele.
+
+**E o medidor nasceu cego — quarta vez da asserção de casamento único nesta série, e a mais
+irônica: o instrumento feito para verificar precisou ser verificado.** O regex exigia dois
+espaços onde havia um, e o medidor devolveu "2 sítios, 13 capturados", números impossíveis que
+eu poderia ter lido como "nada a ver aqui". Quem disse que ele estava cego foi o controle
+plantado junto dele, que planta um destino não literal e exige que o medidor acuse. Está no
+achado 11, com as outras três.
+
+### A escada, e por que nesta ordem
+
+Quatro commits, um major por commit, e o acoplamento medido pelos intervalos declarados nos
+pacotes:
+
+| # | O quê | Tipo | Instrumento estável durante o commit |
+|---|---|---|---|
+| 1 | `v7_startTransition` e `v7_relativeSplatPath` ligadas no react-router 6 | comportamento, sem versão | suíte e arreio, intactos |
+| 2 | `react-router-dom` 6.30.6 → 7.18.4 | major, código de aplicação | suíte e arreio, intactos |
+| 3 | `vite` 5.4.21 → 6.4.3 | major, ferramenta | suíte (roda através do vite) |
+| 4 | `vitest` 3.2.7 → 4.1.11 | major, o próprio runner | as 27 mutações |
+
+**Router antes do vite.** Nos commits 1 e 2 o instrumento inteiro — vite 5 + vitest 3.2,
+conhecidos e verdes — fica fixo, e qualquer vermelho tem uma causa só. Na ordem inversa, a
+suíte que provaria o router estaria sob a mudança que se quer verificar: é o achado 8 aplicado
+antes de acontecer, em vez de explicado depois.
+
+**`vitest` 4.1.11, não 5.** O 4.1.11 é o mínimo que corrige GHSA-82fw-gwwq-j7x9 (vulnerável até
+4.1.10), aceita node 20 e 22 (o 5 exige ^22.12) e é linha mais rodada que um `5.0.1` recém-saído.
+Com `vite` 6.4.3 o peer dele (`^6 || ^7 || ^8`) fica satisfeito e continua existindo **um** vite.
+Isso corrige também uma afirmação da Etapa 7: o `vitest` 4 só duplicaria o vite porque o projeto
+estava no vite 5; a partir do 6 a duplicação não existe.
+
+**O arreio contra o `preview`, nos commits 3 e 4.** Major de vite quebra empacotamento, e
+"compila" não é "roda": hoje o arreio mede o servidor de desenvolvimento e o `npm run build` só
+prova que o build termina. Os commits 3 e 4 medem também o `dist/` servido por `npm run preview`.
+Parâmetro de porta no arreio e nada mais.
+
+### A segunda escada: `vite` 7/8, depois — não é meta abandonada
+
+Parar no 6.4.3 zera as advisories; seguir adiante é manutenção, não segurança. O acoplamento,
+medido nos `package.json` dos pacotes, é o que define o degrau seguinte:
+
+| Pacote | Aceita |
+|---|---|
+| `@vitejs/plugin-react-swc` 3.11 | `vite ^4 \|\| ^5 \|\| ^6 \|\| ^7` |
+| `@vitejs/plugin-react-swc` 4.3 | `vite ^4 \|\| ^5 \|\| ^6 \|\| ^7 \|\| ^8` |
+| `vitest` 3.2.7 | `vite ^5 \|\| ^6 \|\| ^7` (dependência direta) |
+| `vitest` 4.1.11 | `vite ^6 \|\| ^7 \|\| ^8` |
+| `vitest` 5.0.1 | `vite ^6.4 \|\| ^7 \|\| ^8`, node `^22.12 \|\| ^24 \|\| >=26` |
+| `vite` 7 e 8 | node `^20.19 \|\| >=22.12` |
+
+Ou seja: **`vite` 7 cabe sem trocar mais nada** (plugin 3.11 e vitest 4.1.11 já o aceitam), e
+**`vite` 8 exige o plugin 4 junto**. O CI roda node 22, que satisfaz os dois. Fica como etapa
+própria, com o mesmo critério: um major por commit, arreio no `dev` e no `preview`, e as
+mutações reexecutadas se o runner se mexer.
 
 **Regras:**
-- Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as três
-  verificações e `npm test` passando.
-- **Subir o `vite` destrava o `vitest` 5.** A Etapa 7 ficou no `vitest` 3.2.x porque o 5 exige
-  `vite` ^6 (o projeto está no 5.4.21, e o `npm install` reprova com ERESOLVE) e o 4 instalaria
-  um segundo `vite` no `node_modules`, fazendo a suíte rodar sobre outra resolução de módulos
-  que não a do aplicativo. Ao subir o `vite`, suba o `vitest` no mesmo commit e confira que
-  continua existindo **um** `vite` instalado.
-- Começar por `react-router-dom`, a única advisory que chega ao bundle. Antes, verificar
-  se algum destino de `Link`/`navigate()` vem de entrada do usuário ou de parâmetro de URL.
+- Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as quatro verificações
+  passando e `rm -rf node_modules && npm ci` antes delas.
 - `recharts` v3 mexe nos gráficos da Etapa 3: conferir de novo nome acessível e tabela
-  equivalente.
+  equivalente. Fora desta etapa — não tem advisory.
 - `vite` major: conferir que o `manualChunks` da Etapa 0 continua valendo e que o bundle
-  principal não volta a crescer.
+  principal não volta a crescer. **Medido no commit 2:** nomear `react-router` no
+  `manualChunks` não muda nada — o bundle sai idêntico, mesmos hashes de conteúdo, com e sem a
+  linha, porque o rollup já arrasta o subtree pela reexportação. A linha não entrou.
+- Trocar o runner é ligar outra opção de verificação: depois do commit 4, **reexecutar as 27
+  mutações** e o controle de zero testes. Verde com runner novo é indistinguível de verde com
+  runner que não reprova mais nada.
 
 **Critério de aceite:** `npm audit` sem advisory alta ou moderada, ou cada uma que restar
-registrada aqui com justificativa (dev ou bundle). As três verificações e `npm test`
-passam.
+registrada aqui com justificativa (dev ou bundle). As quatro verificações passam, o arreio dá
+diferença zero no `dev` e no `preview`, e as mutações continuam sendo acusadas.
+
+### Onde está (19/09/2026)
+
+Feitos: commit 1 (`72becab`, flags do 7 ligadas no 6, avisos 2 → 0, fotografia zero) e commit 2
+(`97d636b`, `react-router-dom` 7.18.4, audit 6 → 4, fotografia zero). Faltam: commit 3 (`vite`
+6.4.3), commit 4 (`vitest` 4.1.11), a asserção de sítios × capturados no teste de rotas, e o
+commit de documentação que fecha a etapa.
 
 ---
 
