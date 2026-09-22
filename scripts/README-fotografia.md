@@ -50,6 +50,40 @@ eixo dos gráficos, e o Recharts escolhe quantos cabem conforme o espaço. A lar
 fotografia, e `comparar` recusa comparação entre larguras diferentes em vez de devolver uma
 lista de superfícies que parece regressão.
 
+## Contra o `dist/`: o build de produção (Etapa 8)
+
+O servidor de desenvolvimento não é o que vai para produção. Major de bundler quebra
+empacotamento, e `npm run build` só prova que o build termina — "compila" não é "roda". Para
+medir o `dist/` de verdade:
+
+```bash
+npm run build
+mkdir -p dist/scripts && cp scripts/fotografia.js dist/scripts/
+npm run preview -- --port 4173 --strictPort
+```
+
+Abra `http://localhost:4173`, na **mesma largura** da outra ponta, com o `localStorage` vazio, e
+carregue o arreio do mesmo jeito (`eval(await (await fetch('/scripts/fotografia.js')).text())`)
+— ele é servido porque está em `dist/scripts/`. Depois `controles()`, `estavel()` e `comparar()`,
+como no servidor de desenvolvimento.
+
+Três cuidados:
+
+- **Copie de novo depois de cada build.** O `vite build` esvazia o `dist/`. Se esquecer, o
+  `preview` devolve o `index.html` com **status 200** — é o fallback de SPA —, e o `eval` falha
+  com `SyntaxError: Unexpected token '<'`. Medido. A falha é barulhenta, mas repare no 200:
+  conferir `r.ok` não pegaria o arquivo ausente.
+- **Confira que é mesmo o build de produção.** O documento tem de carregar
+  `/assets/index-*.js`, e não `/@vite/client`:
+  `[...document.querySelectorAll('script[src]')].map((s) => s.getAttribute('src'))`.
+- **Compare `preview` com `preview`, e `dev` com `dev`.** Medido na Etapa 8: no `vite` 5 e no
+  6.4.3 as duas origens deram a mesma fotografia, superfície por superfície — mas isso é
+  resultado, não premissa. Se um dia divergirem, a divergência é um achado, não ruído.
+
+O arreio não precisou de nenhuma mudança para isso: ele não tem referência a origem, porta,
+`/src/` nem `import.meta`, e tudo o que mede é relativo à página. `dist/` é ignorado pelo git,
+então a cópia do arreio não entra em commit nenhum.
+
 ## Os dois controles, e por que nenhum é opcional
 
 **`__foto.controles()` — a ferramenta enxerga?** Quebra de propósito uma coisa de cada

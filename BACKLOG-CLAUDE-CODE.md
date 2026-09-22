@@ -773,6 +773,88 @@ espaços onde havia um) e devolveu "2 sítios, 13 capturados" — números impos
 controle plantado junto dele, com a asserção de que a quebra aparece, que disse "o medidor está
 cego" antes de o número ser usado.
 
+### 12. Uma etapa verificando outra, nos dois sentidos (Etapa 8)
+
+Dois casos da mesma etapa, espelhados. No primeiro, o investimento de uma etapa anterior pegou
+defeito numa posterior. No segundo, uma etapa posterior achou buraco no instrumento de uma
+anterior. Nenhum dos dois foi procurado.
+
+**A prop `future` que o strict reprovou.** O commit 1 ligou `v7_startTransition` e
+`v7_relativeSplatPath` no react-router 6, pela prop `future` do `BrowserRouter`. Ao subir para o
+7, o typecheck reprovou: *"Property 'future' does not exist on type 'BrowserRouterProps'"*. No
+7 os dois comportamentos são o padrão e a prop não existe mais. **Sem o strict da Etapa 6, ela
+ficaria no `BrowserRouter` ignorada em silêncio, afirmando uma configuração que não acontece** —
+e o código continuaria dizendo, a quem o lesse, que o roteador tinha flags ligadas. **É a
+primeira vez na série que o investimento de uma etapa pegou defeito numa etapa posterior sem
+ninguém procurar.**
+
+**O `<Navigate>` que a suíte da Etapa 7 não via.** Ao medir o gatilho do open redirect, achou-se
+que a varredura de rotas nunca contou `<Navigate to=>`. Contrafactual medido com o teste de rotas
+da Etapa 7 e a suíte **inteira**: um redirecionamento apontando para `/gestao-antiga?tab=relatorios`
+— rota que não existe — **passava com os 70 verdes**. Com a guarda de `321ab87`, reprova. **É a
+primeira vez que uma etapa posterior encontrou buraco na suíte, e não no código.**
+
+**A correção do autor, sobre o que valida uma suíte.** O autor tinha dito que o major passar com
+os 70 verdes seria a validação da Etapa 7. Corrigiu-se: *não é. Verde não valida suíte; reprovar
+quando deve, sim, e isso foram as mutações.* No upgrade do router, quem pegou alguma coisa foi o
+typecheck, e os 70 verdes não disseram nada — nem sobre o router, nem sobre o `<Navigate>` que
+eles não viam. A validação da suíte continua sendo o que ela reprova quando se planta o defeito.
+
+### 13. A ferramenta de resolução de dependências quebrando por dentro (Etapa 8)
+
+`npm install -D vitest@4.1.11`, no npm 11.5.2 da máquina:
+
+```
+npm error Cannot read properties of null (reading 'edgesOut')
+    at #loadPeerSet (@npmcli/arborist/lib/arborist/build-ideal-tree.js:1314)
+```
+
+**Não foi conflito — seria um `ERESOLVE`. Foi defeito da ferramenta.** Pelo log, o gatilho é um
+peer **opcional** de um pacote de **teste**: o `@testing-library/jest-dom` 7.0.1 declara
+`vitest >= 0.32`, o que faz o npm avaliar `vitest@*` (o 5.0.1) e seguir os peers opcionais dele
+(`@vitest/browser-playwright`, `@vitejs/devtools-*`), até encontrar um nó nulo. Trocar a faixa no
+`package.json` e rodar `npm install` quebrou igual. O lockfile ficou intacto nas duas vezes.
+
+O contorno aprovado foi separar quem gera o lockfile de quem instala a partir dele:
+
+1. **Gerar** com o npm 11.19.1, fixado na versão exata: `npx -y npm@11.19.1 install`, com a faixa
+   já trocada no `package.json`.
+2. **Conferir o diff** do lockfile por alcançabilidade (achado 14 e o procedimento na Etapa 8).
+3. **Instalar** com o npm da máquina, que não o gerou: `rm -rf node_modules && npm ci`. O lock
+   tinha de provar que instala com um npm diferente do que o escreveu — e o `npm ci` também
+   monta árvore, então poderia ter passado pela mesma resolução de peers. Não passou.
+4. **A prova final é o CI do PR**, que roda `npm ci` com o npm do setup-node — um terceiro npm.
+
+O 11.19.1 ainda avisou que os scripts de instalação de `@swc/core` e `esbuild` não estavam
+cobertos pela política `allowScripts` dele. É mais uma razão para o `node_modules` final não vir
+do npm que gerou o lock.
+
+Parece a família dos achados 8, 10 e 11 — a ferramenta falhando antes do código —, mas é do tipo
+oposto, e a diferença importa. Naqueles, o instrumento devolveu saída **plausível e errada**, e o
+perigo era ela ser lida como resultado. Aqui a ferramenta **quebrou alto**: não houve lockfile
+meio escrito, nem árvore que parecesse certa. Falha barulhenta custa uma sessão; a silenciosa
+custa o registro.
+
+### 14. Condição de verificação escrita pelo nome em vez da propriedade (Etapa 8)
+
+Para o commit do `vitest`, o autor escreveu a condição: *o diff do `package-lock.json` fica
+restrito ao subtree do vitest (vitest e @vitest/\*). Se aparecer pacote fora desse subtree, pare.*
+
+Medido: **18 caminhos fora de `vitest`/`@vitest/*`**. O trabalho parou, como a condição mandava.
+Os 18 aparecem porque o lockfile é achatado: as dependências do próprio vitest moram em
+`node_modules/<nome>`, não dentro de `vitest/`. **Nenhuma major do vitest caberia na condição
+lida pelo nome.** A propriedade que importava era outra — *nada fora do fechamento de
+dependências do vitest muda* —, e ela foi medida por alcançabilidade, com controle nos dois
+sentidos: os 18 são exclusivos do vitest, nenhum é compartilhado, e nenhuma das 37 dependências
+do aplicativo mudou.
+
+O autor aceitou a leitura por subgrafo e registrou o erro como seu: **definiu a verificação pelo
+nome dos caminhos, e não pela propriedade que queria garantir.** É a mesma família do achado 7 —
+a varredura que procura pelas palavras do caso conhecido em vez da categoria —, agora numa regra
+que o próprio autor redigiu. E a condição literal, se tivesse sido aplicada sem medir, teria
+reprovado todo upgrade possível; se tivesse sido reinterpretada por quem executava, teria
+deixado de ser verificação. Parar e medir a propriedade foi o que a manteve como verificação.
+
 ---
 
 ## Pendências abertas
@@ -1799,7 +1881,8 @@ atual não depende dela para valer o que afirma.
 ERESOLVE. `vitest` 4 instalaria um **segundo `vite`** no `node_modules`, o que faria a suíte
 rodar sobre uma resolução de módulos diferente da do aplicativo. Escolhido `vitest` 3.2.x, que
 reusa o `vite` do projeto (conferido: um `vite` instalado). Nenhum `--legacy-peer-deps`. Subir
-o `vite` na Etapa 8 destrava o `vitest` 5.
+o `vite` na Etapa 8 destrava o `vitest` 5. **Resolvido na Etapa 8:** `vitest` 4.1.11 sobre `vite`
+6.4.3, com um único vite — a duplicação só existia enquanto o projeto estava no vite 5.
 
 ---
 
@@ -1808,7 +1891,66 @@ o `vite` na Etapa 8 destrava o `vitest` 5.
 Só depois da Etapa 7. Todas as correções exigem versão major, e sem testes a quebra
 passa por lint, typecheck e build sem ser vista.
 
-### Estado medido em 19/09/2026: 6 entradas, 5 moderadas e 1 alta
+**Critério de aceite:** `npm audit` sem advisory alta ou moderada, as quatro verificações
+passando, o arreio com diferença zero no `dev` e no `preview`, e as mutações acusadas. ✅
+atendido — com a prova final no CI do PR, que roda `npm ci` com o npm do setup-node.
+
+### Resultado da etapa
+
+Medido no início, antes do primeiro commit, e de novo depois do último.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Entradas no `npm audit`** | **6** | **0** |
+| — alta | 1 | 0 |
+| — que chega ao bundle de produção | 1 | 0 |
+| `react-router-dom` | 6.30.6 | 7.18.4 |
+| `vite` | 5.4.21 | 6.4.3 |
+| `vitest` | 3.2.7 | 4.1.11 |
+| Cópias de `vite` no `node_modules` | 1 | 1 |
+| Destinos de navegação que a varredura de rotas não via | 6¹ | 0² |
+| Testes | 70 em 7 arquivos | 73 em 7 arquivos |
+| Mutações, acusadas de quantas plantadas | 27 de 27 | 30 de 30³ |
+| Fotografia de superfície, 23 superfícies | — | diferença zero em cada commit⁴ |
+| Bundle JS, bytes em `dist/assets` | 1.800.472 | 1.833.161 (+32.689)⁵ |
+| Node declarado no README | 18+ | 22.13+ ou 24+⁶ |
+
+¹ 3 destinos não literais sem nome (Header ×2, ResourcesPanel) e os 3 `<Navigate>` de
+`App.tsx`, que nenhuma varredura contava. ² Os 3 não literais listados pelo nome; os 3
+`<Navigate>` varridos e resolvidos. ³ Reexecutadas no `vitest` 4.1.11, com os três controles do
+runner comparados à linha de base do 3.2.7 (abaixo). ⁴ No `dev` nos commits 1 a 3, e no
+`preview` — o `dist/` servido — nos commits do `vite` e do `vitest`. ⁵ +55 do commit 1, +18.153
+do router, +14.481 do vite, 0 do vitest. ⁶ Medido pelos 324 campos `engines` instalados; ver
+abaixo.
+
+| Commit | Degrau | Audit | Fotografia |
+|---|---|---|---|
+| `72becab` | flags do react-router 7 ligadas no 6 | 6 | zero (dev); avisos de future flag 2 → 0 |
+| `97d636b` | `react-router-dom` 7.18.4 | 6 → 4 | zero (dev) |
+| `321ab87` | sítios × capturados no teste de rotas | 4 | — (só teste) |
+| `aca509b` | `vite` 6.4.3 | 4 → 2 | zero (dev e preview) |
+| `70dee2e` | `vitest` 4.1.11 | 2 → 0 | zero (preview); build byte a byte idêntico |
+
+**Os três controles do runner, antes e depois da troca.** Medidos no 3.2.7 **antes** de trocar,
+para existir linha de base, com o mesmo script depois:
+
+| Controle | `vitest` 3.2.7 | `vitest` 4.1.11 |
+|---|---|---|
+| suíte normal | saída 0, 73 passam | saída 0, 73 passam |
+| zero testes coletados (`passWithNoTests: false`) | saída 1 | saída 1 |
+| `TZ=UTC` de fora, com o pino no config | 73 passam | 73 passam |
+| `TZ=UTC`, **sem** o pino | 3 reprovam, o do fuso incluído | 3 reprovam, o do fuso incluído |
+
+O pino de fuso da Etapa 7 — o modo de falha silencioso mais grave que a suíte já teve — continua
+vencendo a variável externa, e o teste que o trava continua acusando a ausência dele.
+
+### O npm audit final: zero
+
+Nenhuma advisory restante, então nenhuma a justificar. A de hidratação SSR do react-router
+(GHSA-337j-9hxr-rhxg), que não se aplicava porque o projeto não faz SSR, saiu junto com a outra
+no commit do router.
+
+### O estado no início (19/09/2026): 6 entradas, 5 moderadas e 1 alta
 
 Eram 4 em 13/09. A regra de contagem: entradas que o `npm audit` lista, uma por pacote
 afetado, contadas do `npm audit --json`.
@@ -1867,6 +2009,13 @@ eu poderia ter lido como "nada a ver aqui". Quem disse que ele estava cego foi o
 plantado junto dele, que planta um destino não literal e exige que o medidor acuse. Está no
 achado 11, com as outras três.
 
+**O gatilho virou teste em `321ab87`.** `src/test/rotas.test.ts` conta todo sítio de navegação
+— toda abertura de `<Link` e `<Navigate`, toda chamada `navigate(` — e exige que todo sítio não
+capturado esteja numa lista, pelo nome. Um quarto destino não literal reprova. Foram duas
+extensões além do pedido, as duas por buraco medido: o `<Navigate>`, que nenhuma varredura
+contava (achado 12), e o apelido de `useNavigate()`, que tiraria as chamadas da contagem. Cada
+guarda tem mutação própria no código de produção, e o conjunto foi de 27 para 30.
+
 ### A escada, e por que nesta ordem
 
 Quatro commits, um major por commit, e o acoplamento medido pelos intervalos declarados nos
@@ -1877,7 +2026,7 @@ pacotes:
 | 1 | `v7_startTransition` e `v7_relativeSplatPath` ligadas no react-router 6 | comportamento, sem versão | suíte e arreio, intactos |
 | 2 | `react-router-dom` 6.30.6 → 7.18.4 | major, código de aplicação | suíte e arreio, intactos |
 | 3 | `vite` 5.4.21 → 6.4.3 | major, ferramenta | suíte (roda através do vite) |
-| 4 | `vitest` 3.2.7 → 4.1.11 | major, o próprio runner | as 27 mutações |
+| 4 | `vitest` 3.2.7 → 4.1.11 | major, o próprio runner | as 30 mutações e os controles do runner |
 
 **Router antes do vite.** Nos commits 1 e 2 o instrumento inteiro — vite 5 + vitest 3.2,
 conhecidos e verdes — fica fixo, e qualquer vermelho tem uma causa só. Na ordem inversa, a
@@ -1914,29 +2063,123 @@ Ou seja: **`vite` 7 cabe sem trocar mais nada** (plugin 3.11 e vitest 4.1.11 já
 própria, com o mesmo critério: um major por commit, arreio no `dev` e no `preview`, e as
 mutações reexecutadas se o runner se mexer.
 
+Duas ferramentas desta etapa ficam prontas para ela, e devem ser reusadas em vez de
+reinventadas: o **procedimento de alcançabilidade** do lockfile (abaixo), para provar que o
+diff de cada degrau não sai do fechamento de dependências do pacote atualizado; e o
+**procedimento de dois npms** do achado 13, se a geração do lockfile voltar a quebrar por dentro.
+
 **Regras:**
 - Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as quatro verificações
   passando e `rm -rf node_modules && npm ci` antes delas.
 - `recharts` v3 mexe nos gráficos da Etapa 3: conferir de novo nome acessível e tabela
   equivalente. Fora desta etapa — não tem advisory.
 - `vite` major: conferir que o `manualChunks` da Etapa 0 continua valendo e que o bundle
-  principal não volta a crescer. **Medido no commit 2:** nomear `react-router` no
-  `manualChunks` não muda nada — o bundle sai idêntico, mesmos hashes de conteúdo, com e sem a
-  linha, porque o rollup já arrasta o subtree pela reexportação. A linha não entrou.
-- Trocar o runner é ligar outra opção de verificação: depois do commit 4, **reexecutar as 27
-  mutações** e o controle de zero testes. Verde com runner novo é indistinguível de verde com
-  runner que não reprova mais nada.
+  principal não volta a crescer. Medido no commit do vite: mesmos quatro chunks, principal +308
+  bytes.
+- Trocar o runner é ligar outra opção de verificação: **reexecutar as mutações** e os três
+  controles do runner, com linha de base medida **antes** da troca. Verde com runner novo é
+  indistinguível de verde com runner que não reprova mais nada.
+- O diff do lockfile se confere por **alcançabilidade**, não pelo nome dos caminhos (achado 14).
 
-**Critério de aceite:** `npm audit` sem advisory alta ou moderada, ou cada uma que restar
-registrada aqui com justificativa (dev ou bundle). As quatro verificações passam, o arreio dá
-diferença zero no `dev` e no `preview`, e as mutações continuam sendo acusadas.
+### O que não entrou, e por quê
 
-### Onde está (19/09/2026)
+Duas coisas que eu propus, com justificativa plausível, medidas, e fora:
 
-Feitos: commit 1 (`72becab`, flags do 7 ligadas no 6, avisos 2 → 0, fotografia zero) e commit 2
-(`97d636b`, `react-router-dom` 7.18.4, audit 6 → 4, fotografia zero). Faltam: commit 3 (`vite`
-6.4.3), commit 4 (`vitest` 4.1.11), a asserção de sítios × capturados no teste de rotas, e o
-commit de documentação que fecha a etapa.
+- **`react-router` no `manualChunks`** (commit do router). A justificativa: no 7 o código vive
+  no `react-router`, e sem nomeá-lo ele cairia no chunk principal. **Plausível, medida nos dois
+  lados, falsa**: com e sem a linha o bundle sai idêntico, mesmos nomes com hash de conteúdo e
+  mesmos bytes — o rollup já arrasta o subtree pela reexportação. A linha foi revertida.
+  Comentário que explica um efeito inexistente é pior que nenhum.
+- **Um parâmetro de porta no arreio**, para medir o `preview`. Medido: `scripts/fotografia.js`
+  não tem referência a origem, porta, `/src/` nem `import.meta` — tudo é relativo à página. O
+  `preview` precisou de procedimento, não de código, e o procedimento está em
+  `scripts/README-fotografia.md`. Mesmo motivo do `manualChunks`: parâmetro que não faz nada não
+  entra.
+
+### Custos declarados, sem ação
+
+- **+18.208 bytes no chunk `react`** (162.860 → 181.068), do `react-router` 7. É o custo do
+  major que fecha a única advisory que chegava ao bundle.
+- **+14.481 bytes no JS total** do `vite` 6.4.3, dos quais **+12.029 no chunk `charts`** (83%).
+  **A causa não foi medida.** Um bundler novo muda minificação, interoperação de CommonJS e
+  resolução de pacote, e qualquer das três explicaria o número. Fica registrado como não medido,
+  que é melhor do que explicado por palpite. Medir exigiria construir as duas versões lado a lado
+  e comparar a contribuição de cada módulo.
+
+### O procedimento de alcançabilidade do lockfile
+
+Para provar que o diff de um lockfile não sai do fechamento de dependências do pacote
+atualizado. Pelo nome dos caminhos não serve: num lockfile achatado, as dependências do pacote
+moram em `node_modules/<nome>` (achado 14).
+
+**1. Listar o que mudou**, comparando as entradas `packages` do lock do `HEAD` com as da árvore
+de trabalho: caminho adicionado, removido, ou com versão, `resolved`, `integrity` ou
+dependências diferentes.
+
+**2. Para cada caminho mudado, perguntar se ele é alcançável sem o pacote.** Tira-se o nó do
+pacote do grafo e percorre-se a partir da raiz; o que não for alcançado só existe por causa
+dele. O caminho removido se confere no lock velho; o adicionado e o alterado, no novo.
+
+```js
+// pkgs = lock.packages; corta toda aresta que chegue ao pacote atualizado
+const alcancaveisSem = (pkgs, cortado) => {
+  const resolver = (de, nome) => { // regra do Node: procura node_modules subindo
+    for (let base = de; ; ) {
+      const alvo = (base ? base + '/' : '') + 'node_modules/' + nome;
+      if (pkgs[alvo]) return alvo;
+      if (!base) return null;
+      const i = base.lastIndexOf('/node_modules/');
+      base = i < 0 ? '' : base.slice(0, i);
+    }
+  };
+  const vistos = new Set(['']), fila = [''];
+  while (fila.length) {
+    const atual = fila.shift(), e = pkgs[atual];
+    const deps = { ...e.dependencies, ...e.optionalDependencies, ...e.peerDependencies,
+      ...(atual === '' ? e.devDependencies : {}) };
+    for (const nome of Object.keys(deps)) {
+      const alvo = resolver(atual, nome);
+      if (alvo && alvo !== cortado && !vistos.has(alvo)) { vistos.add(alvo); fila.push(alvo); }
+    }
+  }
+  return vistos;
+};
+```
+
+**3. Controle nos dois sentidos, antes de ler o resultado.** Um pacote que o aplicativo usa de
+verdade (`react`, `vite`, `@testing-library/jest-dom`) tem de sair **alcançável**; o próprio
+pacote e dependências que só ele tem (`vitest`, `@vitest/runner`, `@vitest/expect`) têm de sair
+**exclusivos**. Sem os dois, "exclusivo" pode ser o medidor que não percorre nada.
+
+**4. Conferir à parte que nenhuma dependência direta do aplicativo mudou de versão**, e que na
+raiz do lock só muda a faixa do pacote atualizado.
+
+Medido no commit do `vitest`: 26 caminhos mudados, 18 deles fora de `vitest`/`@vitest/*` pelo
+nome, **os 18 exclusivos, 0 compartilhados**, nenhuma das 37 dependências do aplicativo alterada.
+O trecho acima foi executado como está escrito aqui, contra o diff desse commit, e reproduz o
+resultado com os dois controles passando.
+
+### O pré-requisito de Node estava errado desde a Etapa 7
+
+O README e o guia de contribuição diziam "Node.js 18+". Medido pelos campos `engines.node` de
+todos os pacotes instalados — 324 deles têm um —, com o `semver` do próprio `node_modules`:
+
+| Node | Pacotes que recusam |
+|---|---:|
+| 18.20 | 25 |
+| 20.19 | 1 (`@testing-library/jest-dom` 7, `>=22`) |
+| 21.7 | 16 |
+| 22.12 | 2 (`jsdom` 29 e `eslint-visitor-keys` 5, `^22.13`) |
+| 22.18 | 0 |
+| 23.0 | 10 |
+| 24, 26 | 0 |
+
+O mínimo é **22.13, ou 24+**; as ímpares 21 e 23 não servem. Quem fixou isso foram o `jsdom` 29 e
+o `@testing-library/jest-dom` 7, que entraram em `c152869`, o primeiro lote da **Etapa 7** — ou
+seja, a afirmação era falsa havia uma etapa, e nenhuma verificação a pegava: o CI roda o node 22
+mais recente, e o npm só avisa sobre `engines` enquanto `engine-strict` estiver desligado, que é
+o padrão (conferido nesta máquina: `false`). Os dois documentos foram corrigidos. Declarar `engines` no `package.json` faria o npm avisar a quem instala com a versão
+errada; não foi feito, porque é mudança de configuração que ninguém pediu.
 
 ---
 

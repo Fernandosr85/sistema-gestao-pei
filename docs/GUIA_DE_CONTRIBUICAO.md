@@ -17,7 +17,7 @@ Este guia define boas práticas para contribuir com o projeto **Sistema de Gest�
 
 ## Pré-requisitos
 
-- Node.js 18+
+- Node.js 22.13+ ou 24+ (as ímpares 21 e 23 não servem; medido pelos `engines` dos pacotes)
 - npm
 - Git
 
