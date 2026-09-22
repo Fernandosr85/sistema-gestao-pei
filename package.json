@@ -76,7 +76,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^6.4.3",
-    "vitest": "^3.2.7"
+    "vitest": "^4.1.11"
   },
   "description": "Prototype of an Individualized Education Plan (IEP/PEI) management interface for inclusive education.",
   "license": "MIT",
