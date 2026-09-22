@@ -73,14 +73,16 @@ Telas navegáveis do protótipo:
 
 ## Tecnologias
 
-React 18 · TypeScript · Vite 5 · Tailwind CSS · shadcn/ui (Radix) · React Router ·
+React 18 · TypeScript · Vite 6 · Tailwind CSS · shadcn/ui (Radix) · React Router ·
 React Hook Form + Zod · Recharts · React Big Calendar · Lucide
 
 ---
 
 ## Começando
 
-**Pré-requisitos:** Node.js 18+ e npm.
+**Pré-requisitos:** Node.js 22.13+ ou 24+, e npm. As versões ímpares 21 e 23 não servem.
+Medido pelos campos `engines` de todos os pacotes instalados: quem fixa o 22.13 são o
+`jsdom` 29 e o `@testing-library/jest-dom` 7, da suíte de testes.
 
 ```bash
 git clone https://github.com/Fernandosr85/sistema-gestao-pei.git
@@ -379,11 +381,11 @@ Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o 
 | `src/lib/metrics.test.ts` | 19 | os seletores de métrica corrigidos nas Etapas 4 e 5 |
 | `src/lib/date.test.ts` | 13 | data local, idade na véspera e no dia do aniversário, e o dia anterior que o fuso produzia |
 | `src/store/reducer.test.ts` | 12 | as ações do store, inclusive a que não deve tocar nas coleções vinculadas |
-| `src/test/rotas.test.ts` | 5 | todo destino de `Link`/`navigate()` resolve para uma rota declarada |
+| `src/test/rotas.test.ts` | 8 | todo destino de `Link`, `Navigate` e `navigate()` resolve para uma rota declarada, e nenhum destino não literal escapa da varredura |
 | `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
 | `src/test/arreio.test.ts` | 3 | o andaime: que a suíte discrimina, e que jsdom não calcula layout |
 
-**O risco, com o número absoluto: são 70 testes, cobrindo as correções das Etapas 1 a 6. O
+**O risco, com o número absoluto: são 73 testes, cobrindo as correções das Etapas 1 a 6 e a guarda de navegação da Etapa 8. O
 restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 
@@ -393,8 +395,9 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **27 mutações, todas acusadas na verificação
-  final.** Uma delas revelou defeito no próprio teste, e está registrada no backlog.
+  código de produção e a suíte teve de reprovar: **30 mutações, todas acusadas** — 27 da Etapa 7
+  e 3 da guarda de navegação da Etapa 8 —, reexecutadas depois de trocar o runner para o
+  `vitest` 4. Uma delas revelou defeito no próprio teste, e está registrada no backlog.
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
@@ -403,6 +406,33 @@ Orçamento, 28 dos 79 elementos semânticos e 13 dos 96 números só ficam de fo
 porque o navegador calcula layout). Continua no arreio de
 [`scripts/fotografia.js`](scripts/fotografia.js), conduzido à mão, por decisão registrada no
 backlog e não por esquecimento.
+
+### Dependências (Etapa 8)
+
+`npm audit` de **6 entradas para 0**, uma major por commit, na ordem router → vite → vitest: a
+suíte que prova o router não podia estar sob a mudança que se queria verificar.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Entradas no `npm audit` | 6 (1 alta) | 0 |
+| Advisory que chega ao bundle de produção | 1 | 0 |
+| `react-router-dom` / `vite` / `vitest` | 6.30.6 / 5.4.21 / 3.2.7 | 7.18.4 / 6.4.3 / 4.1.11 |
+| Destinos de navegação fora do alcance da varredura de rotas | 6 | 0 |
+| Mutações acusadas | 27 de 27 | 30 de 30 |
+| Bundle JS, bytes | 1.800.472 | 1.833.161 |
+
+- **Cada degrau com diferença zero na fotografia de superfície** — no servidor de
+  desenvolvimento e, nos commits do vite e do vitest, também no `dist/` servido por
+  `npm run preview`, porque major de bundler quebra empacotamento e "compila" não é "roda".
+- **O `vite` parou no 6.4.3**, o mínimo que zera as advisories, e não no 8 que o `npm audit`
+  sugere: o `fixAvailable` aponta a última versão, não a mínima. O 7 e o 8 ficam como segunda
+  escada, com o acoplamento medido no backlog.
+- **O advisory de open redirect do router virou teste.** Todo destino de navegação que não é
+  literal tem de estar numa lista, pelo nome; um novo reprova até alguém conferir de onde ele vem.
+- **O `+32.689` bytes é custo declarado**: +18.208 do router 7, +14.481 do vite 6. A causa dos
+  +12.029 no chunk de gráficos não foi medida, e está registrada assim.
+- **O runner foi trocado com linha de base**: os controles de zero testes e de fuso medidos no
+  `vitest` 3.2.7 antes da troca, e comparados depois.
 
 ### Limites conhecidos
 

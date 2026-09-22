@@ -19,7 +19,7 @@ Nenhuma alteração é considerada pronta antes de as quatro passarem:
 ```bash
 npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
-npm test            # 70 testes, 7 arquivos. Zero teste encontrado reprova.
+npm test            # 73 testes, 7 arquivos. Zero teste encontrado reprova.
 npm run build       # conclui
 ```
 
@@ -65,7 +65,8 @@ vence a variável externa.
 
 `npm test` roda a suíte em Vitest + jsdom (`vitest.config.ts`). Ela cobre **o que as Etapas 1
 a 6 corrigiram** — persistência do store, datas, seletores de métrica, reducer, grafo de rotas
-e o fluxo de cadastro até a listagem —, e não o código todo. Arquivo sem teste não é arquivo
+e o fluxo de cadastro até a listagem —, mais a guarda de navegação da Etapa 8 (todo destino
+não literal listado pelo nome), e não o código todo. Arquivo sem teste não é arquivo
 verificado; a lista do que ficou de fora está no README.
 
 - O ambiente é fixado no config (`TZ=America/Sao_Paulo`), porque em UTC os defeitos de data

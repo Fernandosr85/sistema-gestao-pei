@@ -23,6 +23,11 @@ const App = () => (
   <TooltipProvider>
     <Toaster />
     <Sonner />
+    {/*
+      * Sem `future`: no react-router 7 os dois comportamentos que o commit anterior ligou
+      * (`v7_startTransition` e `v7_relativeSplatPath`) são o padrão, e a prop não existe mais
+      * em `BrowserRouterProps` — quem disse isso foi o typecheck, não a documentação.
+      */}
     <BrowserRouter>
       <div className="min-h-screen bg-background">
         <a
