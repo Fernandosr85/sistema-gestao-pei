@@ -379,11 +379,11 @@ Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o 
 | `src/lib/metrics.test.ts` | 19 | os seletores de métrica corrigidos nas Etapas 4 e 5 |
 | `src/lib/date.test.ts` | 13 | data local, idade na véspera e no dia do aniversário, e o dia anterior que o fuso produzia |
 | `src/store/reducer.test.ts` | 12 | as ações do store, inclusive a que não deve tocar nas coleções vinculadas |
-| `src/test/rotas.test.ts` | 5 | todo destino de `Link`/`navigate()` resolve para uma rota declarada |
+| `src/test/rotas.test.ts` | 8 | todo destino de `Link`, `Navigate` e `navigate()` resolve para uma rota declarada, e nenhum destino não literal escapa da varredura |
 | `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
 | `src/test/arreio.test.ts` | 3 | o andaime: que a suíte discrimina, e que jsdom não calcula layout |
 
-**O risco, com o número absoluto: são 70 testes, cobrindo as correções das Etapas 1 a 6. O
+**O risco, com o número absoluto: são 73 testes, cobrindo as correções das Etapas 1 a 6 e a guarda de navegação da Etapa 8. O
 restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 

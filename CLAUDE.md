@@ -19,7 +19,7 @@ Nenhuma alteração é considerada pronta antes de as quatro passarem:
 ```bash
 npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
-npm test            # 70 testes, 7 arquivos. Zero teste encontrado reprova.
+npm test            # 73 testes, 7 arquivos. Zero teste encontrado reprova.
 npm run build       # conclui
 ```
 
