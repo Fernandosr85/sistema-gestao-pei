@@ -43,8 +43,13 @@ const DialogContent = React.forwardRef<
     >
       {children}
       <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
+        <X className="h-4 w-4" aria-hidden="true" />
+        {/*
+          * O nome acessível do fechar vinha em inglês do template do shadcn, numa página
+          * declarada `lang="pt-BR"`: o leitor de tela lia "Close" com pronúncia portuguesa.
+          * 3.1.2 (idioma do trecho) e 4.1.2 (nome do componente). Um arquivo, todos os diálogos.
+          */}
+        <span className="sr-only">Fechar</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

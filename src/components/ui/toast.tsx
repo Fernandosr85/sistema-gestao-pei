@@ -71,9 +71,15 @@ const ToastClose = React.forwardRef<
       className,
     )}
     toast-close=""
+    aria-label="Fechar notificação"
     {...props}
   >
-    <X className="h-4 w-4" />
+    {/*
+      * Achado na mesma varredura do "Close" do diálogo, e pior: este botão não tinha nome
+      * NENHUM — só o ícone. A varredura automatizada da Etapa 3 não o alcançou porque toast só
+      * existe depois de uma ação, e o axe mediu rota a rota, sem interagir.
+      */}
+    <X className="h-4 w-4" aria-hidden="true" />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;

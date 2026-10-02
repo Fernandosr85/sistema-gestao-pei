@@ -79,6 +79,10 @@ describe('Ver PEI: o plano é do estudante aberto', () => {
        */
       expect(dialogo.getByRole('heading', { name: 'Progresso nas metas do PEI' })).toBeInTheDocument();
       expect(dialogo.getByText('50%')).toBeInTheDocument();
+
+      // O fechar do primitivo: nome em português, numa página lang="pt-BR" (3.1.2 e 4.1.2).
+      expect(dialogo.getByRole('button', { name: 'Fechar' })).toBeInTheDocument();
+      expect(dialogo.queryByRole('button', { name: 'Close' })).toBeNull();
       expect(dialogo.getByText(/Média das 4 metas do plano/)).toBeInTheDocument();
       expect(dialogo.getByText(/Alcançadas: 1 de 4/)).toBeInTheDocument();
       expect(dialogo.getByText(/Não iniciadas: 1 de 4/)).toBeInTheDocument();
