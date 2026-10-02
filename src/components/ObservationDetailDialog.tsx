@@ -1,16 +1,16 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Calendar, Clock, MapPin, User, FileText, Target, 
-  TrendingUp, TrendingDown, Wrench, CheckCircle2, 
-  AlertCircle, Camera, Video, Bell,
-  Edit, FileDown, Mail, Trash2
+import {
+  Calendar, Clock, User, FileText, Target,
+  TrendingUp, TrendingDown, Wrench, CheckCircle2,
+  AlertCircle, Edit, FileDown, Mail, Trash2,
 } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { formatLocalDate } from '@/lib/date';
 import { classLabelOf } from '@/lib/report';
 import { studentNameOf } from '@/lib/metrics';
+import { goalsCitingSource, peiGoalAreaLabel } from '@/lib/pei';
 import { useDemoStore } from '@/store/useDemoStore';
 import { StructuredObservation } from '@/types';
 
@@ -20,6 +20,24 @@ interface ObservationDetailDialogProps {
   observation: StructuredObservation | null;
 }
 
+/**
+ * O detalhe de uma observação registrada.
+ *
+ * O QUE ESTE DIÁLOGO INVENTAVA, até a Etapa 9: horário e local fixos; "Objetivo PEI #3" e "#7",
+ * que não existiam em lugar nenhum; blocos de DETALHAMENTO com números ("3 conversas
+ * espontâneas", "+200% em relação à semana passada"), transições com horário e duração, gatilhos
+ * identificados e um plano de ação em três prazos; contexto e horário por índice de
+ * comportamento; três evidências anexadas; um texto de "Observações Adicionais" ASSINADO pelo
+ * observador; notificações enviadas com horário de leitura e uma RESPOSTA DA FAMÍLIA entre
+ * aspas; e metadados de criação e edição. Nada disso estava no registro.
+ *
+ * Os dois últimos são a classe do achado 1 na forma mais direta: texto fictício atribuído, com
+ * nome, a quem não escreveu — uma professora e uma mãe.
+ *
+ * O QUE FICA: o que a observação tem. E uma ligação que agora existe de verdade: as metas do PEI
+ * cujas notas citam esta observação como evidência (`PeiGoalNote.source`), percorrida ao
+ * contrário. "Relacionado a" deixou de ser enfeite e passou a ser o grafo do registro.
+ */
 export function ObservationDetailDialog({ open, onOpenChange, observation }: ObservationDetailDialogProps) {
   const { state } = useDemoStore();
   if (!observation) return null;
@@ -29,24 +47,24 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
 
   const situacoes = observation.comunicacao.situacoes.filter((item) => item.contexto.trim() || item.resposta.trim());
   const interacoes = observation.habilidadesSociais.interacoes.filter((item) => item.tipo.trim() || item.descricao.trim());
+  const metas = goalsCitingSource(state, 'observation', observation.id);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <FileText className="h-6 w-6" />
-            Detalhes da Observação
+          <DialogTitle className="flex items-center gap-2 text-2xl">
+            <FileText className="h-6 w-6" aria-hidden="true" />
+            Detalhes da observação
           </DialogTitle>
           <DialogDescription>
-            Registro completo da observação, com identificação do estudante, descrição e
-            metadados.
+            Registro completo da observação, com identificação do estudante, o que foi observado e
+            as metas do PEI que a citam.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Student Info */}
-          <div className="p-4 bg-muted/50 rounded-lg">
+          <div className="rounded-lg bg-muted/50 p-4">
             <h2 className="text-xl font-bold">{studentNameOf(state, observation.studentId)}</h2>
             {student && (
               <p className="text-sm text-muted-foreground">
@@ -56,62 +74,66 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
           </div>
 
           <DemoDataNotice
-            subject="O horário, o local, os objetivos do PEI, os detalhamentos, as comparações, as evidências, as observações adicionais, as notificações e os metadados deste detalhe"
-            detail="Vêm da observação registrada só a data, a duração, o observador, as situações de comunicação, as interações sociais, o resumo e os comportamentos listados."
+            // O componente completa com "... são exemplos estáticos": o sujeito entra no plural.
+            subject="Os textos desta observação"
+            detail="É o registro de demonstração, com texto fictício. Tudo o que aparece aqui foi gravado na observação ou vem das metas que a citam; o diálogo não acrescenta nada."
           />
 
-          {/* General Information */}
           <Card>
-            <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-lg mb-4">Informações Gerais</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
+            <CardContent className="space-y-3 pt-6">
+              <h3 className="mb-4 text-lg font-semibold">Informações gerais</h3>
+
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <Calendar className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <span className="text-sm">
                     <strong>Data:</strong> {formatLocalDate(observation.data)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <Clock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  {/* Horário e local saíram: a observação registra período e duração, não hora. */}
                   <span className="text-sm">
-                    <strong>Horário:</strong> 08:30 - 10:30 ({observation.duracao} minutos)
+                    <strong>Período:</strong> {observation.periodo === 'manha' ? 'Manhã' : 'Tarde'} ·{' '}
+                    {observation.duracao} minutos
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">
-                    <strong>Local:</strong> Sala de Aula Regular
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-muted-foreground" />
+                  <User className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <span className="text-sm">
                     <strong>Observador:</strong> {observation.observador}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-3 border-t">
+              <div className="border-t pt-3">
                 <div className="flex items-start gap-2">
-                  <Target className="h-4 w-4 text-muted-foreground mt-0.5" />
+                  <Target className="mt-0.5 h-4 w-4 text-muted-foreground" aria-hidden="true" />
                   <div className="text-sm">
-                    <strong>Relacionado a:</strong>
-                    <ul className="list-disc list-inside mt-1 text-muted-foreground">
-                      <li>Objetivo PEI #3: Melhorar transições entre atividades</li>
-                      <li>Objetivo PEI #7: Aumentar participação em atividades coletivas</li>
-                    </ul>
+                    <strong>Metas do PEI que citam esta observação:</strong>
+                    {metas.length === 0 ? (
+                      <p className="mt-1 text-muted-foreground">
+                        Nenhuma meta cita esta observação como evidência.
+                      </p>
+                    ) : (
+                      <ul className="mt-1 list-inside list-disc text-muted-foreground">
+                        {metas.map((meta) => (
+                          <li key={meta.id}>
+                            {meta.title} ({peiGoalAreaLabel(meta.area)})
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Communication and social skills, as recorded */}
           <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg">Comunicação e habilidades sociais registradas</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <CardContent className="space-y-4 pt-6">
+              <h3 className="text-lg font-semibold">Comunicação e habilidades sociais registradas</h3>
+              <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
                 <div className="space-y-2">
                   <h4 className="font-semibold">Situações de comunicação</h4>
                   {situacoes.length === 0 ? (
@@ -146,315 +168,87 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
             </CardContent>
           </Card>
 
-          {/* Detailed Observation */}
           <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">Observação Detalhada</h3>
+            <CardContent className="space-y-4 pt-6">
+              <h3 className="mb-4 text-lg font-semibold">Resumo do observador</h3>
 
-              {/* Pontos Fortes */}
-              <div className="p-4 border-l-4 border-success bg-success/5 rounded-r-lg space-y-3">
+              <div className="space-y-2 rounded-r-lg border-l-4 border-success bg-success/5 p-4">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-success" />
-                  <h4 className="font-semibold text-success">Pontos Fortes</h4>
+                  <TrendingUp className="h-5 w-5 text-success" aria-hidden="true" />
+                  <h4 className="font-semibold text-success">Ponto forte</h4>
                 </div>
-                <p className="font-medium">{observation.resumo.pontoForte}</p>
-                
-                <div className="mt-3 space-y-2">
-                  <p className="text-sm font-semibold">DETALHAMENTO:</p>
-                  <p className="text-sm text-muted-foreground">
-                    Demonstrou progresso significativo na comunicação verbal durante toda a manhã:
-                  </p>
-                  <ul className="list-disc list-inside text-sm text-muted-foreground ml-2">
-                    <li>Iniciou 3 conversas espontâneas com colegas</li>
-                    <li>Respondeu a todas as perguntas feitas pela professora</li>
-                    <li>Usou frases completas (5-7 palavras em média)</li>
-                    <li>Manteve contato visual durante as interações</li>
-                  </ul>
-
-                  <div className="mt-3 p-3 bg-background rounded">
-                    <p className="text-sm font-semibold mb-1">COMPARAÇÃO:</p>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <span>• Semana passada: 1 interação verbal espontânea</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span>• Esta semana: 3 interações verbais espontâneas</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-success font-semibold">
-                        <TrendingUp className="h-4 w-4" />
-                        <span>Crescimento: +200%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <p>{observation.resumo.pontoForte}</p>
               </div>
 
-              {/* Desafios */}
-              <div className="p-4 border-l-4 border-warning bg-warning/5 rounded-r-lg space-y-3">
+              <div className="space-y-2 rounded-r-lg border-l-4 border-warning bg-warning/5 p-4">
                 <div className="flex items-center gap-2">
-                  <TrendingDown className="h-5 w-5 text-warning" />
-                  <h4 className="font-semibold text-warning">Desafios</h4>
+                  <TrendingDown className="h-5 w-5 text-warning" aria-hidden="true" />
+                  <h4 className="font-semibold text-warning">Desafio</h4>
                 </div>
-                <p className="font-medium">{observation.resumo.desafio}</p>
-                
-                <div className="mt-3 space-y-3">
-                  <p className="text-sm font-semibold">DETALHAMENTO:</p>
-                  <p className="text-sm text-muted-foreground">
-                    Apresentou resistência em 2 das 4 transições:
-                  </p>
-
-                  <div className="space-y-3">
-                    <div className="p-3 bg-background rounded">
-                      <p className="text-sm font-semibold mb-2">TRANSIÇÃO 1: Arte → Matemática (09:15)</p>
-                      <ul className="list-disc list-inside text-sm text-muted-foreground ml-2 space-y-1">
-                        <li>Comportamento: Recusou-se a guardar materiais</li>
-                        <li>Duração da resistência: 8 minutos</li>
-                        <li>Estratégia usada: Aviso verbal + contagem regressiva</li>
-                        <li>Resultado: Aceitou após negociação (mais 2 minutos)</li>
-                      </ul>
-                    </div>
-
-                    <div className="p-3 bg-background rounded">
-                      <p className="text-sm font-semibold mb-2">TRANSIÇÃO 2: Matemática → Recreio (10:00)</p>
-                      <ul className="list-disc list-inside text-sm text-muted-foreground ml-2 space-y-1">
-                        <li>Comportamento: Dificuldade em interromper atividade</li>
-                        <li>Duração: 5 minutos</li>
-                        <li>Estratégia usada: Timer visual</li>
-                        <li>Resultado: Tranquila após ver o timer</li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div className="p-3 bg-background rounded">
-                    <p className="text-sm font-semibold mb-1">GATILHOS IDENTIFICADOS:</p>
-                    <ul className="list-disc list-inside text-sm text-muted-foreground ml-2">
-                      <li>Atividades muito envolventes (arte, jogos)</li>
-                      <li>Mudanças abruptas sem aviso prévio</li>
-                      <li>Falta de suporte visual (timer, agenda)</li>
-                    </ul>
-                  </div>
-                </div>
+                <p>{observation.resumo.desafio}</p>
               </div>
 
-              {/* Ajustes */}
-              <div className="p-4 border-l-4 border-info bg-info/5 rounded-r-lg space-y-3">
+              <div className="space-y-2 rounded-r-lg border-l-4 border-info bg-info/5 p-4">
                 <div className="flex items-center gap-2">
-                  <Wrench className="h-5 w-5 text-info" />
-                  <h4 className="font-semibold text-info">Ajustes e Estratégias</h4>
+                  <Wrench className="h-5 w-5 text-info" aria-hidden="true" />
+                  <h4 className="font-semibold text-info">Ajustes necessários</h4>
                 </div>
-                <p className="font-medium">{observation.resumo.ajustesNecessarios}</p>
-                
-                <div className="mt-3 space-y-3">
-                  <p className="text-sm font-semibold">PLANO DE AÇÃO:</p>
-                  
-                  <div className="space-y-3">
-                    <div className="p-3 bg-background rounded">
-                      <p className="text-sm font-semibold mb-2">IMEDIATO (Esta semana):</p>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                          Criar timer visual para transições
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                          Estabelecer rotina de avisos (5 min, 2 min, agora)
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-success" />
-                          Usar prancha de CAA com sequência visual
-                        </li>
-                      </ul>
+                <p>{observation.resumo.ajustesNecessarios}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="space-y-4 pt-6">
+              <h3 className="mb-4 text-lg font-semibold">Comportamentos observados</h3>
+
+              {observation.comportamento.positivos.length === 0 &&
+              observation.comportamento.desafiadores.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nenhum comportamento registrado.</p>
+              ) : (
+                <>
+                  {observation.comportamento.positivos.map((comportamento, idx) => (
+                    <div
+                      key={`positivo-${idx}`}
+                      className="flex items-center gap-2 rounded-lg border border-success/20 bg-success/5 p-4"
+                    >
+                      <CheckCircle2 className="h-5 w-5 shrink-0 text-success" aria-hidden="true" />
+                      {/* O tipo está escrito no cabeçalho de cada bloco, não só na cor da borda. */}
+                      <p>
+                        <span className="sr-only">Comportamento positivo: </span>
+                        {comportamento}
+                      </p>
                     </div>
-
-                    <div className="p-3 bg-background rounded">
-                      <p className="text-sm font-semibold mb-2">CURTO PRAZO (2-4 semanas):</p>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li className="flex items-center gap-2">
-                          <div className="h-4 w-4 border-2 border-muted-foreground rounded" />
-                          Treinar o uso independente do timer
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <div className="h-4 w-4 border-2 border-muted-foreground rounded" />
-                          Criar história social sobre transições
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <div className="h-4 w-4 border-2 border-muted-foreground rounded" />
-                          Implementar sistema de recompensa
-                        </li>
-                      </ul>
+                  ))}
+                  {observation.comportamento.desafiadores.map((comportamento, idx) => (
+                    <div
+                      key={`desafiador-${idx}`}
+                      className="flex items-center gap-2 rounded-lg border border-warning/20 bg-warning/5 p-4"
+                    >
+                      <AlertCircle className="h-5 w-5 shrink-0 text-warning" aria-hidden="true" />
+                      <p>
+                        <span className="sr-only">Comportamento desafiador: </span>
+                        {comportamento}
+                      </p>
                     </div>
-
-                    <div className="p-3 bg-background rounded">
-                      <p className="text-sm font-semibold mb-2">RECURSOS NECESSÁRIOS:</p>
-                      <ul className="list-disc list-inside text-sm text-muted-foreground ml-2">
-                        <li>Timer visual (relógio de areia ou digital)</li>
-                        <li>Prancha de rotina com pictogramas</li>
-                        <li>História social impressa</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  ))}
+                </>
+              )}
             </CardContent>
           </Card>
 
-          {/* Comportamentos Observados */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">Comportamentos Observados</h3>
-
-              {observation.comportamento.positivos.map((comportamento, idx) => (
-                <div key={idx} className="p-4 bg-success/5 border border-success/20 rounded-lg space-y-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-success" />
-                    <p className="font-medium">{comportamento}</p>
-                  </div>
-                  <div className="ml-7 space-y-2 text-sm text-muted-foreground">
-                    <p><strong>📍 Contexto:</strong> {idx === 0 ? 'Fila para o bebedouro' : 'Pintura com tinta guache'}</p>
-                    <p><strong>⏰ Horário:</strong> {idx === 0 ? '09:45' : '08:45 - 09:15 (30 minutos)'}</p>
-                    <p>
-                      <strong>📝 Observação:</strong> {idx === 0 
-                        ? 'Aguardou pacientemente por 3 minutos sem necessidade de intervenção. Manteve-se calma e não tentou furar a fila como em observações anteriores.'
-                        : 'Participou ativamente da atividade de pintura. Mostrou criatividade ao escolher cores e compartilhou materiais com os colegas sem resistência.'}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              {observation.comportamento.desafiadores.map((comportamento, idx) => (
-                <div key={idx} className="p-4 bg-warning/5 border border-warning/20 rounded-lg space-y-2">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="h-5 w-5 text-warning" />
-                    <p className="font-medium">{comportamento}</p>
-                  </div>
-                  <div className="ml-7 space-y-2 text-sm text-muted-foreground">
-                    <p><strong>📍 Contexto:</strong> Final da atividade livre</p>
-                    <p><strong>⏰ Horário:</strong> 09:15</p>
-                    <p><strong>📝 Observação:</strong> Ao ser solicitada a guardar os blocos de montar, inicialmente recusou e disse "ainda não acabei".</p>
-                    
-                    <div className="mt-3 p-3 bg-background rounded">
-                      <p className="font-semibold mb-2">🔄 Intervenção realizada:</p>
-                      <ol className="list-decimal list-inside space-y-1">
-                        <li>A professora ofereceu aviso prévio: "Mais 2 minutos"</li>
-                        <li>Usou timer visual</li>
-                        <li>Negociou: "Vamos guardar juntas?"</li>
-                        <li>Aceitou após os 2 minutos</li>
-                      </ol>
-                      <p className="mt-2"><strong>⏱️ Tempo de resistência:</strong> 8 minutos</p>
-                      <p><strong>✅ Resultado:</strong> Guardou com ajuda verbal</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Evidências */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h3 className="font-semibold text-lg mb-4">Evidências Anexadas (3)</h3>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <div className="p-4 border rounded-lg text-center space-y-2">
-                  <div className="w-full aspect-square bg-muted rounded flex items-center justify-center">
-                    <Camera className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium">Trabalho de arte</p>
-                </div>
-                <div className="p-4 border rounded-lg text-center space-y-2">
-                  <div className="w-full aspect-square bg-muted rounded flex items-center justify-center">
-                    <Camera className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <p className="text-sm font-medium">Registro da atividade</p>
-                </div>
-                <div className="p-4 border rounded-lg text-center space-y-2">
-                  <div className="w-full aspect-square bg-muted rounded flex items-center justify-center">
-                    <Video className="h-8 w-8 text-muted-foreground" />
-                    <span className="absolute text-xs">▶️ 1:30</span>
-                  </div>
-                  <p className="text-sm font-medium">Transição difícil</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Observações Adicionais */}
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-4">Observações Adicionais</h3>
-              <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground space-y-2">
-                <p>
-                  Esta manhã foi particularmente produtiva, com avanços
-                  significativos na comunicação e engajamento nas atividades propostas.
-                </p>
-                <p>
-                  A questão das transições continua sendo um desafio, mas as estratégias de negociação 
-                  e avisos prévios têm se mostrado eficazes. A implementação de suportes visuais 
-                  permanentes deve ajudar a reduzir essas dificuldades.
-                </p>
-                <p>
-                  Recomendo manter a comunicação próxima com a família para alinhar estratégias 
-                  e garantir continuidade em casa.
-                </p>
-                <p className="pt-2 font-medium text-foreground">- {observation.observador}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notificações */}
-          <Card>
-            <CardContent className="pt-6 space-y-3">
-              <h3 className="font-semibold text-lg mb-4">Notificações Enviadas</h3>
-              
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 bg-success/5 border border-success/20 rounded-lg">
-                  <Bell className="h-5 w-5 text-success mt-0.5" />
-                  <div className="flex-1 text-sm">
-                    <p className="font-medium">Família - {formatLocalDate(observation.data)} 10:45</p>
-                    <p className="text-muted-foreground">Status: Visualizado às 11:30</p>
-                    <p className="mt-2 p-2 bg-background rounded">
-                      💬 Resposta: "Obrigada pelo retorno! Vamos implementar o timer em casa também."
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                  <Bell className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div className="flex-1 text-sm">
-                    <p className="font-medium">Coordenação Pedagógica - {formatLocalDate(observation.data)} 10:45</p>
-                    <p className="text-muted-foreground">Status: Visualizado às 14:20</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Metadados */}
-          <Card>
-            <CardContent className="pt-6">
-              <h3 className="font-semibold text-lg mb-4">Metadados</h3>
-              <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-                <p><strong>Criado em:</strong> {formatLocalDate(observation.data)} 10:35</p>
-                <p><strong>Última edição:</strong> {formatLocalDate(observation.data)} 10:40</p>
-                <p><strong>Editado por:</strong> {observation.observador}</p>
-                <p><strong>Visibilidade:</strong> Equipe pedagógica + Família</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t">
+          <div className="flex flex-wrap gap-3 border-t pt-4">
             <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
-              <Edit className="h-4 w-4 mr-2" />
-              Editar Observação
+              <Edit className="mr-2 h-4 w-4" aria-hidden="true" />
+              Editar observação
             </Button>
             <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
-              <FileDown className="h-4 w-4 mr-2" />
+              <FileDown className="mr-2 h-4 w-4" aria-hidden="true" />
               Exportar PDF
             </Button>
             <Button variant="outline" size="sm" disabled aria-describedby="observacao-acoes-indisponiveis">
-              <Mail className="h-4 w-4 mr-2" />
-              Reenviar Notificação
+              <Mail className="mr-2 h-4 w-4" aria-hidden="true" />
+              Notificar a família
             </Button>
             <Button
               variant="outline"
@@ -463,12 +257,12 @@ export function ObservationDetailDialog({ open, onOpenChange, observation }: Obs
               disabled
               aria-describedby="observacao-acoes-indisponiveis"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
               Excluir
             </Button>
             <p id="observacao-acoes-indisponiveis" className="w-full text-xs text-muted-foreground">
-              Editar, excluir, exportar e reenviar notificação não estão disponíveis neste protótipo. Nenhuma
-              observação é excluída.
+              Editar, excluir, exportar e notificar não estão disponíveis neste protótipo. Nenhuma
+              observação é excluída, e nenhuma notificação é enviada.
             </p>
           </div>
         </div>

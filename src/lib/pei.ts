@@ -162,6 +162,22 @@ export const familyMeetingsOf = (state: DemoState, studentId: string): Atendimen
     .filter((appointment) => appointment.studentId === studentId && appointment.tipo === 'familyMeeting')
     .sort((a, b) => b.data.localeCompare(a.data));
 
+/**
+ * Metas cujas notas citam este registro como evidência.
+ *
+ * A ligação existe num sentido só — a nota aponta para a origem —, e esta função a percorre ao
+ * contrário para a tela do registro poder dizer a que meta ele serviu. Sem ela, a observação
+ * teria de guardar uma lista de metas, que é a cópia que a Etapa 5 ensinou a não fazer.
+ */
+export const goalsCitingSource = (state: DemoState, kind: PeiGoalNoteSource['kind'], id: string): PeiGoal[] => {
+  const goalIds = new Set(
+    state.peiGoalNotes
+      .filter((note) => note.source?.kind === kind && note.source.id === id)
+      .map((note) => note.goalId),
+  );
+  return state.peiGoals.filter((goal) => goalIds.has(goal.id));
+};
+
 /** O atendimento que a revisão cita, quando ele existe — é onde mora a ata (ver `PeiRevision`). */
 export const appointmentOf = (state: DemoState, appointmentId: string): Atendimento | undefined =>
   state.appointments.find((appointment) => appointment.id === appointmentId);

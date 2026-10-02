@@ -169,6 +169,7 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Painel de Gestão | ❌ Cenário ilustrativo nomeado (*Escola Ilustrativa*), fixo no código e separado dos registros, com aviso acima das abas e em cada uma |
 | Desempenho do estudante | ⚠️ Lido dos registros desde a Etapa 9: série do que cada avaliação mediu, metas do PEI por área, níveis e resumo da última avaliação. Frequência e integração **não existem no modelo** e saíram da tela, em vez de aparecer como número fixo. Exportar, compartilhar e imprimir continuam desabilitados |
 | Modo Apresentação do estudante | ⚠️ Montado do plano desde a Etapa 9: capa, progresso nas metas, um slide por meta, conquistas e próximos passos da última avaliação. O número de slides vem do plano. Sem PEI vigente não há apresentação, e o diálogo diz isso. Vídeo e PDF continuam não implementados |
+| Detalhe da observação | ⚠️ Desde a Etapa 9 mostra só o que foi registrado, mais as metas do PEI cujas notas citam aquela observação. Saíram horário, local, plano de ação, evidências anexadas, notificações e metadados, que o modelo não tem |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
 | PEI (metas, revisões, histórico) | ⚠️ O PEI é entidade do modelo e o Ver PEI mostra o plano **do estudante aberto**: identificação, perfil, metas com observações e evidência, estratégias, recursos, revisões e histórico. Estudante sem plano vigente vê "Sem PEI vigente", e não 0%. Elaborar, editar e revisar pela interface não existem; esses controles ficam desabilitados, e o plano entra pelos dados de demonstração |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
@@ -445,11 +446,12 @@ suíte que prova o router não podia estar sob a mudança que se queria verifica
 
 ### Limites conhecidos
 
-- **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação e Detalhe da
-  observação ainda mostram conteúdo fixo, igual para qualquer estudante. O Desempenho de uma
-  aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Os três dizem na tela que o
-  conteúdo não é do estudante aberto. **O Ver PEI saiu desta lista na Etapa 9**: lê o plano do
-  estudante, ou diz que não há.
+- **Diálogos de exemplo sob o nome do estudante — resolvido na Etapa 9.** Ver PEI, Desempenho,
+  Modo Apresentação e Detalhe da observação mostravam conteúdo fixo, igual para qualquer
+  estudante: o Desempenho de uma aluna dizia 85% enquanto a ficha dela, calculada, dizia 60%. Os
+  quatro passaram a ler os registros do estudante aberto, ou a dizer que não há registro. O que
+  não existe no modelo — frequência, integração, anexos, notificações — **saiu da tela** em vez
+  de virar número fixo com aviso em volta.
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
 - **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de

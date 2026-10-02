@@ -4,6 +4,7 @@ import {
   familyMeetingsOf,
   goalCountsByStatus,
   goalsByArea,
+  goalsCitingSource,
   goalsOfPei,
   noteSourceLabel,
   notesOfGoal,
@@ -171,6 +172,30 @@ describe('notas da meta e a evidência, que é elo fraco', () => {
     expect(noteSourceLabel(s, { kind: 'appointment', id: 'atd-999' })).toBe('Atendimento não encontrado no registro');
     expect(noteSourceLabel(s, { kind: 'assessment', id: 'avl-999' })).toBe('Avaliação não encontrada no registro');
     expect(noteSourceLabel(s, { kind: 'observation', id: 'obs-999' })).toBe('Observação não encontrada no registro');
+  });
+});
+
+describe('goalsCitingSource: a evidência percorrida ao contrário', () => {
+  it('a meta cuja nota cita a observação aparece; as outras não', () => {
+    const s = semente();
+    // `pei-note-2` cita a observação `obs-1`, e ela é da meta `pei-goal-2`.
+    expect(goalsCitingSource(s, 'observation', 'obs-1').map((meta) => meta.id)).toEqual(['pei-goal-2']);
+    expect(goalsCitingSource(s, 'observation', 'obs-inexistente')).toHaveLength(0);
+  });
+
+  it('o TIPO da evidência conta, não só o id', () => {
+    const s = semente();
+    /*
+     * Na semente nenhum id se repete entre coleções, então ignorar o `kind` passaria despercebido
+     * — foi o que uma mutação mostrou. Aqui o mesmo id 'x' é usado por uma observação e por uma
+     * avaliação, e as duas notas são de metas diferentes: só uma pode responder por cada tipo.
+     */
+    s.peiGoalNotes = [
+      { ...s.peiGoalNotes[0], id: 'n-obs', goalId: 'pei-goal-1', source: { kind: 'observation', id: 'x' } },
+      { ...s.peiGoalNotes[0], id: 'n-avl', goalId: 'pei-goal-2', source: { kind: 'assessment', id: 'x' } },
+    ];
+    expect(goalsCitingSource(s, 'observation', 'x').map((meta) => meta.id)).toEqual(['pei-goal-1']);
+    expect(goalsCitingSource(s, 'assessment', 'x').map((meta) => meta.id)).toEqual(['pei-goal-2']);
   });
 });
 
