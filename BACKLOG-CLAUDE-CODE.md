@@ -567,6 +567,22 @@ medidas: `argsIgnorePattern` é opção do ESLint e não do `tsc`; e a isenção
 `(_param: number) => 1` não é acusado, `({ ..._rest }) => 2` é acusado com `TS6133`. A correção
 não era padrão de ignore nenhum: era apagar a desestruturação inútil.
 
+**Quarta forma registrada neste achado — as duas do `grep`, o `TS6192` e esta —, na Etapa 9: a
+lista fixa dentro de um controle.** O `CONTROLE: a semente inteira passa nos esquemas`, escrito
+na Etapa 7 para garantir que o estado de demonstração atravessa a validação de forma do
+carregamento, enumerava **sete coleções pelo nome**. Na v4 a
+semente passou a ter onze: as quatro do PEI entraram e o controle continuaria verde sem olhar
+para nenhuma delas — e um esquema de PEI com defeito descartaria o plano inteiro a cada recarga,
+em silêncio, que é exatamente o que esse controle existe para impedir.
+
+Foi pego no dia em que teria falhado, e não por perspicácia: a v4 obrigou a trocar `gravar(3,`
+por `gravar(4,` em sete testes, este entre eles, e a lista de sete coleções estava na linha
+seguinte. Agora o controle enumera `Object.keys(semente())` e exige 11. É a mesma causa dos
+casos acima — **lista em vez de classe** —, pela primeira vez dentro de um instrumento de
+verificação em vez de dentro de uma busca. O instrumento que confere o estado inteiro precisava
+perguntar ao estado quantas coleções ele tem, em vez de carregar a resposta de quando foi
+escrito.
+
 ---
 
 ### 8. O instrumento que não media o que dizia medir (Etapa 5)
@@ -863,6 +879,41 @@ a varredura que procura pelas palavras do caso conhecido em vez da categoria —
 que o próprio autor redigiu. E a condição literal, se tivesse sido aplicada sem medir, teria
 reprovado todo upgrade possível; se tivesse sido reinterpretada por quem executava, teria
 deixado de ser verificação. Parar e medir a propriedade foi o que a manteve como verificação.
+
+---
+
+### 15. Um achado anterior prevenindo um caso que ainda não existia (Etapa 9)
+
+**Qualificação:** é a primeira vez na série que um achado já registrado impediu um defeito que
+nunca chegou a existir. As quatro ondas do achado 1 foram registradas depois do fato: cada uma
+começou com dado fictício aparecendo sob o nome de um estudante e seguiu com uma busca pelo mesmo
+padrão em outras telas. Aqui não há ocorrência para corrigir, porque o código que a produziria
+não foi escrito.
+
+**A decisão.** A `migrateV3ToV4` acrescenta as quatro coleções do PEI ao estado já gravado no
+navegador de quem usou o sistema. O precedente da casa era a `migrateV1ToV2`, que preencheu as
+coleções novas com as fixtures de demonstração, as mesmas que um navegador novo recebe. Seguir o
+precedente teria escrito, nesse estado gravado, um PEI completo atribuído ao estudante de `id`
+'1': perfil, pontos fortes, desafios, estilo de aprendizagem, adaptações curriculares e
+necessidade de apoio humano. Um PEI é um documento que **afirma coisas sobre uma criança
+nomeada**, e isso é a classe do achado 1 — conteúdo fictício exibido como se fosse o registro
+daquele estudante —, com a diferença de que a origem seria a migração, e não texto fixo numa
+tela. As quatro coleções entram vazias. Navegador novo continua recebendo o PEI da semente,
+porque ali não há registro de ninguém para contaminar.
+
+**O precedente não foi corrigido, e isso fica registrado.** A `migrateV1ToV2` carrega a mesma
+classe de risco em forma mais leve: os atendimentos e as avaliações que ela injeta também
+apontam para estudante por `id`, e quem tiver renomeado o estudante '1' — o cadastro é editável
+— passaria a ver esses registros atribuídos ao nome novo. A diferença entre os dois casos é o
+peso do que o registro afirma — data e tipo de um atendimento contra perfil e necessidades de uma
+criança —, não a existência do risco. Mexer na v1->v2 agora mudaria o resultado de uma migração
+que ainda pode rodar sobre estado gravado na versão 1: **é decisão do autor, e está aberta.**
+
+**O que o caso mostra sobre a forma do registro.** O achado 1 só pôde agir aqui porque está
+escrito como classe — "dado fictício atribuído a estudante nomeado" — e não como a lista das
+sete telas em que apareceu. Registro escrito pela lista do que já aconteceu não alcança o caso
+seguinte. É a distinção do achado 7 vista do outro lado: lá a lista deixou passar o que a busca
+devia achar; aqui a classe pegou o que ninguém tinha procurado.
 
 ---
 
@@ -2276,6 +2327,39 @@ Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema
    formulário de evento. Antes, responder: existe agenda pessoal separada dos atendimentos
    (planejamento, formação, tarefas)? Se existir, o caminho é uma entidade nova de evento e
    tarefa, e não a (a').
+
+### Decisões de modelo tomadas na execução (commit `448fa6b`)
+
+Duas decisões que o plano aprovado não previa, tomadas durante a modelagem e aprovadas depois,
+mais um controle que precisou ser corrigido no caminho. Ficam aqui porque quem ler o código vai
+encontrar as três e não vai encontrar o motivo nelas.
+
+**1. As coleções do PEI entram vazias na v4**, contra o precedente da v1->v2, que preencheu
+coleção nova com as fixtures. Registrado no **achado 15**: é o primeiro caso da série em que um
+achado anterior preveniu um defeito antes de ele existir.
+
+**2. A cascata de descarte segue a posse; a referência fraca não leva nada.** O carregamento
+descarta o registro que não passa na validação de forma e, em seguida, o que ficou órfão. Órfão
+de **posse**: plano sem estudante sai e leva as metas, as notas e as revisões; meta inválida leva
+só as notas dela. Já `PeiGoalNote.source` e `PeiRevision.appointmentId` apontam para a evidência
+e para a ata, e são **elos fracos**: a nota cujo atendimento foi descartado fica, sem a ligação.
+
+O motivo é de domínio, não de integridade referencial. A nota é o que um professor escreveu sobre
+a meta de uma criança; a observação, a avaliação ou o atendimento citados são de onde veio a
+evidência. Perder a evidência não torna o texto falso — torna o texto menos sustentado, o que é
+informação diferente. Descartar a nota para não deixar apontador pendurado seria jogar fora o
+conteúdo para preservar o link, e aqui o conteúdo é registro de acompanhamento de um estudante.
+A regra que fica: descarta-se junto o que não existe sem o outro; o que existe sem o outro fica,
+e perde só a ligação.
+
+As duas direções estão testadas — a nota sobrevive à perda da evidência, a meta não sobrevive à
+perda do plano — e duas das sete mutações do commit atacam exatamente esta fronteira: desligar a
+cascata de posse e tratar o elo fraco como posse. As duas foram acusadas.
+
+**3. Um controle antigo estava passando pela razão errada**, pego no dia em que teria falhado:
+o `CONTROLE: a semente inteira passa nos esquemas` enumerava sete coleções numa lista fixa e a
+semente passou a ter onze. Registrado no **achado 7**, como quarta forma da mesma causa — lista
+em vez de classe —, e a primeira dentro de um instrumento de verificação.
 
 ---
 
