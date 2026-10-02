@@ -464,7 +464,7 @@ const StudentDetail = () => {
       <PresentationModeDialog
         open={presentationDialogOpen}
         onOpenChange={setPresentationDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <EditarCadastroDialog
         open={editDialogOpen}

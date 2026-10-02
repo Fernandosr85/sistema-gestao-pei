@@ -1035,13 +1035,18 @@ Enquanto os testes não forem feitos, o critério de aceite da Etapa 3 — "nave
 inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" — está
 **cumprido pela metade**.
 
+> **A tabela foi atualizada pela Etapa 9**, que mexeu nas telas de M3, M5 e M9. O M5 esperava
+> "Slide 3 de 12": o 12 era o número de slides do exemplo fixo, e agora a apresentação é montada
+> do plano — são 8 para a estudante 1, e o nome da região inclui o título do slide. Era este o
+> motivo de executar os nove DEPOIS da etapa: o esperado muda com a tela.
+
 | | Onde | Sequência | Esperado |
 |---|---|---|---|
 | M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
 | M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
 | M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
 | M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
-| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
+| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 8: Reconhecer e ler palavras do vocabulário funcional", e Esc fecha |
 | M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
 | M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
 | M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
