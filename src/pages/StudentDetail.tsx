@@ -89,7 +89,9 @@ const StudentDetail = () => {
      * Era uma linha do tempo fixa, igual para qualquer estudante: "Pendências: 1", "Ingresso na
      * instituição 2020", "Primeiro PEI elaborado 2023", "Revisões realizadas: 3" e
      * "Progressões/retenções: Nenhuma". Nada disso existe no store. Agora são os registros do
-     * estudante, contados. Não há entidade PEI (Etapa 9), então não há revisão para contar.
+     * estudante, contados. A entidade PEI passou a existir nesta etapa, e a contagem de revisões
+     * entra junto da mudança do progresso para as metas do plano — o commit seguinte, que declara
+     * antes o que muda nesta tela. Este aqui não toca na ficha.
      */
     timeline: [
       { tipo: "cadastro", texto: "Cadastro no sistema", data: formatLocalDate(student.dataCadastro), icone: School, cor: "text-primary" },
@@ -471,7 +473,7 @@ const StudentDetail = () => {
       <VerPEIDialog
         open={peiDialogOpen}
         onOpenChange={setPeiDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <AnexosDialog
         open={anexosDialogOpen}

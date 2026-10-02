@@ -169,7 +169,7 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Painel de Gestão | ❌ Cenário ilustrativo nomeado (*Escola Ilustrativa*), fixo no código e separado dos registros, com aviso acima das abas e em cada uma |
 | Desempenho e Modo Apresentação do estudante | ❌ Exemplos fixos, iguais para qualquer estudante, com aviso; o progresso calculado está na ficha |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
-| PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
+| PEI (metas, revisões, histórico) | ⚠️ O PEI é entidade do modelo e o Ver PEI mostra o plano **do estudante aberto**: identificação, perfil, metas com observações e evidência, estratégias, recursos, revisões e histórico. Estudante sem plano vigente vê "Sem PEI vigente", e não 0%. Elaborar, editar e revisar pela interface não existem; esses controles ficam desabilitados, e o plano entra pelos dados de demonstração |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
 | Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
 | Preferências de acessibilidade (Configurações → Acessibilidade) | ✅ Funcional: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e alvos maiores, aplicados na hora e guardados neste navegador |
@@ -180,15 +180,16 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Sincronização Google Calendar / Outlook | ❌ Não implementada; os controles aparecem desabilitados, com o motivo |
 | Notificações | ❌ Não implementadas; os controles aparecem desabilitados |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
-| Testes automatizados | ❌ Não implementados |
+| Testes automatizados | ✅ Suíte em Vitest + jsdom (`npm test`), cobrindo o que as Etapas 1 a 6 corrigiram, a guarda de navegação da Etapa 8 e o PEI da Etapa 9 — não o código todo. A tabela por arquivo está em [Testes automatizados](#testes-automatizados-etapa-7) |
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
 desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero
 violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
 Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
 registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
-Gestão, desempenho, apresentação e PEI continuam com conteúdo fixo de demonstração, agora com
+Gestão, desempenho e apresentação continuam com conteúdo fixo de demonstração, agora com
 aviso em todas essas telas. O histórico acadêmico não tem modelo de dados e diz isso na tela.
+Na Etapa 9, o PEI virou entidade do modelo e o Ver PEI passou a ler o plano do estudante.
 
 ---
 
@@ -438,12 +439,11 @@ suíte que prova o router não podia estar sob a mudança que se queria verifica
 
 ### Limites conhecidos
 
-- **Diálogos de exemplo sob o nome do estudante.**Desempenho, Modo Apresentação, Ver PEI e
-  Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante. O
-  Desempenho de uma aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Trocar por
-  dado real depende da entidade PEI. Os quatro dizem na tela que o conteúdo não é do estudante
-  aberto; o Ver PEI passou a dizer em `bd93507`, e deixou de mostrar o nome do aluno com "Ativo"
-  no cabeçalho.
+- **Diálogos de exemplo sob o nome do estudante.** Desempenho, Modo Apresentação e Detalhe da
+  observação ainda mostram conteúdo fixo, igual para qualquer estudante. O Desempenho de uma
+  aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Os três dizem na tela que o
+  conteúdo não é do estudante aberto. **O Ver PEI saiu desta lista na Etapa 9**: lê o plano do
+  estudante, ou diz que não há.
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
 - **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de
