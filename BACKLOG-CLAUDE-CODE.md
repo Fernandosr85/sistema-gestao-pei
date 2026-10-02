@@ -829,6 +829,15 @@ O 11.19.1 ainda avisou que os scripts de instalação de `@swc/core` e `esbuild`
 cobertos pela política `allowScripts` dele. É mais uma razão para o `node_modules` final não vir
 do npm que gerou o lock.
 
+**E um número do próprio npm que não é o que parece.** O `npm ci` daqui relatou `added 600
+packages`; o do CI, `added 541`. O lock tem **600 entradas**, e no disco ficaram **539** nesta
+máquina — exatamente as instaláveis em `win32-x64` — e 541 no CI, as de `linux-x64-glibc`. Os
+dois números do CI batem; o local, não: o `added 600` do npm 11.5.2 conta entradas do lock, e
+não o que escreveu. A regra de contagem, então, é: **entradas do lock presentes no disco**, e
+não a linha que o npm imprime. Os binários de plataforma (`@esbuild/win32-x64`,
+`@rollup/rollup-win32-*`, `@swc/core-win32-x64-msvc`) explicam a diferença entre as duas
+máquinas, e foram conferidos um a um.
+
 Parece a família dos achados 8, 10 e 11 — a ferramenta falhando antes do código —, mas é do tipo
 oposto, e a diferença importa. Naqueles, o instrumento devolveu saída **plausível e errada**, e o
 perigo era ela ser lida como resultado. Aqui a ferramenta **quebrou alto**: não houve lockfile
@@ -861,6 +870,13 @@ deixado de ser verificação. Parar e medir a propriedade foi o que a manteve co
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
 etapa pode afirmar sem ele e o que **não** pode.
+
+> **Ordem decidida pelo autor em 02/10/2026: os nove testes manuais vêm ANTES da Etapa 9.**
+> O motivo é de medição, não de agenda. Eles são a única verificação do projeto que ninguém
+> executou, levam cerca de meia hora, e a Etapa 9 mexe nas telas que eles cobrem — medir depois
+> de uma mudança grande é pior que medir agora, porque qualquer achado passaria a ter duas causas
+> candidatas. É o mesmo raciocínio que pôs o router antes do vite na Etapa 8: não deixar o
+> instrumento e o objeto se moverem juntos.
 
 ### 1. Verificação por teclado e leitor de tela (Etapa 3) — não feita
 
@@ -2068,6 +2084,19 @@ reinventadas: o **procedimento de alcançabilidade** do lockfile (abaixo), para 
 diff de cada degrau não sai do fechamento de dependências do pacote atualizado; e o
 **procedimento de dois npms** do achado 13, se a geração do lockfile voltar a quebrar por dentro.
 
+**O gatilho, para isto não ficar como meta vaga.** A segunda escada **não** se abre por o 7 e o
+8 existirem. Ela se abre quando uma destas duas coisas acontecer:
+
+1. **Uma advisory nova** atingir o `vite` 6.4.x — aí a escada volta a ser segurança, e vale o
+   custo de subir.
+2. **O `vitest` 5 passar a valer a pena** por motivo próprio (um recurso que a suíte precise, ou
+   o 4 sair de suporte). Ele exige `vite` ^6.4, que já está satisfeito, então nesse caso o
+   `vitest` sobe sozinho; o `vite` 7/8 só entra se o 5 vier a exigir.
+
+Fora desses dois casos, subir é manutenção sem medida que a justifique, e cada major custa uma
+sessão de verificação. Enquanto nenhum dos dois acontecer, o estado correto é este: `vite` 6.4.3
+e `vitest` 4.1.11, com o acoplamento acima registrado para quando o gatilho vier.
+
 **Regras:**
 - Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as quatro verificações
   passando e `rm -rf node_modules && npm ci` antes delas.
@@ -2178,12 +2207,31 @@ O mínimo é **22.13, ou 24+**; as ímpares 21 e 23 não servem. Quem fixou isso
 o `@testing-library/jest-dom` 7, que entraram em `c152869`, o primeiro lote da **Etapa 7** — ou
 seja, a afirmação era falsa havia uma etapa, e nenhuma verificação a pegava: o CI roda o node 22
 mais recente, e o npm só avisa sobre `engines` enquanto `engine-strict` estiver desligado, que é
-o padrão (conferido nesta máquina: `false`). Os dois documentos foram corrigidos. Declarar `engines` no `package.json` faria o npm avisar a quem instala com a versão
-errada; não foi feito, porque é mudança de configuração que ninguém pediu.
+o padrão (conferido nesta máquina: `false`). Os dois documentos foram corrigidos, e o `package.json` passou a declarar
+`engines.node` em `09a4d24`, a pedido do autor: o erro aparece na instalação e não no primeiro
+`npm test`.
+
+**A faixa declarada é a medida: `^22.13.0 || >=24.0.0`.** O primeiro commit trouxe `>=22.13`, mais
+simples de ler, e o autor a trocou pela medida com o argumento que decide: `>=22.13` admite o
+node 23, que **10 pacotes instalados recusam** nos próprios `engines`, então quem instalasse no 23
+receberia dez avisos de pacote e nenhum do projeto. **Erro localizado vale mais que faixa
+legível.** Conferida caso a caso contra a varredura, com o `semver` do próprio `node_modules`:
+recusa 20.19, 21.7, 22.12, 23.0 e 23.11; aceita 22.13, 22.18, 24.0 e 26.0 — exatamente a tabela
+acima.
+
+**Medido, porque declarar só vale se o npm ler o campo:** com uma faixa plantada `>=99.0.0`,
+`npm install --dry-run` emite `npm warn EBADENGINE Unsupported engine`; com a faixa real e node
+22.18, não emite nada; e a mesma faixa plantada com `--engine-strict` sai com código 1. Ou seja,
+o efeito padrão é AVISO, e vira erro só com `engine-strict`, que **não** foi ligado — fazer a
+instalação de terceiros reprovar é decisão de política, não de registro.
 
 ---
 
 ## Etapa 9 — Decisões de produto
+
+**Começa depois dos nove testes manuais** (M1 a M9, na Pendência 1): ela mexe nas telas que eles
+cobrem, e medir acessibilidade por teclado e leitor de tela depois de uma mudança grande deixaria
+qualquer achado com duas causas candidatas.
 
 Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
 
