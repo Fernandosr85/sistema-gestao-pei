@@ -9,6 +9,7 @@ import {
   previousWeekPeriod,
   studentNameOf,
   studentProgress,
+  studentRecordSummary,
   summarizeRatings,
   weekPeriod,
 } from './metrics';
@@ -83,32 +84,80 @@ describe('períodos de semana e mês', () => {
   });
 });
 
-describe('studentProgress: progresso vem da avaliação mais recente, ou não existe', () => {
-  it('estudante sem avaliação devolve undefined, e não zero', () => {
+/*
+ * A FONTE DESTE NÚMERO MUDOU NA ETAPA 9: era a média dos objetivos da avaliação mais recente,
+ * passou a ser a média das metas do PEI vigente. Mudança de comportamento declarada, não
+ * refatoração — e por isso os testes da fonte antiga foram reescritos, não adaptados.
+ *
+ * Cada caso aqui assevera também o valor que a fonte ANTIGA produziria, pela regra do CLAUDE.md:
+ * assim "passou" significa "o número vem do plano", e não "o número existe".
+ */
+describe('studentProgress: o progresso vem das metas do PEI vigente, ou não existe', () => {
+  it('estudante sem PEI vigente devolve undefined, e não zero', () => {
     const s = semente();
-    const semAvaliacao = s.students.find((aluno) => !s.assessments.some((a) => a.studentId === aluno.id));
-    expect(semAvaliacao).toBeDefined();
-    if (!semAvaliacao) return;
-    // O defeito da Etapa 4: 3 de 4 alunos exibiam progresso sem ter avaliação.
-    expect(studentProgress(s, semAvaliacao.id)).toBeUndefined();
-    expect(studentProgress(s, semAvaliacao.id)).not.toBe(0);
+    const semPlano = s.students.find((aluno) => !s.peis.some((pei) => pei.studentId === aluno.id));
+    expect(semPlano).toBeDefined();
+    if (!semPlano) return;
+    // Vale a mesma regra da Etapa 4, agora sobre a outra fonte: ausência não é zero.
+    expect(studentProgress(s, semPlano.id)).toBeUndefined();
+    expect(studentProgress(s, semPlano.id)).not.toBe(0);
   });
 
-  it('com avaliação, é a média dos objetivos da MAIS RECENTE', () => {
+  it('com plano vigente, é a média das metas — 50% na semente, e não os 60% da avaliação', () => {
     const s = semente();
-    const alvo = s.assessments[0].studentId;
-    const antiga = { ...s.assessments[0], id: 'avl-antiga', date: '2020-01-01', objectives: [{ ...s.assessments[0].objectives[0], progress: 0 }] };
-    s.assessments = [antiga, { ...s.assessments[0], objectives: [{ ...s.assessments[0].objectives[0], progress: 80 }] }];
-    expect(studentProgress(s, alvo)).toBe(80);
-    // Falsificação: se pegasse a primeira em vez da mais recente, daria 0.
-    expect(studentProgress(s, alvo)).not.toBe(0);
+    expect(studentProgress(s, '1')).toBe(50);
+    /*
+     * 60 é a média dos objetivos de `avl-1`, o número que esta função devolvia até a Etapa 9. É
+     * ele que não pode voltar sob o rótulo "Progresso nas metas do PEI": os dois estão certos e
+     * medem coisas diferentes, e é a troca silenciosa entre eles que esta asserção impede.
+     */
+    expect(studentProgress(s, '1')).not.toBe(60);
   });
 
-  it('avaliação sem objetivos devolve undefined', () => {
+  it('a avaliação deixa de influir: mudá-la não mexe no progresso do plano', () => {
     const s = semente();
-    const alvo = s.assessments[0].studentId;
-    s.assessments = [{ ...s.assessments[0], objectives: [] }];
-    expect(studentProgress(s, alvo)).toBeUndefined();
+    const antes = studentProgress(s, '1');
+    s.assessments = s.assessments.map((avaliacao) => ({
+      ...avaliacao,
+      objectives: avaliacao.objectives.map((objetivo) => ({ ...objetivo, progress: 100 })),
+    }));
+    expect(studentProgress(s, '1')).toBe(antes);
+    expect(studentProgress(s, '1')).not.toBe(100);
+  });
+
+  it('plano vigente sem meta devolve undefined, e não zero', () => {
+    const s = semente();
+    s.peiGoals = [];
+    expect(studentProgress(s, '1')).toBeUndefined();
+    expect(studentProgress(s, '1')).not.toBe(0);
+  });
+
+  it('plano encerrado não conta: sem vigente, não há número', () => {
+    const s = semente();
+    s.peis = s.peis.map((pei) => ({ ...pei, status: 'closed' as const }));
+    expect(studentProgress(s, '1')).toBeUndefined();
+  });
+});
+
+describe('studentRecordSummary: as revisões do PEI entram na contagem', () => {
+  it('conta a revisão do plano vigente do estudante 1, e zero para quem não tem plano', () => {
+    const s = semente();
+    expect(studentRecordSummary(s, '1').peiRevisions).toBe(1);
+    expect(studentRecordSummary(s, '2').peiRevisions).toBe(0);
+  });
+
+  it('a revisão não antecipa a data do último registro quando há registro mais novo', () => {
+    const s = semente();
+    // Atendimento de 30/11 é mais recente que a revisão de 05/11: a data não muda com a Etapa 9.
+    expect(studentRecordSummary(s, '1').lastRecordDate).toBe('2025-11-30');
+  });
+
+  it('com a revisão como registro mais recente, ela passa a ser a data', () => {
+    const s = semente();
+    s.peiRevisions = s.peiRevisions.map((revisao) => ({ ...revisao, date: '2026-01-15' }));
+    // Falsificação: se a revisão ficasse fora do cálculo, a data seria a do atendimento.
+    expect(studentRecordSummary(s, '1').lastRecordDate).toBe('2026-01-15');
+    expect(studentRecordSummary(s, '1').lastRecordDate).not.toBe('2025-11-30');
   });
 });
 

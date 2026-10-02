@@ -85,7 +85,7 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentName }: St
           */}
         <DemoDataNotice
           subject="A evolução por trimestre, os objetivos, a presença, a integração e as conquistas deste diálogo"
-          detail="São os mesmos para qualquer estudante e não vêm das avaliações registradas. O progresso calculado das avaliações está na ficha, em “Progresso médio dos objetivos na avaliação mais recente”."
+          detail="São os mesmos para qualquer estudante e não vêm dos registros. O progresso calculado está na ficha, em “Progresso nas metas do PEI”, e as metas do plano estão em Ver PEI."
         />
 
         <Tabs defaultValue="overview" className="w-full">

@@ -304,6 +304,11 @@ O que isso significa na prática:
 - **O que é do navegador é calculado.** Alunos ativos, observações e atendimentos por período,
   próximos atendimentos, progresso do aluno, último registro, nota e número de avaliações dos
   recursos e badges de contribuição saem dos registros, e mudam quando algo é cadastrado.
+- **O progresso do aluno mudou de fonte na Etapa 9**, e o rótulo mudou junto: era a média dos
+  objetivos da avaliação mais recente, é a média das metas do PEI vigente, e a tela diz
+  "Progresso nas metas do PEI". Para a estudante 1 da demonstração, eram 60% e são 50% — os dois
+  números estão certos e medem coisas diferentes; a medição datada continua na avaliação, que
+  aponta para a meta. Sem plano vigente a tela diz "Sem PEI vigente", e não 0%.
 - **Sem base, a tela diz "sem base".** Quando o período anterior não tem registro, não há
   porcentagem de variação para mostrar, e nenhuma é inventada.
 - **O que não é do navegador tem nome.** O painel de Gestão descreve a *Escola Ilustrativa*,
