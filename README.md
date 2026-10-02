@@ -83,7 +83,8 @@ React Hook Form + Zod · Recharts · React Big Calendar · Lucide
 **Pré-requisitos:** Node.js 22.13+ ou 24+, e npm. As versões ímpares 21 e 23 não servem.
 Medido pelos campos `engines` de todos os pacotes instalados: quem fixa o 22.13 são o
 `jsdom` 29 e o `@testing-library/jest-dom` 7, da suíte de testes. O `package.json` declara
-`engines.node`, então o npm avisa na instalação se a versão não servir.
+`"engines": { "node": "^22.13.0 || >=24.0.0" }`, a mesma faixa da medição, então o npm avisa na
+instalação se a versão não servir — em vez de o erro aparecer no primeiro `npm test`.
 
 ```bash
 git clone https://github.com/Fernandosr85/sistema-gestao-pei.git

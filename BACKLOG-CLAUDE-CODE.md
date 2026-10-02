@@ -2208,15 +2208,22 @@ o `@testing-library/jest-dom` 7, que entraram em `c152869`, o primeiro lote da *
 seja, a afirmação era falsa havia uma etapa, e nenhuma verificação a pegava: o CI roda o node 22
 mais recente, e o npm só avisa sobre `engines` enquanto `engine-strict` estiver desligado, que é
 o padrão (conferido nesta máquina: `false`). Os dois documentos foram corrigidos, e o `package.json` passou a declarar
-`"engines": { "node": ">=22.13" }` em `09a4d24`, a pedido do autor: o erro aparece na
-instalação e não no primeiro `npm test`. **Medido, porque declarar só vale se o npm ler o
-campo:** com uma faixa plantada `>=99.0.0`, `npm install --dry-run` emite
-`npm warn EBADENGINE Unsupported engine`; com a faixa real e node 22.18, não emite nada; e a
-mesma faixa plantada com `--engine-strict` sai com código 1. Ou seja, o efeito padrão é AVISO,
-e vira erro só com `engine-strict`, que não foi ligado — fazer a instalação de terceiros
-reprovar é decisão de política. A faixa declarada admite o node 23, que 10 pacotes instalados
-recusam nos próprios `engines`; nesse caso o aviso vem de cada pacote. A fiel à medição seria
-`^22.13.0 || >=24.0.0`.
+`engines.node` em `09a4d24`, a pedido do autor: o erro aparece na instalação e não no primeiro
+`npm test`.
+
+**A faixa declarada é a medida: `^22.13.0 || >=24.0.0`.** O primeiro commit trouxe `>=22.13`, mais
+simples de ler, e o autor a trocou pela medida com o argumento que decide: `>=22.13` admite o
+node 23, que **10 pacotes instalados recusam** nos próprios `engines`, então quem instalasse no 23
+receberia dez avisos de pacote e nenhum do projeto. **Erro localizado vale mais que faixa
+legível.** Conferida caso a caso contra a varredura, com o `semver` do próprio `node_modules`:
+recusa 20.19, 21.7, 22.12, 23.0 e 23.11; aceita 22.13, 22.18, 24.0 e 26.0 — exatamente a tabela
+acima.
+
+**Medido, porque declarar só vale se o npm ler o campo:** com uma faixa plantada `>=99.0.0`,
+`npm install --dry-run` emite `npm warn EBADENGINE Unsupported engine`; com a faixa real e node
+22.18, não emite nada; e a mesma faixa plantada com `--engine-strict` sai com código 1. Ou seja,
+o efeito padrão é AVISO, e vira erro só com `engine-strict`, que **não** foi ligado — fazer a
+instalação de terceiros reprovar é decisão de política, não de registro.
 
 ---
 
