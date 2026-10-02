@@ -454,7 +454,7 @@ const StudentDetail = () => {
       <StudentPerformanceDialog
         open={performanceDialogOpen}
         onOpenChange={setPerformanceDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <StudentHistoryDialog
         open={historyDialogOpen}

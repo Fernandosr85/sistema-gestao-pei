@@ -167,7 +167,8 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Relatório do estudante e da turma | ⚠️ Montado com os registros do navegador; imprime ou salva como PDF pela janela de impressão do navegador |
 | Indicadores do Dashboard, da Agenda, da ficha do aluno e da Biblioteca | ✅ Calculados dos registros do navegador, em `src/lib/metrics.ts`; sem registro no período anterior, a variação diz "sem base de comparação" |
 | Painel de Gestão | ❌ Cenário ilustrativo nomeado (*Escola Ilustrativa*), fixo no código e separado dos registros, com aviso acima das abas e em cada uma |
-| Desempenho e Modo Apresentação do estudante | ❌ Exemplos fixos, iguais para qualquer estudante, com aviso; o progresso calculado está na ficha |
+| Desempenho do estudante | ⚠️ Lido dos registros desde a Etapa 9: série do que cada avaliação mediu, metas do PEI por área, níveis e resumo da última avaliação. Frequência e integração **não existem no modelo** e saíram da tela, em vez de aparecer como número fixo. Exportar, compartilhar e imprimir continuam desabilitados |
+| Modo Apresentação do estudante | ❌ Exemplo fixo, igual para qualquer estudante, com aviso; o progresso calculado está na ficha |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
 | PEI (metas, revisões, histórico) | ⚠️ O PEI é entidade do modelo e o Ver PEI mostra o plano **do estudante aberto**: identificação, perfil, metas com observações e evidência, estratégias, recursos, revisões e histórico. Estudante sem plano vigente vê "Sem PEI vigente", e não 0%. Elaborar, editar e revisar pela interface não existem; esses controles ficam desabilitados, e o plano entra pelos dados de demonstração |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
