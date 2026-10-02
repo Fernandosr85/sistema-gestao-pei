@@ -1,5 +1,6 @@
 import { institution } from '@/config/institution';
 import type { Assessment, Atendimento, Observation, Student } from '@/types';
+import type { PeiGoal } from '@/types/pei';
 import type { DemoState } from '@/types/store';
 import { isWithinPeriod, type DatePeriod } from '@/lib/metrics';
 
@@ -30,6 +31,8 @@ export interface StudentReport {
   observations: Observation[];
   appointments: Atendimento[];
   assessments: Assessment[];
+  /** Metas do PEI do estudante: o título do objetivo medido mora nelas, não na avaliação. */
+  peiGoals: PeiGoal[];
 }
 
 export const buildStudentReport = (state: DemoState, studentId: string, period: ReportPeriod): StudentReport | null => {
@@ -46,6 +49,10 @@ export const buildStudentReport = (state: DemoState, studentId: string, period: 
     assessments: state.assessments
       .filter((item) => item.studentId === studentId && isWithinPeriod(item.date, period))
       .sort(newestFirst((item) => item.date)),
+    peiGoals: (() => {
+      const peiIds = new Set(state.peis.filter((pei) => pei.studentId === studentId).map((pei) => pei.id));
+      return state.peiGoals.filter((goal) => peiIds.has(goal.peiId));
+    })(),
   };
 };
 

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { assessmentKindLabel, objectiveStatusLabel } from '@/lib/assessment';
 import { formatLocalDate } from '@/lib/date';
+import { objectiveTitle } from '@/lib/pei';
 import { useDemoStore } from '@/store/useDemoStore';
 
 interface StudentAssessmentsCardProps {
@@ -35,9 +36,9 @@ const StudentAssessmentsCard = ({ studentId }: StudentAssessmentsCardProps) => {
                     {assessment.quarter ? ` · ${assessment.quarter}º trimestre` : ''}
                   </Badge>
                 </div>
-                {assessment.objectives.map((objective) => (
-                  <p key={objective.title} className="text-muted-foreground">
-                    {objective.title}: {objective.progress}% ({objectiveStatusLabel(objective.status)})
+                {assessment.objectives.map((objective, index) => (
+                  <p key={objective.goalId ?? objective.title ?? index} className="text-muted-foreground">
+                    {objectiveTitle(objective, state.peiGoals)}: {objective.progress}% ({objectiveStatusLabel(objective.status)})
                   </p>
                 ))}
                 <p className="mt-1 line-clamp-2 text-muted-foreground">

@@ -1,4 +1,13 @@
-import { mockAppointments, mockAssessments, mockObservations, mockStudents } from '@/data/mockData';
+import {
+  mockAppointments,
+  mockAssessments,
+  mockObservations,
+  mockPeiGoalNotes,
+  mockPeiGoals,
+  mockPeiRevisions,
+  mockPeis,
+  mockStudents,
+} from '@/data/mockData';
 import { mockResources, mockReviews } from '@/data/mockResources';
 import type { DemoState } from '@/types/store';
 
@@ -13,4 +22,9 @@ export const createSeedState = (): DemoState =>
     reviews: mockReviews,
     // Favorites belong to the browser, so there are none to seed.
     favorites: [],
+    // Um PEI completo para o estudante 1 e nenhum para os outros: os dois estados existem.
+    peis: mockPeis,
+    peiGoals: mockPeiGoals,
+    peiGoalNotes: mockPeiGoalNotes,
+    peiRevisions: mockPeiRevisions,
   });

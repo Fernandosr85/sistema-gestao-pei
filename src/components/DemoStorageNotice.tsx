@@ -28,6 +28,10 @@ const COLLECTION_LABELS: Record<keyof DiscardedCounts, [string, string]> = {
   resources: ['recurso', 'recursos'],
   reviews: ['avaliação de recurso', 'avaliações de recurso'],
   favorites: ['favorito', 'favoritos'],
+  peis: ['PEI', 'PEIs'],
+  peiGoals: ['meta do PEI', 'metas do PEI'],
+  peiGoalNotes: ['registro em meta', 'registros em metas'],
+  peiRevisions: ['revisão de PEI', 'revisões de PEI'],
 };
 
 const describeDiscarded = (counts: DiscardedCounts): string =>

@@ -20,7 +20,7 @@ import StatCard from '@/components/StatCard';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { DetalhesAtendimentoDialog } from '@/components/DetalhesAtendimentoDialog';
-import { appointmentTypes } from '@/lib/appointment';
+import { appointmentTypeLabel, appointmentTypes } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import {
   appointmentsInPeriod,
@@ -45,11 +45,11 @@ import { useDemoStore } from '@/store/useDemoStore';
  * texto branco, entre 1,9:1 e 3,8:1.
  */
 const tipoColors = {
-  'Reunião Pedagógica': { classe: 'bg-brand-blue', css: 'hsl(var(--brand-blue))' },
-  'Avaliação': { classe: 'bg-brand-green', css: 'hsl(var(--brand-green))' },
-  'Atendimento Família': { classe: 'bg-brand-orange', css: 'hsl(var(--brand-orange))' },
-  'Multidisciplinar': { classe: 'bg-brand-purple', css: 'hsl(var(--brand-purple))' },
-  'Outros': { classe: 'bg-brand-gray', css: 'hsl(var(--brand-gray))' },
+  pedagogicalMeeting: { classe: 'bg-brand-blue', css: 'hsl(var(--brand-blue))' },
+  assessment: { classe: 'bg-brand-green', css: 'hsl(var(--brand-green))' },
+  familyMeeting: { classe: 'bg-brand-orange', css: 'hsl(var(--brand-orange))' },
+  multidisciplinary: { classe: 'bg-brand-purple', css: 'hsl(var(--brand-purple))' },
+  other: { classe: 'bg-brand-gray', css: 'hsl(var(--brand-gray))' },
 };
 
 const statusBadgeVariant = {
@@ -487,7 +487,7 @@ const AgendaAtendimentos = () => {
                                   backgroundColor: tipoColors[tipo as keyof typeof tipoColors].css,
                                 }}
                               />
-                              <span className="text-sm flex-1">{tipo}</span>
+                              <span className="text-sm flex-1">{appointmentTypeLabel(tipo as Atendimento['tipo'])}</span>
                               <Badge variant="secondary" className="text-xs">
                                 {count} ({Math.round((count / totalAtendimentos) * 100)}%)
                               </Badge>
@@ -660,7 +660,7 @@ const AgendaAtendimentos = () => {
                             borderColor: 'transparent'
                           }}
                         >
-                          {event.resource.tipo}
+                          {appointmentTypeLabel(event.resource.tipo)}
                         </Badge>
                         <div className="flex-1">
                           <div className="font-semibold">{event.title}</div>
@@ -726,7 +726,7 @@ const AgendaAtendimentos = () => {
                             {atendimento.horarioInicio} - {atendimento.horarioFim}
                           </div>
                           <Badge variant="outline" className="text-xs">
-                            {atendimento.tipo}
+                            {appointmentTypeLabel(atendimento.tipo)}
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">{atendimento.objetivos}</p>

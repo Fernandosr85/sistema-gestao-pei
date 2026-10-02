@@ -1,4 +1,5 @@
 import { appointmentStatusLabel } from '@/lib/appointment';
+import { objectiveTitle } from '@/lib/pei';
 import { assessmentKindLabel, objectiveStatusLabel } from '@/lib/assessment';
 import { calculateAge, formatLocalDate } from '@/lib/date';
 import { labelFor, quickObservationContextOptions, quickObservationToneOptions } from '@/lib/observation';
@@ -11,7 +12,7 @@ interface StudentReportContentProps {
 }
 
 const StudentReportContent = ({ report }: StudentReportContentProps) => {
-  const { student, observations, appointments, assessments } = report;
+  const { student, observations, appointments, assessments, peiGoals } = report;
   const profileSections = studentProfileSections(student);
 
   // Guardian contact (phone and e-mail) stays out of the printout: the report does not need it.
@@ -137,9 +138,9 @@ const StudentReportContent = ({ report }: StudentReportContentProps) => {
                   {formatLocalDate(assessment.date)} · {assessmentKindLabel(assessment.kind)}
                   {assessment.quarter ? ` · ${assessment.quarter}º trimestre` : ''} · {assessment.assessor}
                 </p>
-                {assessment.objectives.map((objective) => (
-                  <p key={objective.title} className="text-muted-foreground">
-                    {objective.title}: {objective.progress}% ({objectiveStatusLabel(objective.status)})
+                {assessment.objectives.map((objective, index) => (
+                  <p key={objective.goalId ?? objective.title ?? index} className="text-muted-foreground">
+                    {objectiveTitle(objective, peiGoals)}: {objective.progress}% ({objectiveStatusLabel(objective.status)})
                   </p>
                 ))}
                 <dl className="mt-1 space-y-1">

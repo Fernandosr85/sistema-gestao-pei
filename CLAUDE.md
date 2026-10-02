@@ -164,6 +164,19 @@ O cenário ilustrativo da Gestão não nomeia nenhum estudante nem família, e s
 repete nome algum dos dados de demonstração. Ao editar qualquer tela de Gestão, verifique as
 duas coisas.
 
+### 6. Nenhum campo alega mandato legal que não existe
+O marco legal brasileiro (LDB art. 58-60, LBI art. 27-28, Lei 12.764/2012, Decreto 7.611/2011,
+Resolução CNE/CEB 4/2009) obriga atendimento educacional especializado, currículos e recursos
+adaptados e profissional de apoio. **Ele não prescreve os campos de um PEI.** A estrutura do
+plano — as seis partes, a revisão trimestral, a família como coautora — vem do manual deste
+repositório (`src/pages/Manual.tsx`), que é prática institucional.
+
+Ao modelar ou exibir qualquer coisa do domínio: campo que vem do manual cita o manual; campo
+que vem da lei cita o artigo; campo que é decisão de produto diz que é decisão de produto.
+Nunca escreva "exigido por lei", "obrigatório pela LBI" ou equivalente sem o artigo que exige.
+Confundir prática institucional com exigência legal faz o sistema afirmar, sobre o direito de
+uma criança, o que a lei não diz — e quem lê a tela não tem como distinguir.
+
 ## Convenções
 
 - Identificadores novos: inglês, ASCII, camelCase/PascalCase. Português apenas em textos

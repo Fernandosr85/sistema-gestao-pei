@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { appointmentTypes, isOpenAppointment } from '@/lib/appointment';
+import { appointmentTypeLabel, appointmentTypes, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate, parseLocalDate, toLocalISODate } from '@/lib/date';
 import { createId } from '@/lib/id';
 import { studentNameOf } from '@/lib/metrics';
@@ -198,7 +198,7 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
         <div className="space-y-6 py-4">
           {editing === 'reschedule' && appointment && (
             <p className="rounded-md bg-muted p-3 text-sm">
-              <strong>{studentNameOf(state, appointment.studentId)}</strong> · {appointment.tipo}
+              <strong>{studentNameOf(state, appointment.studentId)}</strong> · {appointmentTypeLabel(appointment.tipo)}
               <br />
               Data atual: {formatLocalDate(appointment.data)}, {appointment.horarioInicio} - {appointment.horarioFim}
             </p>
@@ -233,7 +233,7 @@ export const NovoAtendimentoDialog = ({ open, onOpenChange, appointment, mode = 
                   <SelectContent>
                     {appointmentTypes.map((appointmentType) => (
                       <SelectItem key={appointmentType} value={appointmentType}>
-                        {appointmentType}
+                        {appointmentTypeLabel(appointmentType)}
                       </SelectItem>
                     ))}
                   </SelectContent>
