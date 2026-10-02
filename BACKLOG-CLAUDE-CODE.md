@@ -871,12 +871,24 @@ deixado de ser verificação. Parar e medir a propriedade foi o que a manteve co
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
 etapa pode afirmar sem ele e o que **não** pode.
 
-> **Ordem decidida pelo autor em 02/10/2026: os nove testes manuais vêm ANTES da Etapa 9.**
-> O motivo é de medição, não de agenda. Eles são a única verificação do projeto que ninguém
-> executou, levam cerca de meia hora, e a Etapa 9 mexe nas telas que eles cobrem — medir depois
-> de uma mudança grande é pior que medir agora, porque qualquer achado passaria a ter duas causas
-> candidatas. É o mesmo raciocínio que pôs o router antes do vite na Etapa 8: não deixar o
-> instrumento e o objeto se moverem juntos.
+> **Ordem decidida pelo autor em 02/10/2026: os nove testes manuais vêm DEPOIS da Etapa 9.**
+> A Etapa 9 mexe nas telas que os nove cobrem — Desempenho, Apresentação, Ver PEI, Detalhe da
+> observação, matriz de riscos, relatórios. Executá-los no estado final mede uma vez, e o que
+> for medido vale para o sistema que fica. Antes, mediria o estado que a etapa seguinte vai
+> desfazer, e os nove teriam de ser refeitos.
+>
+> **A ordem inversa esteve registrada aqui no mesmo dia, e está substituída.** O argumento era:
+> eles são a única verificação que ninguém executou, e medir depois de uma mudança grande deixa
+> qualquer achado com duas causas candidatas. Fica citado porque ordem escrita e ordem praticada
+> não podem divergir — quem ler a Pendência 1 daqui a um mês precisa saber que a ordem mudou e
+> por quê, em vez de encontrar um registro que descreve uma prática que não aconteceu.
+>
+> A diferença entre os dois argumentos é o que se protege. O primeiro protege a atribuição de
+> causa de um achado novo; o segundo evita medir duas vezes a mesma coisa. Com os nove ainda não
+> executados, não há linha de base a preservar — não existe medição anterior para um achado novo
+> contradizer —, então o custo de refazer pesa mais. A regra geral da série continua valendo onde
+> ela se aplica: não deixar o instrumento e o objeto se moverem juntos. Aqui o instrumento são
+> teclado e leitor de tela, que a Etapa 9 não altera.
 
 ### 1. Verificação por teclado e leitor de tela (Etapa 3) — não feita
 
@@ -2229,9 +2241,10 @@ instalação de terceiros reprovar é decisão de política, não de registro.
 
 ## Etapa 9 — Decisões de produto
 
-**Começa depois dos nove testes manuais** (M1 a M9, na Pendência 1): ela mexe nas telas que eles
-cobrem, e medir acessibilidade por teclado e leitor de tela depois de uma mudança grande deixaria
-qualquer achado com duas causas candidatas.
+**Vem ANTES dos nove testes manuais** (M1 a M9, na Pendência 1), por decisão do autor em
+02/10/2026: esta etapa mexe nas telas que os nove cobrem, então executá-los no estado final mede
+uma vez e o resultado vale para o sistema que fica. O registro anterior dizia o contrário, e está
+substituído na Pendência 1, com a razão — ordem escrita e ordem praticada não podem divergir.
 
 Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
 
