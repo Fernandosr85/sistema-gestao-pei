@@ -270,6 +270,24 @@ código acha intenção. E falta a quarta, que nenhuma das três cobre: ativaç�
 leitor de tela reais, que ficam em lista de teste manual porque a ferramenta de navegador da
 sessão não ativa `<button>` por Enter ou Space.
 
+**Dois casos novos, na Etapa 9, no mesmo ponto cego: o que só existe depois de uma interação.**
+O botão de fechar de todo diálogo tinha nome acessível **"Close"**, em inglês, numa página
+`lang="pt-BR"` (3.1.2 e 4.1.2); o botão de fechar do toast não tinha nome **nenhum**, só o
+ícone (4.1.2, e contra a regra de botão só-de-ícone do CLAUDE.md). Os dois estavam no primitivo
+compartilhado, desde o template, e atravessaram as oito etapas anteriores — inclusive a Etapa 3,
+que levou o axe a zero em todas as rotas.
+
+Não é falha do axe: diálogo e toast **não estão montados** enquanto ninguém interage, e a
+varredura mediu rota a rota. É o mesmo limite registrado acima — "só vê o que está montado" —,
+agora com a consequência medida no tempo: oito etapas. E alcança também o arreio de superfície,
+que mede as mesmas 23 rotas sem interagir, e por isso deu zero nos dois commits que corrigiram
+isso. **Nenhum dos dois métodos automatizados deste repositório vê conteúdo que só existe depois
+de um clique.** O que viu foi a leitura do texto do diálogo aberto no navegador, durante outra
+verificação.
+
+Corrigidos em `ccb2fce`, com asserção nos dois lugares onde eles existem e duas mutações. A
+pendência 3 abre o trabalho de estender o arreio a diálogos.
+
 ---
 
 ### 3. Correção de acessibilidade revelando defeito funcional (Etapa 3)
@@ -789,6 +807,16 @@ espaços onde havia um) e devolveu "2 sítios, 13 capturados" — números impos
 controle plantado junto dele, com a asserção de que a quebra aparece, que disse "o medidor está
 cego" antes de o número ser usado.
 
+**Quinta e sexta vez, as duas na Etapa 9, e as duas pela mesma causa.** Na mutação do Ver PEI, a
+âncora tinha dois espaços a mais: o bloco que ela mirava estava dentro do retorno antecipado. Na
+mutação do botão de fechar, a âncora terminava em `\n` e o `ui/toast.tsx` é **CRLF** — o
+repositório tem `core.autocrlf=true`, então o conteúdo versionado é LF e a cópia de trabalho no
+Windows é CRLF, arquivo a arquivo. Nos dois casos a asserção abortou com "casou 0 vezes", e nos
+dois a correção foi a mesma: **ler a âncora do arquivo em vez de escrevê-la de memória.**
+
+Regra de contagem das seis: ocorrências registradas aqui e no achado 7 em que a asserção de
+casamento único impediu um resultado falso — três na Etapa 7, uma na Etapa 8 e duas na Etapa 9.
+
 ### 12. Uma etapa verificando outra, nos dois sentidos (Etapa 8)
 
 Dois casos da mesma etapa, espelhados. No primeiro, o investimento de uma etapa anterior pegou
@@ -915,6 +943,52 @@ sete telas em que apareceu. Registro escrito pela lista do que já aconteceu nã
 seguinte. É a distinção do achado 7 vista do outro lado: lá a lista deixou passar o que a busca
 devia achar; aqui a classe pegou o que ninguém tinha procurado.
 
+**A gravidade não é a mesma, e é isso que decidiu.** O autor determinou em 02/10/2026 que a
+`migrateV1ToV2` **não** será mexida, aceitando a leitura da classe de risco: atendimento e
+avaliação injetados são registros de rotina — data, tipo, profissionais —, enquanto um PEI é
+documento que afirma coisas sobre uma criança nomeada: perfil, desafios, necessidade de apoio.
+Mudar o resultado de uma migração que ainda pode rodar sobre estado v1 real custa mais do que o
+risco que ela carrega. **Fica aberta, com a diferença de gravidade registrada**, e não como
+dívida esquecida: se um dia a v1 deixar de poder rodar, o custo muda e a decisão pode mudar com
+ele.
+
+A distinção vale como critério, e não só para este caso: a mesma classe de defeito pede respostas
+diferentes conforme **o que o registro afirma sobre a pessoa**. É o critério que já estava no
+achado 1 — "o que decide é ser atribuído a pessoa nomeada" — com um segundo eixo: quanto o
+registro afirma.
+
+---
+
+### 16. A declaração escrita pelos chamadores, e não pelos montadores (Etapa 9)
+
+**Qualificação:** o defeito está no mecanismo que existe para proteger contra ele. A regra
+invertida desta etapa manda declarar, antes do commit, quais superfícies e quais medidas vão
+mexer; a declaração é a verificação. Ela saiu errada pela causa do achado 7 — enumerar o que já
+se conhece em vez de perguntar pela classe.
+
+**O que aconteceu.** O commit que trocou a fonte do progresso declarou movimento de `numeros` em
+**duas** superfícies, `/alunos` e `/alunos/1`. Mexeu em **três**: `/` também, porque o Dashboard
+monta o mesmo `StudentCard` da listagem. A declaração foi escrita a partir dos sítios que **chamam
+o seletor** `studentProgress` — dois arquivos, achados por busca — e não dos sítios que **montam o
+componente** que o chama, que são três rotas. Medido número a número depois: 60 -> 50 em `/` e
+`/alunos`, e em `/alunos/1` o 60 -> 50 mais o "1" de "Revisões do PEI: 1" entrando; nada além do
+previsto no conteúdo, só uma superfície a mais do que o previsto na lista.
+
+**A regra que fica, ditada pelo autor:** *declare pelos montadores do componente, não pelos
+chamadores do seletor.* Está no CLAUDE.md, no bloco de verificação.
+
+**O que o caso mostra sobre a regra invertida.** Declarar duas e mexer três expôs o **método**, e
+não só o número. Se a declaração tivesse listado as três — por sorte, ou por eu ter aberto o
+Dashboard antes —, o commit passaria com a declaração batendo com a medida, e o raciocínio
+errado continuaria em uso para a próxima tela. Foi a diferença entre o declarado e o medido que
+tornou visível *como* a lista tinha sido montada. Uma verificação que só compara números não
+acha isso; uma que compara a **previsão** com a medida, acha.
+
+**É a família do achado 7** — lista em vez de classe — e, como o achado 14, numa regra escrita
+por quem verifica, não numa busca no código: lá a condição do lockfile foi definida pelo nome dos
+caminhos em vez da propriedade; aqui a declaração foi definida pela lista de chamadores em vez da
+classe "rotas que montam este componente".
+
 ---
 
 ## Pendências abertas
@@ -995,6 +1069,32 @@ Nenhum foi corrigido.
 
 **O que a Etapa 3 pode afirmar sem eles:** o "124 violações para 0" vale para o que aparece nas
 rotas sem interação. **O que não pode:** que todo conteúdo alcançável por clique foi medido.
+
+### 3. O arreio de superfície não alcança diálogo (Etapa 9) — trabalho próprio, depois da etapa
+
+**Estado em 02/10/2026:** `scripts/fotografia.js` mede 23 superfícies **sem interagir**. Diálogo,
+toast, menu e aba de diálogo só existem depois de um clique, e nenhum deles entra na medida.
+
+**O que isso significa na prática.** Nos commits da Etapa 9 que mudaram o Ver PEI e o botão de
+fechar, a fotografia deu zero — e o zero não era evidência de nada, porque o instrumento não
+chega ao objeto. A regra invertida da etapa ("zero é suspeito no commit que devia mudar a tela")
+só se aplica onde o arreio alcança; onde não alcança, o que vale é dizer isso em voz alta e pôr a
+prova em outro lugar: teste de árvore (`src/test/verpei.test.tsx`, `progresso.test.tsx`) e
+navegador.
+
+**Por que não foi feito junto.** Estender o arreio no mesmo commit que muda a tela moveria
+instrumento e objeto ao mesmo tempo — a regra que a Etapa 5 pagou para aprender (achado 8).
+Decisão do autor em 02/10/2026: é trabalho próprio, depois da Etapa 9.
+
+**O que ele precisa ter**, para não repetir os defeitos do arreio original: abrir o diálogo pelo
+controle que o abre (não por estado interno), medir as quatro medidas com o diálogo montado,
+percorrer as abas, fechar, e ter **controle próprio** — uma quebra plantada dentro do diálogo que
+a medida tem de acusar. Sem esse controle, um arreio de diálogo que devolve "zero" não vale mais
+que o silêncio de agora.
+
+**O que a etapa pode afirmar sem ele:** que as telas de diálogo fazem o que os testes de árvore
+asseveram, em jsdom, e o que foi lido no navegador. **O que não pode:** que nenhum detalhe de
+acessibilidade, foco ou número regrediu dentro de um diálogo entre dois commits.
 
 ---
 

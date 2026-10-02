@@ -46,6 +46,16 @@ varredura funciona". Conte as ocorrências, exija exatamente uma, e só então r
 Todo número registrado vem acompanhado da regra que o produz. Número sem regra de contagem
 não é medida e não deve ser repetido.
 
+Ao declarar, antes de um commit, quais telas vão mudar: **liste os sítios que MONTAM o
+componente, não os que CHAMAM o seletor.** O mesmo cartão aparece em mais de uma rota, e a
+declaração escrita pela busca do seletor deixa de fora as rotas que o montam por dentro de
+outro componente. Declaração incompleta reprova o commit mesmo quando o conteúdo medido está
+certo: o que ela verifica é o raciocínio, não só o número.
+
+Âncora de substituição se **lê do arquivo**, nunca se escreve de memória: indentação e fim de
+linha variam por arquivo (`core.autocrlf=true` deixa a cópia de trabalho em CRLF). Exija
+exatamente uma ocorrência e aborte fora disso.
+
 Prova que não se consegue fazer não vale como prova. Quando a verificação de uma simplificação
 falha por limite de ferramenta, desfaça a simplificação em vez de assumir equivalência.
 
