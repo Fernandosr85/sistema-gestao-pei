@@ -175,7 +175,8 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
 | Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
 | Preferências de acessibilidade (Configurações → Acessibilidade) | ✅ Funcional: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e alvos maiores, aplicados na hora e guardados neste navegador |
-| Perfil, Minha Agenda e as demais abas de Configurações | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
+| Minha Agenda | ⚠️ Desde a Etapa 9 lista os atendimentos registrados, agrupados por quando acontecem — inclusive os que continuam agendados com data já passada, que não podem sumir da tela. Sem autenticação, não há como filtrar por profissional, e a tela diz isso. Agenda pessoal (aulas, formação, tarefas) não existe: é entidade nova, registrada no backlog |
+| Perfil e as demais abas de Configurações | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação de arquivo (PDF gerado pela aplicação, Excel, Word) | ❌ Não implementada |
