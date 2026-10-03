@@ -105,9 +105,9 @@ de ansiedade: foi uma segunda, com termos de saúde mental e comportamento, que 
 Um dado de saúde escrito sem nenhuma delas continua podendo estar em alguma tela. O que muda a
 garantia não é uma busca melhor, é a Etapa 4 terminar: quando tudo o que a ficha e os diálogos
 do estudante mostram vier do registro dele ou de um cenário explicitamente nomeado, deixa de
-haver texto fixo para atribuir a alguém. A Etapa 4 terminou sem chegar lá: Desempenho,
-Apresentação, Ver PEI e Detalhe da observação ainda mostram conteúdo fixo sob o nome do
-estudante, com aviso (ver **Ainda aberto**, abaixo).
+haver texto fixo para atribuir a alguém. A Etapa 4 terminou sem chegar lá, e a Etapa 9 chegou:
+ver **Fechado na Etapa 9**, abaixo. Até ela, Desempenho, Apresentação, Ver PEI e Detalhe da
+observação mostravam conteúdo fixo sob o nome do estudante, com aviso.
 
 **Critério, decidido pelo autor na Etapa 4: o que decide é a atribuição a uma pessoa
 nomeada.** Não é ser fictício, e não é ter aviso de exemplo. Dois casos que ficaram para
@@ -356,8 +356,9 @@ Quem lesse "3 observações" numa coluna pensaria estar lendo uma quarta-feira.
   contagem em cada célula, e dar ao dia da semana o papel de cabeçalho de coluna, obrigou a
   alinhar o dia 1 com o dia da semana real. O desalinhamento apareceu na primeira renderização.
 
-**Caso 2: as setas do modo apresentação nunca funcionaram.** `PresentationModeDialog` tem
-doze slides e botões "Anterior" e "Próximo". Nenhuma tecla trocava de slide: não havia
+**Caso 2: as setas do modo apresentação nunca funcionaram.** `PresentationModeDialog` tinha,
+em 2026, doze slides fixos e botões "Anterior" e "Próximo" (na Etapa 9 o número passou a vir do
+plano: são 8 para a estudante 1). Nenhuma tecla trocava de slide: não havia
 handler de teclado no componente, só `onClick` nos botões.
 
 - **Por que passou:** com o mouse, a apresentação funciona inteira. Ninguém que a usasse
@@ -1073,6 +1074,51 @@ classe do código.
 
 ---
 
+### 18. O registro envelhece em silêncio (varredura de coerência, 03/10/2026)
+
+**Qualificação:** nove etapas de registro nunca tinham sido lidas de ponta a ponta procurando
+contradição. A varredura — pedida pelo autor como sessão de fechamento — leu as 2.633 linhas do
+BACKLOG e as 589 do README **medindo cada número que dava para medir**, e achou **vinte** itens.
+Nenhum deles é defeito de código: são defeitos do registro sobre o código.
+
+| Classe | Quantos | O pior exemplo |
+|---|---:|---|
+| README e BACKLOG se contradizendo | 5 | o README dizia "o formato gravado está na **versão 3**" com a tabela do próprio README dizendo v4, 300 linhas abaixo |
+| Afirmação de resultado que ficou falsa | 9 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
+| Número sem a regra que o produz | 5 | "165 classes de cor fixa", que a Etapa 5 já tinha declarado irreproduzível e o README repetia |
+| Pendência resolvida com o registro intacto | 3 | "As três chaves acentuadas que ficaram, e por quê", resolvidas na v4 e ainda escritas no presente |
+
+**Os dois achados dentro do achado.**
+
+1. **O número corrigido num lugar e intacto no outro.** A recontagem "18 → 27 mutações" entrou no
+   achado 11 na própria Etapa 7, e o parágrafo da Etapa 7 que dizia "as 18 mutações desta etapa"
+   ficou como estava — no mesmo arquivo, a 1.300 linhas de distância. Corrigir onde o erro foi
+   discutido não corrige onde ele foi escrito.
+2. **O número que ninguém conseguia reproduzir.** "73 mutações, todas acusadas" era o número mais
+   citado da série, e os scripts que o produziam viviam no diretório temporário das sessões. A
+   varredura foi procurá-los: **27 não existem mais** — os da Etapa 7 foram embora com o
+   scratchpad daquela sessão. O que sobrou foi versionado em `scripts/mutacoes/`, e o que se
+   perdeu está escrito lá.
+
+**O mecanismo, que é o que interessa para o artigo.** Nenhum dos vinte veio de descuido isolado:
+todos vêm da mesma assimetria. Quando uma etapa muda o código, ela escreve o registro **novo** —
+a seção dela, a tabela de resultado, o achado. O registro **velho** fica, e continua afirmando no
+presente um estado que deixou de existir. A série inteira tem verificação para o código (quatro
+comandos, arreio, mutação, controle positivo) e **não tinha nenhuma para o registro**. O texto é
+a única coisa aqui que ninguém reprovava.
+
+**A assimetria tem um sinal, e ele estava visível.** Toda vez que a Etapa 9 fechou uma pendência,
+o texto que a descrevia continuou no presente — "mantém", "ainda mostram", "não possui". O tempo
+verbal é o indício: registro escrito no presente sobre um estado que a etapa seguinte muda vira
+afirmação falsa sem que ninguém toque nele.
+
+**A regra que fica, no CLAUDE.md:** ao fechar uma etapa, reler o que ela tocou nos dois arquivos
+e medir de novo os números que ela move — e escrever estado datado em vez de presente. A
+varredura inteira custou uma sessão; cada item dela custaria minutos se tivesse sido feito na
+etapa que o produziu.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -1131,11 +1177,17 @@ inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" 
 | M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 8: Reconhecer e ler palavras do vocabulário funcional", e Esc fecha |
 | M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
 | M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
-| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
+| M8 | Leitor de tela em `/alunos` e num diálogo (o Ver PEI serve) | Leitura sequencial, e Tab até o botão de fechar | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição; **o botão de fechar é anunciado como "Fechar"**, não "Close" |
 | M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
 
 O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
 parecem não funcionar. É artefato da automação, não do app.
+
+**O M8 ganhou o botão de fechar em 03/10/2026**, por decisão do autor. O nome acessível dele era
+"Close", em inglês, numa página `lang="pt-BR"`, e foi corrigido em `ccb2fce` — mas **só um
+leitor de tela prova o que ele anuncia**. É o mesmo argumento do achado 2: o que só existe depois
+de uma interação não é alcançado por nenhuma verificação automatizada deste repositório, e o M8 é
+o único teste da lista que chega lá.
 
 **Para fechar:** executar os nove, registrar aqui o resultado de cada um (passou, falhou e
 como) e a data. Falha vira item de correção, e a pendência só sai deste bloco quando os nove
@@ -1144,18 +1196,44 @@ passarem.
 ### 2. Dois defeitos de acessibilidade achados depois do merge (Etapa 3) — não corrigidos
 
 Achados durante a verificação da Etapa 4 e deixados para a Etapa 3 por decisão do autor.
-Nenhum foi corrigido.
+Nenhum foi corrigido. **Os dois foram remedidos em 03/10/2026, na varredura de coerência**, e um
+deles muda de descrição.
 
-- **Calendário da Agenda em inglês.** Em `/agenda-atendimentos`, a visão Lista mostra "Tue Nov
-  25", "2:00 pm" e "11/25/2025". A página tem `lang="pt-BR"`, e o leitor de tela lê esses trechos
-  com pronúncia portuguesa (3.1.1 e 3.1.2). Visto de passagem; a causa não foi investigada.
+- **Datas do calendário da Agenda em inglês.** O registro de 16/09/2026 dizia: "em
+  `/agenda-atendimentos`, a visão **Lista** mostra 'Tue Nov 25', '2:00 pm' e '11/25/2025'. Visto
+  de passagem; a causa não foi investigada." **Remedido: o defeito existe, a tela é outra, e a
+  causa agora está medida.**
+  - A visão **Lista** não é do `react-big-calendar`: é uma lista de cartões própria, e está toda
+    em português ("28/11/2025", "14:00 - 15:00", "Reunião Pedagógica"). A atribuição estava
+    errada.
+  - Quem mostra inglês são as visões do calendário: **Mês** escreve "October 2026" e "Sun Mon
+    Tue Wed Thu Fri Sat"; **Dia** escreve o intervalo como "10/03/2026 – 10/04/2026", que é
+    MM/DD/YYYY. Os rótulos de botão estão em português porque são passados à mão pela prop
+    `messages`; o que vem do `localizer` está em inglês.
+  - **A causa, medida:** o `AgendaAtendimentos.tsx` importa `moment/locale/pt-br` e chama
+    `moment.locale('pt-br')` — e o módulo `moment` que a página carrega responde
+    `locale() === 'en'`, com `['en']` como única locale registrada, enquanto
+    `moment_locale_pt-br.js` **é baixado** pelo navegador. Medido no console, pelo mesmo módulo
+    que o aplicativo usa. O mecanismo exato (interoperação entre o `moment` CommonJS e o módulo
+    de locale, sob o pré-empacotamento do Vite) **não foi investigado** e não é afirmado aqui.
+  - **Por que nenhuma verificação pegou:** é texto que só aparece depois de trocar de aba, e o
+    axe e o arreio medem rota a rota sem interagir (achado 2). E a atribuição errada à "visão
+    Lista" sobreviveu dois anos de registro porque ninguém voltou a abrir a tela.
 - **Selo "ATENÇÃO" com contraste 3,15:1.** Em Gestão > Relatórios, "Ver detalhes do exemplo" →
-  subtab "Alertas", o selo tem texto branco sobre `--alert-warning-icon` (`#db7706`): 3,15:1,
+  subtab "Alertas", o selo tem texto branco sobre `--alert-warning-icon` (`#D97706`): 3,15:1,
   medido pelo axe em 16/09/2026 (1.4.3 pede 4,5:1). O selo é de `645280f`. A medida da Etapa 3
-  deu 0 nessa rota porque o selo só aparece depois de dois cliques.
+  deu 0 nessa rota porque o selo só aparece depois de dois cliques. **Conferido em 03/10/2026:
+  intacto** — `reports/PredictiveAnalysis.tsx:565` continua com
+  `bg-[hsl(var(--alert-warning-icon))] text-white`, e o token continua `32 95% 44%`.
 
 **O que a Etapa 3 pode afirmar sem eles:** o "124 violações para 0" vale para o que aparece nas
 rotas sem interação. **O que não pode:** que todo conteúdo alcançável por clique foi medido.
+
+**Para fechar:** corrigir os dois, com o contraste remedido da cor computada e o calendário
+conferido nas três visões. Nenhum dos dois tem correção escrita ainda, e o do calendário precisa
+antes de uma decisão: consertar a locale do `moment` ou trocar o localizador por um que já seja
+usado no projeto (o `date-fns` já está instalado e o `ptBR` dele já é importado nesta mesma
+tela).
 
 ### 3. O arreio de superfície não alcança diálogo (Etapa 9) — trabalho próprio, depois da etapa
 
@@ -1182,6 +1260,49 @@ que o silêncio de agora.
 **O que a etapa pode afirmar sem ele:** que as telas de diálogo fazem o que os testes de árvore
 asseveram, em jsdom, e o que foi lido no navegador. **O que não pode:** que nenhum detalhe de
 acessibilidade, foco ou número regrediu dentro de um diálogo entre dois commits.
+
+### 4. As 27 mutações da Etapa 7 não serão reescritas — decisão do autor, 03/10/2026
+
+**Estado em 03/10/2026:** 47 das 74 mutações da série estão em `scripts/mutacoes/` e reproduzem o
+resultado registrado — 47 plantadas, 47 acusadas, medido pelo `executar.cjs`. As 27 da Etapa 7 —
+persistência e migrações (4), datas (3), seletores (6), reducer (5), rotas (3) e fluxo (6) —
+viviam no diretório temporário daquela sessão e não sobreviveram a ela. O resultado delas está
+registrado aqui e nas mensagens dos commits de 18/09/2026; a reprodução, não.
+
+**Decisão do autor: não reescrever — e o motivo é o registro, não o trabalho.** Reescrevê-las a
+partir dos testes de hoje produz mutações que casam com o que o teste **faz hoje**, não com o
+defeito que ele existia para pegar em 18/09. Seriam 27 mutações novas com aparência de
+reconstituição, e isso é pior que 27 declaradas perdidas: o leitor veria o 74 inteiro como
+reproduzível quando parte dele seria medida de outubro vestida com a data de setembro. **Está
+escrito aqui para ninguém reabrir isto achando que é só trabalho braçal.**
+
+**A premissa está medida, não suposta** (03/10/2026). Quatro dos seis arquivos de teste da
+Etapa 7 mudaram depois dela: `src/store/persistence.test.ts` +227/−10 (`448fa6b`, Etapa 9),
+`src/test/rotas.test.ts` +108/−6 (`321ab87`, Etapa 8), `src/lib/metrics.test.ts` +68/−19
+(`ac477e1`, Etapa 9) e `src/test/fluxo.test.tsx` +8/−0 (`ccb2fce`); só `date.test.ts` e
+`reducer.test.ts` estão como ficaram. E o alvo também se moveu: quando as seis mutações dos
+seletores foram plantadas, `studentProgress` tinha 11 linhas e lia a avaliação mais recente; hoje
+tem 4 e lê as metas do PEI vigente, e a conta antiga vive em `assessmentProgress`. Uma mutação
+escrita hoje contra `studentProgress` planta defeito em código da Etapa 9 — não é a mutação de
+setembro com outro nome de arquivo, é outra mutação.
+
+**E não há artefato de onde recuperar as originais.** Os 22 transcritos de sessão desta máquina
+foram varridos em 03/10/2026: nenhum é a sessão da Etapa 7 — dois citam "Etapa 7" uma vez cada
+(um é o plano deste backlog sendo lido, o outro é de projeto alheio) e o terceiro é a sessão de
+fechamento. Perdido aqui significa perdido, não "em outro lugar".
+
+**O que o repositório pode afirmar sem elas:** que 47 mutações plantadas em código de produção são
+acusadas pela suíte, hoje, por quem rodar `node scripts/mutacoes/executar.cjs`; e que as 27 foram
+acusadas quando foram plantadas, pelo registro da Etapa 7 — testemunho, não reprodução. **O que
+não pode:** que o 74 seja reproduzível. É **47 reproduzíveis e 27 atestadas**, e os dois números
+não se somam numa afirmação só.
+
+**Isto é o achado 18 dentro da sessão que o escreveu.** O commit `d83d8ba` e o README dos scripts
+diziam "reescrevê-las é trabalho possível, e fica como pendência" — escrito horas antes da
+decisão, no mesmo dia. A mensagem do commit fica como está, porque história não se reescreve; o
+texto vivo foi corrigido e esta pendência registra a substituição, como a Pendência 1 faz com a
+ordem dos testes manuais. O prazo do achado 18 não se mede em etapas: mede-se no tempo entre
+escrever e decidir, e aqui foram horas.
 
 ---
 
@@ -1422,6 +1543,12 @@ calcula layout nem contraste, que é metade do valor do axe.
    - **97 linhas em título, aba, `DialogTitle` e `Label`** (como "📋 Dados Pessoais"):
      **saíram**. O leitor de tela lê o nome do emoji antes do texto, o que polui a
      navegação. As 97 foram revistas uma a uma antes de aplicar.
+     > **Os dois números, 98 e 97, não vêm da mesma contagem** (varredura de coerência,
+     > 03/10/2026). A tabela de resultado da etapa diz 98 e este item diz 97, e nenhum dos dois
+     > traz a regra que o produz — ninguém consegue dizer hoje se a diferença de 1 é uma linha
+     > contada em dois lugares, um caso de triagem ou um erro de contagem. Fica registrado como
+     > número sem método: o que se pode afirmar é que o resultado medido depois foi **zero**, e
+     > esse zero tem regra (busca por emoji em título, aba, `DialogTitle` e `Label`).
    - **158 linhas decorativas no meio de texto corrido: ficam.** Envolver cada uma em `span`
      com `aria-hidden` seriam 158 pontos de alteração para resolver verbosidade, não
      barreira. O leitor anuncia o nome do emoji: é incômodo, não é falha. Registrado para
@@ -1616,9 +1743,10 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
   saem de seletores de `metrics.ts`: o progresso aparece igual no card e na ficha, e as
   contagens da ficha e do relatório vêm dos mesmos registros (o relatório, no período
   escolhido). Mas Desempenho, Apresentação, Ver PEI e Detalhe da observação ainda
-  mostram números fixos sob o nome do estudante: o Desempenho da Maria diz 85% no 4º
-  trimestre, e a ficha, 60%. Trocar por dado real depende da entidade PEI (Etapa 9), e o autor
-  aceitou a ressalva.
+  mostravam números fixos sob o nome do estudante: o Desempenho da Maria dizia 85% no 4º
+  trimestre, e a ficha, 60%. Trocar por dado real dependia da entidade PEI, e o autor aceitou a
+  ressalva. **Resolvido na Etapa 9**, com as quatro telas lendo o registro: a ressalva sai, e o
+  85% deixou de existir.
 - **Conferido em 16/09/2026, depois do merge: três dos quatro diziam na tela que o conteúdo não
   é do estudante aberto; o Ver PEI não dizia. Corrigido em `bd93507`, a pedido do autor — era o
   pior dos quatro justamente por nomear.**
@@ -1744,10 +1872,10 @@ faziam essa leitura:
   rotas medidas mostram exatamente os mesmos números antes e depois da correção.
 
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
-telas diferentes. **Estado:** cumprido com uma ressalva, descrita em **O que o número não diz**,
-no topo desta etapa: os diálogos de exemplo ainda mostram números fixos sob o nome do
-estudante. Os quatro dizem na tela que o conteúdo não é dele: três desde a Etapa 4, e o Ver PEI
-desde `bd93507`.
+telas diferentes. **Estado em 2026-09:** cumprido com uma ressalva — os diálogos de exemplo
+mostravam números fixos sob o nome do estudante, e os quatro diziam na tela que o conteúdo não
+era dele (três desde a Etapa 4, o Ver PEI desde `bd93507`). **Estado depois da Etapa 9:
+cumprido sem ressalva**, porque os quatro passaram a ler o registro do estudante aberto.
 
 ---
 
@@ -1864,10 +1992,16 @@ O 165 não é reproduzível por nenhuma das duas. É número sem método, e a re
 acrescentou ao CLAUDE.md nesta etapa existe por causa dele: todo número registrado vem
 acompanhado da regra que o produz.
 
-### As três chaves acentuadas que ficaram, e por quê
+### As três chaves acentuadas que ficaram, e por quê — resolvidas na Etapa 9
 
-`AgendaAtendimentos.tsx:47-49` mantém `'Reunião Pedagógica'`, `'Avaliação'` e
-`'Atendimento Família'` como chaves de objeto, contra a convenção. **Não é esquecimento.**
+> **Medido em 03/10/2026:** não ficaram mais. `AgendaAtendimentos.tsx` usa identificadores
+> (`pedagogicalMeeting`, `assessment`, `familyMeeting`, `multidisciplinary`, `other`), e as três
+> cadeias acentuadas sobrevivem em dois lugares, os dois de propósito: a tabela de migração da
+> v4 (`store/migrations.ts`), que precisa delas para ler o que está gravado, e uma fixture de
+> teste. A linha "Chaves de objeto com acento | 4 | 3" da tabela acima passa a 0 no modelo.
+
+`AgendaAtendimentos.tsx:47-49` **mantinha** `'Reunião Pedagógica'`, `'Avaliação'` e
+`'Atendimento Família'` como chaves de objeto, contra a convenção. **Não era esquecimento.**
 
 Esses valores são o tipo `AppointmentType`: são campo do modelo (`Atendimento.tipo`), texto
 que aparece na tela, chave do mapa de cores **e dado gravado no `localStorage` de quem já
@@ -1904,23 +2038,31 @@ O defeito estava **ativo e esperando alguém renomear um estudante**. A etapa de
 não existia para caçar defeito, entregou a correção de um. Fica registrado com essa
 qualificação porque muda o que a Etapa 5 entregou: não foram só remoção e deduplicação.
 
-### O inventário dos 17 arquivos acima de 400 linhas
+### O inventário dos arquivos acima de 400 linhas
 
-O BACKLOG listava 6 arquivos, com números defasados. São 17, depois da remoção de
+O BACKLOG listava 6 arquivos, com números defasados. Eram 17 na Etapa 5, depois da remoção de
 `ui/sidebar.tsx`. A convenção do CLAUDE.md manda quebrá-los em commits de refatoração
-dedicados; quebrar 17 dentro desta etapa destruiria a prova de regressão, porque cada quebra
-move a fotografia por motivo legítimo. Ficam registrados com o número de hoje:
+dedicados; quebrar 17 dentro daquela etapa destruiria a prova de regressão, porque cada quebra
+move a fotografia por motivo legítimo.
+
+> **Recontado em 03/10/2026, na varredura de coerência. Regra: `wc -l` acima de 400 em
+> `src/`, arquivo de teste incluído.** São **16**, e o conjunto mudou — o número tinha ficado em
+> 17 por coincidência. Saíram `ObservationDetailDialog` (479 → 272) e `MinhaAgenda` (446 → 217),
+> as duas reescritas na Etapa 9; entrou `persistence.test.ts` (422), que cresceu com os testes
+> da v4. O `PresentationModeDialog` entrou com 405 linhas **escritas na Etapa 9** e saiu no
+> commit de refatoração desta sessão (318 + 137 no player), porque arquivo nascido acima do
+> limite é dívida da etapa que o escreveu, não herança.
 
 | Arquivo | Linhas | | Arquivo | Linhas |
 |---|---:|---|---|---:|
-| `MeuPerfilDialog.tsx` | 817 | | `ContributeResourceDialog.tsx` | 494 |
-| `AgendaAtendimentos.tsx` | 770 | | `StudentDetail.tsx` | 492 |
-| `Manual.tsx` | 640 | | `ObservationDetailDialog.tsx` | 479 |
-| `NewStudent.tsx` | 610 | | `OrcamentoContent.tsx` | 459 |
-| `PredictiveAnalysis.tsx` | 604 | | `NewAssessmentDialog.tsx` | 454 |
-| `ProgressChart.tsx` | 593 | | `MinhaAgenda.tsx` | 446 |
-| `AlertasRiscosContent.tsx` | 575 | | `EquipeContent.tsx` | 412 |
-| `ConfiguracoesDialog.tsx` | 574 | | `NovoAtendimentoDialog.tsx` | 411 |
+| `MeuPerfilDialog.tsx` | 817 | | `StudentDetail.tsx` | 494 |
+| `AgendaAtendimentos.tsx` | 770 | | `ContributeResourceDialog.tsx` | 494 |
+| `Manual.tsx` | 640 | | `OrcamentoContent.tsx` | 459 |
+| `NewStudent.tsx` | 610 | | `NewAssessmentDialog.tsx` | 454 |
+| `PredictiveAnalysis.tsx` | 604 | | `persistence.test.ts` | 422 |
+| `ProgressChart.tsx` | 593 | | `EquipeContent.tsx` | 412 |
+| `AlertasRiscosContent.tsx` | 575 | | `NovoAtendimentoDialog.tsx` | 411 |
+| `ConfiguracoesDialog.tsx` | 574 | | | |
 | `NewObservation.tsx` | 511 | | | |
 
 ### O validador do store aceita qualquer objeto com `id`
@@ -2053,8 +2195,9 @@ descarte silencioso é perda de dado sem aviso. "Descartei 3 observações" e "s
 observações" são coisas diferentes, e é o número que separa as duas.
 
 **Derivar o tipo do esquema com `z.infer`** seria o desenho certo — uma fonte só, em vez de
-duas mantidas em acordo pelo compilador. Reescreve `types/index.ts` inteiro e está registrado
-na Etapa 9.
+duas mantidas em acordo pelo compilador. Reescreve `types/index.ts` inteiro. Estava registrado
+para a Etapa 9, **ficou de fora dela** e hoje é etapa própria: com a v4, são onze pares
+esquema/tipo em vez de sete, ou seja, a dívida cresceu.
 
 ---
 
@@ -2092,6 +2235,16 @@ que o acompanha é o que ficou de fora.
    `include` apontando para um padrão que não casa nada, `npm test` sai com código 1.
 2. **Mutação no código de produção.** Antes de aceitar cada lote, o defeito que o teste diz
    pegar é plantado no código real, a suíte tem de **reprovar**, e o arquivo volta ao original.
+   > **Os scripts foram versionados em 03/10/2026, em `scripts/mutacoes/`** — decisão do autor
+   > na varredura de coerência: número que um leitor não consegue reproduzir não é medida, e
+   > este era o mais citado da série. **Dos 74 do conjunto, 47 estão lá.** Os 27 desta etapa
+   > viviam no diretório temporário da sessão e **não sobreviveram** a ela; o resultado está
+   > registrado aqui e nas mensagens dos commits, e não é reproduzível a partir do repositório.
+   > **Não serão reescritos, por decisão do autor em 03/10/2026** (Pendências abertas, item 4):
+   > mutação escrita a partir do teste de hoje casa com o que o teste faz hoje, não com o defeito
+   > que ele pegava em 18/09 — quatro dos seis arquivos de teste mudaram desde então e o
+   > `studentProgress` que seis delas atacavam foi reescrito. **47 reproduzíveis e 27 atestadas**
+   > é o que o repositório pode afirmar.
    **27 mutações na etapa, todas acusadas na verificação final** — 4 na persistência e nas
    migrações, 3 nas datas, 6 nos seletores, 5 no reducer, 3 nas rotas e 6 no fluxo. Uma delas,
    a que apaga uma rota, **não** foi acusada quando foi plantada pela primeira vez, e o que ela
@@ -2134,8 +2287,10 @@ evitar o portão barulhento. Não é pendência desta etapa.
 
 ### Mutação automatizada: candidata a etapa futura
 
-As 18 mutações desta etapa foram escritas à mão, uma a uma, com o alvo escolhido pelo que o
-teste diz pegar. Uma ferramenta de mutação (Stryker) geraria centenas automaticamente e mediria
+As 27 mutações desta etapa foram escritas à mão, uma a uma, com o alvo escolhido pelo que o
+teste diz pegar. (Este parágrafo dizia **18** até a varredura de coerência de 03/10/2026: a
+recontagem por script está no achado 11 desde a própria Etapa 7, e o número velho ficou aqui
+sem ninguém notar — o registro corrigido num lugar e intacto no outro.) Uma ferramenta de mutação (Stryker) geraria centenas automaticamente e mediria
 quantas a suíte sobrevive — que é a medida honesta de força de suíte, no lugar da porcentagem
 de cobertura. É trabalho de uma etapa inteira sozinha (configuração, tempo de execução, triagem
 de mutantes equivalentes), e fica registrada como **candidata**, não como pendência: a suíte
@@ -2338,7 +2493,9 @@ diff de cada degrau não sai do fechamento de dependências do pacote atualizado
 8 existirem. Ela se abre quando uma destas duas coisas acontecer:
 
 1. **Uma advisory nova** atingir o `vite` 6.4.x — aí a escada volta a ser segurança, e vale o
-   custo de subir.
+   custo de subir. **Reescrito em 03/10/2026 pela propriedade**, depois que uma advisory nova
+   atingiu outro subtree e esta condição não se aplicou a nada: ver "O gatilho da segunda escada,
+   reescrito pela propriedade", abaixo.
 2. **O `vitest` 5 passar a valer a pena** por motivo próprio (um recurso que a suíte precise, ou
    o 4 sair de suporte). Ele exige `vite` ^6.4, que já está satisfeito, então nesse caso o
    `vitest` sobe sozinho; o `vite` 7/8 só entra se o 5 vier a exigir.
@@ -2346,6 +2503,52 @@ diff de cada degrau não sai do fechamento de dependências do pacote atualizado
 Fora desses dois casos, subir é manutenção sem medida que a justifique, e cada major custa uma
 sessão de verificação. Enquanto nenhum dos dois acontecer, o estado correto é este: `vite` 6.4.3
 e `vitest` 4.1.11, com o acoplamento acima registrado para quando o gatilho vier.
+
+### O advisory do `braces`, pela cadeia do Tailwind (03/10/2026) — custo declarado
+
+Um dia depois de a Etapa 9 fechar com o `npm audit` em zero, ele voltou a 5. **Nada mudou no
+projeto**: um advisory novo foi publicado.
+
+| Medida | Valor |
+|---|---|
+| Entradas | **5, todas altas** — `braces`, `chokidar`, `micromatch`, `fast-glob`, `tailwindcss` |
+| Regra de contagem | a da Etapa 8: uma entrada por pacote afetado, do `npm audit --json` |
+| Advisory | `GHSA-vfj7-8cjw-p6xm` — exaustão de pilha no `braces` com padrão muito aninhado |
+| Caminho, medido com `npm ls braces` | `tailwindcss 3.4.19 → chokidar 3.6.0 / micromatch 4.0.8 → braces 3.0.3` |
+| Chega ao bundle? | **não** — `tailwindcss` é `devDependency` e produz CSS; nada dessa cadeia é empacotado |
+| `npm audit fix` sem `--force` | não muda nada: não há versão corrigida do `braces` |
+| `npm audit fix --force` | instalaria **`tailwindcss` 4**, major com quebra declarada pelo próprio npm |
+
+**Decisão do autor em 03/10/2026: custo declarado, não etapa.** É ferramenta de build, não chega
+a quem usa o sistema, e não existe correção em patch — trocar por um major do Tailwind para
+responder a um DoS em padrão de glob de build é pagar mais caro que o risco.
+
+**O gatilho:** abre quando houver versão corrigida **sem major** (o `braces` ganhar correção, ou
+o Tailwind 3.4.x passar a aceitar uma), **ou** quando o Tailwind 4 valer por motivo próprio. Não
+abre por o 4 existir.
+
+### O gatilho da segunda escada, reescrito pela propriedade
+
+O gatilho registrado na Etapa 8 dizia: *"uma advisory nova atingir o `vite` 6.4.x"*. Em
+03/10/2026 uma advisory nova atingiu o projeto — e **no subtree do Tailwind**. Pela letra, o
+gatilho não abriu; pela propriedade que ele queria garantir — *o projeto passou a carregar risco
+que a escada resolveria* —, a pergunta nem se aplicava, porque a escada do vite não resolve nada
+do Tailwind.
+
+**É o achado 14 outra vez, e o autor registra a atribuição como sua**: condição de verificação
+escrita **pelo nome do pacote** em vez da propriedade. Lida pelo nome, ela só dispara para um
+subtree; o resto do fechamento de dependências fica fora do radar sem que ninguém decida isso.
+
+**A redação que fica:**
+
+> A segunda escada (`vite` 7/8) abre quando **o projeto passar a carregar advisory alta ou
+> moderada sem correção em patch** cuja remediação seja subir o `vite`, **ou** quando o
+> `vitest` 5 passar a valer a pena por motivo próprio. Advisory em outro subtree é avaliada no
+> subtree dela, com a mesma pergunta: existe correção sem major? Se não existir, vira custo
+> declarado, com o caminho medido e o gatilho escrito.
+
+Assim a condição passa a ser sobre **o que o projeto carrega**, e não sobre onde o problema
+nasceu — e um advisory novo sempre encontra uma regra que o avalia, em vez de cair fora de todas.
 
 **Regras:**
 - Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as quatro verificações
@@ -2486,17 +2689,20 @@ substituído na Pendência 1, com a razão — ordem escrita e ordem praticada n
 
 Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
 
-1. **PEI como entidade.** O sistema se chama Gestão PEI e não possui entidade PEI. Metas,
-   revisões e histórico são conteúdo fixo.
+1. **PEI como entidade.** ✅ **Executado** — ver "Resultado da etapa", abaixo. O texto do plano
+   fica como foi escrito, no presente de quando foi escrito.
 
-   Hoje o `VerPEIDialog` mostra um PEI de exemplo, com aviso, igual para qualquer estudante.
+   O sistema se chamava Gestão PEI e não possuía entidade PEI. Metas, revisões e histórico eram
+   conteúdo fixo, e o `VerPEIDialog` mostrava um PEI de exemplo, com aviso, igual para qualquer
+   estudante.
    Editar PEI, Nova Revisão, "Adicionar observação" na meta e "Ver ata" ficam desabilitados.
    Modelar o PEI dá sentido ao nome do sistema: metas, prazos, responsáveis, revisões e
    evidências ligadas a observações, avaliações e atas de atendimento.
    - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
      imprimível.
    - Exige mudar o modelo de dados e subir a versão do store, com migração.
-   - **Junto vai o `z.infer`**: a Etapa 6 criou `src/store/schemas.ts` com sete esquemas `zod`
+   - **Junto iria o `z.infer`** — e não foi: ficou de fora por tamanho, e está em "O que a
+     etapa NÃO fez". A Etapa 6 criou `src/store/schemas.ts` com sete esquemas `zod`
      anotados como `z.ZodType<T>`, com os tipos de `@/types` como fonte. São duas declarações
      do mesmo formato, mantidas em acordo pelo compilador. O desenho certo é uma fonte só, com
      o tipo derivado do esquema por `z.infer`; isso reescreve `types/index.ts` inteiro e cabe

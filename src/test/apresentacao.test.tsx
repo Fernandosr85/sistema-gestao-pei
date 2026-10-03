@@ -64,9 +64,19 @@ describe('Modo Apresentação: os slides vêm do plano', () => {
       const dialogo = await abrirApresentacao(user, '/alunos/1');
       await user.click(dialogo.getByRole('button', { name: /Iniciar apresentação/ }));
 
-      const slide = within(await screen.findByRole('region', { name: /^Slide 1 de 8/ }));
+      const regiao = await screen.findByRole('region', { name: /^Slide 1 de 8/ });
+      const slide = within(regiao);
       expect(slide.getByRole('heading', { name: 'Maria Silva Santos', level: 1 })).toBeInTheDocument();
       expect(slide.getByText('PEI 2025 - 4º Trimestre')).toBeInTheDocument();
+
+      /*
+       * O FOCO AO ABRIR, que é o que faz o leitor de tela anunciar o primeiro slide. Esta
+       * asserção nasceu de uma regressão medida: ao separar o player em componente próprio, ele
+       * passou a montar junto com o diálogo, o foco automático do Radix passou a correr na mesma
+       * hora que o efeito do slide, e o foco deixava de chegar aqui — só no slide 1, e sem que
+       * nenhum teste ou o arreio notasse.
+       */
+      expect(regiao).toHaveFocus();
 
       const apresentacao = within(screen.getByRole('dialog'));
       expect(apresentacao.getByText(/Slide 1 de 8/)).toBeInTheDocument();

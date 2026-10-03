@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Play, X, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { Play } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { PresentationPlayer } from '@/components/PresentationPlayer';
+import type { Slide } from '@/components/PresentationPlayer';
 import { assessmentsOf } from '@/lib/assessment';
 import { formatLocalDate } from '@/lib/date';
 import { studentNameOf } from '@/lib/metrics';
@@ -54,14 +56,13 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentId }: Presen
   const ultima = avaliacoes[avaliacoes.length - 1];
 
   const [isPresenting, setIsPresenting] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(1);
   const [format, setFormat] = useState('interactive');
 
   /*
    * Os slides são DERIVADOS: a quantidade vem do plano, não de uma constante. O "12" antigo era
    * número de slides de um exemplo, e oito deles não tinham conteúdo.
    */
-  const slides: Array<{ titulo: string; conteudo: JSX.Element }> = [];
+  const slides: Slide[] = [];
 
   if (pei) {
     slides.push({
@@ -210,106 +211,18 @@ export const PresentationModeDialog = ({ open, onOpenChange, studentId }: Presen
 
   const totalSlides = slides.length;
 
-  const handleStartPresentation = () => {
-    setIsPresenting(true);
-    setCurrentSlide(1);
-  };
-
-  const handleEndPresentation = () => {
-    setIsPresenting(false);
-    setCurrentSlide(1);
-  };
-
-  const nextSlide = () => {
-    if (currentSlide < totalSlides) setCurrentSlide(currentSlide + 1);
-  };
-
-  const prevSlide = () => {
-    if (currentSlide > 1) setCurrentSlide(currentSlide - 1);
-  };
-
-  /*
-   * A troca de slide não movia o foco nem era anunciada: quem usa leitor de tela ouvia o
-   * nome do botão "Próximo" e nada mais. O slide vira uma região com nome que inclui o
-   * número, e o foco vai para ela a cada troca — é o leitor lendo o nome da região que
-   * anuncia "Slide 3 de N". Também não havia navegação por setas: só o clique nos botões.
-   */
-  const slideRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isPresenting) slideRef.current?.focus();
-  }, [currentSlide, isPresenting]);
-
-  const handleSlideKeys = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      nextSlide();
-    } else if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      prevSlide();
-    }
-  };
+  const handleStartPresentation = () => setIsPresenting(true);
+  const handleEndPresentation = () => setIsPresenting(false);
 
   if (isPresenting && totalSlides > 0) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[95vh] max-w-[95vw] p-0" onKeyDown={handleSlideKeys}>
-          <DialogHeader className="sr-only">
-            <DialogTitle>Apresentação do progresso de {studentName}</DialogTitle>
-            <DialogDescription>
-              {totalSlides} slides montados a partir do PEI e das avaliações deste estudante. Use as
-              setas esquerda e direita para navegar, ou os botões no rodapé.
-            </DialogDescription>
-          </DialogHeader>
-
-          {/* `min-w-0` porque item de grade tem largura mínima automática: sem ele, o slide
-              cresce até caber o conteúdo e estoura o diálogo em telas estreitas. */}
-          <div className="relative flex h-[90vh] w-full min-w-0 flex-col bg-gradient-to-br from-primary/5 to-accent/5">
-            <div
-              ref={slideRef}
-              tabIndex={-1}
-              role="region"
-              aria-roledescription="slide"
-              aria-label={`Slide ${currentSlide} de ${totalSlides}: ${slides[currentSlide - 1].titulo}`}
-              className="flex min-w-0 flex-1 items-center justify-center overflow-y-auto p-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:p-12"
-            >
-              {slides[currentSlide - 1].conteudo}
-            </div>
-
-            <div className="py-4 text-center text-sm text-muted-foreground">
-              Slide {currentSlide} de {totalSlides} · montado com os registros de {studentName}
-            </div>
-
-            {/* Controles de Navegação. Em 320 px, ou com zoom de 200%, os três botões não
-                cabem lado a lado e o rodapé estourava a largura; agora quebram linha. */}
-            <div className="border-t bg-background/95 p-4 backdrop-blur">
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button variant="outline" size="lg" onClick={prevSlide} disabled={currentSlide === 1}>
-                  <ChevronLeft className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Anterior
-                </Button>
-
-                {currentSlide < totalSlides ? (
-                  <Button variant="default" size="lg" onClick={nextSlide}>
-                    Próximo
-                    <ChevronRight className="ml-2 h-5 w-5" aria-hidden="true" />
-                  </Button>
-                ) : (
-                  <Button variant="default" size="lg" onClick={handleEndPresentation}>
-                    <Home className="mr-2 h-5 w-5" aria-hidden="true" />
-                    Início
-                  </Button>
-                )}
-
-                <Button variant="outline" size="lg" onClick={handleEndPresentation}>
-                  <X className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Encerrar
-                </Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PresentationPlayer
+        open={open}
+        onOpenChange={onOpenChange}
+        slides={slides}
+        studentName={studentName}
+        onEnd={handleEndPresentation}
+      />
     );
   }
 

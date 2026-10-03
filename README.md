@@ -151,8 +151,8 @@ localStorage do navegador, com aviso permanente e o botão "Restaurar dados de
 demonstração". Desligado, o store roda só em memória e não toca no localStorage. Ele só
 deve ser desligado quando as telas passarem a consumir dados reais de um backend.
 
-O formato gravado é versionado (`src/store/persistence.ts`) e está na versão 3. Dados das
-versões 1 e 2 são migrados na primeira leitura, um passo de cada vez e sem perda; dados de
+O formato gravado é versionado (`src/store/persistence.ts`) e está na **versão 4**. Dados das
+versões 1, 2 e 3 são migrados na primeira leitura, um passo de cada vez e sem perda; dados de
 versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 
 ---
@@ -190,9 +190,11 @@ desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado 
 violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
 Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
 registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
-Gestão, desempenho e apresentação continuam com conteúdo fixo de demonstração, agora com
-aviso em todas essas telas. O histórico acadêmico não tem modelo de dados e diz isso na tela.
-Na Etapa 9, o PEI virou entidade do modelo e o Ver PEI passou a ler o plano do estudante.
+Na Etapa 9, o PEI virou entidade do modelo e as cinco telas que mostravam exemplo sob o nome de
+uma criança — Ver PEI, Desempenho, Modo Apresentação, Detalhe da observação e Minha Agenda —
+passaram a ler os registros do estudante aberto. **O painel de Gestão continua sendo cenário
+fixo**, com nome próprio e aviso, e o histórico acadêmico não tem modelo de dados e diz isso na
+tela.
 
 ---
 
@@ -224,7 +226,9 @@ O que isso significa na prática:
   gráfico de progresso e as estrelas de avaliação eram acionáveis só por clique.
 - **Leitor de tela.** Todo controle tem nome; os diálogos anunciam título e descrição; a
   troca de slide na apresentação move o foco e é anunciada; os doze gráficos têm nome e
-  tabela equivalente, aberta por um `<details>`.
+  tabela equivalente, aberta por um `<details>`. (Regra de contagem: instâncias de
+  `ResponsiveContainer` em `src/` — 12 em 7 arquivos, conferido em 03/10/2026. Uma delas, a do
+  Desempenho, só renderiza quando o estudante tem duas ou mais avaliações.)
 - **Sem depender de cor, posição ou hover.** O status que era só emoji virou palavra, e o
   calendário de observações virou tabela com a contagem escrita em cada célula.
 - **Contraste.** Todas as cores saem de tokens no bloco `--brand-*` do `src/index.css`, com
@@ -254,8 +258,17 @@ navegador. A tela diz isso, em vez de oferecer um controle que não faria nada.
   funcionavam no mouse, o lint encontrou um e o axe nenhum — o achado 2 do backlog registra
   a medida disso. A navegação completa por teclado e a leitura com leitor de tela real **ainda
   não foram testadas**: os nove testes estão em "Pendências abertas" no backlog.
-- **165 classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores
-  que passam no contraste. Estão registradas na Etapa 5 do backlog.
+- **Dois defeitos conhecidos e não corrigidos**, achados depois do merge da Etapa 3 e abertos na
+  Pendência 2 do backlog: o selo "ATENÇÃO" de Gestão > Relatórios tem contraste **3,15:1** sobre
+  `--alert-warning-icon` (1.4.3 pede 4,5:1), e o calendário da Agenda formata datas em inglês
+  (3.1.1 e 3.1.2). Os dois só aparecem depois de clique, que é por onde a varredura não passa.
+- **O que só existe depois de uma interação não é medido por método automatizado nenhum deste
+  repositório** — nem o axe rota a rota, nem o arreio de superfície, nem o lint. Foi assim que
+  dois botões de fechar sem nome acessível correto atravessaram oito etapas (achado 2).
+- **Classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores que
+  passam no contraste. O número de classes **depende da regra de contagem** — 147 pela estreita,
+  164 pela larga —, e o "165" que esta seção trazia não sai de nenhuma das duas: é número sem
+  método, recontado na Etapa 5 do backlog.
 
 ---
 
@@ -416,11 +429,18 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **73 mutações, todas acusadas** — 27 da Etapa 7,
-  3 da guarda de navegação da Etapa 8 e 43 da Etapa 9 —, reexecutadas depois de trocar o runner
-  para o `vitest` 4. Duas revelaram defeito no próprio teste, e quatro revelaram que os DADOS de
-  teste não distinguiam o certo do errado: as duas coisas estão registradas no backlog (achados
-  11 e 17).
+  código de produção e a suíte teve de reprovar: **74 mutações, todas acusadas** — 27 da Etapa 7,
+  3 da guarda de navegação da Etapa 8, 43 da Etapa 9 e 1 da varredura de coerência —,
+  reexecutadas depois de trocar o runner para o `vitest` 4. Duas revelaram defeito no próprio
+  teste, e quatro revelaram que os DADOS de teste não distinguiam o certo do errado: as duas
+  coisas estão registradas no backlog (achados 11 e 17).
+  **47 delas estão em [`scripts/mutacoes/`](scripts/mutacoes/) e qualquer pessoa reexecuta com
+  `node scripts/mutacoes/executar.cjs`.** As 27 da Etapa 7 foram escritas em scripts que viviam
+  no diretório temporário da sessão e não sobreviveram: o resultado delas está registrado, e
+  **não é reproduzível a partir deste repositório**. Está dito assim no README dos scripts, e
+  **não serão reescritas**: mutação escrita a partir do teste de hoje casa com o teste de hoje,
+  não com o defeito de 18/09 (Pendências abertas, item 4, com a premissa medida). O número
+  honesto é **47 reproduzíveis e 27 atestadas**, não 74 reproduzíveis.
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
@@ -502,12 +522,14 @@ porcentagem que resta é o `width="100%"` do contêiner de um gráfico.
 - **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de
   gráfico. Passam no contraste. O número de classes de cor fixa depende da regra de contagem
   — 147 pela estreita, 164 pela larga —, e está registrado com a regra no backlog.
-- **17 arquivos acima de 400 linhas.** A convenção pede quebrá-los em commits de refatoração
+- **16 arquivos acima de 400 linhas** (regra: `wc -l` acima de 400 em `src/`, arquivo de teste
+  incluído; recontado em 03/10/2026). A convenção pede quebrá-los em commits de refatoração
   dedicados; fazer isso na etapa de limpeza destruiria a prova de regressão. Inventariados no
-  backlog, com o número de linhas de cada um.
+  backlog, com o número de linhas de cada um e com o que mudou desde a Etapa 5.
 - **Os esquemas de validação e os tipos são duas declarações do mesmo formato**, mantidas em
-  acordo pelo compilador. Uma fonte só, com o tipo derivado do esquema, é o desenho certo e
-  está registrado para quando a entidade PEI for modelada.
+  acordo pelo compilador — hoje são onze pares, não sete. Uma fonte só, com o tipo derivado do
+  esquema por `z.infer`, é o desenho certo; estava previsto para a etapa do PEI, ficou de fora
+  dela e é etapa própria, registrada no backlog.
 - **A suíte cobre o que foi corrigido, não o código todo.** Tela, diálogo e gráfico só têm a
   cobertura indireta do teste de fluxo; o resto da renderização depende do arreio, que é
   conduzido à mão. Varredura de acessibilidade automatizada no CI exigiria navegador headless e
