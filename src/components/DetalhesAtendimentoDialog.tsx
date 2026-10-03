@@ -18,7 +18,7 @@ import { Calendar, Clock, MapPin, Users, Target, FileText, Edit, CheckCircle, Ca
 import { Link } from 'react-router-dom';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
 import { useToast } from '@/hooks/use-toast';
-import { isOpenAppointment } from '@/lib/appointment';
+import { appointmentTypeLabel, isOpenAppointment } from '@/lib/appointment';
 import { formatLocalDate } from '@/lib/date';
 import { studentNameOf } from '@/lib/metrics';
 import { describeSaveLocation } from '@/store/saveFeedback';
@@ -154,7 +154,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
                 <FileText className="h-4 w-4" />
                 <span className="font-medium">Tipo</span>
               </div>
-              <Badge variant="outline">{current.tipo}</Badge>
+              <Badge variant="outline">{appointmentTypeLabel(current.tipo)}</Badge>
             </div>
           </div>
 

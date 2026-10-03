@@ -93,6 +93,33 @@ export type AssessmentObjectiveStatus = 'achieved' | 'inProgress' | 'notStarted'
 
 export type PerformanceLevel = 1 | 2 | 3 | 4 | 5;
 
+/*
+ * O objetivo medido numa avaliação, em duas formas, e nunca nas duas ao mesmo tempo:
+ *
+ * - LIGADO a uma meta do PEI (`goalId`): o título mora na meta, e a avaliação guarda só a
+ *   medição daquela data. É o princípio do nome do estudante na Etapa 5 — título copiado para
+ *   dentro da avaliação divergiria quando a meta fosse renomeada.
+ * - SOLTO (`title`): o que existia antes de o PEI ser modelado, e o que a tela de nova avaliação
+ *   ainda cria enquanto não liga à meta. Migrado como está, sem inventar PEI nenhum para ele.
+ *
+ * `progress` não duplica o da meta: aqui é a medição naquela data; na meta é o valor corrente.
+ */
+export type AssessmentObjective =
+  | {
+      goalId: string;
+      title?: undefined;
+      status: AssessmentObjectiveStatus;
+      progress: number;
+      notes: string;
+    }
+  | {
+      goalId?: undefined;
+      title: string;
+      status: AssessmentObjectiveStatus;
+      progress: number;
+      notes: string;
+    };
+
 export interface Assessment {
   id: string;
   studentId: string;
@@ -100,12 +127,7 @@ export interface Assessment {
   assessor: string;
   kind: AssessmentKind;
   quarter?: 1 | 2 | 3 | 4;
-  objectives: Array<{
-    title: string;
-    status: AssessmentObjectiveStatus;
-    progress: number;
-    notes: string;
-  }>;
+  objectives: AssessmentObjective[];
   languageArts: {
     reading: PerformanceLevel;
     writing: PerformanceLevel;
@@ -124,7 +146,18 @@ export interface Assessment {
   };
 }
 
-export type AppointmentType = 'Reunião Pedagógica' | 'Avaliação' | 'Atendimento Família' | 'Multidisciplinar' | 'Outros';
+/*
+ * Identificador, não rótulo. Até a v3 os valores eram 'Reunião Pedagógica', 'Avaliação' e
+ * 'Atendimento Família': texto de tela servindo de chave de objeto, com acento, contra a
+ * convenção do projeto — e gravado no localStorage de quem usou. A v4 renomeia o dado gravado; os
+ * rótulos em português ficam em `src/lib/appointment.ts`, e a tela não muda.
+ */
+export type AppointmentType =
+  | 'pedagogicalMeeting'
+  | 'assessment'
+  | 'familyMeeting'
+  | 'multidisciplinary'
+  | 'other';
 
 export type AppointmentStatus = 'agendado' | 'remarcado' | 'realizado' | 'cancelado';
 

@@ -1,8 +1,9 @@
-import type { Assessment, Atendimento } from '@/types';
+import type { Atendimento } from '@/types';
 import type { DemoState } from '@/types/store';
 import type { Badge, ResourceReview } from '@/types/resource';
 import { isOpenAppointment } from '@/lib/appointment';
 import { toLocalISODate } from '@/lib/date';
+import { activePeiOf, goalsOfPei, peiGoalsProgress } from '@/lib/pei';
 
 /**
  * Seletores de métrica compartilhados (Etapa 4 do BACKLOG).
@@ -104,22 +105,25 @@ export const periodChange = (current: number, previous: number): PeriodChange =>
     : { kind: 'change', percent: Math.round(((current - previous) / previous) * 100) };
 
 /**
- * Progresso médio dos objetivos na avaliação mais recente do estudante, de 0 a 100.
+ * Progresso médio das metas do PEI vigente do estudante, de 0 a 100.
  *
- * Substitui `Student.progresso`, um número guardado no cadastro que nenhuma avaliação
- * atualizava: aparecia em alunos sem avaliação nenhuma. Sem avaliação, ou sem objetivo na
- * mais recente, não há número — `undefined`, e a tela diz "Sem avaliação registrada".
+ * A FONTE MUDOU NA ETAPA 9, e é mudança de comportamento, não refatoração. Antes o número era a
+ * média dos objetivos da avaliação mais recente — o melhor que existia enquanto não havia PEI no
+ * modelo, e ainda assim outra coisa: o retrato de uma data, e não o estado corrente das metas do
+ * plano. Com as duas fontes no sistema, a ficha mostrava a medição de uma avaliação sob um nome
+ * que parecia falar do plano. Para a estudante 1 da demonstração, eram 60% pela avaliação de
+ * 01/11/2025 e são 50% pelas quatro metas do plano vigente; os dois números estão certos, e
+ * medem coisas diferentes.
+ *
+ * A medição datada não se perde: ela continua na avaliação, e a avaliação aponta para a meta
+ * pelo `goalId`. O que sai é o uso dela como se fosse o progresso do plano.
+ *
+ * Sem PEI vigente não há número — `undefined`, e a tela diz "Sem PEI vigente", nunca 0%. Antes a
+ * ausência dizia "Sem avaliação registrada", pelo mesmo princípio aplicado à fonte anterior.
  */
 export const studentProgress = (state: DemoState, studentId: string): number | undefined => {
-  const latest = state.assessments
-    .filter((assessment) => assessment.studentId === studentId)
-    .reduce<Assessment | undefined>(
-      (current, assessment) => (!current || assessment.date > current.date ? assessment : current),
-      undefined,
-    );
-  if (!latest || latest.objectives.length === 0) return undefined;
-  const total = latest.objectives.reduce((sum, objective) => sum + objective.progress, 0);
-  return Math.round(total / latest.objectives.length);
+  const pei = activePeiOf(state, studentId);
+  return pei ? peiGoalsProgress(goalsOfPei(state, pei.id)) : undefined;
 };
 
 /**
@@ -134,7 +138,9 @@ export interface StudentRecordSummary {
   observations: number;
   assessments: number;
   appointments: number;
-  /** A data mais recente entre observações, avaliações e atendimentos, ou `undefined`. */
+  /** Revisões do PEI vigente. Zero enquanto o estudante não tiver plano (Etapa 9). */
+  peiRevisions: number;
+  /** A data mais recente entre observações, avaliações, atendimentos e revisões, ou `undefined`. */
   lastRecordDate: string | undefined;
 }
 
@@ -142,15 +148,19 @@ export const studentRecordSummary = (state: DemoState, studentId: string): Stude
   const observations = state.observations.filter((item) => item.studentId === studentId);
   const assessments = state.assessments.filter((item) => item.studentId === studentId);
   const appointments = state.appointments.filter((item) => item.studentId === studentId);
+  const pei = activePeiOf(state, studentId);
+  const revisions = pei ? state.peiRevisions.filter((item) => item.peiId === pei.id) : [];
   const dates = [
     ...observations.map((item) => item.data),
     ...assessments.map((item) => item.date),
     ...appointments.map((item) => item.data),
+    ...revisions.map((item) => item.date),
   ];
   return {
     observations: observations.length,
     assessments: assessments.length,
     appointments: appointments.length,
+    peiRevisions: revisions.length,
     lastRecordDate: dates.length > 0 ? dates.reduce((a, b) => (b > a ? b : a)) : undefined,
   };
 };

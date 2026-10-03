@@ -4,45 +4,143 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, TrendingUp, FileText, Printer, Download } from 'lucide-react';
+import { Printer, Download } from 'lucide-react';
 import DemoDataNotice from '@/components/DemoDataNotice';
+import { PeiFollowUp } from '@/components/PeiFollowUp';
+import { PeiGoalCard } from '@/components/PeiGoalCard';
+import { formatLocalDate } from '@/lib/date';
+import { studentNameOf } from '@/lib/metrics';
+import {
+  activePeiOf,
+  goalCountsByStatus,
+  goalsByArea,
+  goalsOfPei,
+  peiGoalAreaLabel,
+  peiGoalsProgress,
+  peiHistoryOf,
+  peiStatusLabel,
+} from '@/lib/pei';
+import { useDemoStore } from '@/store/useDemoStore';
+import type { Pei } from '@/types/pei';
+
+const NOTICE_ID = 'pei-dados-ficticios';
+
+const Lista = ({ itens }: { itens: string[] }) => (
+  <ul className="list-inside list-disc space-y-1">
+    {itens.map((item) => (
+      <li key={item}>{item}</li>
+    ))}
+  </ul>
+);
+
+const CartaoDoPlano = ({ pei }: { pei: Pei }) => (
+  <Card>
+    <CardContent className="pt-6">
+      <Badge className="mb-2" variant={pei.status === 'active' ? 'default' : 'secondary'}>
+        {peiStatusLabel(pei.status)}
+      </Badge>
+      <h4 className="font-semibold">PEI {pei.term}</h4>
+      <p className="text-sm text-muted-foreground">
+        Vigência de {formatLocalDate(pei.startsOn)} a {formatLocalDate(pei.endsOn)} · elaborado em{' '}
+        {formatLocalDate(pei.draftedOn)} por {pei.draftedBy}
+      </p>
+    </CardContent>
+  </Card>
+);
 
 interface VerPEIDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  studentName: string;
+  /** Id, não nome: o plano é procurado pelo estudante, e o nome é resolvido a partir dele. */
+  studentId: string;
 }
 
-export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogProps) {
+/**
+ * O PEI do estudante, lido do store.
+ *
+ * O QUE ESTA TELA DIZIA ANTES. Até a Etapa 9 era um plano fixo, o mesmo para qualquer estudante:
+ * perfil, objetivos com porcentagem, recursos, reuniões e histórico de três trimestres, com aviso
+ * dizendo que nada daquilo era do estudante aberto. Na Etapa 2 ela foi a segunda onda do achado 1
+ * — saiu o diagnóstico com CID que aparecia na identificação — e ficou honesta ao preço de não
+ * mostrar PEI nenhum. Agora mostra o plano do estudante, ou diz que não há.
+ *
+ * ESTRUTURA. As cinco abas seguem as seis partes do manual (`src/pages/Manual.tsx`, seção 2):
+ * identificação e perfil na Visão Geral, metas em Objetivos, adaptações e recursos em
+ * Estratégias, avaliação e monitoramento em Acompanhamento, e o "vigente e histórico" (9.1) em
+ * Histórico. Nenhum campo aqui é exigência legal; a regra está em `src/types/pei.ts`.
+ */
+export function VerPEIDialog({ open, onOpenChange, studentId }: VerPEIDialogProps) {
+  const { state } = useDemoStore();
+  const studentName = studentNameOf(state, studentId);
+  const pei = activePeiOf(state, studentId);
+  const history = peiHistoryOf(state, studentId);
+  const goals = pei ? goalsOfPei(state, pei.id) : [];
+  const progress = peiGoalsProgress(goals);
+  const counts = goalCountsByStatus(goals);
+
+  /*
+   * Sem plano vigente a tela diz isso, e só isso. Não mostra 0%, que seria uma medida que ninguém
+   * fez, nem a média da avaliação, que mede outra coisa. O histórico, se existir, continua
+   * visível: plano encerrado é documentação (manual 9.1), não motivo para esconder a aba.
+   */
+  if (!pei) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI)</DialogTitle>
+            <DialogDescription>{studentName} não tem PEI vigente registrado.</DialogDescription>
+          </DialogHeader>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Sem PEI vigente</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-muted-foreground">
+              <p>
+                Nenhum plano com vigência aberta está registrado para este estudante. O sistema não
+                exibe progresso nem metas enquanto não houver plano: número sem plano por trás seria
+                invenção.
+              </p>
+              <p>
+                Elaborar e editar PEI pela interface ainda não existe. Enquanto não existir, o plano
+                entra pelos dados de demonstração.
+              </p>
+            </CardContent>
+          </Card>
+
+          {history.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="font-semibold">Planos anteriores</h3>
+              {history.map((anterior) => (
+                <CartaoDoPlano key={anterior.id} pei={anterior} />
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-        {/*
-          * O cabeçalho dizia "Aluno: <nome do estudante> · PEI 2024 - 4º Trimestre · ✅ Ativo", e a
-          * descrição, "plano do estudante", sobre um plano fixo, igual para qualquer um: perfil com
-          * "Interação social limitada" e "Comunicação verbal reduzida", objetivos, reuniões e uma
-          * responsável nomeada, "Profª Marina Santos", que na demonstração é a regente de outra
-          * aluna; o nome dela, nas quatro ocorrências, virou "Professor(a) regente". Dos
-          * quatro diálogos de exemplo da ficha, era o único que não dizia que o conteúdo não é do
-          * estudante aberto, e o único que atribuía status ao nome dele. O nome agora aparece só
-          * para dizer isso.
-          */}
+      <DialogContent className="max-h-[90vh] max-w-5xl overflow-y-auto">
         <DialogHeader>
           <div className="space-y-2">
-            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI) — exemplo</DialogTitle>
+            <DialogTitle className="text-xl">Plano Educacional Individualizado (PEI)</DialogTitle>
             <DialogDescription>
-              Exemplo ilustrativo de PEI, o mesmo para qualquer estudante: não é o plano de {studentName}.
+              Plano {peiStatusLabel(pei.status).toLowerCase()} de {studentName}: {pei.term}.
             </DialogDescription>
             <p className="text-sm text-muted-foreground">
-              Exemplo: PEI 2024 - 4º Trimestre | Período: Out/2024 a Dez/2024
+              Vigência de {formatLocalDate(pei.startsOn)} a {formatLocalDate(pei.endsOn)}
             </p>
           </div>
         </DialogHeader>
 
         <DemoDataNotice
-          id="pei-exemplo"
-          subject="Os dados deste PEI (identificação, perfil, objetivos, estratégias, reuniões e histórico)"
-          detail={`São os mesmos para qualquer estudante: nada deste plano vem do registro de ${studentName}. O sistema ainda não tem registro de PEI: editar, revisar, anexar evidências, abrir documentos, baixar e imprimir estão desabilitados.`}
+          id={NOTICE_ID}
+          subject="Os dados deste PEI (perfil, metas, estratégias, recursos e revisões)"
+          detail={`Vêm do registro de demonstração de ${studentName}, com conteúdo fictício. Editar PEI, criar revisão, adicionar observação na meta, baixar e imprimir continuam desabilitados: não há implementação por trás deles.`}
         />
 
         <Tabs defaultValue="visao-geral" className="w-full">
@@ -54,7 +152,7 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
             <TabsTrigger value="historico">Histórico</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="visao-geral" className="space-y-6 mt-6">
+          <TabsContent value="visao-geral" className="mt-6 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Identificação</CardTitle>
@@ -63,296 +161,192 @@ export function VerPEIDialog({ open, onOpenChange, studentName }: VerPEIDialogPr
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-muted-foreground">Data de elaboração</p>
-                    <p className="font-medium">15/09/2024</p>
+                    <p className="font-medium">{formatLocalDate(pei.draftedOn)}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Responsável</p>
-                    <p className="font-medium">Professor(a) regente</p>
+                    <p className="text-muted-foreground">Responsável pela elaboração</p>
+                    <p className="font-medium">{pei.draftedBy}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Próxima revisão</p>
-                    <p className="font-medium">15/12/2024</p>
+                    <p className="font-medium">{formatLocalDate(pei.nextReviewOn)}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Situação</p>
+                    <p className="font-medium">{peiStatusLabel(pei.status)}</p>
                   </div>
                 </div>
                 <div className="pt-2">
-                  <p className="text-muted-foreground">Participantes</p>
-                  <p className="font-medium">Mãe, Coordenação, Prof. de Apoio</p>
+                  <p className="text-muted-foreground">Participantes da elaboração</p>
+                  <p className="font-medium">{pei.participants.join(', ')}</p>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Perfil do Aluno</CardTitle>
+                <CardTitle className="text-base">Perfil do estudante</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-sm">
                 <div>
-                  <p className="font-semibold text-success mb-2">Pontos Fortes:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Boa memória visual</li>
-                    <li>Interesse por ciências</li>
-                    <li>Concentração em atividades de interesse</li>
-                  </ul>
+                  <p className="mb-2 font-semibold text-success">Pontos fortes</p>
+                  <Lista itens={pei.profile.strengths} />
                 </div>
                 <div>
-                  <p className="font-semibold text-warning mb-2">Desafios:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Interação social limitada</li>
-                    <li>Dificuldade com mudanças de rotina</li>
-                    <li>Comunicação verbal reduzida</li>
-                  </ul>
+                  <p className="mb-2 font-semibold text-warning">Desafios</p>
+                  <Lista itens={pei.profile.challenges} />
                 </div>
                 <div>
-                  <p className="font-semibold text-primary mb-2">Estilo de Aprendizagem:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Visual</li>
-                    <li>Necessita rotinas claras</li>
-                    <li>Responde bem a reforço positivo</li>
-                  </ul>
+                  <p className="mb-2 font-semibold text-primary">Estilo de aprendizagem</p>
+                  <Lista itens={pei.profile.learningStyle} />
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Progresso Atual</CardTitle>
+                {/*
+                  * O rótulo diz de que o número é. Existe outro progresso no sistema — a média dos
+                  * objetivos da avaliação mais recente —, e os dois não medem a mesma coisa.
+                  */}
+                <CardTitle className="text-base">Progresso nas metas do PEI</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Objetivos Alcançados</span>
-                    <span className="font-bold">12/15 (80%)</span>
-                  </div>
-                  <Progress value={80} className="h-2" />
+                {progress === undefined ? (
+                  <p className="text-sm text-muted-foreground">
+                    Nenhuma meta registrada neste plano, então não há progresso a calcular.
+                  </p>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Média das {goals.length} metas do plano</span>
+                        <span className="font-bold">{progress}%</span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+                    <ul className="space-y-1 text-sm">
+                      <li>Alcançadas: {counts.achieved} de {goals.length}</li>
+                      <li>Em progresso: {counts.inProgress} de {goals.length}</li>
+                      <li>Não iniciadas: {counts.notStarted} de {goals.length}</li>
+                      <li>Precisam de revisão: {counts.needsReview} de {goals.length}</li>
+                    </ul>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="objetivos" className="mt-6 space-y-6">
+            {goals.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhuma meta registrada neste plano.</p>
+            ) : (
+              goalsByArea(goals).map((grupo) => (
+                <div key={grupo.area} className="space-y-4">
+                  <h3 className="text-lg font-semibold">
+                    {peiGoalAreaLabel(grupo.area)} ({grupo.goals.length}{' '}
+                    {grupo.goals.length === 1 ? 'meta' : 'metas'})
+                  </h3>
+                  {grupo.goals.map((goal) => (
+                    <PeiGoalCard key={goal.id} goal={goal} noticeId={NOTICE_ID} />
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Em Progresso</span>
-                    <span className="font-bold">3/15 (20%)</span>
-                  </div>
-                  <Progress value={20} className="h-2" />
-                </div>
-              </CardContent>
-            </Card>
+              ))
+            )}
           </TabsContent>
 
-          <TabsContent value="objetivos" className="space-y-6 mt-6">
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Língua Portuguesa (5 objetivos)</h3>
-              
-              <Card className="border-l-4 border-l-success">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-success" />
-                      <h4 className="font-semibold">Objetivo 1: Escrever nome completo</h4>
-                    </div>
-                    <Badge className="bg-success">Alcançado (100%)</Badge>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Data alcance:</span> 15/10/2024</p>
-                    <p><span className="font-medium">Estratégias usadas:</span> Treino diário, modelo visual</p>
-                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="pei-exemplo">
-                      Ver evidências: 📷 3 fotos
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-l-4 border-l-warning">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-warning" />
-                      <h4 className="font-semibold">Objetivo 2: Ler palavras simples</h4>
-                    </div>
-                    <Badge variant="secondary">Em progresso (80%)</Badge>
-                  </div>
-                  <Progress value={80} className="mb-3 h-2" />
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Estratégias:</span> Flashcards, leitura compartilhada</p>
-                    <p><span className="font-medium">Próxima etapa:</span> Frases curtas</p>
-                    <Button variant="link" size="sm" className="p-0 h-auto" disabled aria-describedby="pei-exemplo">
-                      Adicionar observação
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Matemática (4 objetivos)</h3>
-              
-              <Card className="border-l-4 border-l-warning">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-warning" />
-                      <h4 className="font-semibold">Objetivo 1: Contar até 50</h4>
-                    </div>
-                    <Badge variant="secondary">Em progresso (70%)</Badge>
-                  </div>
-                  <Progress value={70} className="mb-3 h-2" />
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Estratégias:</span> Material concreto, contagem diária</p>
-                    <p><span className="font-medium">Próxima etapa:</span> Contar até 100</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Habilidades Sociais (6 objetivos)</h3>
-              
-              <Card className="border-l-4 border-l-success">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-success" />
-                      <h4 className="font-semibold">Objetivo 1: Pedir ajuda</h4>
-                    </div>
-                    <Badge className="bg-success">Alcançado (100%)</Badge>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <p><span className="font-medium">Data alcance:</span> 05/11/2024</p>
-                    <p><span className="font-medium">Estratégias usadas:</span> Prancha CAA, modelagem</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="estrategias" className="space-y-6 mt-6">
+          <TabsContent value="estrategias" className="mt-6 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Adaptações Curriculares</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc list-inside space-y-2 text-sm">
-                  <li>Tempo estendido para atividades</li>
-                  <li>Instruções visuais e escritas</li>
-                  <li>Avaliações adaptadas</li>
-                  <li>Ambiente com redução de estímulos</li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Recursos Necessários</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm">
-                  <li className="flex items-center justify-between">
-                    <span>Prancha de comunicação alternativa</span>
-                    <Badge className="bg-success">✅ Disponível</Badge>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Fones de ouvido para redução de ruído</span>
-                    <Badge className="bg-success">✅ Disponível</Badge>
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span>Cantinho da calma na sala</span>
-                    <Badge className="bg-success">✅ Disponível</Badge>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Apoio Humano</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <p><span className="font-medium">Profissional de apoio:</span> Professor(a) de Apoio F.</p>
-                <p><span className="font-medium">Horas semanais:</span> 15h</p>
-                <p><span className="font-medium">Apoio especializado:</span> AEE 2x por semana</p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="acompanhamento" className="space-y-4 mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Frequência de Avaliação</CardTitle>
+                <CardTitle className="text-base">Adaptações curriculares</CardTitle>
               </CardHeader>
               <CardContent className="text-sm">
-                <p>Avaliações trimestrais com registro contínuo de progresso</p>
-                <p className="text-muted-foreground mt-2">Próxima avaliação: 15/12/2024</p>
+                {pei.adaptations.length === 0 ? (
+                  <p className="text-muted-foreground">Nenhuma adaptação registrada.</p>
+                ) : (
+                  <Lista itens={pei.adaptations} />
+                )}
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Reuniões com Família</CardTitle>
+                <CardTitle className="text-base">Recursos necessários</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-2">
-                <p>Última reunião: 18/10/2024</p>
-                <p>Próxima reunião: Fevereiro/2025</p>
-                <Button variant="outline" size="sm" className="mt-2" disabled aria-describedby="pei-exemplo">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Ver ata da última reunião
-                </Button>
+              <CardContent className="text-sm">
+                {pei.resources.length === 0 ? (
+                  <p className="text-muted-foreground">Nenhum recurso registrado.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {pei.resources.map((resource) => (
+                      <li key={resource.name} className="flex flex-wrap items-center justify-between gap-2">
+                        <span>{resource.name}</span>
+                        {/* O estado está no texto do selo, não na cor dele. */}
+                        <Badge className={resource.available ? 'bg-success' : undefined} variant={resource.available ? undefined : 'outline'}>
+                          {resource.available ? 'Disponível' : 'Não disponível'}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Apoio humano</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <p>
+                  <span className="font-medium">Profissional de apoio:</span> {pei.humanSupport.professional}
+                </p>
+                <p>
+                  <span className="font-medium">Horas semanais:</span> {pei.humanSupport.weeklyHours}h
+                </p>
+                <p>
+                  <span className="font-medium">Apoio especializado:</span>{' '}
+                  {pei.humanSupport.specializedSupport}
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="historico" className="space-y-4 mt-6">
-            <div className="space-y-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <Badge className="bg-success mb-2">Ativo</Badge>
-                      <h4 className="font-semibold">PEI 2024 - 4º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/09/2024 - Professor(a) regente</p>
-                    </div>
-                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
-                  </div>
-                </CardContent>
-              </Card>
+          <TabsContent value="acompanhamento" className="mt-6">
+            <PeiFollowUp pei={pei} />
+          </TabsContent>
 
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold">PEI 2024 - 3º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/06/2024 - Professor(a) regente</p>
-                    </div>
-                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold">PEI 2024 - 2º Trimestre</h4>
-                      <p className="text-sm text-muted-foreground">15/03/2024 - Professor(a) regente</p>
-                    </div>
-                    <Button variant="outline" size="sm" disabled aria-describedby="pei-exemplo">Ver documento</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+          <TabsContent value="historico" className="mt-6 space-y-4">
+            <CartaoDoPlano pei={pei} />
+            {history.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhum PEI anterior registrado. O manual pede que o plano vigente e o histórico fiquem
+                documentados (seção 9.1); o histórico passa a existir quando um plano é encerrado e
+                outro entra em vigência.
+              </p>
+            ) : (
+              history.map((anterior) => <CartaoDoPlano key={anterior.id} pei={anterior} />)
+            )}
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-between gap-3 mt-6 pt-6 border-t">
+        <div className="mt-6 flex flex-wrap justify-between gap-3 border-t pt-6">
           <div className="flex gap-2">
-            <Button variant="outline" disabled aria-describedby="pei-exemplo">
-              <Download className="w-4 h-4 mr-2" />
+            <Button variant="outline" disabled aria-describedby={NOTICE_ID}>
+              <Download className="mr-2 h-4 w-4" aria-hidden="true" />
               Baixar PDF
             </Button>
-            <Button variant="outline" disabled aria-describedby="pei-exemplo">
-              <Printer className="w-4 h-4 mr-2" />
+            <Button variant="outline" disabled aria-describedby={NOTICE_ID}>
+              <Printer className="mr-2 h-4 w-4" aria-hidden="true" />
               Imprimir
             </Button>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" disabled aria-describedby="pei-exemplo">✏️ Editar PEI</Button>
-            <Button disabled aria-describedby="pei-exemplo">📋 Nova Revisão</Button>
+            <Button variant="outline" disabled aria-describedby={NOTICE_ID}>
+              Editar PEI
+            </Button>
+            <Button disabled aria-describedby={NOTICE_ID}>
+              Nova revisão
+            </Button>
           </div>
         </div>
       </DialogContent>

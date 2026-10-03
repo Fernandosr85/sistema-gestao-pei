@@ -167,28 +167,32 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Relatório do estudante e da turma | ⚠️ Montado com os registros do navegador; imprime ou salva como PDF pela janela de impressão do navegador |
 | Indicadores do Dashboard, da Agenda, da ficha do aluno e da Biblioteca | ✅ Calculados dos registros do navegador, em `src/lib/metrics.ts`; sem registro no período anterior, a variação diz "sem base de comparação" |
 | Painel de Gestão | ❌ Cenário ilustrativo nomeado (*Escola Ilustrativa*), fixo no código e separado dos registros, com aviso acima das abas e em cada uma |
-| Desempenho e Modo Apresentação do estudante | ❌ Exemplos fixos, iguais para qualquer estudante, com aviso; o progresso calculado está na ficha |
+| Desempenho do estudante | ⚠️ Lido dos registros desde a Etapa 9: série do que cada avaliação mediu, metas do PEI por área, níveis e resumo da última avaliação. Frequência e integração **não existem no modelo** e saíram da tela, em vez de aparecer como número fixo. Exportar, compartilhar e imprimir continuam desabilitados |
+| Modo Apresentação do estudante | ⚠️ Montado do plano desde a Etapa 9: capa, progresso nas metas, um slide por meta, conquistas e próximos passos da última avaliação. O número de slides vem do plano. Sem PEI vigente não há apresentação, e o diálogo diz isso. Vídeo e PDF continuam não implementados |
+| Detalhe da observação | ⚠️ Desde a Etapa 9 mostra só o que foi registrado, mais as metas do PEI cujas notas citam aquela observação. Saíram horário, local, plano de ação, evidências anexadas, notificações e metadados, que o modelo não tem |
 | Edição e exclusão de observações | ❌ Não implementadas; os controles aparecem desabilitados, com o motivo |
-| PEI (metas, revisões, histórico) | ❌ Não há entidade PEI: o Ver PEI é um exemplo fixo, com aviso e ações desabilitadas |
+| PEI (metas, revisões, histórico) | ⚠️ O PEI é entidade do modelo e o Ver PEI mostra o plano **do estudante aberto**: identificação, perfil, metas com observações e evidência, estratégias, recursos, revisões e histórico. Estudante sem plano vigente vê "Sem PEI vigente", e não 0%. Elaborar, editar e revisar pela interface não existem; esses controles ficam desabilitados, e o plano entra pelos dados de demonstração |
 | Histórico acadêmico do estudante | ❌ Não implementado; o diálogo informa que não há histórico registrado |
 | Anexos, fotos e documentos | ❌ Não são armazenados; a tela de anexos é um exemplo, com aviso e ações desabilitadas |
 | Preferências de acessibilidade (Configurações → Acessibilidade) | ✅ Funcional: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e alvos maiores, aplicados na hora e guardados neste navegador |
-| Perfil, Minha Agenda e as demais abas de Configurações | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
+| Minha Agenda | ⚠️ Desde a Etapa 9 lista os atendimentos registrados, agrupados por quando acontecem — inclusive os que continuam agendados com data já passada, que não podem sumir da tela. Sem autenticação, não há como filtrar por profissional, e a tela diz isso. Agenda pessoal (aulas, formação, tarefas) não existe: é entidade nova, registrada no backlog |
+| Perfil e as demais abas de Configurações | ❌ Ilustrativos: nada é salvo e os controles aparecem desabilitados |
 | Autenticação, perfis e permissões | ❌ Não implementado |
 | Backend e banco de dados | ❌ Não implementado |
 | Exportação de arquivo (PDF gerado pela aplicação, Excel, Word) | ❌ Não implementada |
 | Sincronização Google Calendar / Outlook | ❌ Não implementada; os controles aparecem desabilitados, com o motivo |
 | Notificações | ❌ Não implementadas; os controles aparecem desabilitados |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
-| Testes automatizados | ❌ Não implementados |
+| Testes automatizados | ✅ Suíte em Vitest + jsdom (`npm test`), cobrindo o que as Etapas 1 a 6 corrigiram, a guarda de navegação da Etapa 8 e o PEI da Etapa 9 — não o código todo. A tabela por arquivo está em [Testes automatizados](#testes-automatizados-etapa-7) |
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
 desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero
 violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
 Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
 registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
-Gestão, desempenho, apresentação e PEI continuam com conteúdo fixo de demonstração, agora com
+Gestão, desempenho e apresentação continuam com conteúdo fixo de demonstração, agora com
 aviso em todas essas telas. O histórico acadêmico não tem modelo de dados e diz isso na tela.
+Na Etapa 9, o PEI virou entidade do modelo e o Ver PEI passou a ler o plano do estudante.
 
 ---
 
@@ -303,6 +307,11 @@ O que isso significa na prática:
 - **O que é do navegador é calculado.** Alunos ativos, observações e atendimentos por período,
   próximos atendimentos, progresso do aluno, último registro, nota e número de avaliações dos
   recursos e badges de contribuição saem dos registros, e mudam quando algo é cadastrado.
+- **O progresso do aluno mudou de fonte na Etapa 9**, e o rótulo mudou junto: era a média dos
+  objetivos da avaliação mais recente, é a média das metas do PEI vigente, e a tela diz
+  "Progresso nas metas do PEI". Para a estudante 1 da demonstração, eram 60% e são 50% — os dois
+  números estão certos e medem coisas diferentes; a medição datada continua na avaliação, que
+  aponta para a meta. Sem plano vigente a tela diz "Sem PEI vigente", e não 0%.
 - **Sem base, a tela diz "sem base".** Quando o período anterior não tem registro, não há
   porcentagem de variação para mostrar, e nenhuma é inventada.
 - **O que não é do navegador tem nome.** O painel de Gestão descreve a *Escola Ilustrativa*,
@@ -375,20 +384,30 @@ sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 obse
 
 ### Testes automatizados (Etapa 7)
 
-Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`.
+Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`. A
+tabela é da Etapa 9, que levou a suíte de 73 para 131 testes.
 
 | Arquivo | Testes | O que trava |
 |---|---:|---|
-| `src/store/persistence.test.ts` | 14 | envelope do localStorage, migrações v1→v3, descarte de registro inválido e cascata de órfãos |
-| `src/lib/metrics.test.ts` | 19 | os seletores de métrica corrigidos nas Etapas 4 e 5 |
+| `src/store/persistence.test.ts` | 26 | envelope do localStorage, migrações v1→v4, descarte de registro inválido e cascata de órfãos por posse |
+| `src/lib/metrics.test.ts` | 24 | os seletores de métrica das Etapas 4, 5 e 9, inclusive a troca de fonte do progresso |
+| `src/lib/pei.test.ts` | 17 | plano vigente, média das metas, agrupamento por área, evidência da nota e seus elos fracos |
 | `src/lib/date.test.ts` | 13 | data local, idade na véspera e no dia do aniversário, e o dia anterior que o fuso produzia |
 | `src/store/reducer.test.ts` | 12 | as ações do store, inclusive a que não deve tocar nas coleções vinculadas |
 | `src/test/rotas.test.ts` | 8 | todo destino de `Link`, `Navigate` e `navigate()` resolve para uma rota declarada, e nenhum destino não literal escapa da varredura |
+| `src/lib/assessment.test.ts` | 7 | a medição datada da avaliação, separada do progresso corrente das metas |
+| `src/test/apresentacao.test.tsx` | 4 | os slides vêm do plano, o número deles também, e sem plano não há apresentação |
 | `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
 | `src/test/arreio.test.ts` | 3 | o andaime: que a suíte discrimina, e que jsdom não calcula layout |
+| `src/test/desempenho.test.tsx` | 3 | as duas medidas de progresso com nomes distintos, e o que saiu por não existir no modelo |
+| `src/test/progresso.test.tsx` | 3 | o par número-rótulo na listagem e na ficha, com o valor da fonte antiga como falsificação |
+| `src/test/verpei.test.tsx` | 3 | o plano do estudante aberto, e "Sem PEI vigente" para quem não tem |
+| `src/test/minha-agenda.test.tsx` | 2 | os atendimentos do store, inclusive os agendados com data já passada |
+| `src/test/observacao.test.tsx` | 2 | só o que foi registrado, e as metas que citam aquela observação |
 
-**O risco, com o número absoluto: são 73 testes, cobrindo as correções das Etapas 1 a 6 e a guarda de navegação da Etapa 8. O
-restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
+**O risco, com o número absoluto: são 131 testes, cobrindo as correções das Etapas 1 a 6, a
+guarda de navegação da Etapa 8 e as cinco telas da Etapa 9. O restante do código não tem
+teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 
 Três decisões que dizem o que a suíte significa:
@@ -397,9 +416,11 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **30 mutações, todas acusadas** — 27 da Etapa 7
-  e 3 da guarda de navegação da Etapa 8 —, reexecutadas depois de trocar o runner para o
-  `vitest` 4. Uma delas revelou defeito no próprio teste, e está registrada no backlog.
+  código de produção e a suíte teve de reprovar: **73 mutações, todas acusadas** — 27 da Etapa 7,
+  3 da guarda de navegação da Etapa 8 e 43 da Etapa 9 —, reexecutadas depois de trocar o runner
+  para o `vitest` 4. Duas revelaram defeito no próprio teste, e quatro revelaram que os DADOS de
+  teste não distinguiam o certo do errado: as duas coisas estão registradas no backlog (achados
+  11 e 17).
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
@@ -436,14 +457,46 @@ suíte que prova o router não podia estar sob a mudança que se queria verifica
 - **O runner foi trocado com linha de base**: os controles de zero testes e de fuso medidos no
   `vitest` 3.2.7 antes da troca, e comparados depois.
 
+### O PEI como entidade (Etapa 9)
+
+O sistema se chama Gestão PEI e não tinha entidade PEI: metas, revisões e histórico eram
+conteúdo fixo, igual para qualquer estudante. A etapa modelou o plano, migrou o dado gravado
+para a versão 4 e reescreveu as cinco telas que mostravam exemplo sob o nome de uma criança.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Telas exibindo conteúdo fixo sob o nome do estudante | 5 | 0 |
+| Nomes de estudantes escritos no código dessas telas | 20 | 0 |
+| Porcentagens literais no código dessas telas | 21 | 1 |
+| Seções "em desenvolvimento" nessas telas | 6 | 0 |
+| Coleções do store / versão do envelope | 7 / v3 | 11 / v4 |
+| Testes | 73 | 131 |
+| Mutações acusadas | 30 de 30 | 73 de 73 |
+
+As regras de contagem estão no backlog, com a medição: "nomes" e "porcentagens" são ocorrências
+**fora de comentário** (os comentários citam de propósito os valores antigos), e a única
+porcentagem que resta é o `width="100%"` do contêiner de um gráfico.
+
+- **A estrutura do PEI vem do manual deste repositório, não da lei.** O marco legal obriga AEE,
+  adaptações e profissional de apoio, e **não prescreve campo nenhum** de PEI. Virou invariante
+  no `CLAUDE.md`: campo que vem do manual cita o manual, campo que vem da lei cita o artigo, e
+  nenhum campo alega mandato legal que não existe.
+- **O que o modelo não tem saiu da tela.** Presença, integração, anexos com arquivo e
+  notificações não viraram número fixo com aviso em volta: a tela não mostra o que não tem, e
+  diz o que falta.
+- **Dois progressos, dois nomes.** "Progresso nas metas do PEI" é o estado corrente das metas;
+  o que cada avaliação mediu continua na avaliação, com data. A ficha trocou de fonte — 60% pela
+  avaliação, 50% pelas metas — e o rótulo trocou junto.
+- **Sem PEI vigente, a tela diz isso** — não 0%, que seria uma medida que ninguém fez.
+
 ### Limites conhecidos
 
-- **Diálogos de exemplo sob o nome do estudante.**Desempenho, Modo Apresentação, Ver PEI e
-  Detalhe da observação ainda mostram conteúdo fixo, igual para qualquer estudante. O
-  Desempenho de uma aluna pode dizer 85% enquanto a ficha dela, calculada, diz 60%. Trocar por
-  dado real depende da entidade PEI. Os quatro dizem na tela que o conteúdo não é do estudante
-  aberto; o Ver PEI passou a dizer em `bd93507`, e deixou de mostrar o nome do aluno com "Ativo"
-  no cabeçalho.
+- **Diálogos de exemplo sob o nome do estudante — resolvido na Etapa 9.** Ver PEI, Desempenho,
+  Modo Apresentação e Detalhe da observação mostravam conteúdo fixo, igual para qualquer
+  estudante: o Desempenho de uma aluna dizia 85% enquanto a ficha dela, calculada, dizia 60%. Os
+  quatro passaram a ler os registros do estudante aberto, ou a dizer que não há registro. O que
+  não existe no modelo — frequência, integração, anexos, notificações — **saiu da tela** em vez
+  de virar número fixo com aviso em volta.
 - **O cenário de Gestão é inventado**, com nome e aviso. A coerência interna dele só foi
   tratada onde havia contradição à vista.
 - **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de

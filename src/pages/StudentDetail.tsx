@@ -89,13 +89,16 @@ const StudentDetail = () => {
      * Era uma linha do tempo fixa, igual para qualquer estudante: "Pendências: 1", "Ingresso na
      * instituição 2020", "Primeiro PEI elaborado 2023", "Revisões realizadas: 3" e
      * "Progressões/retenções: Nenhuma". Nada disso existe no store. Agora são os registros do
-     * estudante, contados. Não há entidade PEI (Etapa 9), então não há revisão para contar.
+     * estudante, contados — inclusive as revisões do PEI vigente, que passaram a existir na
+     * Etapa 9. Estudante sem plano mostra zero revisões, que é a contagem dos registros dele, e
+     * não um lugar vazio.
      */
     timeline: [
       { tipo: "cadastro", texto: "Cadastro no sistema", data: formatLocalDate(student.dataCadastro), icone: School, cor: "text-primary" },
       { tipo: "observacoes", texto: `Observações registradas: ${registros.observations}`, icone: FileText, cor: "text-info" },
       { tipo: "avaliacoes", texto: `Avaliações registradas: ${registros.assessments}`, icone: TrendingUp, cor: "text-success" },
       { tipo: "atendimentos", texto: `Atendimentos: ${registros.appointments}`, icone: Calendar, cor: "text-warning" },
+      { tipo: "revisoes", texto: `Revisões do PEI: ${registros.peiRevisions}`, icone: FileText, cor: "text-primary" },
     ],
     ultimoRegistro: registros.lastRecordDate ? formatLocalDate(registros.lastRecordDate) : undefined,
     progresso: studentProgress(state, student.id),
@@ -184,7 +187,7 @@ const StudentDetail = () => {
                   * número, e o número guardado no cadastro, que nenhuma avaliação atualizava.
                   */}
                 {alunoCompleto.progresso === undefined ? (
-                  <p className="py-4 text-center text-sm text-muted-foreground">Sem avaliação registrada</p>
+                  <p className="py-4 text-center text-sm text-muted-foreground">Sem PEI vigente</p>
                 ) : (
                   <>
                     {/* Círculo de Progresso */}
@@ -216,7 +219,7 @@ const StudentDetail = () => {
                         </div>
                       </div>
                       <p className="mt-3 text-center text-sm text-muted-foreground">
-                        Progresso médio dos objetivos na avaliação mais recente
+                        Progresso nas metas do PEI
                       </p>
                     </div>
                   </>
@@ -451,7 +454,7 @@ const StudentDetail = () => {
       <StudentPerformanceDialog
         open={performanceDialogOpen}
         onOpenChange={setPerformanceDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <StudentHistoryDialog
         open={historyDialogOpen}
@@ -461,7 +464,7 @@ const StudentDetail = () => {
       <PresentationModeDialog
         open={presentationDialogOpen}
         onOpenChange={setPresentationDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <EditarCadastroDialog
         open={editDialogOpen}
@@ -471,7 +474,7 @@ const StudentDetail = () => {
       <VerPEIDialog
         open={peiDialogOpen}
         onOpenChange={setPeiDialogOpen}
-        studentName={student.nomeCompleto}
+        studentId={student.id}
       />
       <AnexosDialog
         open={anexosDialogOpen}

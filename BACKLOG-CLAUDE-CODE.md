@@ -208,11 +208,43 @@ métodos:
 > varredura tem de ser no texto do repositório, e o critério de alcance é o grafo de imports,
 > não a navegação.
 
-**Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
-conteúdo fixo de exemplo sob o nome do estudante, todos com aviso de que o conteúdo não é dele e
-sem dado de saúde. O Ver PEI identificava outra pessoa da demonstração até `bd93507`. A Etapa 4
-terminou sem trocá-los: o que mostram — PEI, trimestres, presença, conquistas — não tem registro
-de origem no modelo. Ficam para a Etapa 9, com a entidade PEI.
+**Fechado na Etapa 9.** Ver PEI, Detalhe da observação, Apresentação e Desempenho ficaram até lá
+com conteúdo fixo de exemplo sob o nome do estudante — todos com aviso de que o conteúdo não era
+dele e sem dado de saúde; o Ver PEI identificava outra pessoa da demonstração até `bd93507`. A
+Etapa 4 terminou sem trocá-los porque o que mostravam — PEI, trimestres, presença, conquistas —
+não tinha registro de origem no modelo. Com a entidade PEI, as quatro passaram a ler os registros
+do estudante aberto, e o que o modelo não tem saiu da tela em vez de virar número fixo com aviso.
+
+**Sexta onda, na Etapa 9 — e o pior caso da série, por uma razão nova: AUTORIA FALSA.**
+
+O detalhe da observação (`ObservationDetailDialog`) trazia dois blocos que nenhuma onda anterior
+tinha:
+
+- **"Observações Adicionais"**, três parágrafos de avaliação pedagógica sobre a criança —
+  "Esta manhã foi particularmente produtiva…", "Recomendo manter a comunicação próxima com a
+  família…" — **assinados com o nome do observador da observação aberta**, que é o campo real do
+  registro. Quem lesse a tela via um texto atribuído, nominalmente, a uma professora que não o
+  escreveu.
+- **"Notificações Enviadas"**, com horário de leitura e uma **resposta da família entre aspas**:
+  *"Obrigada pelo retorno! Vamos implementar o timer em casa também."* Fala inventada, posta na
+  boca da mãe de uma criança, com data e hora.
+
+**Por que é pior que as cinco ondas anteriores.** Nelas o defeito era dado de uma pessoa exibido
+sob o nome de outra: errado, grave com dado de saúde, e ainda assim um erro de **atribuição de
+registro**. Aqui o registro não existia em lugar nenhum — foi **inventado e assinado**. A
+diferença importa para o que o sistema afirma: um prontuário trocado diz a coisa errada sobre
+uma criança; um texto assinado diz que **uma profissional avaliou e uma mãe respondeu**, e
+nenhuma das duas disse nada. Num sistema de educação inclusiva, esse texto é o tipo de coisa que
+entra em reunião, em relatório e em decisão sobre a vida escolar de alguém.
+
+**Por que sobreviveu a cinco varreduras.** Todas procuraram o que já tinha acontecido: dado de
+saúde, nome de estudante, vocabulário clínico, números sem origem. Nenhuma procurou **texto
+assinado** — a classe só ficou visível quando a tela foi reescrita para ler o registro, e o que
+sobrava sem fonte ficou óbvio. É a lição do achado 7 outra vez: a busca pela lista do que já se
+viu não alcança a forma seguinte.
+
+Corrigido em `25828fe`, junto com o resto do que o diálogo inventava, e com asserção nominal dos
+doze trechos que não podem voltar.
 
 ---
 
@@ -269,6 +301,39 @@ dinâmico acha o que a árvore de acessibilidade mostra, e só do que está mont
 código acha intenção. E falta a quarta, que nenhuma das três cobre: ativação por teclado e
 leitor de tela reais, que ficam em lista de teste manual porque a ferramenta de navegador da
 sessão não ativa `<button>` por Enter ou Space.
+
+**Dois casos novos, na Etapa 9, no mesmo ponto cego: o que só existe depois de uma interação.**
+O botão de fechar de todo diálogo tinha nome acessível **"Close"**, em inglês, numa página
+`lang="pt-BR"` (3.1.2 e 4.1.2); o botão de fechar do toast não tinha nome **nenhum**, só o
+ícone (4.1.2, e contra a regra de botão só-de-ícone do CLAUDE.md). Os dois estavam no primitivo
+compartilhado, desde o template, e atravessaram as oito etapas anteriores — inclusive a Etapa 3,
+que levou o axe a zero em todas as rotas.
+
+Não é falha do axe: diálogo e toast **não estão montados** enquanto ninguém interage, e a
+varredura mediu rota a rota. É o mesmo limite registrado acima — "só vê o que está montado" —,
+agora com a consequência medida no tempo: oito etapas. E alcança também o arreio de superfície,
+que mede as mesmas 23 rotas sem interagir, e por isso deu zero nos dois commits que corrigiram
+isso. **Nenhum dos dois métodos automatizados deste repositório vê conteúdo que só existe depois
+de um clique.** O que viu foi a leitura do texto do diálogo aberto no navegador, durante outra
+verificação.
+
+Corrigidos em `ccb2fce`, com asserção nos dois lugares onde eles existem e duas mutações. A
+pendência 3 abre o trabalho de estender o arreio a diálogos.
+
+**A formulação que fica, e ela é mais ampla do que "o axe não viu".** Não é limite de uma
+ferramenta: é limite de **todo o aparato automatizado deste repositório**. O axe mede rota a
+rota; o arreio de superfície mede as mesmas 23 rotas; o `jsx-a11y` lê código e não sabe o que
+monta. Diálogo e toast **só existem depois de uma interação**, e nenhum dos três chega lá. Foi
+por isso que dois defeitos de nome acessível atravessaram oito etapas e a verificação que levou
+o axe a zero.
+
+**É o argumento mais forte a favor dos nove testes manuais, que continuam pendentes** (ver
+"Pendências abertas", item 1). A lista M1 a M9 existe porque teclado e leitor de tela reais
+cobrem o que o automatizado não cobre; o par "Close"/toast mostra que a lacuna não é teórica e
+não é pequena — são dois defeitos de WCAG 4.1.2 e 3.1.2 em componentes que aparecem em toda a
+aplicação, achados por leitura de tela aberta, não por varredura. Enquanto os nove não forem
+executados, o que o repositório pode afirmar sobre acessibilidade vale **para o que está montado
+sem interação**, e não para o sistema inteiro.
 
 ---
 
@@ -567,6 +632,22 @@ medidas: `argsIgnorePattern` é opção do ESLint e não do `tsc`; e a isenção
 `(_param: number) => 1` não é acusado, `({ ..._rest }) => 2` é acusado com `TS6133`. A correção
 não era padrão de ignore nenhum: era apagar a desestruturação inútil.
 
+**Quarta forma registrada neste achado — as duas do `grep`, o `TS6192` e esta —, na Etapa 9: a
+lista fixa dentro de um controle.** O `CONTROLE: a semente inteira passa nos esquemas`, escrito
+na Etapa 7 para garantir que o estado de demonstração atravessa a validação de forma do
+carregamento, enumerava **sete coleções pelo nome**. Na v4 a
+semente passou a ter onze: as quatro do PEI entraram e o controle continuaria verde sem olhar
+para nenhuma delas — e um esquema de PEI com defeito descartaria o plano inteiro a cada recarga,
+em silêncio, que é exatamente o que esse controle existe para impedir.
+
+Foi pego no dia em que teria falhado, e não por perspicácia: a v4 obrigou a trocar `gravar(3,`
+por `gravar(4,` em sete testes, este entre eles, e a lista de sete coleções estava na linha
+seguinte. Agora o controle enumera `Object.keys(semente())` e exige 11. É a mesma causa dos
+casos acima — **lista em vez de classe** —, pela primeira vez dentro de um instrumento de
+verificação em vez de dentro de uma busca. O instrumento que confere o estado inteiro precisava
+perguntar ao estado quantas coleções ele tem, em vez de carregar a resposta de quando foi
+escrito.
+
 ---
 
 ### 8. O instrumento que não media o que dizia medir (Etapa 5)
@@ -773,6 +854,16 @@ espaços onde havia um) e devolveu "2 sítios, 13 capturados" — números impos
 controle plantado junto dele, com a asserção de que a quebra aparece, que disse "o medidor está
 cego" antes de o número ser usado.
 
+**Quinta e sexta vez, as duas na Etapa 9, e as duas pela mesma causa.** Na mutação do Ver PEI, a
+âncora tinha dois espaços a mais: o bloco que ela mirava estava dentro do retorno antecipado. Na
+mutação do botão de fechar, a âncora terminava em `\n` e o `ui/toast.tsx` é **CRLF** — o
+repositório tem `core.autocrlf=true`, então o conteúdo versionado é LF e a cópia de trabalho no
+Windows é CRLF, arquivo a arquivo. Nos dois casos a asserção abortou com "casou 0 vezes", e nos
+dois a correção foi a mesma: **ler a âncora do arquivo em vez de escrevê-la de memória.**
+
+Regra de contagem das seis: ocorrências registradas aqui e no achado 7 em que a asserção de
+casamento único impediu um resultado falso — três na Etapa 7, uma na Etapa 8 e duas na Etapa 9.
+
 ### 12. Uma etapa verificando outra, nos dois sentidos (Etapa 8)
 
 Dois casos da mesma etapa, espelhados. No primeiro, o investimento de uma etapa anterior pegou
@@ -866,17 +957,145 @@ deixado de ser verificação. Parar e medir a propriedade foi o que a manteve co
 
 ---
 
+### 15. Um achado anterior prevenindo um caso que ainda não existia (Etapa 9)
+
+**Qualificação:** é a primeira vez na série que um achado já registrado impediu um defeito que
+nunca chegou a existir. As quatro ondas do achado 1 foram registradas depois do fato: cada uma
+começou com dado fictício aparecendo sob o nome de um estudante e seguiu com uma busca pelo mesmo
+padrão em outras telas. Aqui não há ocorrência para corrigir, porque o código que a produziria
+não foi escrito.
+
+**A decisão.** A `migrateV3ToV4` acrescenta as quatro coleções do PEI ao estado já gravado no
+navegador de quem usou o sistema. O precedente da casa era a `migrateV1ToV2`, que preencheu as
+coleções novas com as fixtures de demonstração, as mesmas que um navegador novo recebe. Seguir o
+precedente teria escrito, nesse estado gravado, um PEI completo atribuído ao estudante de `id`
+'1': perfil, pontos fortes, desafios, estilo de aprendizagem, adaptações curriculares e
+necessidade de apoio humano. Um PEI é um documento que **afirma coisas sobre uma criança
+nomeada**, e isso é a classe do achado 1 — conteúdo fictício exibido como se fosse o registro
+daquele estudante —, com a diferença de que a origem seria a migração, e não texto fixo numa
+tela. As quatro coleções entram vazias. Navegador novo continua recebendo o PEI da semente,
+porque ali não há registro de ninguém para contaminar.
+
+**O precedente não foi corrigido, e isso fica registrado.** A `migrateV1ToV2` carrega a mesma
+classe de risco em forma mais leve: os atendimentos e as avaliações que ela injeta também
+apontam para estudante por `id`, e quem tiver renomeado o estudante '1' — o cadastro é editável
+— passaria a ver esses registros atribuídos ao nome novo. A diferença entre os dois casos é o
+peso do que o registro afirma — data e tipo de um atendimento contra perfil e necessidades de uma
+criança —, não a existência do risco. Mexer na v1->v2 agora mudaria o resultado de uma migração
+que ainda pode rodar sobre estado gravado na versão 1: **é decisão do autor, e está aberta.**
+
+**O que o caso mostra sobre a forma do registro.** O achado 1 só pôde agir aqui porque está
+escrito como classe — "dado fictício atribuído a estudante nomeado" — e não como a lista das
+sete telas em que apareceu. Registro escrito pela lista do que já aconteceu não alcança o caso
+seguinte. É a distinção do achado 7 vista do outro lado: lá a lista deixou passar o que a busca
+devia achar; aqui a classe pegou o que ninguém tinha procurado.
+
+**A gravidade não é a mesma, e é isso que decidiu.** O autor determinou em 02/10/2026 que a
+`migrateV1ToV2` **não** será mexida, aceitando a leitura da classe de risco: atendimento e
+avaliação injetados são registros de rotina — data, tipo, profissionais —, enquanto um PEI é
+documento que afirma coisas sobre uma criança nomeada: perfil, desafios, necessidade de apoio.
+Mudar o resultado de uma migração que ainda pode rodar sobre estado v1 real custa mais do que o
+risco que ela carrega. **Fica aberta, com a diferença de gravidade registrada**, e não como
+dívida esquecida: se um dia a v1 deixar de poder rodar, o custo muda e a decisão pode mudar com
+ele.
+
+A distinção vale como critério, e não só para este caso: a mesma classe de defeito pede respostas
+diferentes conforme **o que o registro afirma sobre a pessoa**. É o critério que já estava no
+achado 1 — "o que decide é ser atribuído a pessoa nomeada" — com um segundo eixo: quanto o
+registro afirma.
+
+---
+
+### 16. A declaração escrita pelos chamadores, e não pelos montadores (Etapa 9)
+
+**Qualificação:** o defeito está no mecanismo que existe para proteger contra ele. A regra
+invertida desta etapa manda declarar, antes do commit, quais superfícies e quais medidas vão
+mexer; a declaração é a verificação. Ela saiu errada pela causa do achado 7 — enumerar o que já
+se conhece em vez de perguntar pela classe.
+
+**O que aconteceu.** O commit que trocou a fonte do progresso declarou movimento de `numeros` em
+**duas** superfícies, `/alunos` e `/alunos/1`. Mexeu em **três**: `/` também, porque o Dashboard
+monta o mesmo `StudentCard` da listagem. A declaração foi escrita a partir dos sítios que **chamam
+o seletor** `studentProgress` — dois arquivos, achados por busca — e não dos sítios que **montam o
+componente** que o chama, que são três rotas. Medido número a número depois: 60 -> 50 em `/` e
+`/alunos`, e em `/alunos/1` o 60 -> 50 mais o "1" de "Revisões do PEI: 1" entrando; nada além do
+previsto no conteúdo, só uma superfície a mais do que o previsto na lista.
+
+**A regra que fica, ditada pelo autor:** *declare pelos montadores do componente, não pelos
+chamadores do seletor.* Está no CLAUDE.md, no bloco de verificação.
+
+**O que o caso mostra sobre a regra invertida.** Declarar duas e mexer três expôs o **método**, e
+não só o número. Se a declaração tivesse listado as três — por sorte, ou por eu ter aberto o
+Dashboard antes —, o commit passaria com a declaração batendo com a medida, e o raciocínio
+errado continuaria em uso para a próxima tela. Foi a diferença entre o declarado e o medido que
+tornou visível *como* a lista tinha sido montada. Uma verificação que só compara números não
+acha isso; uma que compara a **previsão** com a medida, acha.
+
+**É a família do achado 7** — lista em vez de classe — e, como o achado 14, numa regra escrita
+por quem verifica, não numa busca no código: lá a condição do lockfile foi definida pelo nome dos
+caminhos em vez da propriedade; aqui a declaração foi definida pela lista de chamadores em vez da
+classe "rotas que montam este componente".
+
+---
+
+### 17. A semente plausível que não discriminava (Etapa 9)
+
+**Qualificação:** quatro vezes na mesma etapa uma mutação deixou de reprovar, e nas quatro o
+buraco não estava no teste — estava nos **dados** de teste. A camada 2 (mutação) existe para
+dizer se a suíte reprova quando deve; o que ela disse aqui foi outra coisa, e mais fina: que a
+suíte não tinha com o que reprovar.
+
+| Mutação que passou | Por que a fixture não distinguia | O que foi acrescentado |
+|---|---|---|
+| média dos objetivos → **máximo** | `avl-1` tem **um** objetivo, e com um só média, máximo e mínimo dão o mesmo número | casos com dois e três objetivos, onde as três contas se separam |
+| metas **do plano** → todas as metas do sistema | a semente tem **um** plano, e todas as metas são dele | um segundo plano, de outro estudante, gravado pelo `localStorage` |
+| `kind` da evidência ignorado | nenhum id se repete entre coleções: `obs-1` e `avl-1` nunca colidem | o mesmo id `'x'` numa observação e numa avaliação, com metas diferentes |
+| janela de **7 dias** → todos os futuros | o teste tinha **um** atendimento futuro | um segundo, daqui a 30 dias, que separa os dois blocos |
+
+**A regra que fica:** quando a mutação de uma regra não reprova, a primeira pergunta é se os
+dados de teste distinguem o certo do errado — antes de concluir que falta asserção, e muito
+antes de concluir que a mutação é inofensiva.
+
+**A atribuição, registrada pelo autor.** O desenho da semente foi aprovado por ele em várias
+etapas, e em nenhuma delas alguém notou que **plausível e discriminante são propriedades
+diferentes**. Uma fixture plausível é feita para parecer um caso real: uma avaliação com um
+objetivo, um plano por estudante, ids que não colidem, uma agenda curta. Uma fixture
+discriminante é feita para que implementações erradas divirjam da certa. As duas intenções não
+se opõem, mas também não se implicam — e a segunda nunca tinha sido pedida, porque até a Etapa 7
+não havia suíte, e até a Etapa 9 as mutações caíam em código cujo comportamento a semente já
+separava.
+
+**Por que não apareceu antes.** As 30 mutações anteriores miravam persistência, migração,
+seletores de data e grafo de rotas: código em que um registro basta para distinguir o certo do
+errado. As 43 desta etapa miram **agregação e filtragem** — média, janela, pertencimento,
+tipo —, e agregação só se verifica com mais de um elemento. A classe do defeito mudou com a
+classe do código.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
 etapa pode afirmar sem ele e o que **não** pode.
 
-> **Ordem decidida pelo autor em 02/10/2026: os nove testes manuais vêm ANTES da Etapa 9.**
-> O motivo é de medição, não de agenda. Eles são a única verificação do projeto que ninguém
-> executou, levam cerca de meia hora, e a Etapa 9 mexe nas telas que eles cobrem — medir depois
-> de uma mudança grande é pior que medir agora, porque qualquer achado passaria a ter duas causas
-> candidatas. É o mesmo raciocínio que pôs o router antes do vite na Etapa 8: não deixar o
-> instrumento e o objeto se moverem juntos.
+> **Ordem decidida pelo autor em 02/10/2026: os nove testes manuais vêm DEPOIS da Etapa 9.**
+> A Etapa 9 mexe nas telas que os nove cobrem — Desempenho, Apresentação, Ver PEI, Detalhe da
+> observação, matriz de riscos, relatórios. Executá-los no estado final mede uma vez, e o que
+> for medido vale para o sistema que fica. Antes, mediria o estado que a etapa seguinte vai
+> desfazer, e os nove teriam de ser refeitos.
+>
+> **A ordem inversa esteve registrada aqui no mesmo dia, e está substituída.** O argumento era:
+> eles são a única verificação que ninguém executou, e medir depois de uma mudança grande deixa
+> qualquer achado com duas causas candidatas. Fica citado porque ordem escrita e ordem praticada
+> não podem divergir — quem ler a Pendência 1 daqui a um mês precisa saber que a ordem mudou e
+> por quê, em vez de encontrar um registro que descreve uma prática que não aconteceu.
+>
+> A diferença entre os dois argumentos é o que se protege. O primeiro protege a atribuição de
+> causa de um achado novo; o segundo evita medir duas vezes a mesma coisa. Com os nove ainda não
+> executados, não há linha de base a preservar — não existe medição anterior para um achado novo
+> contradizer —, então o custo de refazer pesa mais. A regra geral da série continua valendo onde
+> ela se aplica: não deixar o instrumento e o objeto se moverem juntos. Aqui o instrumento são
+> teclado e leitor de tela, que a Etapa 9 não altera.
 
 ### 1. Verificação por teclado e leitor de tela (Etapa 3) — não feita
 
@@ -898,13 +1117,18 @@ Enquanto os testes não forem feitos, o critério de aceite da Etapa 3 — "nave
 inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" — está
 **cumprido pela metade**.
 
+> **A tabela foi atualizada pela Etapa 9**, que mexeu nas telas de M3, M5 e M9. O M5 esperava
+> "Slide 3 de 12": o 12 era o número de slides do exemplo fixo, e agora a apresentação é montada
+> do plano — são 8 para a estudante 1, e o nome da região inclui o título do slide. Era este o
+> motivo de executar os nove DEPOIS da etapa: o esperado muda com a tela.
+
 | | Onde | Sequência | Esperado |
 |---|---|---|---|
 | M1 | `/gestao?tab=alertas`, matriz de riscos | Tab até um risco, Enter; de novo, Espaço | O detalhe expande e recolhe; o foco fica no botão |
 | M2 | `/biblioteca-recursos` → Ver → "Sua nota" | Tab até a 1ª estrela, Espaço, seta direita duas vezes | Marca 1 e chega a 3; o texto ao lado diz "3 de 5" |
 | M3 | `/gestao?tab=relatorios` → aba "Por Áreas" | Tab até o nome da área, Enter | O painel de detalhe abre |
 | M4 | Mesma tela, calendário de observações | Tab atravessando o bloco | O foco pula a tabela inteira, sem parar em célula |
-| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 12", e Esc fecha |
+| M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 8: Reconhecer e ler palavras do vocabulário funcional", e Esc fecha |
 | M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
 | M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
 | M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
@@ -932,6 +1156,32 @@ Nenhum foi corrigido.
 
 **O que a Etapa 3 pode afirmar sem eles:** o "124 violações para 0" vale para o que aparece nas
 rotas sem interação. **O que não pode:** que todo conteúdo alcançável por clique foi medido.
+
+### 3. O arreio de superfície não alcança diálogo (Etapa 9) — trabalho próprio, depois da etapa
+
+**Estado em 02/10/2026:** `scripts/fotografia.js` mede 23 superfícies **sem interagir**. Diálogo,
+toast, menu e aba de diálogo só existem depois de um clique, e nenhum deles entra na medida.
+
+**O que isso significa na prática.** Nos commits da Etapa 9 que mudaram o Ver PEI e o botão de
+fechar, a fotografia deu zero — e o zero não era evidência de nada, porque o instrumento não
+chega ao objeto. A regra invertida da etapa ("zero é suspeito no commit que devia mudar a tela")
+só se aplica onde o arreio alcança; onde não alcança, o que vale é dizer isso em voz alta e pôr a
+prova em outro lugar: teste de árvore (`src/test/verpei.test.tsx`, `progresso.test.tsx`) e
+navegador.
+
+**Por que não foi feito junto.** Estender o arreio no mesmo commit que muda a tela moveria
+instrumento e objeto ao mesmo tempo — a regra que a Etapa 5 pagou para aprender (achado 8).
+Decisão do autor em 02/10/2026: é trabalho próprio, depois da Etapa 9.
+
+**O que ele precisa ter**, para não repetir os defeitos do arreio original: abrir o diálogo pelo
+controle que o abre (não por estado interno), medir as quatro medidas com o diálogo montado,
+percorrer as abas, fechar, e ter **controle próprio** — uma quebra plantada dentro do diálogo que
+a medida tem de acusar. Sem esse controle, um arreio de diálogo que devolve "zero" não vale mais
+que o silêncio de agora.
+
+**O que a etapa pode afirmar sem ele:** que as telas de diálogo fazem o que os testes de árvore
+asseveram, em jsdom, e o que foi lido no navegador. **O que não pode:** que nenhum detalhe de
+acessibilidade, foco ou número regrediu dentro de um diálogo entre dois commits.
 
 ---
 
@@ -2229,9 +2479,10 @@ instalação de terceiros reprovar é decisão de política, não de registro.
 
 ## Etapa 9 — Decisões de produto
 
-**Começa depois dos nove testes manuais** (M1 a M9, na Pendência 1): ela mexe nas telas que eles
-cobrem, e medir acessibilidade por teclado e leitor de tela depois de uma mudança grande deixaria
-qualquer achado com duas causas candidatas.
+**Vem ANTES dos nove testes manuais** (M1 a M9, na Pendência 1), por decisão do autor em
+02/10/2026: esta etapa mexe nas telas que os nove cobrem, então executá-los no estado final mede
+uma vez e o resultado vale para o sistema que fica. O registro anterior dizia o contrário, e está
+substituído na Pendência 1, com a razão — ordem escrita e ordem praticada não podem divergir.
 
 Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
 
@@ -2263,6 +2514,109 @@ Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema
    formulário de evento. Antes, responder: existe agenda pessoal separada dos atendimentos
    (planejamento, formação, tarefas)? Se existir, o caminho é uma entidade nova de evento e
    tarefa, e não a (a').
+
+### Decisões de modelo tomadas na execução (commit `448fa6b`)
+
+Duas decisões que o plano aprovado não previa, tomadas durante a modelagem e aprovadas depois,
+mais um controle que precisou ser corrigido no caminho. Ficam aqui porque quem ler o código vai
+encontrar as três e não vai encontrar o motivo nelas.
+
+**1. As coleções do PEI entram vazias na v4**, contra o precedente da v1->v2, que preencheu
+coleção nova com as fixtures. Registrado no **achado 15**: é o primeiro caso da série em que um
+achado anterior preveniu um defeito antes de ele existir.
+
+**2. A cascata de descarte segue a posse; a referência fraca não leva nada.** O carregamento
+descarta o registro que não passa na validação de forma e, em seguida, o que ficou órfão. Órfão
+de **posse**: plano sem estudante sai e leva as metas, as notas e as revisões; meta inválida leva
+só as notas dela. Já `PeiGoalNote.source` e `PeiRevision.appointmentId` apontam para a evidência
+e para a ata, e são **elos fracos**: a nota cujo atendimento foi descartado fica, sem a ligação.
+
+O motivo é de domínio, não de integridade referencial. A nota é o que um professor escreveu sobre
+a meta de uma criança; a observação, a avaliação ou o atendimento citados são de onde veio a
+evidência. Perder a evidência não torna o texto falso — torna o texto menos sustentado, o que é
+informação diferente. Descartar a nota para não deixar apontador pendurado seria jogar fora o
+conteúdo para preservar o link, e aqui o conteúdo é registro de acompanhamento de um estudante.
+A regra que fica: descarta-se junto o que não existe sem o outro; o que existe sem o outro fica,
+e perde só a ligação.
+
+As duas direções estão testadas — a nota sobrevive à perda da evidência, a meta não sobrevive à
+perda do plano — e duas das sete mutações do commit atacam exatamente esta fronteira: desligar a
+cascata de posse e tratar o elo fraco como posse. As duas foram acusadas.
+
+**3. Um controle antigo estava passando pela razão errada**, pego no dia em que teria falhado:
+o `CONTROLE: a semente inteira passa nos esquemas` enumerava sete coleções numa lista fixa e a
+semente passou a ter onze. Registrado no **achado 7**, como quarta forma da mesma causa — lista
+em vez de classe —, e a primeira dentro de um instrumento de verificação.
+
+### Resultado da etapa
+
+Medido no `main` em `aaaf86c` (antes do primeiro commit da etapa) e no último commit dela. As
+cinco telas são `VerPEIDialog`, `StudentPerformanceDialog`, `PresentationModeDialog`,
+`ObservationDetailDialog` e `MinhaAgenda`. Cada número vem com a regra que o produz.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Telas exibindo conteúdo fixo sob o nome do estudante** | **5** | **0** |
+| Nomes de estudantes escritos no código dessas telas | 20 | 0 |
+| Porcentagens literais no código dessas telas | 21 | 1 |
+| Seções "em desenvolvimento" nessas telas | 6 | 0 |
+| Linhas nessas cinco telas | 1.942 | 1.581 |
+| Slides da apresentação | 12 fixos, 8 vazios | 8, derivados do plano |
+| Coleções do store | 7 | 11 |
+| Versão do envelope gravado | 3 | 4 |
+| Testes | 73 | 131 |
+| Arquivos de teste | 7 | 15 |
+| Mutações plantadas e acusadas | 30 | 73 |
+| Entradas do `npm audit` | 2 | 0 |
+
+**As regras de contagem.** "Nomes" e "porcentagens" são ocorrências no código **depois de
+remover comentários**, porque os comentários desta etapa citam de propósito os valores antigos
+(com eles, a contagem de porcentagens em HEAD dá 8 em vez de 1 — a diferença é a regra
+funcionando). A única porcentagem que resta é `width="100%"` no contêiner do gráfico do
+Desempenho: dimensão de CSS, não número exibido. "Seções em desenvolvimento" conta os textos
+"…em desenvolvimento" fora de comentário. "Mutações" são defeitos plantados um a um no código de
+produção, cada um com a asserção de que a substituição casou exatamente uma vez: 30 até a Etapa
+8 e 43 nesta.
+
+**O que a fotografia de superfície mediu.** Em seis dos oito commits de código a diferença
+declarada foi zero e medida zero — e em quatro deles **o zero não é evidência**, porque o objeto
+era um diálogo e o arreio mede 23 rotas sem interagir (pendência 3). As duas diferenças reais
+foram declaradas antes: `numeros` em `/`, `/alunos` e `/alunos/1` na troca de fonte do progresso
+(uma superfície a mais do que eu havia declarado — achado 16), e as quatro medidas em
+`/minha-agenda`, exatamente como declarado.
+
+**O que a etapa fez, em uma frase por tela.** O PEI virou entidade com migração v4; o Ver PEI
+mostra o plano do estudante ou diz que não há; o Desempenho lê avaliações e metas, e presença e
+integração saíram por não existirem no modelo; a Apresentação é montada do plano, com o número
+de slides vindo dele; o detalhe da observação mostra o registro e as metas que o citam; a Minha
+Agenda lista os atendimentos, inclusive os agendados com data já passada; e o progresso do
+estudante mudou de fonte, com o rótulo mudando junto.
+
+### O que a etapa NÃO fez
+
+Ficam registrados com o que existe hoje no lugar, para que ninguém leia a etapa como "o PEI está
+pronto".
+
+- **As seis partes do manual, campo a campo.** O modelo cobre a estrutura das seis partes
+  (`src/types/pei.ts`), mas cada parte do manual tem subitens que não viraram campo — níveis de
+  apoio por atividade, critérios de avaliação adaptada, cronograma por objetivo. O que existe é o
+  suficiente para as telas pararem de mentir, que era o escopo aprovado (patamar 1), e não a
+  transcrição do manual.
+- **Anexos com arquivo.** `AnexosDialog` continua dizendo que nenhum laudo está anexado, e é
+  verdade: não há entidade de anexo nem armazenamento. Guardar arquivo de laudo exige decisão de
+  produto e de proteção de dados que o protótipo não tem.
+- **PDF do PEI.** "Baixar PDF" e "Imprimir" seguem desabilitados no Ver PEI. O relatório do
+  estudante é impresso pelo navegador (Etapa 2); gerar arquivo pela aplicação está fora de escopo
+  declarado no README.
+- **Agenda pessoal (aulas, planejamento, formação, tarefas).** Entidade nova. **O gatilho é a
+  resposta à pergunta do item 2 desta etapa**: existe, na prática da escola, agenda pessoal
+  separada dos atendimentos? Enquanto a resposta não vier do autor, a Minha Agenda fica na opção
+  (a') — os atendimentos do store — e **nomeia na tela** o que não tem, em vez de preencher com
+  exemplo. Não é meta vaga: é uma pergunta esperando resposta.
+- **`z.infer`**, que o item 1 previa junto da modelagem. Os esquemas `zod` e os tipos continuam
+  sendo duas declarações do mesmo formato, agora com onze coleções em vez de sete. Ficou de fora
+  por tamanho: reescreve `types/index.ts` inteiro e misturaria refatoração de tipos com mudança
+  de comportamento, contra a regra do CLAUDE.md. Fica para etapa própria.
 
 ---
 

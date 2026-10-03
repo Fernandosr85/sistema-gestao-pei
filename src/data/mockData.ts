@@ -1,4 +1,5 @@
 import { Student, Observation, Assessment, Atendimento } from '@/types';
+import type { Pei, PeiGoal, PeiGoalNote, PeiRevision } from '@/types/pei';
 
 export const mockStudents: Student[] = [
   {
@@ -131,7 +132,8 @@ export const mockAssessments: Assessment[] = [
     quarter: 4,
     objectives: [
       {
-        title: 'Desenvolver habilidades de leitura',
+        // Ligado à meta do PEI: o título mora na meta, e aqui fica a medição desta data.
+        goalId: 'pei-goal-1',
         status: 'inProgress',
         progress: 60,
         notes: 'Reconhece palavras familiares com apoio de pictogramas.',
@@ -160,7 +162,7 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-1',
     studentId: '3',
-    tipo: 'Reunião Pedagógica',
+    tipo: 'pedagogicalMeeting',
     data: '2025-11-28',
     horarioInicio: '14:00',
     horarioFim: '15:00',
@@ -172,7 +174,7 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-2',
     studentId: '2',
-    tipo: 'Avaliação',
+    tipo: 'assessment',
     data: '2025-11-29',
     horarioInicio: '10:00',
     horarioFim: '11:30',
@@ -184,7 +186,7 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-3',
     studentId: '1',
-    tipo: 'Atendimento Família',
+    tipo: 'familyMeeting',
     data: '2025-11-30',
     horarioInicio: '16:00',
     horarioFim: '17:00',
@@ -196,7 +198,7 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-4',
     studentId: '4',
-    tipo: 'Multidisciplinar',
+    tipo: 'multidisciplinary',
     data: '2025-12-02',
     horarioInicio: '13:00',
     horarioFim: '14:30',
@@ -208,7 +210,7 @@ export const mockAppointments: Atendimento[] = [
   {
     id: 'atd-5',
     studentId: '3',
-    tipo: 'Reunião Pedagógica',
+    tipo: 'pedagogicalMeeting',
     data: '2025-11-25',
     horarioInicio: '14:00',
     horarioFim: '15:00',
@@ -217,5 +219,134 @@ export const mockAppointments: Atendimento[] = [
     local: 'Sala de Coordenação',
     objetivos: 'Discussão sobre transições',
     ata: '',
+  },
+];
+
+/*
+ * O PEI de demonstração. Decisão do autor: um plano completo para um estudante e nenhum para os
+ * outros — exercita os dois estados, e vazio é o que a maioria das escolas vê no primeiro dia.
+ *
+ * A estrutura segue as seis partes do manual (`src/pages/Manual.tsx`, seção 2); nenhum campo aqui
+ * é exigência legal, e a regra está em `src/types/pei.ts`. Conteúdo coerente com o que já existe
+ * nas fixtures: a observação `obs-1` aponta transições como desafio, e a avaliação `avl-1` mede a
+ * meta de leitura em 60%.
+ */
+export const mockPeis: Pei[] = [
+  {
+    id: 'pei-1',
+    studentId: '1',
+    term: '2025 - 4º Trimestre',
+    startsOn: '2025-10-01',
+    endsOn: '2025-12-19',
+    status: 'active',
+    draftedOn: '2025-09-15',
+    draftedBy: 'Profª. Ana Beatriz',
+    participants: ['Mãe', 'Coordenação pedagógica', 'Professora de apoio'],
+    profile: {
+      strengths: ['Boa memória visual', 'Interesse por atividades de arte', 'Responde a reforço positivo'],
+      challenges: ['Transições entre atividades', 'Aguardar a vez em grupo', 'Ambientes barulhentos'],
+      learningStyle: ['Visual', 'Precisa de rotina previsível', 'Aprende com material concreto'],
+    },
+    adaptations: [
+      'Tempo estendido nas atividades escritas',
+      'Instrução visual acompanhando a verbal',
+      'Avaliação com apoio de pictogramas',
+      'Ambiente com redução de estímulos sonoros',
+    ],
+    resources: [
+      { name: 'Prancha de comunicação alternativa', available: true },
+      { name: 'Fones de ouvido com redução de ruído', available: true },
+      { name: 'Cantinho da calma na sala', available: false },
+    ],
+    humanSupport: {
+      professional: 'Professora de apoio escolar',
+      weeklyHours: 20,
+      specializedSupport: 'AEE duas vezes por semana',
+    },
+    reviewFrequency: 'quarterly',
+    nextReviewOn: '2025-12-12',
+  },
+];
+
+export const mockPeiGoals: PeiGoal[] = [
+  {
+    id: 'pei-goal-1',
+    peiId: 'pei-1',
+    area: 'portuguese',
+    title: 'Reconhecer e ler palavras do vocabulário funcional',
+    description: 'Ler palavras do cotidiano escolar com apoio de pictograma, sem soletrar.',
+    status: 'inProgress',
+    progress: 60,
+    strategies: ['Pictograma junto da palavra escrita', 'Leitura compartilhada diária'],
+    nextStep: 'Frases de duas palavras',
+    owner: 'Profª. Ana Beatriz',
+    dueOn: '2025-12-12',
+  },
+  {
+    id: 'pei-goal-2',
+    peiId: 'pei-1',
+    area: 'selfRegulation',
+    title: 'Antecipar transições com apoio visual',
+    description: 'Encerrar a atividade em curso após aviso visual, sem recusa.',
+    status: 'inProgress',
+    progress: 40,
+    strategies: ['Aviso visual cinco minutos antes', 'Quadro de rotina na mesa'],
+    nextStep: 'Reduzir o aviso para dois minutos',
+    owner: 'Professora de apoio',
+  },
+  {
+    id: 'pei-goal-3',
+    peiId: 'pei-1',
+    area: 'functionalCommunication',
+    title: 'Pedir ajuda com cartão de comunicação',
+    description: 'Usar o cartão para pedir ajuda em atividade de grupo.',
+    status: 'achieved',
+    progress: 100,
+    strategies: ['Modelagem pelo adulto', 'Cartão sempre ao alcance'],
+    nextStep: 'Generalizar para o recreio',
+    owner: 'Professora de apoio',
+  },
+  {
+    id: 'pei-goal-4',
+    peiId: 'pei-1',
+    area: 'math',
+    title: 'Contar até 50 com material concreto',
+    description: 'Contagem com apoio de material manipulável, em sequência.',
+    status: 'notStarted',
+    progress: 0,
+    strategies: ['Material dourado', 'Contagem diária na rotina'],
+    nextStep: 'Iniciar no 1º trimestre de 2026',
+    owner: 'Profª. Ana Beatriz',
+  },
+];
+
+export const mockPeiGoalNotes: PeiGoalNote[] = [
+  {
+    id: 'pei-note-1',
+    goalId: 'pei-goal-1',
+    date: '2025-11-01',
+    author: 'Profª. Ana Beatriz',
+    text: 'Reconheceu as palavras familiares com apoio de pictogramas na avaliação do trimestre.',
+    source: { kind: 'assessment', id: 'avl-1' },
+  },
+  {
+    id: 'pei-note-2',
+    goalId: 'pei-goal-2',
+    date: '2025-11-19',
+    author: 'Profª. Ana Beatriz',
+    text: 'Transição sem aviso gerou recusa em guardar o material; o ajuste registrado foi avisar cinco minutos antes.',
+    source: { kind: 'observation', id: 'obs-1' },
+  },
+];
+
+export const mockPeiRevisions: PeiRevision[] = [
+  {
+    id: 'pei-rev-1',
+    peiId: 'pei-1',
+    date: '2025-11-05',
+    author: 'Coordenação pedagógica',
+    participants: ['Mãe', 'Profª. Ana Beatriz', 'Professora de apoio'],
+    summary:
+      'Acrescentada a meta de antecipação de transições, a partir das observações de novembro. Mantidas as metas de leitura e de pedido de ajuda.',
   },
 ];

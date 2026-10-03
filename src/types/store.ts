@@ -1,4 +1,5 @@
 import type { Assessment, Atendimento, Observation, Student } from '@/types';
+import type { Pei, PeiGoal, PeiGoalNote, PeiRevision } from '@/types/pei';
 import type { Resource, ResourceFavorite, ResourceReview } from '@/types/resource';
 
 export interface DemoState {
@@ -10,10 +11,26 @@ export interface DemoState {
   reviews: ResourceReview[];
   /** Added in version 3. */
   favorites: ResourceFavorite[];
+  /** Added in version 4: o PEI e o que pende dele. */
+  peis: Pei[];
+  peiGoals: PeiGoal[];
+  peiGoalNotes: PeiGoalNote[];
+  peiRevisions: PeiRevision[];
 }
 
-/** Shape written by version 2 of the store: every collection except favorites. */
-export type DemoStateV2 = Omit<DemoState, 'favorites'>;
+/** Coleções que não existiam antes da versão 4. */
+export type PeiCollection = 'peis' | 'peiGoals' | 'peiGoalNotes' | 'peiRevisions';
+
+/**
+ * Shape written by version 3: sem as coleções do PEI, e com o `tipo` do atendimento ainda
+ * guardando o rótulo acentuado ("Reunião Pedagógica") em vez do identificador.
+ */
+export interface DemoStateV3 extends Omit<DemoState, PeiCollection | 'appointments'> {
+  appointments: Array<Omit<Atendimento, 'tipo'> & { tipo: string }>;
+}
+
+/** Shape written by version 2 of the store: version 3 without favorites. */
+export type DemoStateV2 = Omit<DemoStateV3, 'favorites'>;
 
 /** Shape written by version 1 of the store: only students and observations. */
 export interface DemoStateV1 {

@@ -84,12 +84,14 @@ const StudentCard = ({ student }: StudentCardProps) => {
         {/*
           * O número vinha de `student.progresso`, guardado no cadastro e nunca atualizado por
           * avaliação: três dos quatro alunos do exemplo mostravam porcentagem sem ter avaliação.
+          * Na Etapa 4 passou a vir da avaliação mais recente; na Etapa 9, das metas do PEI
+          * vigente. O rótulo acompanha a fonte — é o que distingue este número do outro.
           */}
         <div className="space-y-2 mb-4">
           <div className="flex items-start justify-between gap-2 text-sm">
-            <span className="text-muted-foreground">Progresso médio dos objetivos na avaliação mais recente</span>
+            <span className="text-muted-foreground">Progresso nas metas do PEI</span>
             {progress === undefined ? (
-              <span className="shrink-0 text-muted-foreground">Sem avaliação registrada</span>
+              <span className="shrink-0 text-muted-foreground">Sem PEI vigente</span>
             ) : (
               <span className="shrink-0 font-semibold">{progress}%</span>
             )}

@@ -118,6 +118,14 @@ describe('cadastro de aluno', () => {
       await user.type(screen.getByPlaceholderText(/Buscar por nome ou matrícula/), aluno.matricula);
       expect(pagina().getAllByRole('heading', { level: 3 })).toHaveLength(1);
       expect(pagina().getByRole('heading', { name: aluno.nome })).toBeInTheDocument();
+
+      /*
+       * O toast do cadastro é a única tela em que o botão de fechar do `ui/toast` aparece, e ele
+       * não tinha nome acessível nenhum — só o ícone. Fica asseverado aqui porque é o lugar onde
+       * ele existe: a varredura automatizada da Etapa 3 não o alcançou por medir rota a rota,
+       * sem interagir, e toast só nasce depois de uma ação.
+       */
+      expect(screen.getByRole('button', { name: 'Fechar notificação' })).toBeInTheDocument();
     },
     LENTO,
   );

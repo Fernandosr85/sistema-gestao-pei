@@ -1,18 +1,22 @@
 import type { ResourceFavorite } from '@/types/resource';
-import type { DemoState, DemoStateV1, DemoStateV2, DiscardedCounts } from '@/types/store';
-import { migrateV1ToV2, migrateV2ToV3 } from './migrations';
+import type { DemoState, DemoStateV1, DemoStateV2, DemoStateV3, DiscardedCounts } from '@/types/store';
+import { migrateV1ToV2, migrateV2ToV3, migrateV3ToV4 } from './migrations';
 import {
   appointmentSchema,
   assessmentSchema,
   favoriteSchema,
   observationSchema,
+  peiGoalNoteSchema,
+  peiGoalSchema,
+  peiRevisionSchema,
+  peiSchema,
   resourceSchema,
   reviewSchema,
   studentSchema,
 } from './schemas';
 
 const STORAGE_KEY = 'pei-demo-store';
-const STORAGE_VERSION = 3;
+const STORAGE_VERSION = 4;
 
 interface StoredEnvelope {
   version: number;
@@ -57,8 +61,14 @@ const isFavoriteList = (value: unknown): value is ResourceFavorite[] =>
     return typeof candidate.resourceId === 'string' && typeof candidate.addedAt === 'string';
   });
 
-const isDemoStateV3 = (value: unknown): value is DemoState =>
+const isDemoStateV3 = (value: unknown): value is DemoStateV3 =>
   isDemoStateV2(value) && isFavoriteList((value as unknown as Record<string, unknown>).favorites);
+
+const isDemoStateV4 = (value: unknown): value is DemoState =>
+  isDemoStateV3(value) &&
+  ['peis', 'peiGoals', 'peiGoalNotes', 'peiRevisions'].every((key) =>
+    isRecordList((value as unknown as Record<string, unknown>)[key]),
+  );
 
 /** Keeps the records that match the declared shape and counts the ones dropped. */
 const keepValid = <T>(list: unknown[], schema: { safeParse: (value: unknown) => { success: boolean; data?: unknown } }): { kept: T[]; dropped: number } => {
@@ -90,6 +100,10 @@ const validateState = (state: DemoState): { state: DemoState; discarded: Discard
   const resources = keepValid<DemoState['resources'][number]>(state.resources, resourceSchema);
   const reviews = keepValid<DemoState['reviews'][number]>(state.reviews, reviewSchema);
   const favorites = keepValid<DemoState['favorites'][number]>(state.favorites, favoriteSchema);
+  const peis = keepValid<DemoState['peis'][number]>(state.peis, peiSchema);
+  const peiGoals = keepValid<DemoState['peiGoals'][number]>(state.peiGoals, peiGoalSchema);
+  const peiGoalNotes = keepValid<DemoState['peiGoalNotes'][number]>(state.peiGoalNotes, peiGoalNoteSchema);
+  const peiRevisions = keepValid<DemoState['peiRevisions'][number]>(state.peiRevisions, peiRevisionSchema);
 
   const studentIds = new Set(students.kept.map((student) => student.id));
   const resourceIds = new Set(resources.kept.map((resource) => resource.id));
@@ -103,6 +117,20 @@ const validateState = (state: DemoState): { state: DemoState; discarded: Discard
   const reviewsKept = byResource(reviews.kept);
   const favoritesKept = byResource(favorites.kept);
 
+  /*
+   * A cascata do PEI segue a POSSE, não toda referência: plano sem estudante sai, meta sem plano
+   * sai, nota sem meta sai, revisão sem plano sai. Já `PeiGoalNote.source` e
+   * `PeiRevision.appointmentId` são referências fracas — evidência e ata. Perder a evidência não
+   * invalida a nota que alguém escreveu, então ela fica, e quem renderiza tem de tolerar a
+   * ausência. Descartar a nota por causa do elo seria jogar fora o texto para preservar o link.
+   */
+  const peisKept = byStudent(peis.kept);
+  const peiIds = new Set(peisKept.map((pei) => pei.id));
+  const peiGoalsKept = peiGoals.kept.filter((goal) => peiIds.has(goal.peiId));
+  const goalIds = new Set(peiGoalsKept.map((goal) => goal.id));
+  const peiGoalNotesKept = peiGoalNotes.kept.filter((note) => goalIds.has(note.goalId));
+  const peiRevisionsKept = peiRevisions.kept.filter((revision) => peiIds.has(revision.peiId));
+
   return {
     state: {
       students: students.kept,
@@ -112,6 +140,10 @@ const validateState = (state: DemoState): { state: DemoState; discarded: Discard
       resources: resources.kept,
       reviews: reviewsKept,
       favorites: favoritesKept,
+      peis: peisKept,
+      peiGoals: peiGoalsKept,
+      peiGoalNotes: peiGoalNotesKept,
+      peiRevisions: peiRevisionsKept,
     },
     discarded: {
       students: students.dropped,
@@ -121,6 +153,10 @@ const validateState = (state: DemoState): { state: DemoState; discarded: Discard
       resources: resources.dropped,
       reviews: reviews.dropped + (reviews.kept.length - reviewsKept.length),
       favorites: favorites.dropped + (favorites.kept.length - favoritesKept.length),
+      peis: peis.dropped + (peis.kept.length - peisKept.length),
+      peiGoals: peiGoals.dropped + (peiGoals.kept.length - peiGoalsKept.length),
+      peiGoalNotes: peiGoalNotes.dropped + (peiGoalNotes.kept.length - peiGoalNotesKept.length),
+      peiRevisions: peiRevisions.dropped + (peiRevisions.kept.length - peiRevisionsKept.length),
     },
   };
 };
@@ -154,14 +190,17 @@ export const loadState = (): LoadResult => {
   try {
     const envelope = JSON.parse(raw) as Partial<StoredEnvelope>;
     const stored = envelope.state;
-    if (envelope.version === STORAGE_VERSION && isDemoStateV3(stored)) {
+    if (envelope.version === STORAGE_VERSION && isDemoStateV4(stored)) {
       return loaded(stored);
     }
+    if (envelope.version === 3 && isDemoStateV3(stored)) {
+      return loaded(migrateV3ToV4(stored), 3);
+    }
     if (envelope.version === 2 && isDemoStateV2(stored)) {
-      return loaded(migrateV2ToV3(stored), 2);
+      return loaded(migrateV3ToV4(migrateV2ToV3(stored)), 2);
     }
     if (envelope.version === 1 && isDemoStateV1(stored)) {
-      return loaded(migrateV2ToV3(migrateV1ToV2(stored)), 1);
+      return loaded(migrateV3ToV4(migrateV2ToV3(migrateV1ToV2(stored))), 1);
     }
   } catch {
     // Unparseable JSON is treated like data from an unknown version.

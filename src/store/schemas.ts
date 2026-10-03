@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { Assessment, Atendimento, Observation, Student } from '@/types';
+import type { Pei, PeiGoal, PeiGoalNote, PeiRevision } from '@/types/pei';
 import type { Resource, ResourceFavorite, ResourceReview } from '@/types/resource';
 
 /*
@@ -97,6 +98,9 @@ export const observationSchema: z.ZodType<Observation> = z.discriminatedUnion('k
   }),
 ]);
 
+/** Mesmo vocabulário na meta do PEI e na medição da avaliação, para as duas não divergirem. */
+const objectiveStatus = z.enum(['achieved', 'inProgress', 'notStarted', 'needsReview']);
+
 const performanceLevel = z.union([
   z.literal(1),
   z.literal(2),
@@ -113,12 +117,22 @@ export const assessmentSchema: z.ZodType<Assessment> = z.object({
   kind: z.enum(['diagnostic', 'formative', 'quarterly', 'socioemotional', 'accessibility']),
   quarter: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
   objectives: z.array(
-    z.object({
-      title: nonEmpty,
-      status: z.enum(['achieved', 'inProgress', 'notStarted', 'needsReview']),
-      progress: z.number(),
-      notes: nonEmpty,
-    }),
+    z.union([
+      z.object({
+        goalId: nonEmpty,
+        title: z.undefined().optional(),
+        status: objectiveStatus,
+        progress: z.number(),
+        notes: nonEmpty,
+      }),
+      z.object({
+        goalId: z.undefined().optional(),
+        title: nonEmpty,
+        status: objectiveStatus,
+        progress: z.number(),
+        notes: nonEmpty,
+      }),
+    ]),
   ),
   languageArts: z.object({
     reading: performanceLevel,
@@ -141,7 +155,7 @@ export const assessmentSchema: z.ZodType<Assessment> = z.object({
 export const appointmentSchema: z.ZodType<Atendimento> = z.object({
   id: nonEmpty,
   studentId: nonEmpty,
-  tipo: z.enum(['Reunião Pedagógica', 'Avaliação', 'Atendimento Família', 'Multidisciplinar', 'Outros']),
+  tipo: z.enum(['pedagogicalMeeting', 'assessment', 'familyMeeting', 'multidisciplinary', 'other']),
   data: nonEmpty,
   horarioInicio: nonEmpty,
   horarioFim: nonEmpty,
@@ -198,4 +212,82 @@ export const reviewSchema: z.ZodType<ResourceReview> = z.object({
 export const favoriteSchema: z.ZodType<ResourceFavorite> = z.object({
   resourceId: nonEmpty,
   addedAt: nonEmpty,
+});
+
+/* Entidades do PEI, acrescentadas na v4. A estrutura é a do manual; ver `src/types/pei.ts`. */
+
+export const peiSchema: z.ZodType<Pei> = z.object({
+  id: nonEmpty,
+  studentId: nonEmpty,
+  term: nonEmpty,
+  startsOn: nonEmpty,
+  endsOn: nonEmpty,
+  status: z.enum(['draft', 'active', 'closed']),
+  draftedOn: nonEmpty,
+  draftedBy: nonEmpty,
+  participants: z.array(nonEmpty),
+  profile: z.object({
+    strengths: z.array(nonEmpty),
+    challenges: z.array(nonEmpty),
+    learningStyle: z.array(nonEmpty),
+  }),
+  adaptations: z.array(nonEmpty),
+  resources: z.array(z.object({ name: nonEmpty, available: z.boolean() })),
+  humanSupport: z.object({
+    professional: nonEmpty,
+    weeklyHours: z.number(),
+    specializedSupport: nonEmpty,
+  }),
+  reviewFrequency: z.enum(['quarterly', 'semiannual', 'annual']),
+  nextReviewOn: nonEmpty,
+});
+
+export const peiGoalSchema: z.ZodType<PeiGoal> = z.object({
+  id: nonEmpty,
+  peiId: nonEmpty,
+  area: z.enum([
+    'portuguese',
+    'math',
+    'science',
+    'geographyHistory',
+    'arts',
+    'physicalEducation',
+    'selfRegulation',
+    'socialInteraction',
+    'functionalCommunication',
+    'autonomy',
+  ]),
+  title: nonEmpty,
+  description: nonEmpty,
+  status: z.enum(['notStarted', 'inProgress', 'achieved', 'needsReview']),
+  progress: z.number(),
+  strategies: z.array(nonEmpty),
+  nextStep: nonEmpty,
+  owner: nonEmpty,
+  dueOn: nonEmpty.optional(),
+});
+
+export const peiGoalNoteSchema: z.ZodType<PeiGoalNote> = z.object({
+  id: nonEmpty,
+  goalId: nonEmpty,
+  date: nonEmpty,
+  author: nonEmpty,
+  text: nonEmpty,
+  source: z
+    .union([
+      z.object({ kind: z.literal('observation'), id: nonEmpty }),
+      z.object({ kind: z.literal('assessment'), id: nonEmpty }),
+      z.object({ kind: z.literal('appointment'), id: nonEmpty }),
+    ])
+    .optional(),
+});
+
+export const peiRevisionSchema: z.ZodType<PeiRevision> = z.object({
+  id: nonEmpty,
+  peiId: nonEmpty,
+  date: nonEmpty,
+  author: nonEmpty,
+  participants: z.array(nonEmpty),
+  summary: nonEmpty,
+  appointmentId: nonEmpty.optional(),
 });
