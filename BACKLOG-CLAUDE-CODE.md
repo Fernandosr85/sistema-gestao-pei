@@ -1,8 +1,13 @@
 # Backlog de correções — uma etapa por sessão
 
 Cada etapa é uma sessão separada do Claude Code, com commit e verificação própria.
-Não começar a seguinte antes de `npm run lint`, `npm run typecheck` e `npm run build`
-passarem na anterior.
+Não começar a seguinte antes de `npm run lint`, `npm run typecheck`, `npm test` e
+`npm run build` passarem na anterior.
+
+> **Corrigido em 03/10/2026:** este cabeçalho listava **três** comandos — ficou sem `npm test`
+> desde que a suíte nasceu, em 18/09, enquanto o CLAUDE.md e o README já diziam quatro. Vigésimo
+> item da mesma classe do achado 18, e o primeiro achado pela regra nova: saiu de cruzar as
+> afirmações dos três arquivos sobre o que o CI roda (achado 19), não de reler este arquivo.
 
 Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementar (Codex).
 
@@ -649,6 +654,17 @@ verificação em vez de dentro de uma busca. O instrumento que confere o estado 
 perguntar ao estado quantas coleções ele tem, em vez de carregar a resposta de quando foi
 escrito.
 
+**Quinta forma, na sessão de fechamento (03/10/2026): uma regra de verificação escrita para o
+instrumento conhecido em vez da classe.** A regra invertida da Etapa 9 — "zero inesperado é falha
+de verificação, não sucesso" — nomeava a fotografia de superfície, e vivia na seção daquela etapa
+sem nunca ter entrado no CLAUDE.md (conferido em 03/10). Quando o zero veio de um painel
+de PR (`checks: 0 passando, 0 falhando, 0 pendentes`, lido segundos depois de criar o PR), a regra
+não foi aplicada: o enunciado falava de outro instrumento, e o agente afirmou três vezes que o
+repositório não tinha CI enquanto 36 execuções verdes estavam no GitHub (achado 19). **É a mesma
+causa dos quatro casos acima** — lista em vez de classe —, agora na camada que devia proteger
+contra ela: a regra. Generalizada por decisão do autor para "zero é ausência de resultado, não
+resultado de ausência", valendo para qualquer instrumento.
+
 ---
 
 ### 8. O instrumento que não media o que dizia medir (Etapa 5)
@@ -1078,7 +1094,7 @@ classe do código.
 
 **Qualificação:** nove etapas de registro nunca tinham sido lidas de ponta a ponta procurando
 contradição. A varredura — pedida pelo autor como sessão de fechamento — leu as 2.633 linhas do
-BACKLOG e as 589 do README **medindo cada número que dava para medir**. São **19 itens
+BACKLOG e as 589 do README **medindo cada número que dava para medir**. São **20 itens
 distintos**, enumerados um a um abaixo. Nenhum deles é defeito de código: são defeitos do registro
 sobre o código.
 
@@ -1090,14 +1106,14 @@ por classe faz o total crescer com a granularidade da taxonomia, que é o oposto
 | Classe | Rótulos | O pior exemplo |
 |---|---:|---|
 | README e BACKLOG se contradizendo | 5 | o README dizia "o formato gravado está na **versão 3**" com a tabela do próprio README dizendo v4, 300 linhas abaixo |
-| Afirmação que ficou falsa — resultado, premissa ou condição | 11 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
+| Afirmação que ficou falsa — resultado, premissa ou condição | 12 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
 | Número sem a regra que o produz | 5 | "165 classes de cor fixa", que a Etapa 5 já tinha declarado irreproduzível e o README repetia |
 | Pendência resolvida com o registro intacto | 3 | "As três chaves acentuadas que ficaram, e por quê", resolvidas na v4 e ainda escritas no presente |
 
-Os rótulos somam **24** em **19 itens**: cinco itens carregam dois rótulos, e estão marcados com
+Os rótulos somam **25** em **20 itens**: cinco itens carregam dois rótulos, e estão marcados com
 **(2)** na lista.
 
-### Os 19 itens, um a um
+### Os 20 itens, um a um
 
 | # | Item | Classe(s) | Corrigido em |
 |---:|---|---|---|
@@ -1120,6 +1136,7 @@ Os rótulos somam **24** em **19 itens**: cinco itens carregam dois rótulos, e 
 | 17 | "73 mutações, todas acusadas", sem dizer quantas um leitor consegue reproduzir | número sem regra | `4242e80` |
 | 18 | Pendência 2: o calendário em inglês atribuído à visão **Lista**, quando são as visões Mês e Dia | afirmação falsa (premissa) | `02ae26e` |
 | 19 | Etapa 8: o gatilho da segunda escada escrito pelo nome do pacote, e por isso inaplicável | afirmação falsa (condição) | `02ae26e` |
+| 20 | **A linha 4 deste arquivo**: o cabeçalho pedia `lint`, `typecheck` e `build` antes da etapa seguinte, sem `npm test`, desde que a suíte nasceu em 18/09 | afirmação falsa | `b611cc7` |
 
 **Os cinco itens com dois rótulos** são o 3 (contradição entre documentos **e** número sem
 regra), o 8, o 9 e o 14 (afirmação falsa **e** pendência resolvida com o registro intacto) e o 10
@@ -1134,7 +1151,17 @@ produz" — e o número não saía da tabela: as quatro classes somavam 22 rótu
 se podia reproduzir sem uma regra dizendo se a unidade é o item ou o rótulo. **Os dois números
 estavam errados por motivos diferentes:** o 22 conta rótulos, e cresce se alguém refinar a
 taxonomia sem que nenhuma incoerência nova exista; o 20 não vinha de contagem nenhuma. A
-enumeração de 03/10/2026, com a regra escrita, conta **19**.
+enumeração de 03/10/2026, com a regra escrita, contou **19**.
+
+**E a ironia é útil: o total voltou a 20.** O item do cabeçalho deste arquivo — `lint`,
+`typecheck` e `build` sem `npm test` — entrou na enumeração por decisão do autor e levou a conta
+de 19 a 20. **É o número que estava escrito aqui quando ele não vinha de contagem nenhuma, e agora
+vem:** mesmo valor, origem diferente. A diferença entre os dois 20 é tudo o que este achado
+defende — um era afirmação, o outro é resultado de uma regra que qualquer leitor reaplica
+(20 itens, 25 rótulos, 5 itens de rótulo duplo, 25 − 5 = 20). Um número certo por acaso e um
+número certo por método são indistinguíveis no texto e opostos como prova; é a mesma lição do
+inventário dos arquivos acima de 400 linhas, que ficou em 17 por coincidência enquanto quatro
+linhas mudavam por baixo.
 
 **E o modo como apareceu corrige a regra deste achado.** Não foi revisão do texto: foi ao **usar**
 o registro para outra coisa — somar a tabela para escrever o corpo do PR #16 — que a incoerência
@@ -1156,7 +1183,7 @@ com "reescrevê-las é trabalho possível" na Pendência 4, escrita e desfeita n
    scratchpad daquela sessão. O que sobrou foi versionado em `scripts/mutacoes/`, e o que se
    perdeu está escrito lá.
 
-**O mecanismo, que é o que interessa para o artigo.** Nenhum dos dezenove veio de descuido
+**O mecanismo, que é o que interessa para o artigo.** Nenhum dos vinte veio de descuido
 isolado:
 todos vêm da mesma assimetria. Quando uma etapa muda o código, ela escreve o registro **novo** —
 a seção dela, a tabela de resultado, o achado. O registro **velho** fica, e continua afirmando no
@@ -1204,8 +1231,8 @@ no instrumento: medir o efeito, não inspecionar a presença.
 
 **O autor registra o erro de método como seu, com estas palavras: disse que esperaria o aviso do
 agente para mesclar, e mesclou antes.** O PR #16 foi mesclado em `3f56c7d` com oito commits,
-`36c5f81` a `1125ba3`, enquanto o nono — `b11bbbc`, a enumeração dos 19 itens e a regra de
-contagem — ainda estava nas quatro verificações. Ele ficou em `pendencias/fechamento`, fora do
+`36c5f81` a `1125ba3`, enquanto o nono — `b11bbbc`, a enumeração (19 itens naquele dia, 20 depois
+de o item do cabeçalho entrar) e a regra de contagem — ainda estava nas quatro verificações. Ele ficou em `pendencias/fechamento`, fora do
 `main`, e o **PR #17 existe por causa disso**.
 
 **A consequência, medida:** no intervalo entre o merge e o PR #17, o `main` afirmou "vinte itens"
@@ -1216,6 +1243,139 @@ um PR mesclado não descrever o que não mesclou.
 **O agente teve a sua parte, e ela fica registrada para a próxima vez:** sabia que o autor
 mesclaria ao receber o aviso e não disse que havia commit a caminho. A regra prática que sai daí é
 simples — quem avisa "terminei" avisa também o que ainda está em verificação.
+
+### 19. A verificação que existia e foi declarada inexistente (03/10/2026)
+
+**Qualificação:** três vezes numa sessão o agente relatou ao autor que "o repositório não tem CI;
+a verificação é local" — ao abrir o PR #16, o #17 e o #18. **É falso, e sempre foi.** Medido em
+03/10/2026, com o repositório de volta a público:
+
+| Medida | Resultado |
+|---|---|
+| Execuções do workflow `verify` | **36, todas `success`**, de 13/09 a 03/10/2026 |
+| Execuções canceladas, falhadas ou puladas | **0** |
+| Os três PRs do dia | check `verify` **passando**: PR #16 em 1m27s, #17 em 57s, #18 em 1m33s |
+| Dias sem execução | só os dias sem `push`: 20–21/09 e 23/09–01/10, com o `main` parado entre o PR #13 e o PR #14 |
+
+**A origem do erro, medida.** O painel de PR do aplicativo devolveu
+`checks: { available: true, passing: 0, failing: 0, pending: 0 }` segundos depois de o PR ser
+criado — antes de a execução ser registrada. **"Zero checks conhecidos neste instante" virou "não
+há CI neste repositório".** O painel não mentiu: ele respondeu sobre o instante em que foi
+perguntado. A inferência mentiu, e bastava um comando — `gh run list` ou `gh pr checks` — para
+matá-la.
+
+**A classe do defeito: zero lido como ausência, sem controle positivo.** É irmão do achado 7 (a
+varredura que não vê o que procura), do achado 8 (o instrumento que não media o que dizia medir) e
+sobretudo **da regra invertida da Etapa 9: "zero inesperado é falha de verificação, não
+sucesso"**. A regra existia e não foi aplicada — e o motivo está na subseção "O par", abaixo.
+
+> **Conferido antes de afirmar, em 03/10/2026, e a primeira redação deste parágrafo estava errada:**
+> ela dizia que a regra invertida "está escrita no CLAUDE.md". **Não estava.** A busca por "zero
+> inesperado", "zero é suspeito" e "falha de verificação" nos três arquivos devolve o BACKLOG
+> (Etapa 9 e Pendência 3) e **nenhuma linha do CLAUDE.md**. A regra vivia na seção de uma etapa e
+> nas instruções daquela sessão, não no arquivo de instruções permanentes — o que torna o caso
+> pior e mais simples: ela não deixou de ser aplicada por estar mal enunciada num lugar
+> permanente; ela não estava num lugar permanente. Entrou no CLAUDE.md agora, generalizada, pela
+> primeira vez.
+
+**O agravante: o próprio registro contradizia a afirmação, em duas linhas do README.** A tabela de
+comandos diz, do `npm test`, "é o que o CI roda" (`README.md:107`), e a seção da suíte diz
+"`npm test` roda no CI entre o `typecheck` e o `build`" (`README.md:400`). **Uma das três
+operações da regra "reler com uso" — cruzar as afirmações entre os três arquivos — derrubava a
+afirmação no primeiro cruzamento.** A regra foi escrita na mesma sessão em que a afirmação falsa
+foi repetida três vezes, e não foi aplicada a ela: foi aplicada ao texto do registro, não à fala
+do agente sobre o estado do repositório.
+
+**A hipótese era do autor, e ele registra que era sua.** Ele propôs interrupção silenciosa por
+limite de minutos do Actions em repositório privado no plano gratuito, e pediu que, se
+confirmasse, ficasse registrada como achado 18 aplicado a ferramenta. **Caiu na medição, junto com
+a do agente:** eram 36 execuções, todas `success`. As duas hipóteses erravam na mesma direção —
+supunham que a verificação tinha deixado de existir, uma por cobrança e outra por leitura de
+painel — e nenhuma das duas tinha medido antes de supor. O que distingue as duas é só isto: a do
+autor foi proposta **como hipótese, com a ordem de medir antes de registrar**; a do agente saiu
+como **afirmação de estado**, três vezes, sem medição nenhuma. **Não houve interrupção**: as 36
+execuções são contínuas e cobrem todos os eventos de `push` e `pull_request` do período,
+incluindo os três PRs de hoje e as mesclagens do `main`. Fica dito o que **não** foi medido: a
+conta de minutos consumidos, porque o endpoint de cobrança do Actions exige escopo `user`, que
+esta autenticação não tem. A refutação é por execução observada, não por saldo.
+
+**E o achado 18 aplicado a ferramenta aconteceu de outra forma.** Não foi a verificação que parou
+em silêncio: foi a **existência** dela que passou dois PRs declarada como inexistente, num relato
+que o autor leu e não tinha como conferir sem abrir o GitHub. O defeito mudou de lugar — do
+registro escrito para o relato falado —, e a parte do mecanismo que se mantém é a mesma: ninguém
+reprova o que o agente afirma.
+
+#### O que o "CI verde" cobriu, por período
+
+Medido pelo histórico do `.github/workflows/ci.yml`:
+
+| Período | Passos do CI | O que "CI verde" significava |
+|---|---|---|
+| 13/09 a 18/09 (`441a31e`) | `npm ci`, `lint`, `typecheck`, `build` | **três** das quatro verificações |
+| de 18/09 em diante (`c152869`) | os mesmos **mais `npm test`** | as **quatro** |
+
+`npm test` entrou no CI em `c152869`, o commit de andaime da suíte da Etapa 7 — o mesmo que
+instalou o controle de que zero teste coletado reprova. Então o "CI verde" dos PRs #1 a #11 cobre
+três verificações, **e isso não é defeito**: a suíte não existia. Do PR #12 em diante cobre as
+quatro. A afirmação "as quatro verificações" vale no CI a partir da Etapa 7; antes dela, valia
+só na máquina.
+
+#### O painel About do GitHub, medido em 03/10/2026
+
+Linha de base, porque é superfície **fora do git**:
+
+| Campo | Estado medido |
+|---|---|
+| Visibilidade | pública |
+| Descrição | "Protótipo de sistema de gestão de Planos Educacionais Individualizados (PEI) para educação inclusiva. React + TypeScript. Dados de demonstração fictícios." — sem vínculo institucional, e dizendo que os dados são fictícios |
+| Tópicos | 12, todos temáticos ou técnicos (`accessibility`, `brazil`, `education`, `educational-management`, `educational-platform`, `inclusive-education`, `react`, `shadcn-ui`, `special-education`, `student-tracking`, `tailwind-css`, `typescript`); nenhum institucional |
+| Homepage | **vazia** |
+
+**Nenhuma verificação deste repositório alcança esses três campos.** As quatro rodam sobre o
+código; a varredura institucional lê `src`, `docs` e `index.html`. Descrição, tópicos e homepage
+vivem no GitHub, não no clone, e por isso só existem no registro como medição datada — quem
+conferir isto em dezembro não tem commit para comparar, tem esta tabela.
+
+#### O par: a regra existia e não foi aplicada
+
+**A regra que mataria esta afirmação existia desde a Etapa 9** — "zero inesperado é falha de
+verificação, não sucesso" — e não foi aplicada, por duas razões que se somam e que foram medidas
+em 03/10/2026:
+
+1. **Estava escrita para um instrumento, não para a classe.** O enunciado falava da fotografia de
+   superfície; o caso de hoje era um painel de PR, e nada nele dizia que os dois são o mesmo
+   problema. Enumerar o instrumento conhecido em vez da classe é o que faz a regra deixar de
+   alcançar o caso seguinte — **quinta forma** registrada do achado 7, depois de duas no `grep`,
+   uma no `TS6192` e uma num controle da suíte, e a primeira dentro de uma regra de verificação.
+2. **E não estava no arquivo de instruções permanentes.** Buscadas as três formulações nos três
+   arquivos, a regra aparece no BACKLOG — na Etapa 9 e na Pendência 3 — e **em nenhuma linha do
+   CLAUDE.md**. Era regra de etapa, não regra do projeto: nasceu amarrada a um instrumento e ao
+   contexto de uma sessão, e as duas amarras impediram que alcançasse o caso seguinte. Entra no
+   CLAUDE.md agora, generalizada, pela primeira vez.
+
+**A generalização, por decisão do autor (03/10/2026), com as palavras dele:** *"Zero é ausência de
+resultado, não resultado de ausência. Antes de afirmar que algo não existe — verificação,
+ocorrência, execução — rode o comando que o lista e confirme com controle positivo. Vale para
+qualquer instrumento, não só para a fotografia."* Está no CLAUDE.md nessa forma.
+
+#### O vigésimo item, que entrou na enumeração
+
+Cruzar os três arquivos sobre o que o CI roda derrubou mais uma afirmação, e ela estava na
+**linha 4 deste arquivo**: o cabeçalho do backlog pedia `lint`, `typecheck` e `build` antes de
+começar a etapa seguinte, **sem `npm test`** — redação de antes de 18/09 que sobreviveu à Etapa 7
+e a cinco etapas depois dela, enquanto o CLAUDE.md e o README diziam quatro. Corrigido no mesmo
+commit deste achado, com a nota de data no lugar.
+
+É o vigésimo item da classe do achado 18 e o primeiro achado **pela** regra do achado 18 corrigida:
+não apareceu numa releitura do cabeçalho — apareceu ao cruzar arquivos para medir outra coisa.
+**Por decisão do autor entrou na enumeração como item 20**, que passa de 19 a 20 itens e de 24 a
+25 rótulos — e devolve ao total o mesmo número que a seção já tinha afirmado sem regra, agora com
+ela (ver "O fecho do próprio achado 18").
+
+**A regra que sai do achado, no CLAUDE.md:** antes de afirmar que uma verificação não existe, rode
+o comando que a lista. Zero num painel é "nada conhecido ainda", não "nada existe" — e afirmação
+sobre o estado do repositório se cruza com o registro antes de sair, que é a mesma operação da
+releitura com uso.
 
 ---
 

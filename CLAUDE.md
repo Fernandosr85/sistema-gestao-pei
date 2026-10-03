@@ -26,6 +26,14 @@ npm run build       # conclui
 Rode as quatro antes de cada commit. Se uma quebrar, conserte antes de seguir — não
 acumule.
 
+**Zero é ausência de resultado, não resultado de ausência.** Antes de afirmar que algo não
+existe — verificação, ocorrência, execução — rode o comando que o lista e confirme com controle
+positivo. Vale para **qualquer instrumento**, não só para a fotografia: a regra nasceu na Etapa 9
+para a fotografia de superfície, ficou amarrada a esse instrumento, nunca entrou aqui, e não
+alcançou o painel de PR — onde `0 passando, 0 falhando, 0 pendentes` foi lido como "não há CI"
+com 36 execuções verdes no GitHub (achado 19; é o achado 7 numa regra de verificação, enumerar o
+conhecido em vez da classe).
+
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
 defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letra acentuada
@@ -66,11 +74,21 @@ números que ela move.** Releitura atenta não reprova nada: o par "vinte itens"
 achado 18 sobreviveu a duas leituras com a tabela à vista e caiu na primeira vez que alguém fez
 conta com ele. Use o registro em três operações — **some as tabelas, cruze os números entre os
 três arquivos (README, BACKLOG, CLAUDE.md) e refaça pelo menos uma conta.** Um registro não se
-mostra incoerente ao ser relido; mostra-se ao ser usado. O registro é a única parte deste projeto
-que nenhuma verificação reprova, e envelhece em silêncio: a varredura de 03/10/2026 achou 19 itens
-acumulados em nove etapas (achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
+mostra incoerente ao ser relido; mostra-se ao ser usado. **E vale para o que você afirma ao autor**, não só para
+o texto do registro: o CI deste repositório existe desde 13/09/2026, com `npm test` dentro dele
+desde 18/09, e foi declarado inexistente em três relatos (achado 19) — `gh run list` e
+`gh pr checks` listam o que o painel ainda não sabe. O registro é a única parte deste projeto
+que nenhuma verificação reprova, e envelhece em silêncio: a varredura de 03/10/2026 achou **20
+itens** acumulados em nove etapas, pela regra "o item é a unidade, a classe é o rótulo" (achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
 presente: "mantém", "ainda mostra" e "não possui" viram afirmação falsa na etapa seguinte sem
 ninguém tocar neles.
+
+**Descrição, tópicos e homepage do GitHub não são alcançados por nenhuma verificação.** As
+quatro rodam sobre o código; a varredura institucional lê `src`, `docs` e `index.html`. Esses
+três campos vivem fora do clone, não têm commit para comparar e só existem no registro como
+**conferência manual datada** — a última está no achado 19, medida em 03/10/2026 (descrição sem
+vínculo institucional e dizendo que os dados são fictícios, 12 tópicos temáticos, homepage vazia).
+Ao mexer no repositório pelo GitHub, remeça os três e registre a data.
 
 Prova que não se consegue fazer não vale como prova. Quando a verificação de uma simplificação
 falha por limite de ferramenta, desfaça a simplificação em vez de assumir equivalência.
