@@ -151,8 +151,8 @@ localStorage do navegador, com aviso permanente e o botão "Restaurar dados de
 demonstração". Desligado, o store roda só em memória e não toca no localStorage. Ele só
 deve ser desligado quando as telas passarem a consumir dados reais de um backend.
 
-O formato gravado é versionado (`src/store/persistence.ts`) e está na versão 3. Dados das
-versões 1 e 2 são migrados na primeira leitura, um passo de cada vez e sem perda; dados de
+O formato gravado é versionado (`src/store/persistence.ts`) e está na **versão 4**. Dados das
+versões 1, 2 e 3 são migrados na primeira leitura, um passo de cada vez e sem perda; dados de
 versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 
 ---
@@ -190,9 +190,11 @@ desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado 
 violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
 Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
 registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
-Gestão, desempenho e apresentação continuam com conteúdo fixo de demonstração, agora com
-aviso em todas essas telas. O histórico acadêmico não tem modelo de dados e diz isso na tela.
-Na Etapa 9, o PEI virou entidade do modelo e o Ver PEI passou a ler o plano do estudante.
+Na Etapa 9, o PEI virou entidade do modelo e as cinco telas que mostravam exemplo sob o nome de
+uma criança — Ver PEI, Desempenho, Modo Apresentação, Detalhe da observação e Minha Agenda —
+passaram a ler os registros do estudante aberto. **O painel de Gestão continua sendo cenário
+fixo**, com nome próprio e aviso, e o histórico acadêmico não tem modelo de dados e diz isso na
+tela.
 
 ---
 
@@ -254,8 +256,17 @@ navegador. A tela diz isso, em vez de oferecer um controle que não faria nada.
   funcionavam no mouse, o lint encontrou um e o axe nenhum — o achado 2 do backlog registra
   a medida disso. A navegação completa por teclado e a leitura com leitor de tela real **ainda
   não foram testadas**: os nove testes estão em "Pendências abertas" no backlog.
-- **165 classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores
-  que passam no contraste. Estão registradas na Etapa 5 do backlog.
+- **Dois defeitos conhecidos e não corrigidos**, achados depois do merge da Etapa 3 e abertos na
+  Pendência 2 do backlog: o selo "ATENÇÃO" de Gestão > Relatórios tem contraste **3,15:1** sobre
+  `--alert-warning-icon` (1.4.3 pede 4,5:1), e o calendário da Agenda formata datas em inglês
+  (3.1.1 e 3.1.2). Os dois só aparecem depois de clique, que é por onde a varredura não passa.
+- **O que só existe depois de uma interação não é medido por método automatizado nenhum deste
+  repositório** — nem o axe rota a rota, nem o arreio de superfície, nem o lint. Foi assim que
+  dois botões de fechar sem nome acessível correto atravessaram oito etapas (achado 2).
+- **Classes de cor fixa e 12 literais hexadecimais** continuam fora dos tokens, em cores que
+  passam no contraste. O número de classes **depende da regra de contagem** — 147 pela estreita,
+  164 pela larga —, e o "165" que esta seção trazia não sai de nenhuma das duas: é número sem
+  método, recontado na Etapa 5 do backlog.
 
 ---
 

@@ -76,8 +76,10 @@ vence a variável externa.
 `npm test` roda a suíte em Vitest + jsdom (`vitest.config.ts`). Ela cobre **o que as Etapas 1
 a 6 corrigiram** — persistência do store, datas, seletores de métrica, reducer, grafo de rotas
 e o fluxo de cadastro até a listagem —, mais a guarda de navegação da Etapa 8 (todo destino
-não literal listado pelo nome), e não o código todo. Arquivo sem teste não é arquivo
-verificado; a lista do que ficou de fora está no README.
+não literal listado pelo nome) e **as cinco telas da Etapa 9** (Ver PEI, Desempenho,
+Apresentação, Detalhe da observação e Minha Agenda, cada uma montada de verdade), e não o
+código todo. Arquivo sem teste não é arquivo verificado; a lista do que ficou de fora está no
+README.
 
 - O ambiente é fixado no config (`TZ=America/Sao_Paulo`), porque em UTC os defeitos de data
   não existem e a suíte passaria sem exercitar um caso sequer.
