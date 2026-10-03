@@ -1078,15 +1078,73 @@ classe do código.
 
 **Qualificação:** nove etapas de registro nunca tinham sido lidas de ponta a ponta procurando
 contradição. A varredura — pedida pelo autor como sessão de fechamento — leu as 2.633 linhas do
-BACKLOG e as 589 do README **medindo cada número que dava para medir**, e achou **vinte** itens.
-Nenhum deles é defeito de código: são defeitos do registro sobre o código.
+BACKLOG e as 589 do README **medindo cada número que dava para medir**. São **19 itens
+distintos**, enumerados um a um abaixo. Nenhum deles é defeito de código: são defeitos do registro
+sobre o código.
 
-| Classe | Quantos | O pior exemplo |
+**A regra de contagem (decisão do autor, 03/10/2026): nesta tabela o item é a unidade e a classe
+é o rótulo.** Item que cai em duas classes conta **uma vez**, com as duas classes citadas. O que
+se mede é quantas incoerências existiam, não quantas vezes elas se encaixam em classes — contar
+por classe faz o total crescer com a granularidade da taxonomia, que é o oposto de uma medida.
+
+| Classe | Rótulos | O pior exemplo |
 |---|---:|---|
 | README e BACKLOG se contradizendo | 5 | o README dizia "o formato gravado está na **versão 3**" com a tabela do próprio README dizendo v4, 300 linhas abaixo |
-| Afirmação de resultado que ficou falsa | 9 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
+| Afirmação que ficou falsa — resultado, premissa ou condição | 11 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
 | Número sem a regra que o produz | 5 | "165 classes de cor fixa", que a Etapa 5 já tinha declarado irreproduzível e o README repetia |
 | Pendência resolvida com o registro intacto | 3 | "As três chaves acentuadas que ficaram, e por quê", resolvidas na v4 e ainda escritas no presente |
+
+Os rótulos somam **24** em **19 itens**: cinco itens carregam dois rótulos, e estão marcados com
+**(2)** na lista.
+
+### Os 19 itens, um a um
+
+| # | Item | Classe(s) | Corrigido em |
+|---:|---|---|---|
+| 1 | README: "o formato gravado está na versão 3", com a tabela do próprio README em v4 | contradição | `1110e22` |
+| 2 | README: "Gestão, desempenho e apresentação continuam com conteúdo fixo", contra a tabela de implementação do mesmo arquivo | contradição | `1110e22` |
+| 3 | README: "165 classes de cor fixa", número que a Etapa 5 já declarara sem método **(2)** | contradição + número sem regra | `1110e22` |
+| 4 | README sem os dois defeitos de acessibilidade em aberto que a Pendência 2 registra | contradição | `1110e22` |
+| 5 | CLAUDE.md: escopo da suíte sem as cinco telas da Etapa 9, que o README já incluía | contradição | `1110e22` |
+| 6 | Achado 1: "ainda mostram conteúdo fixo", apontando para a seção "Ainda aberto" renomeada para "Fechado na Etapa 9" | afirmação falsa | `310f195` |
+| 7 | Achado 3: "o modo apresentação tem doze slides" | afirmação falsa | `310f195` |
+| 8 | Etapa 4, em dois lugares: a ressalva do critério de aceite, com o Desempenho em 85% e a ficha em 60% **(2)** | afirmação falsa + pendência resolvida | `310f195` |
+| 9 | Etapa 5: "As três chaves acentuadas que ficaram, e por quê" **(2)** | afirmação falsa + pendência resolvida | `310f195` |
+| 10 | Etapa 5: o inventário "17 arquivos acima de 400 linhas", certo no total e errado em quatro linhas **(2)** | afirmação falsa + número sem regra | `310f195` |
+| 11 | Etapa 7: "as 18 mutações desta etapa", que o achado 11 do mesmo arquivo já corrigira para 27 | afirmação falsa | `310f195` |
+| 12 | Etapa 9: o item de plano "o sistema não possui entidade PEI", já executado | afirmação falsa | `310f195` |
+| 13 | Etapa 9: "junto vai o `z.infer`", contra "O que a etapa NÃO fez" 120 linhas abaixo | afirmação falsa | `310f195` |
+| 14 | Etapa 6 e README: o ponteiro do `z.infer` mandando esperar "quando a entidade PEI for modelada" **(2)** | afirmação falsa + pendência resolvida | `310f195` |
+| 15 | README: "os doze gráficos têm nome e tabela equivalente", sem a regra que produz o doze | número sem regra | `4242e80` |
+| 16 | Etapa 3: 98 e 97 linhas de emoji — dois números para a mesma correção, nenhum com regra | número sem regra | `4242e80` |
+| 17 | "73 mutações, todas acusadas", sem dizer quantas um leitor consegue reproduzir | número sem regra | `4242e80` |
+| 18 | Pendência 2: o calendário em inglês atribuído à visão **Lista**, quando são as visões Mês e Dia | afirmação falsa (premissa) | `02ae26e` |
+| 19 | Etapa 8: o gatilho da segunda escada escrito pelo nome do pacote, e por isso inaplicável | afirmação falsa (condição) | `02ae26e` |
+
+**Os cinco itens com dois rótulos** são o 3 (contradição entre documentos **e** número sem
+regra), o 8, o 9 e o 14 (afirmação falsa **e** pendência resolvida com o registro intacto) e o 10
+(afirmação falsa **e** número sem regra). Nenhum outro item desta lista cabe em mais de uma
+classe.
+
+### O fecho do próprio achado 18
+
+**Esta seção afirmou "vinte itens" por um dia, e o vinte não tinha regra.** Quem escreveu foi o
+agente, no commit `33c06ec`, dentro do achado criado para a classe "número sem a regra que o
+produz" — e o número não saía da tabela: as quatro classes somavam 22 rótulos, e nem o 20 nem o 22
+se podia reproduzir sem uma regra dizendo se a unidade é o item ou o rótulo. **Os dois números
+estavam errados por motivos diferentes:** o 22 conta rótulos, e cresce se alguém refinar a
+taxonomia sem que nenhuma incoerência nova exista; o 20 não vinha de contagem nenhuma. A
+enumeração de 03/10/2026, com a regra escrita, conta **19**.
+
+**E o modo como apareceu é o mecanismo do achado 18 outra vez.** Não foi revisão do texto: foi ao
+**usar** o registro para outra coisa — somar a tabela para escrever o corpo do PR #16 — que a
+incoerência saiu. É assim que ela sempre aparece, e é o argumento de por que a releitura ao fechar
+etapa tem de ser releitura **com uso**: medir de novo os números, não passar os olhos. Um registro
+só se mostra incoerente quando alguém tenta fazer conta com ele.
+
+**O intervalo entre escrever e envelhecer foi de horas**, não de etapas — o mesmo que aconteceu
+com "reescrevê-las é trabalho possível" na Pendência 4, escrita e desfeita no mesmo dia. O achado
+18 não é sobre registro antigo: é sobre registro que ninguém reprova.
 
 **Os dois achados dentro do achado.**
 
@@ -1100,7 +1158,8 @@ Nenhum deles é defeito de código: são defeitos do registro sobre o código.
    scratchpad daquela sessão. O que sobrou foi versionado em `scripts/mutacoes/`, e o que se
    perdeu está escrito lá.
 
-**O mecanismo, que é o que interessa para o artigo.** Nenhum dos vinte veio de descuido isolado:
+**O mecanismo, que é o que interessa para o artigo.** Nenhum dos dezenove veio de descuido
+isolado:
 todos vêm da mesma assimetria. Quando uma etapa muda o código, ela escreve o registro **novo** —
 a seção dela, a tabela de resultado, o achado. O registro **velho** fica, e continua afirmando no
 presente um estado que deixou de existir. A série inteira tem verificação para o código (quatro
