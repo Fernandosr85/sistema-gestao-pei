@@ -45,8 +45,17 @@ não por lembrança: foi uma recontagem por script que corrigiu "18 mutações" 
 migrações (4), datas (3), seletores (6), reducer (5), rotas (3) e fluxo (6) — foram escritas em
 scripts que viviam no diretório temporário da sessão e **não sobreviveram**: o diretório foi
 limpo entre sessões. O resultado delas está registrado no BACKLOG e nas mensagens dos commits da
-Etapa 7, mas **não é reproduzível a partir deste repositório**. Reescrevê-las é trabalho
-possível — cada teste daquela etapa diz qual defeito pega — e está registrado como pendência.
+Etapa 7, mas **não é reproduzível a partir deste repositório**.
+
+**Elas não serão reescritas**, por decisão do autor em 03/10/2026 (Pendências abertas, item 4, do
+BACKLOG). Reescrever a partir do teste de hoje produz mutação que casa com o que o teste **faz
+hoje**, não com o defeito que ele existia para pegar em 18/09/2026 — quatro dos seis arquivos de
+teste daquela etapa mudaram depois dela, e o `studentProgress` que as seis mutações de seletor
+atacavam foi reescrito na Etapa 9 (a conta antiga virou `assessmentProgress`). Seriam 27 mutações
+novas com aparência de reconstituição, e isso é pior que 27 declaradas perdidas.
+
+**O que este diretório afirma: 47 reproduzíveis. O que o BACKLOG atesta: 27 acusadas em
+18/09/2026, sem reprodução.** Os dois números não se somam numa afirmação só.
 
 É por isso que estes scripts estão versionados: um número que ninguém consegue reproduzir não é
 medida, e era o número mais citado da série.

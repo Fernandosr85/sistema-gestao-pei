@@ -1261,6 +1261,49 @@ que o silêncio de agora.
 asseveram, em jsdom, e o que foi lido no navegador. **O que não pode:** que nenhum detalhe de
 acessibilidade, foco ou número regrediu dentro de um diálogo entre dois commits.
 
+### 4. As 27 mutações da Etapa 7 não serão reescritas — decisão do autor, 03/10/2026
+
+**Estado em 03/10/2026:** 47 das 74 mutações da série estão em `scripts/mutacoes/` e reproduzem o
+resultado registrado — 47 plantadas, 47 acusadas, medido pelo `executar.cjs`. As 27 da Etapa 7 —
+persistência e migrações (4), datas (3), seletores (6), reducer (5), rotas (3) e fluxo (6) —
+viviam no diretório temporário daquela sessão e não sobreviveram a ela. O resultado delas está
+registrado aqui e nas mensagens dos commits de 18/09/2026; a reprodução, não.
+
+**Decisão do autor: não reescrever — e o motivo é o registro, não o trabalho.** Reescrevê-las a
+partir dos testes de hoje produz mutações que casam com o que o teste **faz hoje**, não com o
+defeito que ele existia para pegar em 18/09. Seriam 27 mutações novas com aparência de
+reconstituição, e isso é pior que 27 declaradas perdidas: o leitor veria o 74 inteiro como
+reproduzível quando parte dele seria medida de outubro vestida com a data de setembro. **Está
+escrito aqui para ninguém reabrir isto achando que é só trabalho braçal.**
+
+**A premissa está medida, não suposta** (03/10/2026). Quatro dos seis arquivos de teste da
+Etapa 7 mudaram depois dela: `src/store/persistence.test.ts` +227/−10 (`448fa6b`, Etapa 9),
+`src/test/rotas.test.ts` +108/−6 (`321ab87`, Etapa 8), `src/lib/metrics.test.ts` +68/−19
+(`ac477e1`, Etapa 9) e `src/test/fluxo.test.tsx` +8/−0 (`ccb2fce`); só `date.test.ts` e
+`reducer.test.ts` estão como ficaram. E o alvo também se moveu: quando as seis mutações dos
+seletores foram plantadas, `studentProgress` tinha 11 linhas e lia a avaliação mais recente; hoje
+tem 4 e lê as metas do PEI vigente, e a conta antiga vive em `assessmentProgress`. Uma mutação
+escrita hoje contra `studentProgress` planta defeito em código da Etapa 9 — não é a mutação de
+setembro com outro nome de arquivo, é outra mutação.
+
+**E não há artefato de onde recuperar as originais.** Os 22 transcritos de sessão desta máquina
+foram varridos em 03/10/2026: nenhum é a sessão da Etapa 7 — dois citam "Etapa 7" uma vez cada
+(um é o plano deste backlog sendo lido, o outro é de projeto alheio) e o terceiro é a sessão de
+fechamento. Perdido aqui significa perdido, não "em outro lugar".
+
+**O que o repositório pode afirmar sem elas:** que 47 mutações plantadas em código de produção são
+acusadas pela suíte, hoje, por quem rodar `node scripts/mutacoes/executar.cjs`; e que as 27 foram
+acusadas quando foram plantadas, pelo registro da Etapa 7 — testemunho, não reprodução. **O que
+não pode:** que o 74 seja reproduzível. É **47 reproduzíveis e 27 atestadas**, e os dois números
+não se somam numa afirmação só.
+
+**Isto é o achado 18 dentro da sessão que o escreveu.** O commit `d83d8ba` e o README dos scripts
+diziam "reescrevê-las é trabalho possível, e fica como pendência" — escrito horas antes da
+decisão, no mesmo dia. A mensagem do commit fica como está, porque história não se reescreve; o
+texto vivo foi corrigido e esta pendência registra a substituição, como a Pendência 1 faz com a
+ordem dos testes manuais. O prazo do achado 18 não se mede em etapas: mede-se no tempo entre
+escrever e decidir, e aqui foram horas.
+
 ---
 
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
@@ -2197,8 +2240,11 @@ que o acompanha é o que ficou de fora.
    > este era o mais citado da série. **Dos 74 do conjunto, 47 estão lá.** Os 27 desta etapa
    > viviam no diretório temporário da sessão e **não sobreviveram** a ela; o resultado está
    > registrado aqui e nas mensagens dos commits, e não é reproduzível a partir do repositório.
-   > Reescrevê-los é trabalho possível, porque cada teste diz qual defeito pega, e fica como
-   > pendência própria.
+   > **Não serão reescritos, por decisão do autor em 03/10/2026** (Pendências abertas, item 4):
+   > mutação escrita a partir do teste de hoje casa com o que o teste faz hoje, não com o defeito
+   > que ele pegava em 18/09 — quatro dos seis arquivos de teste mudaram desde então e o
+   > `studentProgress` que seis delas atacavam foi reescrito. **47 reproduzíveis e 27 atestadas**
+   > é o que o repositório pode afirmar.
    **27 mutações na etapa, todas acusadas na verificação final** — 4 na persistência e nas
    migrações, 3 nas datas, 6 nos seletores, 5 no reducer, 3 nas rotas e 6 no fluxo. Uma delas,
    a que apaga uma rota, **não** foi acusada quando foi plantada pela primeira vez, e o que ela

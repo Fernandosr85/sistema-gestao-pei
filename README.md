@@ -437,7 +437,10 @@ Três decisões que dizem o que a suíte significa:
   **47 delas estão em [`scripts/mutacoes/`](scripts/mutacoes/) e qualquer pessoa reexecuta com
   `node scripts/mutacoes/executar.cjs`.** As 27 da Etapa 7 foram escritas em scripts que viviam
   no diretório temporário da sessão e não sobreviveram: o resultado delas está registrado, e
-  **não é reproduzível a partir deste repositório**. Está dito assim no README dos scripts.
+  **não é reproduzível a partir deste repositório**. Está dito assim no README dos scripts, e
+  **não serão reescritas**: mutação escrita a partir do teste de hoje casa com o teste de hoje,
+  não com o defeito de 18/09 (Pendências abertas, item 4, com a premissa medida). O número
+  honesto é **47 reproduzíveis e 27 atestadas**, não 74 reproduzíveis.
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 

@@ -57,6 +57,9 @@ linha variam por arquivo (`core.autocrlf=true` deixa a cópia de trabalho em CRL
 exatamente uma ocorrência e aborte fora disso. Mutação nova entra **versionada** em
 `scripts/mutacoes/`, no mesmo commit do teste que ela verifica: número que só existe no
 diretório temporário de uma sessão não é medida — 27 das 74 desta série se perderam assim.
+**Mutação perdida não se reescreve a partir do teste de hoje:** ela casaria com o que o teste faz
+hoje, não com o defeito que ele pegava quando foi escrita, e reconstituição com data antiga é pior
+que perda declarada (Pendências abertas, item 4).
 
 **Ao fechar uma etapa, releia o que ela tocou no README e no BACKLOG e meça de novo os números
 que ela move.** O registro é a única parte deste projeto que nenhuma verificação reprova, e
