@@ -61,10 +61,14 @@ diretório temporário de uma sessão não é medida — 27 das 74 desta série 
 hoje, não com o defeito que ele pegava quando foi escrita, e reconstituição com data antiga é pior
 que perda declarada (Pendências abertas, item 4).
 
-**Ao fechar uma etapa, releia o que ela tocou no README e no BACKLOG e meça de novo os números
-que ela move.** O registro é a única parte deste projeto que nenhuma verificação reprova, e
-envelhece em silêncio: a varredura de 03/10/2026 achou 19 itens acumulados em nove etapas
-(achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
+**Ao fechar uma etapa, releia COM USO o que ela tocou no README e no BACKLOG, e meça de novo os
+números que ela move.** Releitura atenta não reprova nada: o par "vinte itens" / 22 rótulos do
+achado 18 sobreviveu a duas leituras com a tabela à vista e caiu na primeira vez que alguém fez
+conta com ele. Use o registro em três operações — **some as tabelas, cruze os números entre os
+três arquivos (README, BACKLOG, CLAUDE.md) e refaça pelo menos uma conta.** Um registro não se
+mostra incoerente ao ser relido; mostra-se ao ser usado. O registro é a única parte deste projeto
+que nenhuma verificação reprova, e envelhece em silêncio: a varredura de 03/10/2026 achou 19 itens
+acumulados em nove etapas (achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
 presente: "mantém", "ainda mostra" e "não possui" viram afirmação falsa na etapa seguinte sem
 ninguém tocar neles.
 
