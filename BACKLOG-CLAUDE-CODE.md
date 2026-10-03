@@ -105,9 +105,9 @@ de ansiedade: foi uma segunda, com termos de saúde mental e comportamento, que 
 Um dado de saúde escrito sem nenhuma delas continua podendo estar em alguma tela. O que muda a
 garantia não é uma busca melhor, é a Etapa 4 terminar: quando tudo o que a ficha e os diálogos
 do estudante mostram vier do registro dele ou de um cenário explicitamente nomeado, deixa de
-haver texto fixo para atribuir a alguém. A Etapa 4 terminou sem chegar lá: Desempenho,
-Apresentação, Ver PEI e Detalhe da observação ainda mostram conteúdo fixo sob o nome do
-estudante, com aviso (ver **Ainda aberto**, abaixo).
+haver texto fixo para atribuir a alguém. A Etapa 4 terminou sem chegar lá, e a Etapa 9 chegou:
+ver **Fechado na Etapa 9**, abaixo. Até ela, Desempenho, Apresentação, Ver PEI e Detalhe da
+observação mostravam conteúdo fixo sob o nome do estudante, com aviso.
 
 **Critério, decidido pelo autor na Etapa 4: o que decide é a atribuição a uma pessoa
 nomeada.** Não é ser fictício, e não é ter aviso de exemplo. Dois casos que ficaram para
@@ -356,8 +356,9 @@ Quem lesse "3 observações" numa coluna pensaria estar lendo uma quarta-feira.
   contagem em cada célula, e dar ao dia da semana o papel de cabeçalho de coluna, obrigou a
   alinhar o dia 1 com o dia da semana real. O desalinhamento apareceu na primeira renderização.
 
-**Caso 2: as setas do modo apresentação nunca funcionaram.** `PresentationModeDialog` tem
-doze slides e botões "Anterior" e "Próximo". Nenhuma tecla trocava de slide: não havia
+**Caso 2: as setas do modo apresentação nunca funcionaram.** `PresentationModeDialog` tinha,
+em 2026, doze slides fixos e botões "Anterior" e "Próximo" (na Etapa 9 o número passou a vir do
+plano: são 8 para a estudante 1). Nenhuma tecla trocava de slide: não havia
 handler de teclado no componente, só `onClick` nos botões.
 
 - **Por que passou:** com o mouse, a apresentação funciona inteira. Ninguém que a usasse
@@ -1616,9 +1617,10 @@ seed: Profª. Ana Beatriz, Prof. Carlos Lima, Dra. Maria Fernandes e Dr. João S
   saem de seletores de `metrics.ts`: o progresso aparece igual no card e na ficha, e as
   contagens da ficha e do relatório vêm dos mesmos registros (o relatório, no período
   escolhido). Mas Desempenho, Apresentação, Ver PEI e Detalhe da observação ainda
-  mostram números fixos sob o nome do estudante: o Desempenho da Maria diz 85% no 4º
-  trimestre, e a ficha, 60%. Trocar por dado real depende da entidade PEI (Etapa 9), e o autor
-  aceitou a ressalva.
+  mostravam números fixos sob o nome do estudante: o Desempenho da Maria dizia 85% no 4º
+  trimestre, e a ficha, 60%. Trocar por dado real dependia da entidade PEI, e o autor aceitou a
+  ressalva. **Resolvido na Etapa 9**, com as quatro telas lendo o registro: a ressalva sai, e o
+  85% deixou de existir.
 - **Conferido em 16/09/2026, depois do merge: três dos quatro diziam na tela que o conteúdo não
   é do estudante aberto; o Ver PEI não dizia. Corrigido em `bd93507`, a pedido do autor — era o
   pior dos quatro justamente por nomear.**
@@ -1744,10 +1746,10 @@ faziam essa leitura:
   rotas medidas mostram exatamente os mesmos números antes e depois da correção.
 
 **Critério de aceite:** nenhum indicador de aluno aparece com dois valores diferentes em
-telas diferentes. **Estado:** cumprido com uma ressalva, descrita em **O que o número não diz**,
-no topo desta etapa: os diálogos de exemplo ainda mostram números fixos sob o nome do
-estudante. Os quatro dizem na tela que o conteúdo não é dele: três desde a Etapa 4, e o Ver PEI
-desde `bd93507`.
+telas diferentes. **Estado em 2026-09:** cumprido com uma ressalva — os diálogos de exemplo
+mostravam números fixos sob o nome do estudante, e os quatro diziam na tela que o conteúdo não
+era dele (três desde a Etapa 4, o Ver PEI desde `bd93507`). **Estado depois da Etapa 9:
+cumprido sem ressalva**, porque os quatro passaram a ler o registro do estudante aberto.
 
 ---
 
@@ -1864,10 +1866,16 @@ O 165 não é reproduzível por nenhuma das duas. É número sem método, e a re
 acrescentou ao CLAUDE.md nesta etapa existe por causa dele: todo número registrado vem
 acompanhado da regra que o produz.
 
-### As três chaves acentuadas que ficaram, e por quê
+### As três chaves acentuadas que ficaram, e por quê — resolvidas na Etapa 9
 
-`AgendaAtendimentos.tsx:47-49` mantém `'Reunião Pedagógica'`, `'Avaliação'` e
-`'Atendimento Família'` como chaves de objeto, contra a convenção. **Não é esquecimento.**
+> **Medido em 03/10/2026:** não ficaram mais. `AgendaAtendimentos.tsx` usa identificadores
+> (`pedagogicalMeeting`, `assessment`, `familyMeeting`, `multidisciplinary`, `other`), e as três
+> cadeias acentuadas sobrevivem em dois lugares, os dois de propósito: a tabela de migração da
+> v4 (`store/migrations.ts`), que precisa delas para ler o que está gravado, e uma fixture de
+> teste. A linha "Chaves de objeto com acento | 4 | 3" da tabela acima passa a 0 no modelo.
+
+`AgendaAtendimentos.tsx:47-49` **mantinha** `'Reunião Pedagógica'`, `'Avaliação'` e
+`'Atendimento Família'` como chaves de objeto, contra a convenção. **Não era esquecimento.**
 
 Esses valores são o tipo `AppointmentType`: são campo do modelo (`Atendimento.tipo`), texto
 que aparece na tela, chave do mapa de cores **e dado gravado no `localStorage` de quem já
@@ -1904,23 +1912,31 @@ O defeito estava **ativo e esperando alguém renomear um estudante**. A etapa de
 não existia para caçar defeito, entregou a correção de um. Fica registrado com essa
 qualificação porque muda o que a Etapa 5 entregou: não foram só remoção e deduplicação.
 
-### O inventário dos 17 arquivos acima de 400 linhas
+### O inventário dos arquivos acima de 400 linhas
 
-O BACKLOG listava 6 arquivos, com números defasados. São 17, depois da remoção de
+O BACKLOG listava 6 arquivos, com números defasados. Eram 17 na Etapa 5, depois da remoção de
 `ui/sidebar.tsx`. A convenção do CLAUDE.md manda quebrá-los em commits de refatoração
-dedicados; quebrar 17 dentro desta etapa destruiria a prova de regressão, porque cada quebra
-move a fotografia por motivo legítimo. Ficam registrados com o número de hoje:
+dedicados; quebrar 17 dentro daquela etapa destruiria a prova de regressão, porque cada quebra
+move a fotografia por motivo legítimo.
+
+> **Recontado em 03/10/2026, na varredura de coerência. Regra: `wc -l` acima de 400 em
+> `src/`, arquivo de teste incluído.** São **16**, e o conjunto mudou — o número tinha ficado em
+> 17 por coincidência. Saíram `ObservationDetailDialog` (479 → 272) e `MinhaAgenda` (446 → 217),
+> as duas reescritas na Etapa 9; entrou `persistence.test.ts` (422), que cresceu com os testes
+> da v4. O `PresentationModeDialog` entrou com 405 linhas **escritas na Etapa 9** e saiu no
+> commit de refatoração desta sessão (318 + 137 no player), porque arquivo nascido acima do
+> limite é dívida da etapa que o escreveu, não herança.
 
 | Arquivo | Linhas | | Arquivo | Linhas |
 |---|---:|---|---|---:|
-| `MeuPerfilDialog.tsx` | 817 | | `ContributeResourceDialog.tsx` | 494 |
-| `AgendaAtendimentos.tsx` | 770 | | `StudentDetail.tsx` | 492 |
-| `Manual.tsx` | 640 | | `ObservationDetailDialog.tsx` | 479 |
-| `NewStudent.tsx` | 610 | | `OrcamentoContent.tsx` | 459 |
-| `PredictiveAnalysis.tsx` | 604 | | `NewAssessmentDialog.tsx` | 454 |
-| `ProgressChart.tsx` | 593 | | `MinhaAgenda.tsx` | 446 |
-| `AlertasRiscosContent.tsx` | 575 | | `EquipeContent.tsx` | 412 |
-| `ConfiguracoesDialog.tsx` | 574 | | `NovoAtendimentoDialog.tsx` | 411 |
+| `MeuPerfilDialog.tsx` | 817 | | `StudentDetail.tsx` | 494 |
+| `AgendaAtendimentos.tsx` | 770 | | `ContributeResourceDialog.tsx` | 494 |
+| `Manual.tsx` | 640 | | `OrcamentoContent.tsx` | 459 |
+| `NewStudent.tsx` | 610 | | `NewAssessmentDialog.tsx` | 454 |
+| `PredictiveAnalysis.tsx` | 604 | | `persistence.test.ts` | 422 |
+| `ProgressChart.tsx` | 593 | | `EquipeContent.tsx` | 412 |
+| `AlertasRiscosContent.tsx` | 575 | | `NovoAtendimentoDialog.tsx` | 411 |
+| `ConfiguracoesDialog.tsx` | 574 | | | |
 | `NewObservation.tsx` | 511 | | | |
 
 ### O validador do store aceita qualquer objeto com `id`
@@ -2053,8 +2069,9 @@ descarte silencioso é perda de dado sem aviso. "Descartei 3 observações" e "s
 observações" são coisas diferentes, e é o número que separa as duas.
 
 **Derivar o tipo do esquema com `z.infer`** seria o desenho certo — uma fonte só, em vez de
-duas mantidas em acordo pelo compilador. Reescreve `types/index.ts` inteiro e está registrado
-na Etapa 9.
+duas mantidas em acordo pelo compilador. Reescreve `types/index.ts` inteiro. Estava registrado
+para a Etapa 9, **ficou de fora dela** e hoje é etapa própria: com a v4, são onze pares
+esquema/tipo em vez de sete, ou seja, a dívida cresceu.
 
 ---
 
@@ -2134,8 +2151,10 @@ evitar o portão barulhento. Não é pendência desta etapa.
 
 ### Mutação automatizada: candidata a etapa futura
 
-As 18 mutações desta etapa foram escritas à mão, uma a uma, com o alvo escolhido pelo que o
-teste diz pegar. Uma ferramenta de mutação (Stryker) geraria centenas automaticamente e mediria
+As 27 mutações desta etapa foram escritas à mão, uma a uma, com o alvo escolhido pelo que o
+teste diz pegar. (Este parágrafo dizia **18** até a varredura de coerência de 03/10/2026: a
+recontagem por script está no achado 11 desde a própria Etapa 7, e o número velho ficou aqui
+sem ninguém notar — o registro corrigido num lugar e intacto no outro.) Uma ferramenta de mutação (Stryker) geraria centenas automaticamente e mediria
 quantas a suíte sobrevive — que é a medida honesta de força de suíte, no lugar da porcentagem
 de cobertura. É trabalho de uma etapa inteira sozinha (configuração, tempo de execução, triagem
 de mutantes equivalentes), e fica registrada como **candidata**, não como pendência: a suíte
@@ -2486,17 +2505,20 @@ substituído na Pendência 1, com a razão — ordem escrita e ordem praticada n
 
 Registradas durante a Etapa 2, que tratou os controles sem mudar o que o sistema modela.
 
-1. **PEI como entidade.** O sistema se chama Gestão PEI e não possui entidade PEI. Metas,
-   revisões e histórico são conteúdo fixo.
+1. **PEI como entidade.** ✅ **Executado** — ver "Resultado da etapa", abaixo. O texto do plano
+   fica como foi escrito, no presente de quando foi escrito.
 
-   Hoje o `VerPEIDialog` mostra um PEI de exemplo, com aviso, igual para qualquer estudante.
+   O sistema se chamava Gestão PEI e não possuía entidade PEI. Metas, revisões e histórico eram
+   conteúdo fixo, e o `VerPEIDialog` mostrava um PEI de exemplo, com aviso, igual para qualquer
+   estudante.
    Editar PEI, Nova Revisão, "Adicionar observação" na meta e "Ver ata" ficam desabilitados.
    Modelar o PEI dá sentido ao nome do sistema: metas, prazos, responsáveis, revisões e
    evidências ligadas a observações, avaliações e atas de atendimento.
    - Afeta o Histórico, a Apresentação, os objetivos citados nas observações e o relatório
      imprimível.
    - Exige mudar o modelo de dados e subir a versão do store, com migração.
-   - **Junto vai o `z.infer`**: a Etapa 6 criou `src/store/schemas.ts` com sete esquemas `zod`
+   - **Junto iria o `z.infer`** — e não foi: ficou de fora por tamanho, e está em "O que a
+     etapa NÃO fez". A Etapa 6 criou `src/store/schemas.ts` com sete esquemas `zod`
      anotados como `z.ZodType<T>`, com os tipos de `@/types` como fonte. São duas declarações
      do mesmo formato, mantidas em acordo pelo compilador. O desenho certo é uma fonte só, com
      o tipo derivado do esquema por `z.infer`; isso reescreve `types/index.ts` inteiro e cabe

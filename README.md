@@ -513,12 +513,14 @@ porcentagem que resta é o `width="100%"` do contêiner de um gráfico.
 - **Cores de gráfico fora dos tokens.** Sobram 12 literais hexadecimais, em eixos e séries de
   gráfico. Passam no contraste. O número de classes de cor fixa depende da regra de contagem
   — 147 pela estreita, 164 pela larga —, e está registrado com a regra no backlog.
-- **17 arquivos acima de 400 linhas.** A convenção pede quebrá-los em commits de refatoração
+- **16 arquivos acima de 400 linhas** (regra: `wc -l` acima de 400 em `src/`, arquivo de teste
+  incluído; recontado em 03/10/2026). A convenção pede quebrá-los em commits de refatoração
   dedicados; fazer isso na etapa de limpeza destruiria a prova de regressão. Inventariados no
-  backlog, com o número de linhas de cada um.
+  backlog, com o número de linhas de cada um e com o que mudou desde a Etapa 5.
 - **Os esquemas de validação e os tipos são duas declarações do mesmo formato**, mantidas em
-  acordo pelo compilador. Uma fonte só, com o tipo derivado do esquema, é o desenho certo e
-  está registrado para quando a entidade PEI for modelada.
+  acordo pelo compilador — hoje são onze pares, não sete. Uma fonte só, com o tipo derivado do
+  esquema por `z.infer`, é o desenho certo; estava previsto para a etapa do PEI, ficou de fora
+  dela e é etapa própria, registrada no backlog.
 - **A suíte cobre o que foi corrigido, não o código todo.** Tela, diálogo e gráfico só têm a
   cobertura indireta do teste de fluxo; o resto da renderização depende do arreio, que é
   conduzido à mão. Varredura de acessibilidade automatizada no CI exigiria navegador headless e
