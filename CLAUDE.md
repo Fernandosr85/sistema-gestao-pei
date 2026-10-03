@@ -66,7 +66,10 @@ números que ela move.** Releitura atenta não reprova nada: o par "vinte itens"
 achado 18 sobreviveu a duas leituras com a tabela à vista e caiu na primeira vez que alguém fez
 conta com ele. Use o registro em três operações — **some as tabelas, cruze os números entre os
 três arquivos (README, BACKLOG, CLAUDE.md) e refaça pelo menos uma conta.** Um registro não se
-mostra incoerente ao ser relido; mostra-se ao ser usado. O registro é a única parte deste projeto
+mostra incoerente ao ser relido; mostra-se ao ser usado. **A mesma regra vale para o que você
+afirma ao autor:** antes de dizer que uma verificação não existe, rode o comando que a lista
+(`gh run list`, `gh pr checks`) — zero num painel é "nada conhecido ainda", não "nada existe", e
+o repositório tem CI desde 13/09/2026, com `npm test` dentro dele desde 18/09 (achado 19). O registro é a única parte deste projeto
 que nenhuma verificação reprova, e envelhece em silêncio: a varredura de 03/10/2026 achou 19 itens
 acumulados em nove etapas (achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
 presente: "mantém", "ainda mostra" e "não possui" viram afirmação falsa na etapa seguinte sem

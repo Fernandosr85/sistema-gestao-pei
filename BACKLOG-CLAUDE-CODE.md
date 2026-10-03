@@ -1,8 +1,13 @@
 # Backlog de correções — uma etapa por sessão
 
 Cada etapa é uma sessão separada do Claude Code, com commit e verificação própria.
-Não começar a seguinte antes de `npm run lint`, `npm run typecheck` e `npm run build`
-passarem na anterior.
+Não começar a seguinte antes de `npm run lint`, `npm run typecheck`, `npm test` e
+`npm run build` passarem na anterior.
+
+> **Corrigido em 03/10/2026:** este cabeçalho listava **três** comandos — ficou sem `npm test`
+> desde que a suíte nasceu, em 18/09, enquanto o CLAUDE.md e o README já diziam quatro. Vigésimo
+> item da mesma classe do achado 18, e o primeiro achado pela regra nova: saiu de cruzar as
+> afirmações dos três arquivos sobre o que o CI roda (achado 19), não de reler este arquivo.
 
 Origem: auditoria estática do commit `4c22d53` (Claude) + auditoria complementar (Codex).
 
@@ -1216,6 +1221,101 @@ um PR mesclado não descrever o que não mesclou.
 **O agente teve a sua parte, e ela fica registrada para a próxima vez:** sabia que o autor
 mesclaria ao receber o aviso e não disse que havia commit a caminho. A regra prática que sai daí é
 simples — quem avisa "terminei" avisa também o que ainda está em verificação.
+
+### 19. A verificação que existia e foi declarada inexistente (03/10/2026)
+
+**Qualificação:** três vezes numa sessão o agente relatou ao autor que "o repositório não tem CI;
+a verificação é local" — ao abrir o PR #16, o #17 e o #18. **É falso, e sempre foi.** Medido em
+03/10/2026, com o repositório de volta a público:
+
+| Medida | Resultado |
+|---|---|
+| Execuções do workflow `verify` | **36, todas `success`**, de 13/09 a 03/10/2026 |
+| Execuções canceladas, falhadas ou puladas | **0** |
+| Os três PRs do dia | check `verify` **passando**: PR #16 em 1m27s, #17 em 57s, #18 em 1m33s |
+| Dias sem execução | só os dias sem `push`: 20–21/09 e 23/09–01/10, com o `main` parado entre o PR #13 e o PR #14 |
+
+**A origem do erro, medida.** O painel de PR do aplicativo devolveu
+`checks: { available: true, passing: 0, failing: 0, pending: 0 }` segundos depois de o PR ser
+criado — antes de a execução ser registrada. **"Zero checks conhecidos neste instante" virou "não
+há CI neste repositório".** O painel não mentiu: ele respondeu sobre o instante em que foi
+perguntado. A inferência mentiu, e bastava um comando — `gh run list` ou `gh pr checks` — para
+matá-la.
+
+**A classe do defeito: zero lido como ausência, sem controle positivo.** É irmão do achado 7 (a
+varredura que não vê o que procura), do achado 8 (o instrumento que não media o que dizia medir) e
+sobretudo **da regra invertida da Etapa 9, que está escrita no CLAUDE.md: "zero inesperado é falha
+de verificação, não sucesso"**. A regra existia e não foi aplicada porque o instrumento era um
+painel, e não a fotografia de superfície — a regra tinha sido escrita para um instrumento, não
+para a classe de erro.
+
+**O agravante: o próprio registro contradizia a afirmação, em duas linhas do README.** A tabela de
+comandos diz, do `npm test`, "é o que o CI roda" (`README.md:107`), e a seção da suíte diz
+"`npm test` roda no CI entre o `typecheck` e o `build`" (`README.md:400`). **Uma das três
+operações da regra "reler com uso" — cruzar as afirmações entre os três arquivos — derrubava a
+afirmação no primeiro cruzamento.** A regra foi escrita na mesma sessão em que a afirmação falsa
+foi repetida três vezes, e não foi aplicada a ela: foi aplicada ao texto do registro, não à fala
+do agente sobre o estado do repositório.
+
+**A hipótese do autor, refutada com medição.** A hipótese era interrupção silenciosa por limite de
+minutos do Actions em repositório privado no plano gratuito. **Não houve interrupção**: as 36
+execuções são contínuas e cobrem todos os eventos de `push` e `pull_request` do período,
+incluindo os três PRs de hoje e as mesclagens do `main`. Fica dito o que **não** foi medido: a
+conta de minutos consumidos, porque o endpoint de cobrança do Actions exige escopo `user`, que
+esta autenticação não tem. A refutação é por execução observada, não por saldo.
+
+**E o achado 18 aplicado a ferramenta aconteceu de outra forma.** Não foi a verificação que parou
+em silêncio: foi a **existência** dela que passou dois PRs declarada como inexistente, num relato
+que o autor leu e não tinha como conferir sem abrir o GitHub. O defeito mudou de lugar — do
+registro escrito para o relato falado —, e a parte do mecanismo que se mantém é a mesma: ninguém
+reprova o que o agente afirma.
+
+#### O que o "CI verde" cobriu, por período
+
+Medido pelo histórico do `.github/workflows/ci.yml`:
+
+| Período | Passos do CI | O que "CI verde" significava |
+|---|---|---|
+| 13/09 a 18/09 (`441a31e`) | `npm ci`, `lint`, `typecheck`, `build` | **três** das quatro verificações |
+| de 18/09 em diante (`c152869`) | os mesmos **mais `npm test`** | as **quatro** |
+
+`npm test` entrou no CI em `c152869`, o commit de andaime da suíte da Etapa 7 — o mesmo que
+instalou o controle de que zero teste coletado reprova. Então o "CI verde" dos PRs #1 a #11 cobre
+três verificações, **e isso não é defeito**: a suíte não existia. Do PR #12 em diante cobre as
+quatro. A afirmação "as quatro verificações" vale no CI a partir da Etapa 7; antes dela, valia
+só na máquina.
+
+#### O painel About do GitHub, medido em 03/10/2026
+
+Linha de base, porque é superfície **fora do git**:
+
+| Campo | Estado medido |
+|---|---|
+| Visibilidade | pública |
+| Descrição | "Protótipo de sistema de gestão de Planos Educacionais Individualizados (PEI) para educação inclusiva. React + TypeScript. Dados de demonstração fictícios." — sem vínculo institucional, e dizendo que os dados são fictícios |
+| Tópicos | 12, todos temáticos ou técnicos (`accessibility`, `brazil`, `education`, `educational-management`, `educational-platform`, `inclusive-education`, `react`, `shadcn-ui`, `special-education`, `student-tracking`, `tailwind-css`, `typescript`); nenhum institucional |
+| Homepage | **vazia** |
+
+**Nenhuma verificação deste repositório alcança esses três campos.** As quatro rodam sobre o
+código; a varredura institucional lê `src`, `docs` e `index.html`. Descrição, tópicos e homepage
+vivem no GitHub, não no clone, e por isso só existem no registro como medição datada — quem
+conferir isto em dezembro não tem commit para comparar, tem esta tabela.
+
+#### O vigésimo item, achado pela regra nova
+
+Cruzar os três arquivos sobre o que o CI roda derrubou mais uma afirmação, e ela estava na
+**linha 4 deste arquivo**: o cabeçalho do backlog pedia `lint`, `typecheck` e `build` antes de
+começar a etapa seguinte, **sem `npm test`** — redação de antes de 18/09 que sobreviveu à Etapa 7
+e a cinco etapas depois dela, enquanto o CLAUDE.md e o README diziam quatro. Corrigido no mesmo
+commit deste achado, com a nota de data no lugar.
+
+É o vigésimo item da classe do achado 18 e o primeiro achado **pela** regra do achado 18 corrigida:
+não apareceu numa releitura do cabeçalho — apareceu ao cruzar arquivos para medir outra coisa.
+
+**A regra que sai do achado, no CLAUDE.md:** antes de afirmar que uma verificação não existe, rode
+o comando que a lista. Zero num painel é "nada conhecido ainda", não "nada existe" — e afirmação
+sobre o estado do repositório se cruza com o registro antes de sair, que é a mesma operação da
+releitura com uso.
 
 ---
 
