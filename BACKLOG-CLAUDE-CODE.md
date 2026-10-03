@@ -1074,6 +1074,51 @@ classe do código.
 
 ---
 
+### 18. O registro envelhece em silêncio (varredura de coerência, 03/10/2026)
+
+**Qualificação:** nove etapas de registro nunca tinham sido lidas de ponta a ponta procurando
+contradição. A varredura — pedida pelo autor como sessão de fechamento — leu as 2.633 linhas do
+BACKLOG e as 589 do README **medindo cada número que dava para medir**, e achou **vinte** itens.
+Nenhum deles é defeito de código: são defeitos do registro sobre o código.
+
+| Classe | Quantos | O pior exemplo |
+|---|---:|---|
+| README e BACKLOG se contradizendo | 5 | o README dizia "o formato gravado está na **versão 3**" com a tabela do próprio README dizendo v4, 300 linhas abaixo |
+| Afirmação de resultado que ficou falsa | 9 | "as setas do modo apresentação… **doze slides**", quando o número passou a vir do plano |
+| Número sem a regra que o produz | 5 | "165 classes de cor fixa", que a Etapa 5 já tinha declarado irreproduzível e o README repetia |
+| Pendência resolvida com o registro intacto | 3 | "As três chaves acentuadas que ficaram, e por quê", resolvidas na v4 e ainda escritas no presente |
+
+**Os dois achados dentro do achado.**
+
+1. **O número corrigido num lugar e intacto no outro.** A recontagem "18 → 27 mutações" entrou no
+   achado 11 na própria Etapa 7, e o parágrafo da Etapa 7 que dizia "as 18 mutações desta etapa"
+   ficou como estava — no mesmo arquivo, a 1.300 linhas de distância. Corrigir onde o erro foi
+   discutido não corrige onde ele foi escrito.
+2. **O número que ninguém conseguia reproduzir.** "73 mutações, todas acusadas" era o número mais
+   citado da série, e os scripts que o produziam viviam no diretório temporário das sessões. A
+   varredura foi procurá-los: **27 não existem mais** — os da Etapa 7 foram embora com o
+   scratchpad daquela sessão. O que sobrou foi versionado em `scripts/mutacoes/`, e o que se
+   perdeu está escrito lá.
+
+**O mecanismo, que é o que interessa para o artigo.** Nenhum dos vinte veio de descuido isolado:
+todos vêm da mesma assimetria. Quando uma etapa muda o código, ela escreve o registro **novo** —
+a seção dela, a tabela de resultado, o achado. O registro **velho** fica, e continua afirmando no
+presente um estado que deixou de existir. A série inteira tem verificação para o código (quatro
+comandos, arreio, mutação, controle positivo) e **não tinha nenhuma para o registro**. O texto é
+a única coisa aqui que ninguém reprovava.
+
+**A assimetria tem um sinal, e ele estava visível.** Toda vez que a Etapa 9 fechou uma pendência,
+o texto que a descrevia continuou no presente — "mantém", "ainda mostram", "não possui". O tempo
+verbal é o indício: registro escrito no presente sobre um estado que a etapa seguinte muda vira
+afirmação falsa sem que ninguém toque nele.
+
+**A regra que fica, no CLAUDE.md:** ao fechar uma etapa, reler o que ela tocou nos dois arquivos
+e medir de novo os números que ela move — e escrever estado datado em vez de presente. A
+varredura inteira custou uma sessão; cada item dela custaria minutos se tivesse sido feito na
+etapa que o produziu.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -1132,11 +1177,17 @@ inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" 
 | M5 | `/alunos/1` → Modo Apresentação → Iniciar | Setas direita e esquerda; depois Esc | Anda e volta de slide, o leitor anuncia "Slide 3 de 8: Reconhecer e ler palavras do vocabulário funcional", e Esc fecha |
 | M6 | Configurações → Acessibilidade | Espaço em Alto contraste, fechar, F5 | Continua aplicado depois de recarregar |
 | M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
-| M8 | Leitor de tela em `/alunos` e num diálogo | Leitura sequencial | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição |
+| M8 | Leitor de tela em `/alunos` e num diálogo (o Ver PEI serve) | Leitura sequencial, e Tab até o botão de fechar | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição; **o botão de fechar é anunciado como "Fechar"**, não "Close" |
 | M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
 
 O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
 parecem não funcionar. É artefato da automação, não do app.
+
+**O M8 ganhou o botão de fechar em 03/10/2026**, por decisão do autor. O nome acessível dele era
+"Close", em inglês, numa página `lang="pt-BR"`, e foi corrigido em `ccb2fce` — mas **só um
+leitor de tela prova o que ele anuncia**. É o mesmo argumento do achado 2: o que só existe depois
+de uma interação não é alcançado por nenhuma verificação automatizada deste repositório, e o M8 é
+o único teste da lista que chega lá.
 
 **Para fechar:** executar os nove, registrar aqui o resultado de cada um (passou, falhou e
 como) e a data. Falha vira item de correção, e a pendência só sai deste bloco quando os nove

@@ -54,7 +54,16 @@ certo: o que ela verifica é o raciocínio, não só o número.
 
 Âncora de substituição se **lê do arquivo**, nunca se escreve de memória: indentação e fim de
 linha variam por arquivo (`core.autocrlf=true` deixa a cópia de trabalho em CRLF). Exija
-exatamente uma ocorrência e aborte fora disso.
+exatamente uma ocorrência e aborte fora disso. Mutação nova entra **versionada** em
+`scripts/mutacoes/`, no mesmo commit do teste que ela verifica: número que só existe no
+diretório temporário de uma sessão não é medida — 27 das 74 desta série se perderam assim.
+
+**Ao fechar uma etapa, releia o que ela tocou no README e no BACKLOG e meça de novo os números
+que ela move.** O registro é a única parte deste projeto que nenhuma verificação reprova, e
+envelhece em silêncio: a varredura de 03/10/2026 achou 20 itens acumulados em nove etapas
+(achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
+presente: "mantém", "ainda mostra" e "não possui" viram afirmação falsa na etapa seguinte sem
+ninguém tocar neles.
 
 Prova que não se consegue fazer não vale como prova. Quando a verificação de uma simplificação
 falha por limite de ferramenta, desfaça a simplificação em vez de assumir equivalência.
