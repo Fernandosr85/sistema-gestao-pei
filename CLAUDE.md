@@ -63,7 +63,7 @@ que perda declarada (Pendências abertas, item 4).
 
 **Ao fechar uma etapa, releia o que ela tocou no README e no BACKLOG e meça de novo os números
 que ela move.** O registro é a única parte deste projeto que nenhuma verificação reprova, e
-envelhece em silêncio: a varredura de 03/10/2026 achou 20 itens acumulados em nove etapas
+envelhece em silêncio: a varredura de 03/10/2026 achou 19 itens acumulados em nove etapas
 (achado 18). Escreva **estado datado** — "medido em DD/MM/AAAA", "até a Etapa N" — em vez de
 presente: "mantém", "ainda mostra" e "não possui" viram afirmação falsa na etapa seguinte sem
 ninguém tocar neles.
