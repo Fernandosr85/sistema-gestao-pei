@@ -1423,6 +1423,12 @@ calcula layout nem contraste, que é metade do valor do axe.
    - **97 linhas em título, aba, `DialogTitle` e `Label`** (como "📋 Dados Pessoais"):
      **saíram**. O leitor de tela lê o nome do emoji antes do texto, o que polui a
      navegação. As 97 foram revistas uma a uma antes de aplicar.
+     > **Os dois números, 98 e 97, não vêm da mesma contagem** (varredura de coerência,
+     > 03/10/2026). A tabela de resultado da etapa diz 98 e este item diz 97, e nenhum dos dois
+     > traz a regra que o produz — ninguém consegue dizer hoje se a diferença de 1 é uma linha
+     > contada em dois lugares, um caso de triagem ou um erro de contagem. Fica registrado como
+     > número sem método: o que se pode afirmar é que o resultado medido depois foi **zero**, e
+     > esse zero tem regra (busca por emoji em título, aba, `DialogTitle` e `Label`).
    - **158 linhas decorativas no meio de texto corrido: ficam.** Envolver cada uma em `span`
      com `aria-hidden` seriam 158 pontos de alteração para resolver verbosidade, não
      barreira. O leitor anuncia o nome do emoji: é incômodo, não é falha. Registrado para
@@ -2109,6 +2115,13 @@ que o acompanha é o que ficou de fora.
    `include` apontando para um padrão que não casa nada, `npm test` sai com código 1.
 2. **Mutação no código de produção.** Antes de aceitar cada lote, o defeito que o teste diz
    pegar é plantado no código real, a suíte tem de **reprovar**, e o arquivo volta ao original.
+   > **Os scripts foram versionados em 03/10/2026, em `scripts/mutacoes/`** — decisão do autor
+   > na varredura de coerência: número que um leitor não consegue reproduzir não é medida, e
+   > este era o mais citado da série. **Dos 74 do conjunto, 47 estão lá.** Os 27 desta etapa
+   > viviam no diretório temporário da sessão e **não sobreviveram** a ela; o resultado está
+   > registrado aqui e nas mensagens dos commits, e não é reproduzível a partir do repositório.
+   > Reescrevê-los é trabalho possível, porque cada teste diz qual defeito pega, e fica como
+   > pendência própria.
    **27 mutações na etapa, todas acusadas na verificação final** — 4 na persistência e nas
    migrações, 3 nas datas, 6 nos seletores, 5 no reducer, 3 nas rotas e 6 no fluxo. Uma delas,
    a que apaga uma rota, **não** foi acusada quando foi plantada pela primeira vez, e o que ela

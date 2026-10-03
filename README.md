@@ -226,7 +226,9 @@ O que isso significa na prática:
   gráfico de progresso e as estrelas de avaliação eram acionáveis só por clique.
 - **Leitor de tela.** Todo controle tem nome; os diálogos anunciam título e descrição; a
   troca de slide na apresentação move o foco e é anunciada; os doze gráficos têm nome e
-  tabela equivalente, aberta por um `<details>`.
+  tabela equivalente, aberta por um `<details>`. (Regra de contagem: instâncias de
+  `ResponsiveContainer` em `src/` — 12 em 7 arquivos, conferido em 03/10/2026. Uma delas, a do
+  Desempenho, só renderiza quando o estudante tem duas ou mais avaliações.)
 - **Sem depender de cor, posição ou hover.** O status que era só emoji virou palavra, e o
   calendário de observações virou tabela com a contagem escrita em cada célula.
 - **Contraste.** Todas as cores saem de tokens no bloco `--brand-*` do `src/index.css`, com
@@ -427,11 +429,15 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **73 mutações, todas acusadas** — 27 da Etapa 7,
-  3 da guarda de navegação da Etapa 8 e 43 da Etapa 9 —, reexecutadas depois de trocar o runner
-  para o `vitest` 4. Duas revelaram defeito no próprio teste, e quatro revelaram que os DADOS de
-  teste não distinguiam o certo do errado: as duas coisas estão registradas no backlog (achados
-  11 e 17).
+  código de produção e a suíte teve de reprovar: **74 mutações, todas acusadas** — 27 da Etapa 7,
+  3 da guarda de navegação da Etapa 8, 43 da Etapa 9 e 1 da varredura de coerência —,
+  reexecutadas depois de trocar o runner para o `vitest` 4. Duas revelaram defeito no próprio
+  teste, e quatro revelaram que os DADOS de teste não distinguiam o certo do errado: as duas
+  coisas estão registradas no backlog (achados 11 e 17).
+  **47 delas estão em [`scripts/mutacoes/`](scripts/mutacoes/) e qualquer pessoa reexecuta com
+  `node scripts/mutacoes/executar.cjs`.** As 27 da Etapa 7 foram escritas em scripts que viviam
+  no diretório temporário da sessão e não sobreviveram: o resultado delas está registrado, e
+  **não é reproduzível a partir deste repositório**. Está dito assim no README dos scripts.
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
