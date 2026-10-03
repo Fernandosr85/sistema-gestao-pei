@@ -1136,11 +1136,9 @@ estavam errados por motivos diferentes:** o 22 conta rótulos, e cresce se algu�
 taxonomia sem que nenhuma incoerência nova exista; o 20 não vinha de contagem nenhuma. A
 enumeração de 03/10/2026, com a regra escrita, conta **19**.
 
-**E o modo como apareceu é o mecanismo do achado 18 outra vez.** Não foi revisão do texto: foi ao
-**usar** o registro para outra coisa — somar a tabela para escrever o corpo do PR #16 — que a
-incoerência saiu. É assim que ela sempre aparece, e é o argumento de por que a releitura ao fechar
-etapa tem de ser releitura **com uso**: medir de novo os números, não passar os olhos. Um registro
-só se mostra incoerente quando alguém tenta fazer conta com ele.
+**E o modo como apareceu corrige a regra deste achado.** Não foi revisão do texto: foi ao **usar**
+o registro para outra coisa — somar a tabela para escrever o corpo do PR #16 — que a incoerência
+saiu. A regra corrigida está no fim desta seção, em "A regra corrigida: releitura com uso".
 
 **O intervalo entre escrever e envelhecer foi de horas**, não de etapas — o mesmo que aconteceu
 com "reescrevê-las é trabalho possível" na Pendência 4, escrita e desfeita no mesmo dia. O achado
@@ -1171,10 +1169,53 @@ o texto que a descrevia continuou no presente — "mantém", "ainda mostram", "n
 verbal é o indício: registro escrito no presente sobre um estado que a etapa seguinte muda vira
 afirmação falsa sem que ninguém toque nele.
 
-**A regra que fica, no CLAUDE.md:** ao fechar uma etapa, reler o que ela tocou nos dois arquivos
-e medir de novo os números que ela move — e escrever estado datado em vez de presente. A
-varredura inteira custou uma sessão; cada item dela custaria minutos se tivesse sido feito na
-etapa que o produziu.
+**A regra que fica, no CLAUDE.md:** ao fechar uma etapa, reler **com uso** o que ela tocou nos
+dois arquivos e medir de novo os números que ela move — e escrever estado datado em vez de
+presente. A varredura inteira custou uma sessão; cada item dela custaria minutos se tivesse sido
+feito na etapa que o produziu. O "com uso" é correção posterior, e a subseção seguinte diz de onde
+ela veio.
+
+### A regra corrigida: releitura com uso (03/10/2026)
+
+A primeira redação desta regra, escrita em `33c06ec`, dizia "reler o que a etapa tocou e medir de
+novo os números que ela move". **Não basta, e este caso é a prova:** o par "vinte itens" / 22
+rótulos atravessou duas leituras antes de aparecer, e nas duas a tabela esteve na tela.
+
+1. **Quando foi escrito** (`33c06ec`): a tabela e o total saíram no mesmo commit, e a soma das
+   quatro linhas nunca foi feita. **Escrever não é conferir.**
+2. **Numa releitura do mesmo dia** (`1125ba3`): a seção foi reaberta e lida para citar o achado 18
+   dentro da Pendência 4 — a tabela esteve à vista, com o total três linhas acima dela, e nada
+   saltou. **Ler não é conferir.**
+3. **Na terceira vez**, quando a tabela teve de ser **reproduzida** no corpo do PR #16, a soma foi
+   feita porque o resumo precisava do número — e os 22 apareceram na hora.
+
+**A dedução, do agente, registrada por ordem do autor:** um registro não se mostra incoerente ao
+ser **relido**; mostra-se ao ser **usado**. Releitura compara o texto com a lembrança de quem o
+escreveu, e a lembrança concorda com o texto porque veio dele. Uso obriga a produzir um número
+**novo** a partir do registro, e duas afirmações incompatíveis não cabem no mesmo resultado.
+
+**A regra passa a ser reler COM USO:** somar as tabelas, cruzar os números entre os três arquivos
+(README, BACKLOG, CLAUDE.md) e refazer pelo menos uma conta. São três operações com resultado
+verificável, em vez de "leitura atenta" — atenção não tem critério de reprovação, conta tem. É a
+mesma troca que as quatro verificações fizeram pelo código, e que o achado 8 pagou para aprender
+no instrumento: medir o efeito, não inspecionar a presença.
+
+### O commit a caminho, e o merge que não esperou (03/10/2026)
+
+**O autor registra o erro de método como seu, com estas palavras: disse que esperaria o aviso do
+agente para mesclar, e mesclou antes.** O PR #16 foi mesclado em `3f56c7d` com oito commits,
+`36c5f81` a `1125ba3`, enquanto o nono — `b11bbbc`, a enumeração dos 19 itens e a regra de
+contagem — ainda estava nas quatro verificações. Ele ficou em `pendencias/fechamento`, fora do
+`main`, e o **PR #17 existe por causa disso**.
+
+**A consequência, medida:** no intervalo entre o merge e o PR #17, o `main` afirmou "vinte itens"
+com uma tabela somando 22 rótulos — exatamente a incoerência que esta seção descreve, agora na
+ramificação principal. O corpo do PR #16 ganhou nota dizendo o que entrou e o que não entrou, para
+um PR mesclado não descrever o que não mesclou.
+
+**O agente teve a sua parte, e ela fica registrada para a próxima vez:** sabia que o autor
+mesclaria ao receber o aviso e não disse que havia commit a caminho. A regra prática que sai daí é
+simples — quem avisa "terminei" avisa também o que ainda está em verificação.
 
 ---
 
