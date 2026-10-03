@@ -208,11 +208,43 @@ métodos:
 > varredura tem de ser no texto do repositório, e o critério de alcance é o grafo de imports,
 > não a navegação.
 
-**Ainda aberto:** Ver PEI, Detalhe da observação, Apresentação e Desempenho continuam com
-conteúdo fixo de exemplo sob o nome do estudante, todos com aviso de que o conteúdo não é dele e
-sem dado de saúde. O Ver PEI identificava outra pessoa da demonstração até `bd93507`. A Etapa 4
-terminou sem trocá-los: o que mostram — PEI, trimestres, presença, conquistas — não tem registro
-de origem no modelo. Ficam para a Etapa 9, com a entidade PEI.
+**Fechado na Etapa 9.** Ver PEI, Detalhe da observação, Apresentação e Desempenho ficaram até lá
+com conteúdo fixo de exemplo sob o nome do estudante — todos com aviso de que o conteúdo não era
+dele e sem dado de saúde; o Ver PEI identificava outra pessoa da demonstração até `bd93507`. A
+Etapa 4 terminou sem trocá-los porque o que mostravam — PEI, trimestres, presença, conquistas —
+não tinha registro de origem no modelo. Com a entidade PEI, as quatro passaram a ler os registros
+do estudante aberto, e o que o modelo não tem saiu da tela em vez de virar número fixo com aviso.
+
+**Sexta onda, na Etapa 9 — e o pior caso da série, por uma razão nova: AUTORIA FALSA.**
+
+O detalhe da observação (`ObservationDetailDialog`) trazia dois blocos que nenhuma onda anterior
+tinha:
+
+- **"Observações Adicionais"**, três parágrafos de avaliação pedagógica sobre a criança —
+  "Esta manhã foi particularmente produtiva…", "Recomendo manter a comunicação próxima com a
+  família…" — **assinados com o nome do observador da observação aberta**, que é o campo real do
+  registro. Quem lesse a tela via um texto atribuído, nominalmente, a uma professora que não o
+  escreveu.
+- **"Notificações Enviadas"**, com horário de leitura e uma **resposta da família entre aspas**:
+  *"Obrigada pelo retorno! Vamos implementar o timer em casa também."* Fala inventada, posta na
+  boca da mãe de uma criança, com data e hora.
+
+**Por que é pior que as cinco ondas anteriores.** Nelas o defeito era dado de uma pessoa exibido
+sob o nome de outra: errado, grave com dado de saúde, e ainda assim um erro de **atribuição de
+registro**. Aqui o registro não existia em lugar nenhum — foi **inventado e assinado**. A
+diferença importa para o que o sistema afirma: um prontuário trocado diz a coisa errada sobre
+uma criança; um texto assinado diz que **uma profissional avaliou e uma mãe respondeu**, e
+nenhuma das duas disse nada. Num sistema de educação inclusiva, esse texto é o tipo de coisa que
+entra em reunião, em relatório e em decisão sobre a vida escolar de alguém.
+
+**Por que sobreviveu a cinco varreduras.** Todas procuraram o que já tinha acontecido: dado de
+saúde, nome de estudante, vocabulário clínico, números sem origem. Nenhuma procurou **texto
+assinado** — a classe só ficou visível quando a tela foi reescrita para ler o registro, e o que
+sobrava sem fonte ficou óbvio. É a lição do achado 7 outra vez: a busca pela lista do que já se
+viu não alcança a forma seguinte.
+
+Corrigido em `25828fe`, junto com o resto do que o diálogo inventava, e com asserção nominal dos
+doze trechos que não podem voltar.
 
 ---
 
@@ -287,6 +319,21 @@ verificação.
 
 Corrigidos em `ccb2fce`, com asserção nos dois lugares onde eles existem e duas mutações. A
 pendência 3 abre o trabalho de estender o arreio a diálogos.
+
+**A formulação que fica, e ela é mais ampla do que "o axe não viu".** Não é limite de uma
+ferramenta: é limite de **todo o aparato automatizado deste repositório**. O axe mede rota a
+rota; o arreio de superfície mede as mesmas 23 rotas; o `jsx-a11y` lê código e não sabe o que
+monta. Diálogo e toast **só existem depois de uma interação**, e nenhum dos três chega lá. Foi
+por isso que dois defeitos de nome acessível atravessaram oito etapas e a verificação que levou
+o axe a zero.
+
+**É o argumento mais forte a favor dos nove testes manuais, que continuam pendentes** (ver
+"Pendências abertas", item 1). A lista M1 a M9 existe porque teclado e leitor de tela reais
+cobrem o que o automatizado não cobre; o par "Close"/toast mostra que a lacuna não é teórica e
+não é pequena — são dois defeitos de WCAG 4.1.2 e 3.1.2 em componentes que aparecem em toda a
+aplicação, achados por leitura de tela aberta, não por varredura. Enquanto os nove não forem
+executados, o que o repositório pode afirmar sobre acessibilidade vale **para o que está montado
+sem interação**, e não para o sistema inteiro.
 
 ---
 
@@ -988,6 +1035,41 @@ acha isso; uma que compara a **previsão** com a medida, acha.
 por quem verifica, não numa busca no código: lá a condição do lockfile foi definida pelo nome dos
 caminhos em vez da propriedade; aqui a declaração foi definida pela lista de chamadores em vez da
 classe "rotas que montam este componente".
+
+---
+
+### 17. A semente plausível que não discriminava (Etapa 9)
+
+**Qualificação:** quatro vezes na mesma etapa uma mutação deixou de reprovar, e nas quatro o
+buraco não estava no teste — estava nos **dados** de teste. A camada 2 (mutação) existe para
+dizer se a suíte reprova quando deve; o que ela disse aqui foi outra coisa, e mais fina: que a
+suíte não tinha com o que reprovar.
+
+| Mutação que passou | Por que a fixture não distinguia | O que foi acrescentado |
+|---|---|---|
+| média dos objetivos → **máximo** | `avl-1` tem **um** objetivo, e com um só média, máximo e mínimo dão o mesmo número | casos com dois e três objetivos, onde as três contas se separam |
+| metas **do plano** → todas as metas do sistema | a semente tem **um** plano, e todas as metas são dele | um segundo plano, de outro estudante, gravado pelo `localStorage` |
+| `kind` da evidência ignorado | nenhum id se repete entre coleções: `obs-1` e `avl-1` nunca colidem | o mesmo id `'x'` numa observação e numa avaliação, com metas diferentes |
+| janela de **7 dias** → todos os futuros | o teste tinha **um** atendimento futuro | um segundo, daqui a 30 dias, que separa os dois blocos |
+
+**A regra que fica:** quando a mutação de uma regra não reprova, a primeira pergunta é se os
+dados de teste distinguem o certo do errado — antes de concluir que falta asserção, e muito
+antes de concluir que a mutação é inofensiva.
+
+**A atribuição, registrada pelo autor.** O desenho da semente foi aprovado por ele em várias
+etapas, e em nenhuma delas alguém notou que **plausível e discriminante são propriedades
+diferentes**. Uma fixture plausível é feita para parecer um caso real: uma avaliação com um
+objetivo, um plano por estudante, ids que não colidem, uma agenda curta. Uma fixture
+discriminante é feita para que implementações erradas divirjam da certa. As duas intenções não
+se opõem, mas também não se implicam — e a segunda nunca tinha sido pedida, porque até a Etapa 7
+não havia suíte, e até a Etapa 9 as mutações caíam em código cujo comportamento a semente já
+separava.
+
+**Por que não apareceu antes.** As 30 mutações anteriores miravam persistência, migração,
+seletores de data e grafo de rotas: código em que um registro basta para distinguir o certo do
+errado. As 43 desta etapa miram **agregação e filtragem** — média, janela, pertencimento,
+tipo —, e agregação só se verifica com mais de um elemento. A classe do defeito mudou com a
+classe do código.
 
 ---
 
@@ -2465,6 +2547,76 @@ cascata de posse e tratar o elo fraco como posse. As duas foram acusadas.
 o `CONTROLE: a semente inteira passa nos esquemas` enumerava sete coleções numa lista fixa e a
 semente passou a ter onze. Registrado no **achado 7**, como quarta forma da mesma causa — lista
 em vez de classe —, e a primeira dentro de um instrumento de verificação.
+
+### Resultado da etapa
+
+Medido no `main` em `aaaf86c` (antes do primeiro commit da etapa) e no último commit dela. As
+cinco telas são `VerPEIDialog`, `StudentPerformanceDialog`, `PresentationModeDialog`,
+`ObservationDetailDialog` e `MinhaAgenda`. Cada número vem com a regra que o produz.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| **Telas exibindo conteúdo fixo sob o nome do estudante** | **5** | **0** |
+| Nomes de estudantes escritos no código dessas telas | 20 | 0 |
+| Porcentagens literais no código dessas telas | 21 | 1 |
+| Seções "em desenvolvimento" nessas telas | 6 | 0 |
+| Linhas nessas cinco telas | 1.942 | 1.581 |
+| Slides da apresentação | 12 fixos, 8 vazios | 8, derivados do plano |
+| Coleções do store | 7 | 11 |
+| Versão do envelope gravado | 3 | 4 |
+| Testes | 73 | 131 |
+| Arquivos de teste | 7 | 15 |
+| Mutações plantadas e acusadas | 30 | 73 |
+| Entradas do `npm audit` | 2 | 0 |
+
+**As regras de contagem.** "Nomes" e "porcentagens" são ocorrências no código **depois de
+remover comentários**, porque os comentários desta etapa citam de propósito os valores antigos
+(com eles, a contagem de porcentagens em HEAD dá 8 em vez de 1 — a diferença é a regra
+funcionando). A única porcentagem que resta é `width="100%"` no contêiner do gráfico do
+Desempenho: dimensão de CSS, não número exibido. "Seções em desenvolvimento" conta os textos
+"…em desenvolvimento" fora de comentário. "Mutações" são defeitos plantados um a um no código de
+produção, cada um com a asserção de que a substituição casou exatamente uma vez: 30 até a Etapa
+8 e 43 nesta.
+
+**O que a fotografia de superfície mediu.** Em seis dos oito commits de código a diferença
+declarada foi zero e medida zero — e em quatro deles **o zero não é evidência**, porque o objeto
+era um diálogo e o arreio mede 23 rotas sem interagir (pendência 3). As duas diferenças reais
+foram declaradas antes: `numeros` em `/`, `/alunos` e `/alunos/1` na troca de fonte do progresso
+(uma superfície a mais do que eu havia declarado — achado 16), e as quatro medidas em
+`/minha-agenda`, exatamente como declarado.
+
+**O que a etapa fez, em uma frase por tela.** O PEI virou entidade com migração v4; o Ver PEI
+mostra o plano do estudante ou diz que não há; o Desempenho lê avaliações e metas, e presença e
+integração saíram por não existirem no modelo; a Apresentação é montada do plano, com o número
+de slides vindo dele; o detalhe da observação mostra o registro e as metas que o citam; a Minha
+Agenda lista os atendimentos, inclusive os agendados com data já passada; e o progresso do
+estudante mudou de fonte, com o rótulo mudando junto.
+
+### O que a etapa NÃO fez
+
+Ficam registrados com o que existe hoje no lugar, para que ninguém leia a etapa como "o PEI está
+pronto".
+
+- **As seis partes do manual, campo a campo.** O modelo cobre a estrutura das seis partes
+  (`src/types/pei.ts`), mas cada parte do manual tem subitens que não viraram campo — níveis de
+  apoio por atividade, critérios de avaliação adaptada, cronograma por objetivo. O que existe é o
+  suficiente para as telas pararem de mentir, que era o escopo aprovado (patamar 1), e não a
+  transcrição do manual.
+- **Anexos com arquivo.** `AnexosDialog` continua dizendo que nenhum laudo está anexado, e é
+  verdade: não há entidade de anexo nem armazenamento. Guardar arquivo de laudo exige decisão de
+  produto e de proteção de dados que o protótipo não tem.
+- **PDF do PEI.** "Baixar PDF" e "Imprimir" seguem desabilitados no Ver PEI. O relatório do
+  estudante é impresso pelo navegador (Etapa 2); gerar arquivo pela aplicação está fora de escopo
+  declarado no README.
+- **Agenda pessoal (aulas, planejamento, formação, tarefas).** Entidade nova. **O gatilho é a
+  resposta à pergunta do item 2 desta etapa**: existe, na prática da escola, agenda pessoal
+  separada dos atendimentos? Enquanto a resposta não vier do autor, a Minha Agenda fica na opção
+  (a') — os atendimentos do store — e **nomeia na tela** o que não tem, em vez de preencher com
+  exemplo. Não é meta vaga: é uma pergunta esperando resposta.
+- **`z.infer`**, que o item 1 previa junto da modelagem. Os esquemas `zod` e os tipos continuam
+  sendo duas declarações do mesmo formato, agora com onze coleções em vez de sete. Ficou de fora
+  por tamanho: reescreve `types/index.ts` inteiro e misturaria refatoração de tipos com mudança
+  de comportamento, contra a regra do CLAUDE.md. Fica para etapa própria.
 
 ---
 

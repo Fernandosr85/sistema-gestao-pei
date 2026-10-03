@@ -384,20 +384,30 @@ sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 obse
 
 ### Testes automatizados (Etapa 7)
 
-Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`.
+Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`. A
+tabela é da Etapa 9, que levou a suíte de 73 para 131 testes.
 
 | Arquivo | Testes | O que trava |
 |---|---:|---|
-| `src/store/persistence.test.ts` | 14 | envelope do localStorage, migrações v1→v3, descarte de registro inválido e cascata de órfãos |
-| `src/lib/metrics.test.ts` | 19 | os seletores de métrica corrigidos nas Etapas 4 e 5 |
+| `src/store/persistence.test.ts` | 26 | envelope do localStorage, migrações v1→v4, descarte de registro inválido e cascata de órfãos por posse |
+| `src/lib/metrics.test.ts` | 24 | os seletores de métrica das Etapas 4, 5 e 9, inclusive a troca de fonte do progresso |
+| `src/lib/pei.test.ts` | 17 | plano vigente, média das metas, agrupamento por área, evidência da nota e seus elos fracos |
 | `src/lib/date.test.ts` | 13 | data local, idade na véspera e no dia do aniversário, e o dia anterior que o fuso produzia |
 | `src/store/reducer.test.ts` | 12 | as ações do store, inclusive a que não deve tocar nas coleções vinculadas |
 | `src/test/rotas.test.ts` | 8 | todo destino de `Link`, `Navigate` e `navigate()` resolve para uma rota declarada, e nenhum destino não literal escapa da varredura |
+| `src/lib/assessment.test.ts` | 7 | a medição datada da avaliação, separada do progresso corrente das metas |
+| `src/test/apresentacao.test.tsx` | 4 | os slides vêm do plano, o número deles também, e sem plano não há apresentação |
 | `src/test/fluxo.test.tsx` | 4 | cadastro de aluno e registro de observação até a listagem, na árvore React inteira |
 | `src/test/arreio.test.ts` | 3 | o andaime: que a suíte discrimina, e que jsdom não calcula layout |
+| `src/test/desempenho.test.tsx` | 3 | as duas medidas de progresso com nomes distintos, e o que saiu por não existir no modelo |
+| `src/test/progresso.test.tsx` | 3 | o par número-rótulo na listagem e na ficha, com o valor da fonte antiga como falsificação |
+| `src/test/verpei.test.tsx` | 3 | o plano do estudante aberto, e "Sem PEI vigente" para quem não tem |
+| `src/test/minha-agenda.test.tsx` | 2 | os atendimentos do store, inclusive os agendados com data já passada |
+| `src/test/observacao.test.tsx` | 2 | só o que foi registrado, e as metas que citam aquela observação |
 
-**O risco, com o número absoluto: são 73 testes, cobrindo as correções das Etapas 1 a 6 e a guarda de navegação da Etapa 8. O
-restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
+**O risco, com o número absoluto: são 131 testes, cobrindo as correções das Etapas 1 a 6, a
+guarda de navegação da Etapa 8 e as cinco telas da Etapa 9. O restante do código não tem
+teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 
 Três decisões que dizem o que a suíte significa:
@@ -406,9 +416,11 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **30 mutações, todas acusadas** — 27 da Etapa 7
-  e 3 da guarda de navegação da Etapa 8 —, reexecutadas depois de trocar o runner para o
-  `vitest` 4. Uma delas revelou defeito no próprio teste, e está registrada no backlog.
+  código de produção e a suíte teve de reprovar: **73 mutações, todas acusadas** — 27 da Etapa 7,
+  3 da guarda de navegação da Etapa 8 e 43 da Etapa 9 —, reexecutadas depois de trocar o runner
+  para o `vitest` 4. Duas revelaram defeito no próprio teste, e quatro revelaram que os DADOS de
+  teste não distinguiam o certo do errado: as duas coisas estão registradas no backlog (achados
+  11 e 17).
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
@@ -444,6 +456,38 @@ suíte que prova o router não podia estar sob a mudança que se queria verifica
   +12.029 no chunk de gráficos não foi medida, e está registrada assim.
 - **O runner foi trocado com linha de base**: os controles de zero testes e de fuso medidos no
   `vitest` 3.2.7 antes da troca, e comparados depois.
+
+### O PEI como entidade (Etapa 9)
+
+O sistema se chama Gestão PEI e não tinha entidade PEI: metas, revisões e histórico eram
+conteúdo fixo, igual para qualquer estudante. A etapa modelou o plano, migrou o dado gravado
+para a versão 4 e reescreveu as cinco telas que mostravam exemplo sob o nome de uma criança.
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Telas exibindo conteúdo fixo sob o nome do estudante | 5 | 0 |
+| Nomes de estudantes escritos no código dessas telas | 20 | 0 |
+| Porcentagens literais no código dessas telas | 21 | 1 |
+| Seções "em desenvolvimento" nessas telas | 6 | 0 |
+| Coleções do store / versão do envelope | 7 / v3 | 11 / v4 |
+| Testes | 73 | 131 |
+| Mutações acusadas | 30 de 30 | 73 de 73 |
+
+As regras de contagem estão no backlog, com a medição: "nomes" e "porcentagens" são ocorrências
+**fora de comentário** (os comentários citam de propósito os valores antigos), e a única
+porcentagem que resta é o `width="100%"` do contêiner de um gráfico.
+
+- **A estrutura do PEI vem do manual deste repositório, não da lei.** O marco legal obriga AEE,
+  adaptações e profissional de apoio, e **não prescreve campo nenhum** de PEI. Virou invariante
+  no `CLAUDE.md`: campo que vem do manual cita o manual, campo que vem da lei cita o artigo, e
+  nenhum campo alega mandato legal que não existe.
+- **O que o modelo não tem saiu da tela.** Presença, integração, anexos com arquivo e
+  notificações não viraram número fixo com aviso em volta: a tela não mostra o que não tem, e
+  diz o que falta.
+- **Dois progressos, dois nomes.** "Progresso nas metas do PEI" é o estado corrente das metas;
+  o que cada avaliação mediu continua na avaliação, com data. A ficha trocou de fonte — 60% pela
+  avaliação, 50% pelas metas — e o rótulo trocou junto.
+- **Sem PEI vigente, a tela diz isso** — não 0%, que seria uma medida que ninguém fez.
 
 ### Limites conhecidos
 
