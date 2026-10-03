@@ -1145,18 +1145,44 @@ passarem.
 ### 2. Dois defeitos de acessibilidade achados depois do merge (Etapa 3) — não corrigidos
 
 Achados durante a verificação da Etapa 4 e deixados para a Etapa 3 por decisão do autor.
-Nenhum foi corrigido.
+Nenhum foi corrigido. **Os dois foram remedidos em 03/10/2026, na varredura de coerência**, e um
+deles muda de descrição.
 
-- **Calendário da Agenda em inglês.** Em `/agenda-atendimentos`, a visão Lista mostra "Tue Nov
-  25", "2:00 pm" e "11/25/2025". A página tem `lang="pt-BR"`, e o leitor de tela lê esses trechos
-  com pronúncia portuguesa (3.1.1 e 3.1.2). Visto de passagem; a causa não foi investigada.
+- **Datas do calendário da Agenda em inglês.** O registro de 16/09/2026 dizia: "em
+  `/agenda-atendimentos`, a visão **Lista** mostra 'Tue Nov 25', '2:00 pm' e '11/25/2025'. Visto
+  de passagem; a causa não foi investigada." **Remedido: o defeito existe, a tela é outra, e a
+  causa agora está medida.**
+  - A visão **Lista** não é do `react-big-calendar`: é uma lista de cartões própria, e está toda
+    em português ("28/11/2025", "14:00 - 15:00", "Reunião Pedagógica"). A atribuição estava
+    errada.
+  - Quem mostra inglês são as visões do calendário: **Mês** escreve "October 2026" e "Sun Mon
+    Tue Wed Thu Fri Sat"; **Dia** escreve o intervalo como "10/03/2026 – 10/04/2026", que é
+    MM/DD/YYYY. Os rótulos de botão estão em português porque são passados à mão pela prop
+    `messages`; o que vem do `localizer` está em inglês.
+  - **A causa, medida:** o `AgendaAtendimentos.tsx` importa `moment/locale/pt-br` e chama
+    `moment.locale('pt-br')` — e o módulo `moment` que a página carrega responde
+    `locale() === 'en'`, com `['en']` como única locale registrada, enquanto
+    `moment_locale_pt-br.js` **é baixado** pelo navegador. Medido no console, pelo mesmo módulo
+    que o aplicativo usa. O mecanismo exato (interoperação entre o `moment` CommonJS e o módulo
+    de locale, sob o pré-empacotamento do Vite) **não foi investigado** e não é afirmado aqui.
+  - **Por que nenhuma verificação pegou:** é texto que só aparece depois de trocar de aba, e o
+    axe e o arreio medem rota a rota sem interagir (achado 2). E a atribuição errada à "visão
+    Lista" sobreviveu dois anos de registro porque ninguém voltou a abrir a tela.
 - **Selo "ATENÇÃO" com contraste 3,15:1.** Em Gestão > Relatórios, "Ver detalhes do exemplo" →
-  subtab "Alertas", o selo tem texto branco sobre `--alert-warning-icon` (`#db7706`): 3,15:1,
+  subtab "Alertas", o selo tem texto branco sobre `--alert-warning-icon` (`#D97706`): 3,15:1,
   medido pelo axe em 16/09/2026 (1.4.3 pede 4,5:1). O selo é de `645280f`. A medida da Etapa 3
-  deu 0 nessa rota porque o selo só aparece depois de dois cliques.
+  deu 0 nessa rota porque o selo só aparece depois de dois cliques. **Conferido em 03/10/2026:
+  intacto** — `reports/PredictiveAnalysis.tsx:565` continua com
+  `bg-[hsl(var(--alert-warning-icon))] text-white`, e o token continua `32 95% 44%`.
 
 **O que a Etapa 3 pode afirmar sem eles:** o "124 violações para 0" vale para o que aparece nas
 rotas sem interação. **O que não pode:** que todo conteúdo alcançável por clique foi medido.
+
+**Para fechar:** corrigir os dois, com o contraste remedido da cor computada e o calendário
+conferido nas três visões. Nenhum dos dois tem correção escrita ainda, e o do calendário precisa
+antes de uma decisão: consertar a locale do `moment` ou trocar o localizador por um que já seja
+usado no projeto (o `date-fns` já está instalado e o `ptBR` dele já é importado nesta mesma
+tela).
 
 ### 3. O arreio de superfície não alcança diálogo (Etapa 9) — trabalho próprio, depois da etapa
 
@@ -2370,7 +2396,9 @@ diff de cada degrau não sai do fechamento de dependências do pacote atualizado
 8 existirem. Ela se abre quando uma destas duas coisas acontecer:
 
 1. **Uma advisory nova** atingir o `vite` 6.4.x — aí a escada volta a ser segurança, e vale o
-   custo de subir.
+   custo de subir. **Reescrito em 03/10/2026 pela propriedade**, depois que uma advisory nova
+   atingiu outro subtree e esta condição não se aplicou a nada: ver "O gatilho da segunda escada,
+   reescrito pela propriedade", abaixo.
 2. **O `vitest` 5 passar a valer a pena** por motivo próprio (um recurso que a suíte precise, ou
    o 4 sair de suporte). Ele exige `vite` ^6.4, que já está satisfeito, então nesse caso o
    `vitest` sobe sozinho; o `vite` 7/8 só entra se o 5 vier a exigir.
@@ -2378,6 +2406,52 @@ diff de cada degrau não sai do fechamento de dependências do pacote atualizado
 Fora desses dois casos, subir é manutenção sem medida que a justifique, e cada major custa uma
 sessão de verificação. Enquanto nenhum dos dois acontecer, o estado correto é este: `vite` 6.4.3
 e `vitest` 4.1.11, com o acoplamento acima registrado para quando o gatilho vier.
+
+### O advisory do `braces`, pela cadeia do Tailwind (03/10/2026) — custo declarado
+
+Um dia depois de a Etapa 9 fechar com o `npm audit` em zero, ele voltou a 5. **Nada mudou no
+projeto**: um advisory novo foi publicado.
+
+| Medida | Valor |
+|---|---|
+| Entradas | **5, todas altas** — `braces`, `chokidar`, `micromatch`, `fast-glob`, `tailwindcss` |
+| Regra de contagem | a da Etapa 8: uma entrada por pacote afetado, do `npm audit --json` |
+| Advisory | `GHSA-vfj7-8cjw-p6xm` — exaustão de pilha no `braces` com padrão muito aninhado |
+| Caminho, medido com `npm ls braces` | `tailwindcss 3.4.19 → chokidar 3.6.0 / micromatch 4.0.8 → braces 3.0.3` |
+| Chega ao bundle? | **não** — `tailwindcss` é `devDependency` e produz CSS; nada dessa cadeia é empacotado |
+| `npm audit fix` sem `--force` | não muda nada: não há versão corrigida do `braces` |
+| `npm audit fix --force` | instalaria **`tailwindcss` 4**, major com quebra declarada pelo próprio npm |
+
+**Decisão do autor em 03/10/2026: custo declarado, não etapa.** É ferramenta de build, não chega
+a quem usa o sistema, e não existe correção em patch — trocar por um major do Tailwind para
+responder a um DoS em padrão de glob de build é pagar mais caro que o risco.
+
+**O gatilho:** abre quando houver versão corrigida **sem major** (o `braces` ganhar correção, ou
+o Tailwind 3.4.x passar a aceitar uma), **ou** quando o Tailwind 4 valer por motivo próprio. Não
+abre por o 4 existir.
+
+### O gatilho da segunda escada, reescrito pela propriedade
+
+O gatilho registrado na Etapa 8 dizia: *"uma advisory nova atingir o `vite` 6.4.x"*. Em
+03/10/2026 uma advisory nova atingiu o projeto — e **no subtree do Tailwind**. Pela letra, o
+gatilho não abriu; pela propriedade que ele queria garantir — *o projeto passou a carregar risco
+que a escada resolveria* —, a pergunta nem se aplicava, porque a escada do vite não resolve nada
+do Tailwind.
+
+**É o achado 14 outra vez, e o autor registra a atribuição como sua**: condição de verificação
+escrita **pelo nome do pacote** em vez da propriedade. Lida pelo nome, ela só dispara para um
+subtree; o resto do fechamento de dependências fica fora do radar sem que ninguém decida isso.
+
+**A redação que fica:**
+
+> A segunda escada (`vite` 7/8) abre quando **o projeto passar a carregar advisory alta ou
+> moderada sem correção em patch** cuja remediação seja subir o `vite`, **ou** quando o
+> `vitest` 5 passar a valer a pena por motivo próprio. Advisory em outro subtree é avaliada no
+> subtree dela, com a mesma pergunta: existe correção sem major? Se não existir, vira custo
+> declarado, com o caminho medido e o gatilho escrito.
+
+Assim a condição passa a ser sobre **o que o projeto carrega**, e não sobre onde o problema
+nasceu — e um advisory novo sempre encontra uma regra que o avalia, em vez de cair fora de todas.
 
 **Regras:**
 - Nunca `npm audit fix --force`. Uma major por commit (`Update:`), com as quatro verificações
