@@ -34,7 +34,11 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 > serem reproduzíveis. O que for cadastrado na interface com data do período entra na contagem
 > normalmente. O Dashboard e a Agenda repetem essa explicação num aviso na própria tela.
 >
-> O sistema **não está pronto para receber dados reais de estudantes**. Ver
+> Não há servidor, não há conta e não há cadastro. O que você digitar fica no `localStorage` do
+> seu navegador e some se você limpar os dados do site. A página também **não busca nada de
+> terceiros** — nenhuma fonte, script ou folha de estilo externa. Isso é uma propriedade do
+> protótipo, não uma garantia de conformidade: o sistema **não está pronto para receber dados
+> reais de estudantes**, e antes de usar com dados reais leia
 > [Antes de usar com dados reais](#antes-de-usar-com-dados-reais).
 
 ---
@@ -89,9 +93,12 @@ instalação se a versão não servir — em vez de o erro aparecer no primeiro 
 ```bash
 git clone https://github.com/Fernandosr85/sistema-gestao-pei.git
 cd sistema-gestao-pei
-npm install
+npm ci
 npm run dev
 ```
+
+`npm ci` instala exatamente o que está no `package-lock.json` e é o que o CI roda — `npm install`
+pode atualizar o lockfile sem ninguém pedir.
 
 A aplicação sobe em `http://localhost:8080`.
 
@@ -597,18 +604,13 @@ sistema-gestao-pei/
 
 ## Contribuindo
 
-Contribuições são bem-vindas, especialmente em acessibilidade, persistência de dados e
-testes.
+Este projeto tem um único mantenedor e não há processo de revisão de pull requests.
 
-1. Fork
-2. `git checkout -b feature/minha-contribuicao`
-3. Garanta que `npm run lint`, `npm run typecheck`, `npm test` e `npm run build` passam
-   — e, se a alteração corrige um defeito, que existe um teste que **reprova** sem a correção
-4. Commit (`Add:`, `Fix:`, `Update:`, `Docs:`, `Refactor:`, `Test:`)
-5. Abra um Pull Request
+O código é MIT: você pode copiar, bifurcar e adaptar para a sua escola sem pedir autorização. Se
+encontrar um erro, abra uma issue — sem garantia de resposta.
 
-Ver [docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md) — instruções para rodar e verificar o
-projeto localmente.
+Para rodar e verificar o projeto localmente, veja
+[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
 
 ---
 

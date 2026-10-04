@@ -234,6 +234,11 @@ uma criança, o que a lei não diz — e quem lê a tela não tem como distingui
 - Arquivos acima de ~400 linhas devem ser quebrados em commits de refatoração dedicados,
   nunca junto de mudança de comportamento.
 - Nada de `any`. Se o tipo não existe, crie em `src/types/`.
+- Validação de dado de formulário passa por `zod`, com `react-hook-form` na camada de
+  formulário. O store já valida forma com esquemas `zod` (`src/store/schemas.ts`): validar à mão
+  num formulário cria um segundo vocabulário para a mesma regra, que é a duplicação que a Etapa 4
+  tirou dos números. Medido em 04/10/2026: `react-hook-form` em 4 arquivos, `zod` nos dois
+  formulários e nos esquemas do store.
 - Sem dependência de plataforma de hospedagem específica. `npm run build` gera estático.
 
 ## Commits
