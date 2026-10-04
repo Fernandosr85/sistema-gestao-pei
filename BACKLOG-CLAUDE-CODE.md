@@ -2903,7 +2903,7 @@ resultado com os dois controles passando.
 
 ### O pré-requisito de Node estava errado desde a Etapa 7
 
-O README e o guia de contribuição diziam "Node.js 18+". Medido pelos campos `engines.node` de
+O README e o guia de contribuição — hoje `docs/DESENVOLVIMENTO.md` — diziam "Node.js 18+". Medido pelos campos `engines.node` de
 todos os pacotes instalados — 324 deles têm um —, com o `semver` do próprio `node_modules`:
 
 | Node | Pacotes que recusam |

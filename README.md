@@ -607,7 +607,8 @@ testes.
 4. Commit (`Add:`, `Fix:`, `Update:`, `Docs:`, `Refactor:`, `Test:`)
 5. Abra um Pull Request
 
-Ver [docs/GUIA_DE_CONTRIBUICAO.md](docs/GUIA_DE_CONTRIBUICAO.md).
+Ver [docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md) — instruções para rodar e verificar o
+projeto localmente.
 
 ---
 
@@ -616,7 +617,7 @@ Ver [docs/GUIA_DE_CONTRIBUICAO.md](docs/GUIA_DE_CONTRIBUICAO.md).
 - [Arquitetura do sistema](docs/ARQUITETURA_DO_SISTEMA.md)
 - [Guia de componentes](docs/GUIA_DE_COMPONENTES.md)
 - [Referência de integrações](docs/API_REFERENCE.md)
-- [Guia de contribuição](docs/GUIA_DE_CONTRIBUICAO.md)
+- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md)
 - [Nota de implementação: sincronização de calendário](docs/calendar-sync-implementation.md)
 
 ---
