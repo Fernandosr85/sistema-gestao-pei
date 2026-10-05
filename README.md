@@ -620,7 +620,6 @@ Para rodar e verificar o projeto localmente, veja
 - [Guia de componentes](docs/GUIA_DE_COMPONENTES.md)
 - [Referência de integrações](docs/API_REFERENCE.md)
 - [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md)
-- [Nota de implementação: sincronização de calendário](docs/calendar-sync-implementation.md)
 
 ---
 

@@ -223,6 +223,19 @@ Nunca escreva "exigido por lei", "obrigatório pela LBI" ou equivalente sem o ar
 Confundir prática institucional com exigência legal faz o sistema afirmar, sobre o direito de
 uma criança, o que a lei não diz — e quem lê a tela não tem como distinguir.
 
+### 7. Substituição se verifica pelo efeito, não pela remoção
+Tirar uma dependência e conferir que ela saiu **não** verifica que o que entrou no lugar funciona.
+Na Etapa 10b, `@fontsource-variable/inter` registra a família `'Inter Variable'` e o
+`src/index.css` pedia `'Inter'`: a varredura de requisição externa daria zero, o `index.html`
+estaria limpo, e a página renderizaria **em fallback**, sem sintoma visível. Nenhuma das quatro
+verificações nem o arreio pegariam.
+
+Ao trocar uma peça — fonte, biblioteca, seletor, utilitário, endpoint —, meça **as duas pontas**:
+que a antiga saiu e que a nova está **em uso**, pelo efeito. Fonte: `getComputedStyle` e
+`document.fonts.check`, mais o arquivo servido pela origem. Seletor ou utilitário: o valor que ele
+produz, não a presença da chamada. Medição que distingue pouco (duas fontes de métrica parecida)
+entra como secundária e diz que é.
+
 ## Convenções
 
 - Identificadores novos: inglês, ASCII, camelCase/PascalCase. Português apenas em textos

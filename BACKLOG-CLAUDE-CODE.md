@@ -2167,7 +2167,8 @@ cumprido sem ressalva**, porque os quatro passaram a ler o registro do estudante
    `levels` não têm interface nem são lidos.
 10. Pequenos defeitos registrados na Etapa 2:
     - `CalendarIntegrations.tsx:132` cita `docs/calendar-sync.md`, mas o arquivo é
-      `docs/calendar-sync-implementation.md`;
+      `docs/calendar-sync-implementation.md`; **na Etapa 10c o arquivo foi removido e a citação
+      saiu da tela junto** — o nome certo deixou de existir, e o defeito do nome errado com ele;
     - `MeuPerfilDialog.tsx:413` tem `Progress value={310}`, fora da escala de 0 a 100;
     - `VisaoGeralContent.tsx:37` usa a chave de objeto `MÉDIA`, com acento;
     - `VisaoGeralContent` e `MeuPerfilDialog` põem `Badge` (um `<div>`) dentro de `<p>`, e o
@@ -3086,10 +3087,175 @@ pronto".
 
 ---
 
+## Etapa 10 — README local-first, guia de desenvolvimento e a fonte servida pelo site
+
+**Não mudou comportamento.** Três commits em `docs/local-first`: `45c0ff1` (o guia de
+contribuição vira guia de desenvolvimento), `747bac5` (a fonte Inter hospedada localmente) e
+`4907bd2` (o local-first declarado, a seção "Contribuindo" e o `npm ci`), mais o fechamento desta
+seção.
+
+### Resultado da etapa
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Requisições a terceiro em tempo de execução (categoria (a)) | 3 | **0** |
+| Recursos de terceiro / total, servidor de desenvolvimento | 1 / 204 | **0 / 205** |
+| Recursos de terceiro / total, build servido | — | **0 / 6** |
+| `preconnect` para domínio de terceiro | 2 | **0** |
+| `dist` inteiro, bytes | 1.917.027 | 2.137.325 |
+| Transferência de fonte por visita, bytes | ~0 a 48.000 (cache do Google) | **48.556, da origem local** |
+| `docs/` — arquivos | 5 | **4** |
+| Linhas do guia de contribuição / desenvolvimento | 143 | **85** |
+
+### A varredura de requisição externa, e a regra que a classifica
+
+**A regra:** é **(a) requisição a terceiro em tempo de execução** o que faz o navegador abrir
+conexão ou buscar conteúdo em host diferente da origem da página, no carregamento ou no uso; é
+**(b)** o que só existe como texto — string, comentário, URL de documentação, badge — e o
+navegador nunca interpreta como recurso. **O critério é o efeito medido, não a forma do literal.**
+
+| Categoria | Antes (02/10) | Depois (04/10) |
+|---|---:|---:|
+| (a) | 3 — a folha `fonts.googleapis.com/css2?family=Inter` e dois `preconnect` | **0** |
+| (b) em `src` e `index.html` | 0 | 0 |
+
+**Controle positivo nas duas rodadas:** com
+`<link rel="stylesheet" href="https://exemplo.invalid/x.css">` plantado, a varredura devolveu a
+ocorrência; removido, voltou ao número de antes. Sem o controle, o zero final não seria evidência —
+seria a ausência de evidência, que é outra coisa (achado 19).
+
+**O que o controle negativo NÃO cobriu, e está dito em voz alta:** nenhuma medida de
+comportamento **offline** foi feita. Não há, nas ferramentas desta sessão, como cortar a rede
+externa e recarregar a página, e por isso **nada no repositório afirma que a página funciona
+offline** — o README fala do que a página **busca**, que é o que está medido. O que se sabe: nos
+dois modos, zero recurso externo foi pedido, e o único arquivo de fonte veio da origem local. O
+que não se sabe: como a página se comporta com a rede cortada.
+
+### A armadilha do nome da família — e a regra que fica
+
+`@fontsource-variable/inter` registra a família **`'Inter Variable'`**. O `src/index.css` pedia
+**`'Inter'`**. Importar o pacote e parar aí teria deixado o `index.html` limpo, a varredura em
+zero e a página **renderizando em fallback** — texto no lugar, com outra fonte, **sem nenhum
+sintoma visível**. O defeito não apareceria em nenhuma das quatro verificações, nem no arreio: a
+fotografia mede atributos e números, não qual face o navegador escolheu.
+
+> **A regra, que passa a ser a invariante 7 do CLAUDE.md: remover uma dependência externa e
+> verificar só a remoção não verifica a substituição.** Quem troca uma peça mede as duas pontas —
+> que a antiga saiu **e** que a nova está em uso, pelo efeito. Aqui: `getComputedStyle` do `body`
+> resolvendo para `"Inter Variable"`, `document.fonts.check('600 16px "Inter Variable"')` em
+> `true`, 1 de 7 faces em `loaded`, e o `woff2` buscado da própria origem. A medição por canvas
+> (407,25 px contra 404,57 do sans-serif) confirma, mas **discrimina pouco** — a Segoe UI tem
+> métrica parecida —, e por isso entra como secundária, não como prova.
+
+### Os pesos, medidos antes de escolher o pacote
+
+As classes do projeto pedem **400** (`font-normal`, 30 usos), **500** (`font-medium`, 143),
+**600** (`font-semibold`, 221) e **700** (`font-bold`, 122), mais três `font-weight: 600` no CSS.
+**Nenhum `font-light`.** A variável cobre `100 900` e serve a todos; o estático ficou
+desnecessário. E o pedido ao Google carregava o peso **300**, que o projeto nunca usou — o
+instrumento antigo pagava por um peso que nenhuma tela pedia.
+
+### O custo, declarado onde ele acontece
+
+| Onde | Variação |
+|---|---|
+| `dist` em disco | **+220.298 bytes** (+7 `woff2` = 218.512; CSS +2.044; `index.html` −265) |
+| Transferência por visita | **+48.556 bytes** — um subconjunto (latin), escolhido pelo `unicode-range` |
+| Requisições de terceiro | **−1** |
+| `preconnect` de terceiro | **−2** |
+
+Os sete subconjuntos (latin, latin-ext, greek, greek-ext, cyrillic, cyrillic-ext, vietnamese) vão
+todos para o `dist`. **Os ~85 kB de cirílico, grego e vietnamita ficam em disco e nunca são
+transferidos** num texto em português: é custo de repositório e de deploy, não de visita. Só
+sairiam escrevendo `@font-face` à mão, duplicando o que o pacote declara — custo declarado, sem
+ação.
+
+`npm audit` continuou nas mesmas 5 entradas altas da cadeia do Tailwind: a fonte não trouxe
+advisory nenhuma, e é a 38ª dependência de produção.
+
+### A triagem das boas práticas: 1 movido, 8 descartados
+
+O bloco "Boas Práticas de Desenvolvimento" do guia antigo foi comparado item a item com o
+CLAUDE.md. **Nada voltou para `docs/DESENVOLVIMENTO.md`:** duas fontes para a mesma convenção é o
+defeito que a Etapa 4 tirou dos números, em prosa.
+
+| Item | Destino | Por quê |
+|---|---|---|
+| Validação por `zod` + `react-hook-form` | **movido ao CLAUDE.md** | o arquivo não citava `zod` em linha nenhuma, e o store já valida forma com `src/store/schemas.ts`: validar à mão cria um segundo vocabulário para a mesma regra |
+| "Evitar componentes muito grandes" | descartado | coberto: `CLAUDE.md`, limite de ~400 linhas em commit de refatoração dedicado |
+| "Evitar `any`" | descartado | coberto: "Nada de `any`. Se o tipo não existe, crie em `src/types/`" |
+| "Centralizar tipos em `src/types/`" | descartado | coberto na mesma linha |
+| "Separar UI e regras de negócio" | descartado | coberto pela invariante 2: métrica deriva de dataset datado via seletor compartilhado |
+| "Criar componentes reutilizáveis" / "preferir composição" | descartado | genéricos; a parte verificável é "um componente por arquivo" |
+| "Padronizar mensagens de erro" | descartado | genérico, sem mecanismo que reprove |
+| "Tailwind / shadcn / consistência visual" | descartado | genéricos; o que o projeto cobra é a invariante 1, que prende cor de marca aos tokens `--brand-*` |
+| "Declarar tipos de forma explícita" | descartado | genérico sob TypeScript estrito, ligado na Etapa 6 |
+
+### A classe do achado desta etapa: documentação que sobrevive à decisão que descrevia
+
+Três ocorrências, na mesma etapa, do mesmo mecanismo — e é parente do achado 18, com uma
+diferença: ali o registro envelhecia porque o **código** mudava; aqui o documento sobrevive a uma
+**decisão de não fazer**.
+
+1. **O guia de contribuição** descrevia fluxo de PR, revisão e critério de aceitação num projeto
+   de um mantenedor que nunca teve processo de revisão. Virou `docs/DESENVOLVIMENTO.md`, com a
+   abertura dizendo o que o arquivo é.
+2. **A seção "Contribuindo" do README** dizia "Contribuições são bem-vindas", com Fork e "Abra um
+   Pull Request". Reescrita: um mantenedor, sem revisão de PR, código MIT para copiar e adaptar,
+   issue sem garantia de resposta. A varredura do README inteiro
+   (`contribu|comunidade|roadmap|pull request|fork|issue|mantenedor|colabora|bem-vind|revisão|aceita`,
+   com controle plantado) achou mais quatro ocorrências, **nenhuma sobre processo**: o item do
+   sumário e três menções a "badges de contribuição", que é funcionalidade do produto.
+3. **`docs/calendar-sync-implementation.md`**, 482 linhas sobre um backend Supabase que o projeto
+   decidiu não ter: fluxo OAuth, esquema de banco, código de *edge functions*, segurança, plano de
+   teste e monitoramento. **Removido nesta etapa** (está em
+   `git show 4907bd2:docs/calendar-sync-implementation.md`). Nada nele era decisão registrada.
+   **E ele não só sobreviveu à decisão: contradizia-a.** A seção "Current State" listava como
+   ✅ implementado um "mock OAuth flow with visual feedback" que a Etapa 2 havia desligado — hoje o
+   próprio componente diz no cabeçalho que nada ali pode simular conexão ou sincronização, e os
+   sete controles da aba estão `disabled`.
+
+**O que sobrou, medido e registrado sem ação.** Duas coisas desta classe continuam no repositório,
+e as duas são decisão do autor:
+
+- **`docs/API_REFERENCE.md`** repete a afirmação falsa que o documento removido carregava:
+  "Existe um fluxo mock de OAuth gerenciado por `useCalendarSync`, com placeholders para
+  integração real" (linha 38). Medido em 05/10/2026: o `useCalendarSync` é um esboço que devolve
+  estado estático, todo controle da aba está desabilitado, e o componente proíbe simulação no
+  próprio comentário. O arquivo também chama o estado atual de "dados mockados localmente", o que
+  a Etapa 4 desfez. É o único lugar do repositório onde "Supabase" ainda aparece como plano, fora
+  da nota histórica desta seção.
+- **O card "Guia de Implementação Backend"**, na aba Integrações das Configurações, é o gêmeo de
+  tela do documento removido: ensina a criar *edge functions* para OAuth e a guardar tokens
+  criptografados num banco. Medido no navegador em 05/10: o card continua lá, agora sem a citação
+  do arquivo. Remover conteúdo de tela é mudança de produto, e não entrou nesta etapa.
+
+### Verificação da etapa
+
+- As quatro, em cada commit: lint 0 erros e 4 avisos aceitos, typecheck silencioso, 131 testes em
+  15 arquivos, build concluindo.
+- Varredura institucional 0, com controle plantado devolvendo 2.
+- `GUIA_DE_CONTRIBUICAO` sem nenhuma ocorrência no repositório.
+- `calendar-sync` só nas duas notas históricas deste arquivo.
+- `supabase` **não voltou vazio**, e a varredura não foi afrouxada: sobraram a nota histórica
+  desta seção e `docs/API_REFERENCE.md:17`, listado acima.
+- A aba Integrações, medida no navegador depois da remoção: nenhuma citação a `calendar-sync`,
+  nenhum `<code>` no painel, aviso de indisponibilidade e os sete botões desabilitados intactos.
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
-- Integração OAuth com Google/Outlook
+- Integração OAuth com Google/Outlook. **Existiu um esboço de desenho** —
+  `docs/calendar-sync-implementation.md`, 482 linhas: fluxo OAuth do Google e da Microsoft,
+  esquema de banco, código de *edge functions*, considerações de segurança, plano de teste e
+  monitoramento, tudo sobre um backend **Supabase** que o projeto decidiu não ter. **Removido na
+  Etapa 10c**; está no histórico, em `git show 4907bd2:docs/calendar-sync-implementation.md`.
+  Nada dele era decisão registrada: era desenho de uma arquitetura descartada, e a seção "Current
+  State" ainda listava como implementado um "mock OAuth flow with visual feedback" que a Etapa 2
+  tinha desligado (o componente hoje diz, no próprio cabeçalho, que nada ali pode simular conexão
+  ou sincronização).
 - Exportação de arquivos gerados pela aplicação (PDF, Excel, Word). O relatório da Etapa 2
   é impresso pelo navegador, que também salva como PDF; a aplicação não gera arquivo.
 - Qualquer análise preditiva de verdade (exigiria dataset governado e validação; hoje há

@@ -127,10 +127,6 @@ export const CalendarIntegrations = () => {
               mapeamentos de eventos
             </li>
           </ol>
-          <p className="mt-3 text-xs">
-            Ver documentação completa em{' '}
-            <code className="bg-white px-1 rounded">docs/calendar-sync-implementation.md</code>
-          </p>
         </CardContent>
       </Card>
     </div>
