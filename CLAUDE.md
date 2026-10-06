@@ -223,6 +223,25 @@ Nunca escreva "exigido por lei", "obrigatório pela LBI" ou equivalente sem o ar
 Confundir prática institucional com exigência legal faz o sistema afirmar, sobre o direito de
 uma criança, o que a lei não diz — e quem lê a tela não tem como distinguir.
 
+### 7. Substituição se verifica pelo efeito, não pela remoção
+Tirar uma dependência e conferir que ela saiu **não** verifica que o que entrou no lugar funciona.
+Na Etapa 10b, `@fontsource-variable/inter` registra a família `'Inter Variable'` e o
+`src/index.css` pedia `'Inter'`: a varredura de requisição externa daria zero, o `index.html`
+estaria limpo, e a página renderizaria **em fallback**, sem sintoma visível. Nenhuma das quatro
+verificações nem o arreio pegariam.
+
+**E presença não é ordem.** Um aviso que continua no texto mas desce para o fim de uma lista de
+boas notícias mudou de efeito sem mudar de conteúdo: na Etapa 10d, "não está pronto para receber
+dados reais de estudantes" tinha caído para a penúltima linha do bloco de aviso do README, e a
+verificação por presença passava. Ao reescrever um bloco, meça **em que linha cada afirmação
+cai** — a mais forte primeiro.
+
+Ao trocar uma peça — fonte, biblioteca, seletor, utilitário, endpoint —, meça **as duas pontas**:
+que a antiga saiu e que a nova está **em uso**, pelo efeito. Fonte: `getComputedStyle` e
+`document.fonts.check`, mais o arquivo servido pela origem. Seletor ou utilitário: o valor que ele
+produz, não a presença da chamada. Medição que distingue pouco (duas fontes de métrica parecida)
+entra como secundária e diz que é.
+
 ## Convenções
 
 - Identificadores novos: inglês, ASCII, camelCase/PascalCase. Português apenas em textos
@@ -234,6 +253,11 @@ uma criança, o que a lei não diz — e quem lê a tela não tem como distingui
 - Arquivos acima de ~400 linhas devem ser quebrados em commits de refatoração dedicados,
   nunca junto de mudança de comportamento.
 - Nada de `any`. Se o tipo não existe, crie em `src/types/`.
+- Validação de dado de formulário passa por `zod`, com `react-hook-form` na camada de
+  formulário. O store já valida forma com esquemas `zod` (`src/store/schemas.ts`): validar à mão
+  num formulário cria um segundo vocabulário para a mesma regra, que é a duplicação que a Etapa 4
+  tirou dos números. Medido em 04/10/2026: `react-hook-form` em 4 arquivos, `zod` nos dois
+  formulários e nos esquemas do store.
 - Sem dependência de plataforma de hospedagem específica. `npm run build` gera estático.
 
 ## Commits

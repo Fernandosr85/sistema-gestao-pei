@@ -101,38 +101,6 @@ export const CalendarIntegrations = () => {
           {renderUnavailableRow('WhatsApp Business', 'Notificações via WhatsApp · não conectado')}
         </CardContent>
       </Card>
-
-      {/* Implementation Guide */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardHeader>
-          <CardTitle className="text-blue-900">Guia de Implementação Backend</CardTitle>
-        </CardHeader>
-        <CardContent className="text-sm text-blue-800 space-y-2">
-          <p className="font-semibold">Para ativar a sincronização real, configure:</p>
-          <ol className="list-decimal list-inside space-y-1 ml-2">
-            <li>
-              <strong>Google:</strong> Criar projeto no Google Cloud Console, habilitar Google
-              Calendar API, configurar OAuth 2.0
-            </li>
-            <li>
-              <strong>Microsoft:</strong> Registrar app no Azure AD, configurar permissões de
-              Calendar API
-            </li>
-            <li>
-              <strong>Backend:</strong> Criar edge functions para OAuth flow, token management, e
-              sync logic
-            </li>
-            <li>
-              <strong>Banco:</strong> Armazenar tokens criptografados, configurações de sync, e
-              mapeamentos de eventos
-            </li>
-          </ol>
-          <p className="mt-3 text-xs">
-            Ver documentação completa em{' '}
-            <code className="bg-white px-1 rounded">docs/calendar-sync-implementation.md</code>
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 };

@@ -36,6 +36,11 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 >
 > O sistema **não está pronto para receber dados reais de estudantes**. Ver
 > [Antes de usar com dados reais](#antes-de-usar-com-dados-reais).
+>
+> Não há servidor, não há conta e não há cadastro: o que você digitar fica no `localStorage` do
+> seu navegador e some se você limpar os dados do site. A página também não busca nada de
+> terceiros — nenhuma fonte, script ou folha de estilo externa. Isso é uma propriedade do
+> protótipo, não uma garantia de conformidade.
 
 ---
 
@@ -89,9 +94,12 @@ instalação se a versão não servir — em vez de o erro aparecer no primeiro 
 ```bash
 git clone https://github.com/Fernandosr85/sistema-gestao-pei.git
 cd sistema-gestao-pei
-npm install
+npm ci
 npm run dev
 ```
+
+`npm ci` instala exatamente o que está no `package-lock.json` e é o que o CI roda — `npm install`
+pode atualizar o lockfile sem ninguém pedir.
 
 A aplicação sobe em `http://localhost:8080`.
 
@@ -597,17 +605,13 @@ sistema-gestao-pei/
 
 ## Contribuindo
 
-Contribuições são bem-vindas, especialmente em acessibilidade, persistência de dados e
-testes.
+Este projeto tem um único mantenedor e não há processo de revisão de pull requests.
 
-1. Fork
-2. `git checkout -b feature/minha-contribuicao`
-3. Garanta que `npm run lint`, `npm run typecheck`, `npm test` e `npm run build` passam
-   — e, se a alteração corrige um defeito, que existe um teste que **reprova** sem a correção
-4. Commit (`Add:`, `Fix:`, `Update:`, `Docs:`, `Refactor:`, `Test:`)
-5. Abra um Pull Request
+O código é MIT: você pode copiar, bifurcar e adaptar para a sua escola sem pedir autorização. Se
+encontrar um erro, abra uma issue — sem garantia de resposta.
 
-Ver [docs/GUIA_DE_CONTRIBUICAO.md](docs/GUIA_DE_CONTRIBUICAO.md).
+Para rodar e verificar o projeto localmente, veja
+[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
 
 ---
 
@@ -616,8 +620,7 @@ Ver [docs/GUIA_DE_CONTRIBUICAO.md](docs/GUIA_DE_CONTRIBUICAO.md).
 - [Arquitetura do sistema](docs/ARQUITETURA_DO_SISTEMA.md)
 - [Guia de componentes](docs/GUIA_DE_COMPONENTES.md)
 - [Referência de integrações](docs/API_REFERENCE.md)
-- [Guia de contribuição](docs/GUIA_DE_CONTRIBUICAO.md)
-- [Nota de implementação: sincronização de calendário](docs/calendar-sync-implementation.md)
+- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md)
 
 ---
 
