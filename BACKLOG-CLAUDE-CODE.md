@@ -3193,7 +3193,7 @@ defeito que a Etapa 4 tirou dos números, em prosa.
 
 ### A classe do achado desta etapa: documentação que sobrevive à decisão que descrevia
 
-Três ocorrências, na mesma etapa, do mesmo mecanismo — e é parente do achado 18, com uma
+**Cinco ocorrências**, na mesma etapa, do mesmo mecanismo — e é parente do achado 18, com uma
 diferença: ali o registro envelhecia porque o **código** mudava; aqui o documento sobrevive a uma
 **decisão de não fazer**.
 
@@ -3215,20 +3215,73 @@ diferença: ali o registro envelhecia porque o **código** mudava; aqui o docume
    próprio componente diz no cabeçalho que nada ali pode simular conexão ou sincronização, e os
    sete controles da aba estão `disabled`.
 
-**O que sobrou, medido e registrado sem ação.** Duas coisas desta classe continuam no repositório,
-e as duas são decisão do autor:
+4. **O card "Guia de Implementação Backend"**, na aba Integrações das Configurações: o gêmeo de
+   **tela** do documento removido. Ensinava a criar projeto no Google Cloud Console, registrar app
+   no Azure AD, criar *edge functions* para OAuth e guardar tokens criptografados num banco —
+   dentro de um sistema sem servidor, sem banco, que lida com dado de criança. **Removido na Etapa
+   10d.** É a primeira ocorrência da classe **na própria tela**, e não em documento: o aviso que já
+   estava lá ("Integrações não implementadas: conectar contas exige OAuth com servidor, e este
+   protótipo não tem servidor") diz o que precisa ser dito, e guia de implementação não é
+   informação para quem usa o sistema — é afordância de documentação para funcionalidade
+   desligada.
+5. **`docs/API_REFERENCE.md`** — "API Reference" num projeto sem API, o que faz do **nome** a
+   mesma afirmação falsa. Triado linha a linha em 05/10/2026, e a triagem **inverteu a
+   expectativa**: a pilha "descreve o que existe" tem **uma linha**, a 10 ("Frontend em React +
+   TypeScript"), que o README e o `DESENVOLVIMENTO.md` já dizem. As outras **151** descrevem o que
+   não existe, ou afirmam falso:
 
-- **`docs/API_REFERENCE.md`** repete a afirmação falsa que o documento removido carregava:
-  "Existe um fluxo mock de OAuth gerenciado por `useCalendarSync`, com placeholders para
-  integração real" (linha 38). Medido em 05/10/2026: o `useCalendarSync` é um esboço que devolve
-  estado estático, todo controle da aba está desabilitado, e o componente proíbe simulação no
-  próprio comentário. O arquivo também chama o estado atual de "dados mockados localmente", o que
-  a Etapa 4 desfez. É o único lugar do repositório onde "Supabase" ainda aparece como plano, fora
-  da nota histórica desta seção.
-- **O card "Guia de Implementação Backend"**, na aba Integrações das Configurações, é o gêmeo de
-  tela do documento removido: ensina a criar *edge functions* para OAuth e a guardar tokens
-  criptografados num banco. Medido no navegador em 05/10: o card continua lá, agora sem a citação
-  do arquivo. Remover conteúdo de tela é mudança de produto, e não entrou nesta etapa.
+   | Trecho | Linhas | O que é |
+   |---|---|---|
+   | "a aplicação opera com **mock data**" e "Dados mockados localmente" | 6, 11 | **falso** desde a Etapa 4: os números vêm dos registros do navegador |
+   | "Backend de persistência (ex.: Supabase, PostgreSQL + API própria)" | 15-25 | não existe, e é a última menção a Supabase como plano |
+   | Google Calendar e Outlook, "Status: UI pronta" | 29-51 | os controles estão desabilitados desde a Etapa 2 |
+   | "Existe um fluxo mock de OAuth gerenciado por `useCalendarSync`" | 38 | **falso**: o hook devolve estado estático e o componente proíbe simular conexão |
+   | Exportação de PDF e de Excel, "Planejado" | 55-69 | não existem; o README marca ❌ |
+   | Notificações por Email/Push, "Status: UI pronta" | 73-79 | controles desabilitados |
+   | `useCalendarSync`: "Simular fluxo de autenticação" | 81-90 | **falso**, e é exatamente o que a Etapa 2 proibiu |
+   | "Modelo Conceitual de API", com **23** endpoints REST | 92-137 | proposta; nenhum existe |
+   | "Observações Importantes" e "Próximos Passos Recomendados" | 139-151 | roteiro para uma API que não há |
+
+   **O que o documento NÃO tem**, medido por busca: nenhuma linha sobre `src/types/`, as ações do
+   reducer, os seletores de `src/lib/metrics.ts`, o envelope de persistência e suas migrações, ou
+   o config de instituição. **A pilha que ficaria não sustenta um arquivo** — e renomeá-lo para
+   `MODELO_DE_DADOS.md` criaria um nome prometendo um modelo de dados que o conteúdo não tem, que
+   é o mesmo defeito na direção oposta.
+
+   **Proposta, para decisão do autor** — e é por isso que o arquivo **não** foi tocado na Etapa
+   10d: **remover `docs/API_REFERENCE.md`**, como se fez com o desenho de calendar sync, e, se um
+   documento de modelo de dados for desejado, **escrevê-lo a partir do código** em etapa própria,
+   lendo `src/types/`, `src/store/` e `src/lib/`. Renomear não produz conteúdo. Enquanto a decisão
+   não vier, as três afirmações falsas das linhas 6, 11 e 38 continuam vivas no repositório, e
+   isto fica escrito para que ninguém as encontre sem aviso.
+
+### A ênfase perdida: presença não é ordem de leitura (invariante 7, segundo caso)
+
+O parágrafo local-first, como entrou em `4907bd2`, **enterrou o aviso mais forte do README**. O
+texto terminava com "…não é garantia de conformidade: o sistema não está pronto para receber dados
+reais de estudantes", e o resultado foi um bloco que abre com boas notícias e fecha com a
+ressalva.
+
+Medido no próprio bloco — 32 linhas em `6ac10b1`, 33 depois da correção da Etapa 10d:
+
+| Afirmação | Linha do bloco antes | Linha do bloco depois |
+|---|---:|---:|
+| "não está pronto para receber dados reais de estudantes" | **29**, a penúltima | **26**, a primeira do fecho |
+| "Não há servidor, não há conta e não há cadastro" | 26 | 29 |
+| "não busca nada de terceiros" | 27 | 30 |
+
+**O conteúdo não mudou; a ordem de leitura mudou** — e com ela o efeito. Quem lê de cima para
+baixo encontrava três boas notícias antes da ressalva, e podia parar antes dela.
+
+**É o segundo caso da invariante 7, e amplia a regra.** No primeiro, a verificação olhava para a
+remoção e não para a substituição (a família `'Inter Variable'`). Aqui a verificação pedida — "as
+duas afirmações da linha substituída estão dentro do parágrafo novo?" — **passou**, e passaria
+sempre, porque pergunta por **presença**. Presença não mede posição, nem ênfase, nem o que o
+leitor encontra primeiro. Ao reescrever um bloco, meça **em que linha cada afirmação cai**, não só
+se ela continua lá.
+
+A correção foi do autor, não do método, e isso está registrado como está: nenhuma das quatro
+verificações, nenhum arreio e nenhuma varredura deste repositório mede ordem de leitura.
 
 ### Verificação da etapa
 
@@ -3237,10 +3290,23 @@ e as duas são decisão do autor:
 - Varredura institucional 0, com controle plantado devolvendo 2.
 - `GUIA_DE_CONTRIBUICAO` sem nenhuma ocorrência no repositório.
 - `calendar-sync` só nas duas notas históricas deste arquivo.
-- `supabase` **não voltou vazio**, e a varredura não foi afrouxada: sobraram a nota histórica
-  desta seção e `docs/API_REFERENCE.md:17`, listado acima.
-- A aba Integrações, medida no navegador depois da remoção: nenhuma citação a `calendar-sync`,
-  nenhum `<code>` no painel, aviso de indisponibilidade e os sete botões desabilitados intactos.
+- `supabase|edge function|API_REFERENCE` **não voltou vazio**, e a varredura não foi afrouxada
+  (controle plantado e removido). Fora das notas desta seção, sobraram exatamente **dois**:
+  `docs/API_REFERENCE.md:17` e o link `README.md:622` ("Referência de integrações") que aponta
+  para ele. Os dois existem porque a decisão sobre esse arquivo é do autor, e a proposta está
+  acima, no item 5.
+- **A aba Integrações, medida no navegador em 05/10, depois das duas remoções** — abrindo o
+  diálogo pelo controle que o abre e a aba pela aba, com `pointerdown` porque Radix não responde a
+  `click` sintético:
+  - nenhuma citação a `calendar-sync`, zero elementos `<code>` no painel;
+  - nenhuma ocorrência de "Guia de Implementação Backend", "edge function", "Azure AD", "Google
+    Cloud Console" ou "tokens criptografados"; nenhuma de "configure:", "criar projeto",
+    "registrar app" ou "armazenar tokens" — a aba deixou de ensinar a implementar qualquer coisa;
+  - **o que sobrou:** o aviso de indisponibilidade e quatro cartões (Calendários, Email,
+    Armazenamento, Comunicação), com os **sete** controles `disabled` intactos;
+  - **layout conferido na medida, não no olho:** o contêiner ficou com 5 filhos, nenhum vazio,
+    espaçamento regular de 22-23 px entre eles e **−1 px** de sobra depois do último cartão, ou
+    seja, nenhum buraco onde o card saiu.
 
 ---
 

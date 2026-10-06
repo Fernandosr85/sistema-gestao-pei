@@ -230,6 +230,12 @@ Na Etapa 10b, `@fontsource-variable/inter` registra a família `'Inter Variable'
 estaria limpo, e a página renderizaria **em fallback**, sem sintoma visível. Nenhuma das quatro
 verificações nem o arreio pegariam.
 
+**E presença não é ordem.** Um aviso que continua no texto mas desce para o fim de uma lista de
+boas notícias mudou de efeito sem mudar de conteúdo: na Etapa 10d, "não está pronto para receber
+dados reais de estudantes" tinha caído para a penúltima linha do bloco de aviso do README, e a
+verificação por presença passava. Ao reescrever um bloco, meça **em que linha cada afirmação
+cai** — a mais forte primeiro.
+
 Ao trocar uma peça — fonte, biblioteca, seletor, utilitário, endpoint —, meça **as duas pontas**:
 que a antiga saiu e que a nova está **em uso**, pelo efeito. Fonte: `getComputedStyle` e
 `document.fonts.check`, mais o arquivo servido pela origem. Seletor ou utilitário: o valor que ele

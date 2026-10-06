@@ -34,12 +34,13 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 > serem reproduzíveis. O que for cadastrado na interface com data do período entra na contagem
 > normalmente. O Dashboard e a Agenda repetem essa explicação num aviso na própria tela.
 >
-> Não há servidor, não há conta e não há cadastro. O que você digitar fica no `localStorage` do
-> seu navegador e some se você limpar os dados do site. A página também **não busca nada de
-> terceiros** — nenhuma fonte, script ou folha de estilo externa. Isso é uma propriedade do
-> protótipo, não uma garantia de conformidade: o sistema **não está pronto para receber dados
-> reais de estudantes**, e antes de usar com dados reais leia
+> O sistema **não está pronto para receber dados reais de estudantes**. Ver
 > [Antes de usar com dados reais](#antes-de-usar-com-dados-reais).
+>
+> Não há servidor, não há conta e não há cadastro: o que você digitar fica no `localStorage` do
+> seu navegador e some se você limpar os dados do site. A página também não busca nada de
+> terceiros — nenhuma fonte, script ou folha de estilo externa. Isso é uma propriedade do
+> protótipo, não uma garantia de conformidade.
 
 ---
 
