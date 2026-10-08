@@ -34,6 +34,12 @@ alcançou o painel de PR — onde `0 passando, 0 falhando, 0 pendentes` foi lido
 com 36 execuções verdes no GitHub (achado 19; é o achado 7 numa regra de verificação, enumerar o
 conhecido em vez da classe).
 
+**O escopo de uma varredura é parte do resultado dela.** Diga onde procurou, junto do que achou:
+varredura cujo escopo não está declarado não distingue "não há ocorrências" de "não procuramos
+ali". As quatro verificações leem `src/`; a fotografia mede rotas; a busca institucional é a única
+que entra em `docs/`, e só por dois termos — foi assim que 152 linhas de afirmação falsa viveram
+nove etapas em `docs/API_REFERENCE.md` (achado 20).
+
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
 defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letra acentuada

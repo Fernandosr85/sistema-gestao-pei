@@ -617,10 +617,18 @@ Para rodar e verificar o projeto localmente, veja
 
 ## Documentação técnica
 
+Os três arquivos que existem em `docs/`, conferidos em 07/10/2026:
+
+- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md) — pré-requisitos,
+  `npm ci`, as quatro verificações e a estrutura de pastas
 - [Arquitetura do sistema](docs/ARQUITETURA_DO_SISTEMA.md)
 - [Guia de componentes](docs/GUIA_DE_COMPONENTES.md)
-- [Referência de integrações](docs/API_REFERENCE.md)
-- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md)
+
+> Os dois últimos são anteriores à auditoria e **descrevem integrações como "UI pronta"** —
+> calendário, e-mail e notificações estão desabilitados desde a Etapa 2, e o backend não existe.
+> O que vale sobre o que está implementado é a tabela deste README e o
+> [backlog](BACKLOG-CLAUDE-CODE.md); a revisão dos dois está registrada como achado 20 do backlog,
+> à espera de decisão.
 
 ---
 
