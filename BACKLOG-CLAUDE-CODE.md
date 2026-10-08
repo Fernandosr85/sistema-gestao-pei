@@ -1411,6 +1411,9 @@ function`):
 | `GUIA_DE_COMPONENTES.md` | 207 | **1** | ver abaixo |
 | `DESENVOLVIMENTO.md` | 85 | **0** | escrito na Etapa 10, depois da auditoria |
 
+Depois da Etapa 10f, `docs/` tem **dois** arquivos: `DESENVOLVIMENTO.md` e
+`GUIA_DE_COMPONENTES.md`.
+
 **O que sobrou vivo, registrado sem ação — decisão do autor:**
 
 - `ARQUITETURA_DO_SISTEMA.md:37`: "os dados são fornecidos por **mock data**, mas a interface foi
@@ -1425,10 +1428,80 @@ function`):
 - `GUIA_DE_COMPONENTES.md:115`: "A interface está pronta, mas o fluxo real ainda depende de
   implementação backend/OAuth". Mesma afirmação, terceiro arquivo.
 
-O README passa a avisar, na seção "Documentação técnica", que esses dois arquivos são anteriores à
-auditoria e descrevem integrações como "UI pronta", e que o que vale sobre o implementado é a
-tabela do README e este backlog. **Isso é remendo, não correção:** a revisão dos dois é trabalho
-próprio, e está aqui à espera de decisão.
+**A varredura também tem vocabulário, e o vocabulário é um escopo.** A busca de 07/10 usou
+palavras de **prontidão** — "implementado", "pronto", "funcional", "disponível", "suporta",
+"integra", mais os nomes das peças que não existem. Ela encontra afirmação de prontidão falsa e
+**não** encontra afirmação **estrutural** falsa: uma linha descrevendo uma dependência que o
+projeto não tem mais é igualmente falsa e não casa nenhuma dessas palavras. **As ocorrências que
+ela devolveu são piso, não contagem.**
+
+> **Corolário: declarar o escopo de uma varredura inclui declarar o vocabulário dela.**
+
+A prova veio na Etapa 10f, com um vocabulário **estrutural** (`TanStack`, `QueryClient`,
+`useQuery`, `moment`, `mockData`, `Math.random`, `src/data`, `matriculaSESI`, `axios`, `fetch(`,
+`localStorage`, idade como campo armazenado): a tabela "Stack Principal" do
+`ARQUITETURA_DO_SISTEMA.md` listava **TanStack Query 5.x**, que **não está instalado**, e mais três
+versões falsas — TypeScript 5.5.3 (é 5.8.3), Vite 5.4.x (é 6.4.3) e React Router 6.30.x (é 7.18.4),
+as duas últimas subidas na Etapa 8. **Quatro de doze linhas da tabela**, e nenhuma delas casaria o
+vocabulário de prontidão.
+
+**O aviso de remendo que a Etapa 10e pôs no README saiu na 10f**, por decisão do autor, com o
+argumento que fecha a Etapa 2 para texto:
+
+> **Controle inerte tem três saídas: implementar, desabilitar com explicação visível, ou remover.
+> Documento tem duas: descrever o que existe, ou sair.** Aviso dizendo que o documento ao lado é
+> falso não é a saída do meio — é o botão inerte com etiqueta.
+
+E `docs/ARQUITETURA_DO_SISTEMA.md` **saiu inteiro na Etapa 10f** (133 linhas). Antes de remover,
+uma leitura única procurando **decisão registrada** — por quê, e não o quê — por vocabulário:
+`por qu|porqu|motivo|razão|escolh|optou|optamos|preferi|em vez de|ao invés|descartad|alternativa|trade-off|restrição|limitação|decidi|decisão|justific|evitar|não usamos|foi escolhido|compromisso|custo`.
+**Nenhuma decisão registrada**: o único casamento foi a palavra "custo" dentro de
+"Hooks customizados", na linha 50, que é o comentário de uma árvore de diretórios. O arquivo era
+descrição — objetivos, tabela de stack, árvore de pastas, lista de módulos, rotas, tipos,
+integrações planejadas e um roadmap em três fases —, e o único "por que" dele ("sem dependência de
+um provedor específico", linha 38) já está no `CLAUDE.md` como convenção, colado numa frase falsa
+sobre `mock data`. Está no histórico, em `git show 3c5cba6:docs/ARQUITETURA_DO_SISTEMA.md`.
+
+### O guia de componentes, medido em 07/10/2026 — decisão pendente
+
+Terceira varredura do `docs/`, agora medindo o documento contra o código em vez de procurar
+palavra. **O guia está em condição diferente dos outros três**, e por um motivo que o registro
+explica: ele **foi auditado na Etapa 5**, e carrega a nota histórica dizendo que `NavigationBar`,
+`ComplexityCard` e `ActionPanel` saíram do repositório por serem inalcançáveis
+(`GUIA_DE_COMPONENTES.md:200-204`).
+
+**(a) Os componentes existem?** Os **18** citados como seção existem, **0 ausentes** — conferido
+nome a nome contra `git ls-files src` e contra as declarações em código. Os três nomes
+PascalCase restantes que não existem em `src/` são exatamente os da nota histórica.
+
+**(b) O que o guia diz sobre eles é verdade?** Oito afirmações verificáveis: **quatro certas, três
+erradas, uma incompleta**.
+
+| Linha | Afirmação | Medida |
+|---|---|---|
+| 5 | "40+ componentes customizados" | **certa** — 55 `.tsx` em `src/components` fora de `ui/` |
+| 10-14 | a árvore tem `ui/`, `gestao/`, `reports/` | **incompleta** — são quatro: falta `printable-report/` |
+| 41-49 | `StatCardProps` com `trend?: string` e `icon?: React.ReactNode` | **errada** — `trend` é `PeriodChange` (a mudança que a Etapa 4 pagou para fazer), `icon` é `LucideIcon` e obrigatório, e faltam `description?` e `variant?` |
+| 58-63 | StudentCard exibe nome, diagnóstico, **nível de suporte**, progresso e **responsável** | **errada** — não há nível de suporte nem responsável; o cartão mostra Série, Idade, Professor, Diagnóstico e "Progresso nas metas do PEI" (ou "Sem PEI vigente") |
+| 84 | BenchmarkingPanel: "números fixos no código e não representam uma coorte real" | **certa** |
+| 115 | CalendarIntegrations: "A interface está pronta" | **errada** — a interface é inerte de propósito, com sete controles desabilitados desde a Etapa 2 |
+| 134 | ConfiguracoesDialog: "6 abas" | **certa** — medido no navegador: Notificações, Aparência, Privacidade, Integrações, Idioma, Acessibilidade |
+| 200-204 | a nota sobre os três componentes removidos na Etapa 5 | **certa** |
+
+**(c) Afirmação estrutural falsa:** **nenhuma.** O vocabulário estrutural declarado acima devolveu
+zero no guia — nada de `TanStack`, `QueryClient`, `moment`, `mockData`, `Math.random`, `src/data`,
+`matriculaSESI`, `axios`, `fetch(` ou `localStorage`. (As sete ocorrências de "idade" que uma busca
+sem fronteira de palavra devolveria são "identidade", "complexidade" e "funcionalidade": com
+`\bidade\b`, zero. O mesmo tipo de falso positivo que "custo" dentro de "customizados" produziu na
+busca por decisão.)
+
+**Proposta do agente, justificada pela medida: corrigir as linhas erradas e manter.** O guia não é
+o caso dos outros três — 18 de 18 componentes existem, nenhuma afirmação estrutural falsa, e o
+defeito mede **três linhas e meia** num arquivo de 207. Remover custaria 18 descrições de
+componente que nada mais no repositório oferece, para resolver o que cabe em seis linhas de
+correção. **O contra-argumento, que é do autor decidir:** o guia envelhece outra vez no primeiro
+commit que mudar uma prop, e nenhuma verificação deste repositório reprova texto — foi assim que as
+três linhas erradas chegaram até aqui. **Decisão pendente.**
 
 ---
 

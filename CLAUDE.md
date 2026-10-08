@@ -34,11 +34,19 @@ alcançou o painel de PR — onde `0 passando, 0 falhando, 0 pendentes` foi lido
 com 36 execuções verdes no GitHub (achado 19; é o achado 7 numa regra de verificação, enumerar o
 conhecido em vez da classe).
 
-**O escopo de uma varredura é parte do resultado dela.** Diga onde procurou, junto do que achou:
+**Documento tem duas saídas: descrever o que existe, ou sair.** Controle inerte tem três —
+implementar, desabilitar com explicação visível, ou remover —, e por isso a Etapa 2 pôde deixar
+botão desabilitado na tela. Texto não tem a do meio: aviso dizendo que o documento ao lado é falso
+é o botão inerte com etiqueta, e saiu do README na Etapa 10f. Documento anterior a uma decisão se
+corrige linha a linha ou se remove inteiro; o histórico preserva.
+
+**O escopo de uma varredura é parte do resultado dela, e isso inclui o vocabulário.** Diga onde procurou, junto do que achou:
 varredura cujo escopo não está declarado não distingue "não há ocorrências" de "não procuramos
 ali". As quatro verificações leem `src/`; a fotografia mede rotas; a busca institucional é a única
 que entra em `docs/`, e só por dois termos — foi assim que 152 linhas de afirmação falsa viveram
-nove etapas em `docs/API_REFERENCE.md` (achado 20).
+nove etapas em `docs/API_REFERENCE.md` (achado 20). Vocabulário de prontidão ("pronto",
+"implementado", "funcional") não acha afirmação **estrutural** falsa: "TanStack Query 5.x" numa
+tabela de stack de um projeto que não a instala é falso e não casa nenhuma dessas palavras.
 
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
