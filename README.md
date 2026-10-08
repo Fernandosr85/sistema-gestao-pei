@@ -617,10 +617,11 @@ Para rodar e verificar o projeto localmente, veja
 
 ## Documentação técnica
 
-- [Arquitetura do sistema](docs/ARQUITETURA_DO_SISTEMA.md)
-- [Guia de componentes](docs/GUIA_DE_COMPONENTES.md)
-- [Referência de integrações](docs/API_REFERENCE.md)
-- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md)
+Os dois arquivos que existem em `docs/`, conferidos em 07/10/2026:
+
+- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md) — pré-requisitos,
+  `npm ci`, as quatro verificações e a estrutura de pastas
+- [Guia de componentes](docs/GUIA_DE_COMPONENTES.md) — os 18 componentes principais, um a um
 
 ---
 

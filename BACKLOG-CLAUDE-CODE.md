@@ -1379,6 +1379,132 @@ releitura com uso.
 
 ---
 
+### 20. A varredura só acha onde ela olha (Etapa 10e, 07/10/2026)
+
+**Qualificação:** as nove etapas varreram `src/`. O `docs/` foi varrido **apenas** em busca da
+marca institucional — a busca por `sesi|lovable` é a única das verificações deste repositório que
+entra nesse diretório, e entra procurando dois termos. As quatro verificações leem `src/` (lint,
+typecheck, suíte e build), a fotografia mede rotas, e a mutação planta defeito em código de
+produção. **Nenhuma delas lê documentação.**
+
+**O resultado disso, medido:** a afirmação falsa mais extensa do repositório viveu nove etapas
+fora do alcance de toda varredura — `docs/API_REFERENCE.md`, 152 linhas, com 23 endpoints REST
+propostos, "UI pronta" para Google e Outlook, e "Simular fluxo de autenticação", que é exatamente
+o que a Etapa 2 proibiu no código. Ela não sobreviveu por ser difícil de ver: sobreviveu por estar
+num diretório que ninguém mediu. **A auditoria encontrou o que estava onde ela olhou.**
+
+> **A regra que fica: o escopo de uma varredura é parte do resultado dela.** Varredura cujo escopo
+> não está declarado não distingue "não há ocorrências" de "não procuramos ali". Toda varredura
+> registrada neste backlog passa a dizer **onde** procurou, junto do que achou — e o controle
+> positivo continua obrigatório, porque escopo declarado com instrumento cego devolve o mesmo zero
+> bonito.
+
+**A primeira varredura de `docs/` com escopo declarado achou mais.** Feita em 07/10/2026 sobre os
+quatro arquivos do diretório (576 linhas), por vocabulário de afirmação falsa
+(`supabase|endpoint|OAuth|backend|UI pronta|mock|simul|planejado|Status:|API própria|edge
+function`):
+
+| Arquivo | Linhas | Ocorrências | O que são |
+|---|---:|---:|---|
+| `API_REFERENCE.md` | 151 | 15 | removido nesta etapa |
+| `ARQUITETURA_DO_SISTEMA.md` | 133 | **6** | ver abaixo |
+| `GUIA_DE_COMPONENTES.md` | 207 | **1** | ver abaixo |
+| `DESENVOLVIMENTO.md` | 85 | **0** | escrito na Etapa 10, depois da auditoria |
+
+Depois da Etapa 10f, `docs/` tem **dois** arquivos: `DESENVOLVIMENTO.md` e
+`GUIA_DE_COMPONENTES.md`.
+
+**O que sobrou vivo, registrado sem ação — decisão do autor:**
+
+- `ARQUITETURA_DO_SISTEMA.md:37`: "os dados são fornecidos por **mock data**, mas a interface foi
+  preparada para futura integração com backend real". Falso desde a Etapa 4: os números vêm dos
+  registros do navegador.
+- `ARQUITETURA_DO_SISTEMA.md:107, 108, 111`: a tabela "Integrações Planejadas" dá **"UI pronta"**
+  a Google Calendar, Microsoft Outlook e Email/Push. Os controles estão `disabled` desde a Etapa 2,
+  com o motivo na tela — "UI pronta" é a mesma afirmação que o documento removido fazia.
+- `ARQUITETURA_DO_SISTEMA.md:113-125`: um **Roadmap em três fases** para o backend que o projeto
+  decidiu não ter, com "CRUD real de alunos e observações" na Fase 1 — o cadastro local existe e
+  funciona desde a Etapa 2.
+- `GUIA_DE_COMPONENTES.md:115`: "A interface está pronta, mas o fluxo real ainda depende de
+  implementação backend/OAuth". Mesma afirmação, terceiro arquivo.
+
+**A varredura também tem vocabulário, e o vocabulário é um escopo.** A busca de 07/10 usou
+palavras de **prontidão** — "implementado", "pronto", "funcional", "disponível", "suporta",
+"integra", mais os nomes das peças que não existem. Ela encontra afirmação de prontidão falsa e
+**não** encontra afirmação **estrutural** falsa: uma linha descrevendo uma dependência que o
+projeto não tem mais é igualmente falsa e não casa nenhuma dessas palavras. **As ocorrências que
+ela devolveu são piso, não contagem.**
+
+> **Corolário: declarar o escopo de uma varredura inclui declarar o vocabulário dela.**
+
+A prova veio na Etapa 10f, com um vocabulário **estrutural** (`TanStack`, `QueryClient`,
+`useQuery`, `moment`, `mockData`, `Math.random`, `src/data`, `matriculaSESI`, `axios`, `fetch(`,
+`localStorage`, idade como campo armazenado): a tabela "Stack Principal" do
+`ARQUITETURA_DO_SISTEMA.md` listava **TanStack Query 5.x**, que **não está instalado**, e mais três
+versões falsas — TypeScript 5.5.3 (é 5.8.3), Vite 5.4.x (é 6.4.3) e React Router 6.30.x (é 7.18.4),
+as duas últimas subidas na Etapa 8. **Quatro de doze linhas da tabela**, e nenhuma delas casaria o
+vocabulário de prontidão.
+
+**O aviso de remendo que a Etapa 10e pôs no README saiu na 10f**, por decisão do autor, com o
+argumento que fecha a Etapa 2 para texto:
+
+> **Controle inerte tem três saídas: implementar, desabilitar com explicação visível, ou remover.
+> Documento tem duas: descrever o que existe, ou sair.** Aviso dizendo que o documento ao lado é
+> falso não é a saída do meio — é o botão inerte com etiqueta.
+
+E `docs/ARQUITETURA_DO_SISTEMA.md` **saiu inteiro na Etapa 10f** (133 linhas). Antes de remover,
+uma leitura única procurando **decisão registrada** — por quê, e não o quê — por vocabulário:
+`por qu|porqu|motivo|razão|escolh|optou|optamos|preferi|em vez de|ao invés|descartad|alternativa|trade-off|restrição|limitação|decidi|decisão|justific|evitar|não usamos|foi escolhido|compromisso|custo`.
+**Nenhuma decisão registrada**: o único casamento foi a palavra "custo" dentro de
+"Hooks customizados", na linha 50, que é o comentário de uma árvore de diretórios. O arquivo era
+descrição — objetivos, tabela de stack, árvore de pastas, lista de módulos, rotas, tipos,
+integrações planejadas e um roadmap em três fases —, e o único "por que" dele ("sem dependência de
+um provedor específico", linha 38) já está no `CLAUDE.md` como convenção, colado numa frase falsa
+sobre `mock data`. Está no histórico, em `git show 3c5cba6:docs/ARQUITETURA_DO_SISTEMA.md`.
+
+### O guia de componentes, medido em 07/10/2026 — decisão pendente
+
+Terceira varredura do `docs/`, agora medindo o documento contra o código em vez de procurar
+palavra. **O guia está em condição diferente dos outros três**, e por um motivo que o registro
+explica: ele **foi auditado na Etapa 5**, e carrega a nota histórica dizendo que `NavigationBar`,
+`ComplexityCard` e `ActionPanel` saíram do repositório por serem inalcançáveis
+(`GUIA_DE_COMPONENTES.md:200-204`).
+
+**(a) Os componentes existem?** Os **18** citados como seção existem, **0 ausentes** — conferido
+nome a nome contra `git ls-files src` e contra as declarações em código. Os três nomes
+PascalCase restantes que não existem em `src/` são exatamente os da nota histórica.
+
+**(b) O que o guia diz sobre eles é verdade?** Oito afirmações verificáveis: **quatro certas, três
+erradas, uma incompleta**.
+
+| Linha | Afirmação | Medida |
+|---|---|---|
+| 5 | "40+ componentes customizados" | **certa** — 55 `.tsx` em `src/components` fora de `ui/` |
+| 10-14 | a árvore tem `ui/`, `gestao/`, `reports/` | **incompleta** — são quatro: falta `printable-report/` |
+| 41-49 | `StatCardProps` com `trend?: string` e `icon?: React.ReactNode` | **errada** — `trend` é `PeriodChange` (a mudança que a Etapa 4 pagou para fazer), `icon` é `LucideIcon` e obrigatório, e faltam `description?` e `variant?` |
+| 58-63 | StudentCard exibe nome, diagnóstico, **nível de suporte**, progresso e **responsável** | **errada** — não há nível de suporte nem responsável; o cartão mostra Série, Idade, Professor, Diagnóstico e "Progresso nas metas do PEI" (ou "Sem PEI vigente") |
+| 84 | BenchmarkingPanel: "números fixos no código e não representam uma coorte real" | **certa** |
+| 115 | CalendarIntegrations: "A interface está pronta" | **errada** — a interface é inerte de propósito, com sete controles desabilitados desde a Etapa 2 |
+| 134 | ConfiguracoesDialog: "6 abas" | **certa** — medido no navegador: Notificações, Aparência, Privacidade, Integrações, Idioma, Acessibilidade |
+| 200-204 | a nota sobre os três componentes removidos na Etapa 5 | **certa** |
+
+**(c) Afirmação estrutural falsa:** **nenhuma.** O vocabulário estrutural declarado acima devolveu
+zero no guia — nada de `TanStack`, `QueryClient`, `moment`, `mockData`, `Math.random`, `src/data`,
+`matriculaSESI`, `axios`, `fetch(` ou `localStorage`. (As sete ocorrências de "idade" que uma busca
+sem fronteira de palavra devolveria são "identidade", "complexidade" e "funcionalidade": com
+`\bidade\b`, zero. O mesmo tipo de falso positivo que "custo" dentro de "customizados" produziu na
+busca por decisão.)
+
+**Proposta do agente, justificada pela medida: corrigir as linhas erradas e manter.** O guia não é
+o caso dos outros três — 18 de 18 componentes existem, nenhuma afirmação estrutural falsa, e o
+defeito mede **três linhas e meia** num arquivo de 207. Remover custaria 18 descrições de
+componente que nada mais no repositório oferece, para resolver o que cabe em seis linhas de
+correção. **O contra-argumento, que é do autor decidir:** o guia envelhece outra vez no primeiro
+commit que mudar uma prop, e nenhuma verificação deste repositório reprova texto — foi assim que as
+três linhas erradas chegaram até aqui. **Decisão pendente.**
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -3248,12 +3374,12 @@ diferença: ali o registro envelhecia porque o **código** mudava; aqui o docume
    `MODELO_DE_DADOS.md` criaria um nome prometendo um modelo de dados que o conteúdo não tem, que
    é o mesmo defeito na direção oposta.
 
-   **Proposta, para decisão do autor** — e é por isso que o arquivo **não** foi tocado na Etapa
-   10d: **remover `docs/API_REFERENCE.md`**, como se fez com o desenho de calendar sync, e, se um
-   documento de modelo de dados for desejado, **escrevê-lo a partir do código** em etapa própria,
-   lendo `src/types/`, `src/store/` e `src/lib/`. Renomear não produz conteúdo. Enquanto a decisão
-   não vier, as três afirmações falsas das linhas 6, 11 e 38 continuam vivas no repositório, e
-   isto fica escrito para que ninguém as encontre sem aviso.
+   **Decidido e executado na Etapa 10e (07/10/2026): o arquivo foi removido inteiro**, sem
+   rename e sem substituto, e a decisão de não haver documento de modelo de dados está em
+   "Decisões fechadas", com o motivo e com as duas perguntas que reabri-la exigiria. O que a
+   remoção deixou para trás está no **achado 20**: as mesmas afirmações em
+   `ARQUITETURA_DO_SISTEMA.md` e `GUIA_DE_COMPONENTES.md`, que nenhuma varredura deste
+   repositório tinha lido.
 
 ### A ênfase perdida: presença não é ordem de leitura (invariante 7, segundo caso)
 
@@ -3290,11 +3416,14 @@ verificações, nenhum arreio e nenhuma varredura deste repositório mede ordem 
 - Varredura institucional 0, com controle plantado devolvendo 2.
 - `GUIA_DE_CONTRIBUICAO` sem nenhuma ocorrência no repositório.
 - `calendar-sync` só nas duas notas históricas deste arquivo.
-- `supabase|edge function|API_REFERENCE` **não voltou vazio**, e a varredura não foi afrouxada
-  (controle plantado e removido). Fora das notas desta seção, sobraram exatamente **dois**:
-  `docs/API_REFERENCE.md:17` e o link `README.md:622` ("Referência de integrações") que aponta
-  para ele. Os dois existem porque a decisão sobre esse arquivo é do autor, e a proposta está
-  acima, no item 5.
+- `supabase|edge function|API_REFERENCE` não voltava vazio na Etapa 10d, e a varredura não foi
+  afrouxada: os dois sobreviventes eram `docs/API_REFERENCE.md:17` e o link do README que apontava
+  para ele. **Os dois saíram na Etapa 10e**, com o arquivo; o que resta dessas palavras no
+  repositório são as notas históricas deste backlog.
+- **Todo link `.md` do README, do `docs/DESENVOLVIMENTO.md` e do `CLAUDE.md` resolve** (conferido
+  arquivo por arquivo com `test -f` em 07/10/2026, com controle plantado: um link para
+  `docs/NAO_EXISTE.md` foi acusado e removido). São 4 no README, 1 no `DESENVOLVIMENTO.md`
+  (`../CLAUDE.md`) e nenhum no `CLAUDE.md`.
 - **A aba Integrações, medida no navegador em 05/10, depois das duas remoções** — abrindo o
   diálogo pelo controle que o abre e a aba pela aba, com `pointerdown` porque Radix não responde a
   `click` sintético:
@@ -3307,6 +3436,31 @@ verificações, nenhum arreio e nenhuma varredura deste repositório mede ordem 
   - **layout conferido na medida, não no olho:** o contêiner ficou com 5 filhos, nenhum vazio,
     espaçamento regular de 22-23 px entre eles e **−1 px** de sobra depois do último cartão, ou
     seja, nenhum buraco onde o card saiu.
+
+---
+
+## Decisões fechadas
+
+Decisões do autor que **não** são pendência: não há trabalho esperando, e reabrir exige argumento
+novo, não lembrança de que o assunto existiu.
+
+### Não haverá documento de modelo de dados (07/10/2026)
+
+A fonte do modelo são **os tipos em `src/types/` e o `CLAUDE.md`**. Um terceiro lugar descrevendo
+o mesmo modelo seria a próxima ocorrência da classe que a Etapa 10 registrou — documentação que
+sobrevive à decisão que descrevia —, e por um motivo mecânico: documento de modelo escrito à mão
+envelhece no primeiro commit que muda um tipo, e **nada neste repositório reprova texto**. O
+`src/types/` e o `src/store/schemas.ts`, não: o typecheck e a suíte reprovam quando eles divergem
+do código.
+
+Foi por isso que `docs/API_REFERENCE.md` saiu **inteiro**, em vez de ser renomeado para
+`MODELO_DE_DADOS.md`: a triagem achou **1 linha de 152** descrevendo algo que existe, e essa linha
+o README e o `DESENVOLVIMENTO.md` já diziam. Renomear teria criado um nome prometendo um modelo de
+dados que o conteúdo não tem.
+
+**Para reabrir**, duas perguntas precisam de resposta: o que o documento diria que o tipo não diz,
+e **qual verificação o reprovaria** no dia em que ele ficasse falso. Sem a segunda, a resposta é
+não.
 
 ---
 
