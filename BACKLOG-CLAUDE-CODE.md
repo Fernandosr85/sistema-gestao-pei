@@ -1860,6 +1860,28 @@ quem for repetir não concluir que o gráfico não existe.
   `/observacoes` ZERO em 19 de 20. O que a Etapa 14 afirma do axe, então, é só o que mediu com
   marcador de objeto: a rota dos relatórios e o estado da rosca da agenda, 10/10 cada.
 
+> **CORRIGIDO EM 11/10/2026, NA ETAPA 15 — e a correção é no enunciado, não nos números.**
+>
+> Este achado foi escrito dizendo que "o axe errou nas duas direções". Está errado: **ele subconta
+> nas duas.** No achado 22 aceitou `placeholder` como nome de último recurso e deixou passar um campo
+> cujo rótulo a pessoa perdia ao digitar; aqui acusou **5 de 13** nós sem nome do mesmo contêiner, com
+> outros **28** e **19** nos contêineres vizinhos da mesma rota, e os rótulos de eixo como texto solto
+> fora do alcance de qualquer regra. Nenhuma das duas é falso positivo. As duas são o mesmo
+> mecanismo: **o axe verifica regras enumeradas para combinações de elemento e papel, não a
+> propriedade "nó exposto sem nome".**
+>
+> **É um conjunto de testes, não uma medida** — e a distância entre as duas coisas, nesta rota, foi de
+> **5 para 60** (13 + 28 + 19 nós expostos sem nome nos três contêineres de gráfico, contra 5
+> acusados). Um conjunto de testes passa quando nenhum teste dele falha; uma medida responde quanto.
+> Confundir os dois é o que faz "0 violações" soar como "nada a consertar".
+>
+> **E a hipótese do plano da Etapa 14 foi refutada pela medição, com o número que a derrubou.** A
+> hipótese era que descendentes de `role="img"` seriam apresentacionais e o axe estaria acusando o que
+> não chega a ninguém. Medido na árvore do Chrome: os cinco setores com `ignored: false`, e **5 de 5**
+> presentes na árvore inteira de **855 nós** — o navegador não poda. O mesmo valeu para um `<img>` sem
+> `alt` plantado dentro do contêiner: também exposto. A especificação diz uma coisa, o navegador faz
+> outra, e quem decide num registro é o navegador.
+
 #### A nota de método
 
 Esta é a primeira verificação da série em que **mais repetição teria confirmado o erro em vez de
@@ -1868,6 +1890,60 @@ passadas teriam devolvido o mesmo cinco. Todas as correções anteriores cederam
 mais rotas, mais estados, mais passadas. Esta cedeu a perguntar **de que o número era função**: de
 `role` explícito no DOM, e não de o nó chegar a alguém. A pergunta que move não é "quantas vezes
 você mediu", é "o que a sua medida é função".
+
+---
+
+### 25. Concordância não é evidência quando os instrumentos derivam da mesma coisa (Etapa 15, 11/10/2026)
+
+Dois instrumentos concordaram que os cinco setores da rosca apareciam na árvore de acessibilidade, e
+concordavam **pelo mesmo ponto cego**: os dois derivam do DOM e nenhum modela filho apresentacional.
+A concordância estava a um passo de ser aceita como confirmação. O que a separou foi um controle
+plantado **dentro** do contêiner `role="img"`, que apareceu nos dois e provou que nenhum dos dois
+podia responder à pergunta.
+
+> **Regra: concordância entre instrumentos só é evidência se eles forem independentes.**
+> Instrumentos com a mesma derivação concordam também quando estão os dois errados — antes de somar
+> duas medições, pergunte **de que cada uma deriva**, e plante um controle que **distinga as duas
+> hipóteses**, não um que as duas passem.
+
+O controle que o plano da Etapa 14 pediu — `<img>` sem `alt` FORA de qualquer `role="img"` — passava
+nos três instrumentos e não distinguia nada: ele só mostra que a leitura funciona. O controle que
+decide é o plantado **no lugar onde as duas hipóteses divergem**: se a árvore podasse descendentes de
+`role="img"`, o controle de dentro teria de desaparecer. Não desapareceu em nenhum dos dois leitores
+de DOM — e, medido depois no Chrome, também não desaparece na árvore de verdade. A hipótese caiu, e a
+limitação dos dois instrumentos ficou medida no mesmo passo.
+
+**O que isto corrige no método, e não só no caso:** "duas medições concordaram" era, até aqui, um
+argumento aceito neste registro. Passa a exigir a pergunta da derivação. Vale para o par
+arreio/leitor de página (os dois leem o DOM), para o par axe/arreio (os dois leem o DOM, só com
+regras diferentes) e para qualquer par em que uma das pontas seja a mesma biblioteca.
+
+#### A nota de premissa: terceira ocorrência da série
+
+A instrução da Etapa 14 dizia "corrija a regra do achado 23 no `CLAUDE.md`". **A regra não estava
+lá:** a Etapa 13 pediu o registro no BACKLOG e no README, e foi só isso que aconteceu. Medido antes
+de escrever — `passadas` tinha **0 ocorrências** no `CLAUDE.md` e tem **2** depois do commit da
+Etapa 14. Executar a ordem como escrita teria produzido uma "correção" de algo inexistente, ou a
+frase "regra corrigida" apontando para um arquivo onde nada havia — que é exatamente como um
+registro passa a mentir sem ninguém ter escrito nada falso de propósito.
+
+**As três ocorrências da classe, nesta série:**
+
+1. Na sessão de fechamento, eu afirmei que a regra invertida da Etapa 9 estava no `CLAUDE.md`; ela
+   vivia só no BACKLOG. Medido e corrigido com nota datada.
+2. Achado 19: a regra do zero existia desde a Etapa 9, amarrada à fotografia de superfície, e por
+   isso não alcançou o painel de PR — onde `0/0/0` foi lido como "não há CI", com 36 execuções
+   verdes.
+3. Esta: a instrução supôs no `CLAUDE.md` uma regra que estava no BACKLOG.
+
+A classe é uma só: **regra escrita dentro do registro de uma etapa não é regra do projeto.** E quem
+manda corrigi-la — eu, o autor, ou um plano — supõe que ela esteja onde deveria estar. **Medir a
+premissa valeu mais que executar a ordem**, nas três.
+
+Nesta etapa a mesma coisa aconteceu com a Pendência 5, que eu mesmo escrevi: ela dizia que o arreio
+"continua listando cinco `img||`", e a medição mostrou que a fotografia nunca os listou — ela mede
+260 ms depois de entrar na rota, antes de o gráfico existir. A pendência estava certa no conserto e
+errada no número, e quem conferisse depois acharia um defeito que não estava lá.
 
 ---
 
@@ -2069,7 +2145,7 @@ texto vivo foi corrigido e esta pendência registra a substituição, como a Pen
 ordem dos testes manuais. O prazo do achado 18 não se mede em etapas: mede-se no tempo entre
 escrever e decidir, e aqui foram horas.
 
-### 5. O arreio não modela `aria-hidden` (Etapa 14) — reporta o que já não chega a ninguém
+### 5. O arreio não modelava `aria-hidden` (Etapa 14) — FECHADA na Etapa 15
 
 A medida `a11y` do arreio lista tudo que casa `[role]` e está visível, e `aria-hidden` não entra na
 conta. Depois do conserto da Etapa 14 ele continua listando **cinco `img||`** na rota da rosca, de
@@ -2088,7 +2164,17 @@ base e o fim da Etapa 14 (23 superfícies, 743 px, 0 diferenças). **O que não 
 `a11y` do arreio seja uma leitura do que chega à tecnologia assistiva — ela é uma leitura do DOM, e
 para a pergunta de acessibilidade quem responde é a árvore do navegador (achado 24).
 
-### 6. Nove gráficos ainda expõem o desenho inteiro (Etapa 14) — medido, proposto, não feito
+> **FECHADA em 11/10/2026, na Etapa 15 (commit `356b377`) — e a premissa dela estava meio errada.**
+> A medida `a11y` passou a podar `aria-hidden="true"`, com dez controles (quatro da regra nova, dois
+> de premissa) e base nova publicada em `scripts/fotografia-base.json`. Mas o que a poda tirou não foi
+> o que esta pendência dizia: foram **125 nós em 14 das 23 superfícies**, sendo **121 barras de
+> progresso** que o `ui/progress.tsx` esconde desde a **Etapa 3** e 4 `<select>` nativos do Radix —
+> e **zero** setores de rosca. A fotografia **nunca** listou os cinco `img||`: ela assenta 260 ms
+> depois de entrar na rota, e a animação da rosca leva mais de um segundo. O "continua listando cinco"
+> vale para `__foto.medir()` numa página assentada, que foi como a Etapa 14 mediu, e não para
+> `__foto.tudo()`. Isso virou a **Pendência 7**.
+
+### 6. Nove gráficos ainda expunham o desenho inteiro (Etapa 14) — FECHADA em 8 de 9 na Etapa 15
 
 A Etapa 14 tirou da árvore o desenho das **duas roscas**. Os outros nove continuam como estavam, e
 dois deles estão medidos na mesma rota: o contêiner do gráfico de linhas do progresso expõe **28
@@ -2101,6 +2187,54 @@ que o Recharts repassa ao `<svg>`), mas exige uma conferência por gráfico ante
 ter nome no contêiner **e** equivalente textual ao lado. Onde não houver, esconder o desenho tira
 informação em vez de tirar ruído — e aí a decisão é de produto. A enumeração dos doze — 11 em
 contêiner nomeado, 1 já escondido desde a Etapa 3 — está no achado 24.
+
+> **FECHADA em 8 de 9, em 11/10/2026, na Etapa 15 (commit `3f13906`), com o resto declarado.**
+> Os doze gráficos foram enumerados e cada candidato teve **as duas condições medidas antes de
+> esconder**: nome do contêiner na árvore do Chrome (por CDP) e equivalente textual na página. Oito
+> satisfizeram as duas e saíram da árvore — progresso do PEI, detalhe de área, radar, os dois do
+> orçamento e os três do Meu Perfil. Na árvore, os contêineres passaram de 71, 33, 46, 43, 64, 48, 36
+> e 45 nós expostos para 16, 2, 12, 12, 12, 2, 2 e 2.
+>
+> **O nono não foi tocado, e o motivo é medição:** o gráfico do diálogo de desempenho só existe com
+> duas ou mais avaliações, e no estado de demonstração o aluno 1 tem uma. Medido com o diálogo aberto:
+> nenhum `<svg>`, contêiner ausente, e no lugar dele o texto "Uma única avaliação registrada, de
+> 01/11/2025: 60%". A condição 2 está satisfeita (a tabela existe mesmo com um ponto); a condição 1 é
+> impossível de medir hoje. **Não escondo o que não pude medir** — o autor decide se vale aplicar por
+> simetria.
+>
+> O que sobrou dos oito está na **Pendência 8**: a legenda do Recharts, que fica fora do `<svg>` e
+> sobrevive ao atributo.
+
+### 7. O assentamento da fotografia é relógio, não objeto (Etapa 15) — medido, não consertado
+
+`__foto.tudo()` espera **260 ms** depois de entrar numa superfície e então mede. Nas três superfícies
+com gráfico isso é cedo: medido na rota dos relatórios, no instante da fotografia há **0 setores** e,
+2,5 s depois, **5**. A fotografia é estável por isso — ela fotografa a tela antes da metade que
+aparece depois — e é **cega** pelo mesmo motivo.
+
+É a mesma classe do achado 23, agora dentro deste instrumento: a condição é o relógio. A Etapa 13
+trocou relógio por objeto no axe; aqui o conserto é o mesmo, com um custo declarado: **muda a base
+publicada** nas três superfícies com gráfico, e provavelmente a torna mais lenta e menos estável
+(cada superfície passaria a esperar o objeto, e as que não têm gráfico precisariam de outro
+marcador).
+
+**O que o repositório pode afirmar sem isso:** que as quatro medidas não mudam entre dois commits,
+no estado em que a tela está 260 ms depois de montar. **O que não pode:** que a fotografia cubra o
+que os gráficos desenham — ela não cobre, e o número que prova isso é 0 contra 5.
+
+### 8. A legenda do Recharts sobrevive ao `aria-hidden` do gráfico (Etapa 15) — medido, é dado
+
+O atributo vai no `<svg>` (pelo `Surface` do Recharts) e cobre tudo que está dentro dele, inclusive
+os rótulos de eixo. A **legenda**, não: ela é um `<ul>` irmão, dentro do `.recharts-wrapper`, e
+continua exposta. Medido na árvore, depois de esconder os oito gráficos: **relatórios** 5 rótulos de
+série com nome e 5 ícones `<svg>` sem nome (progresso 3+3, radar 2+2); **orçamento** 4 e 4;
+**diálogos** 0 — os gráficos de lá não têm legenda.
+
+Os rótulos com nome ("Progresso real", "Meta esperada", "Orçado", "Executado") são informação
+legítima e provavelmente ficam. Os **ícones sem nome** são ruído, e nenhuma regra do axe os alcança
+porque não têm `role` — é o mesmo caso do achado 24. Esconder a legenda inteira tiraria os rótulos
+junto; esconder só os ícones exige prop do Recharts ou CSS, e nenhum dos dois foi medido ainda.
+**Está aqui como dado, não como conserto.**
 
 ---
 

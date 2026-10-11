@@ -230,7 +230,8 @@ commit da etapa e depois do último:
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
 | Campos cujo único nome acessível era o `placeholder` (Etapa 12) | 6 | 0 |
 | Séries de gráfico que respeitam "Reduzir animações" (Etapas 13 e 14, medido) | 0 de 19 | **19 de 19** |
-| Nós sem nome expostos pela rosca de intervenções, na árvore do Chrome (Etapa 14) | 13 de 14 | **1 de 2** |
+| Nós expostos **sem nome** nos três contêineres de gráfico de `/gestao?tab=relatorios`, na árvore do Chrome (Etapas 14 e 15) | 60 | **17** |
+| Gráficos cujo desenho fica fora da árvore de acessibilidade (Etapas 3, 14 e 15) | 1 de 12 | **11 de 12** |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
@@ -247,7 +248,21 @@ commit da etapa e depois do último:
 > **ZERO em 10 de 10**. A medição passa a ser
 > feita por `scripts/axe-com-condicao.js`, que relata sempre
 > `N passadas, condição X, resultado idêntico em N/N` — e **faixa**, quando as passadas discordam.
-> Enquanto o "124 → 0" não for remedido por esse protocolo, ele fica marcado como amostra única.
+> **O "0" foi remedido na Etapa 15, e este é o número com a condição no mesmo parágrafo: ZERO
+> violações de WCAG 2.1 A e AA em cada uma das 23 superfícies, em 10 de 10 passadas por superfície —
+> 230 passadas —, a 1280×900, com `localStorage` vazio, sob a condição "objeto do gráfico presente
+> onde há gráfico + 400 ms sem mutação + movimento reduzido pelo atributo do app +
+> `document.fonts.ready`".** A condição foi atingida em 230 de 230 passadas, sem passada descartada.
+> O "124" continua amostra única: é de março, de uma ponta que não existe mais.
+>
+> A condição tem duas metades porque os modos de falha apontam para lados opostos no tempo:
+> `svg-img-alt` só aparece DEPOIS do fim da animação, e `color-contrast` aparece ANTES de a pintura
+> terminar e decai para zero. Esperar mais não fechava a faixa — com `document.fonts.ready` + 1 500 ms,
+> `/observacoes` ainda dava `color-contrast(21)` em 1 de 20 passadas. O que fechou foi **tirar a
+> transição**: o mesmo interruptor de "Reduzir animações" que a Etapa 3 criou para outra coisa.
+>
+> **O que esse número não cobre, e fica dito junto:** os 15 diálogos, porque o instrumento navega por
+> rota e não interage (Pendência 3), e o estado da rosca da agenda, que exige um dia com atendimento.
 >
 > **O zero do axe é o piso, não o resultado, e tem uma segunda ressalva (medida em 11/10/2026).**
 > As duas linhas da Etapa 12 são de coisas que **o axe não reclama**: ele aceita `placeholder` como
