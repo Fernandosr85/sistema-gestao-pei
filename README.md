@@ -228,6 +228,18 @@ commit da etapa e depois do último:
 | Rotas com rolagem horizontal em 320 px | 6 de 17 | 0 |
 | Lugares com status carregado só por emoji | 6 | 0 |
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
+| Campos cujo único nome acessível era o `placeholder` (Etapa 12) | 6 | 0 |
+| Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
+
+> **O zero do axe é o piso, não o resultado, e tem uma ressalva de método (medida em 11/10/2026).**
+> As duas linhas da Etapa 12 são de coisas que **o axe não reclama**: ele aceita `placeholder` como
+> nome de último recurso, e não exige nome em parada de tabulação dentro de gráfico. As duas foram
+> achadas lendo o que a ferramenta não cobre, não rodando a ferramenta. Além disso, o axe deste
+> projeto **não é estável sozinho**: em cerca de 19 passadas rota×estado apareceram duas
+> intermitências (`svg-img-alt` duas vezes, `color-contrast` uma), com a mesma árvore e a mesma
+> rota, variando só a espera — causa não investigada, provavelmente corrida na montagem dos
+> gráficos. Um número de violação sem regra de espera declarada não é medida; está no achado 22 do
+> backlog.
 
 O que isso significa na prática:
 
