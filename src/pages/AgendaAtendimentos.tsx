@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import StatCard from '@/components/StatCard';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { NovoAtendimentoDialog } from '@/components/NovoAtendimentoDialog';
@@ -97,6 +98,7 @@ const renderWeekChange = (change: PeriodChange, className?: string) => {
 };
 
 const AgendaAtendimentos = () => {
+  const movimentoReduzido = useReducedMotion();
   const [novoAtendimentoOpen, setNovoAtendimentoOpen] = useState(false);
   const [detalhesOpen, setDetalhesOpen] = useState(false);
   const [selectedAtendimento, setSelectedAtendimento] = useState<Atendimento | null>(null);
@@ -502,8 +504,17 @@ const AgendaAtendimentos = () => {
                           aria-label="Gráfico de rosca da distribuição de atendimentos por tipo. Os mesmos valores estão na lista acima."
                         >
                           <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
+                            <PieChart
+                              /*
+                               * Mesmo caso da rosca dos relatórios, e a mesma razão medida: os
+                               * setores do Recharts chegam com `role="img"` e sem nome, e a
+                               * lista acima já traz tipo, contagem e porcentagem em texto. Ver
+                               * o comentário longo em InterventionDonut.tsx.
+                               */
+                              aria-hidden="true"
+                            >
                               <Pie
+                                isAnimationActive={!movimentoReduzido}
                                 /* Mesma parada muda do InterventionDonut: ver o comentário de lá. */
                                 rootTabIndex={-1}
                                 data={Object.entries(distribuicaoPorTipo).map(([tipo, count]) => ({
@@ -525,7 +536,8 @@ const AgendaAtendimentos = () => {
                                   />
                                 ))}
                               </Pie>
-                              <Tooltip 
+                              <Tooltip
+                                isAnimationActive={!movimentoReduzido}
                                 contentStyle={{
                                   backgroundColor: 'hsl(var(--popover))',
                                   border: '1px solid hsl(var(--border))',

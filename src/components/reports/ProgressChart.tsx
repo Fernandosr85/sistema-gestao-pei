@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, LineChart } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { TrendingUp, TrendingDown, Minus, Lightbulb, AlertCircle, CheckCircle2 } from 'lucide-react';
 import ChartDataTable from '@/components/ChartDataTable';
 
@@ -133,6 +134,7 @@ const status = getStatus();
 const StatusIcon = status.icon;
 
 const ProgressChart = () => {
+  const movimentoReduzido = useReducedMotion();
   const [areaSelecionada, setAreaSelecionada] = useState<string | null>(null);
 
   return (
@@ -197,7 +199,8 @@ const ProgressChart = () => {
               ticks={[0, 3, 6, 9, 12]}
             />
             
-            <Tooltip 
+            <Tooltip
+              isAnimationActive={!movimentoReduzido}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--card))', 
                 border: '1px solid hsl(var(--border))',
@@ -222,6 +225,7 @@ const ProgressChart = () => {
             
             {/* Área sombreada */}
             <Area
+              isAnimationActive={!movimentoReduzido}
               type="monotone"
               dataKey="progresso_real"
               fill="url(#colorProgresso)"
@@ -230,6 +234,7 @@ const ProgressChart = () => {
             
             {/* Linha da meta esperada (tracejada) */}
             <Line
+              isAnimationActive={!movimentoReduzido}
               type="monotone"
               dataKey="meta_esperada"
               stroke="hsl(var(--muted-foreground))"
@@ -240,6 +245,7 @@ const ProgressChart = () => {
             
             {/* Linha do progresso real */}
             <Line
+              isAnimationActive={!movimentoReduzido}
               type="monotone"
               dataKey="progresso_real"
               stroke="hsl(var(--primary))"
@@ -368,6 +374,8 @@ function MiniCardArea({
   onClick: () => void;
   ativo: boolean;
 }) {
+  const movimentoReduzido = useReducedMotion();
+
   const getStatusIcon = () => {
     if (area.status === 'excelente') return <CheckCircle2 className="w-4 h-4 text-green-600" />;
     if (area.status === 'atencao') return <AlertCircle className="w-4 h-4 text-red-600" />;
@@ -416,7 +424,8 @@ function MiniCardArea({
       <div className="h-12 mb-3" aria-hidden="true">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={area.dados}>
-            <Line 
+            <Line
+              isAnimationActive={!movimentoReduzido}
               type="monotone" 
               dataKey="valor" 
               stroke={area.cor} 
@@ -441,6 +450,7 @@ function MiniCardArea({
 }
 
 function GraficoAreaDetalhado({ area }: { area: AreaData }) {
+  const movimentoReduzido = useReducedMotion();
   const percentual = Math.round((area.atual / area.total) * 100);
   const diferenca = area.atual - area.meta;
 
@@ -497,7 +507,8 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
               stroke="#6B7280"
               tick={{ fill: '#6B7280', fontSize: 12 }}
             />
-            <Tooltip 
+            <Tooltip
+              isAnimationActive={!movimentoReduzido}
               contentStyle={{ 
                 backgroundColor: '#FFFFFF', 
                 border: '1px solid #E5E7EB',
@@ -506,6 +517,7 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
             />
             
             <Area
+              isAnimationActive={!movimentoReduzido}
               type="monotone"
               dataKey="valor"
               fill={`url(#gradient-${area.nome})`}
@@ -513,6 +525,7 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
             />
             
             <Line
+              isAnimationActive={!movimentoReduzido}
               type="monotone"
               dataKey="meta"
               stroke="#9CA3AF"
@@ -522,7 +535,8 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
               name="Meta"
             />
             
-            <Line 
+            <Line
+              isAnimationActive={!movimentoReduzido}
               type="monotone" 
               dataKey="valor" 
               stroke={area.cor} 

@@ -1684,12 +1684,20 @@ Recharts; o nome, de ninguém.
 **Está relatado e não corrigido**, porque conserto aqui é decisão de produto — e muda a folha dos
 M1–M9 outra vez.
 
+> **Fechado em 11/10/2026, na Etapa 14 (achado 24).** O autor decidiu, e a decisão foi medir antes
+> de consertar: a árvore de acessibilidade do Chrome mostrou que os cinco setores **chegavam** à
+> tecnologia assistiva (expostos, sem nome), junto de outros oito nós sem nome do mesmo contêiner.
+> O conserto foi **retirar a exposição do desenho** (`aria-hidden="true"` no gráfico), com o nome e
+> o equivalente textual onde já estavam. Mesma condição declarada, depois: ZERO em 10/10.
+
 **E o caso particular que o plano mandou conferir de todo modo: os gráficos NÃO respeitam a
 preferência de movimento reduzido.** Com "Reduzir animações" ligada no app (medido:
 `data-a11y-motion="reduzido"` no `<html>` e `transition-duration: 1e-05s` nos cartões), os setores
 continuam aparecendo entre **3,3 s e 4,0 s** — igual a sem a preferência. O CSS do projeto zera
 transição; a animação do Recharts é JavaScript e não consulta nem a preferência do app nem a do
-sistema. **Medido, não corrigido.**
+sistema. **Medido, não corrigido** — e **corrigido na Etapa 14**, por
+`src/hooks/useReducedMotion.ts`, em 19 séries e 11 tooltips: a rosca passou de 1 466 ms para
+73 ms com a preferência ligada (achado 24).
 
 **Sobre a emulação:** `prefers-reduced-motion` no nível do sistema **não é emulável** com as
 ferramentas desta sessão — medido, `matchMedia('(prefers-reduced-motion: reduce)').matches` responde
@@ -1706,7 +1714,165 @@ registro sem as duas coisas que o qualificam.
 
 ---
 
+### 24. Só a árvore decide, e os dois instrumentos à mão não sabiam responder (Etapa 14, 11/10/2026)
+
+**A pergunta que a Etapa 13 deixou aberta:** os cinco `path.recharts-sector[role="img"]` sem nome
+**aparecem** na árvore de acessibilidade, ou são apresentacionais por descenderem de um
+`role="img"`? ARIA diz que filho de `role="img"` é apresentacional. Se fosse esse o caso, o axe
+estaria acusando o que não chega a ninguém, e o conserto seria de marcação, não de conteúdo.
+
+#### Três medições, e um ponto cego que só apareceu porque havia controle
+
+| Instrumento | Os cinco setores | O que ele é |
+|---|---|---|
+| arreio (`scripts/fotografia.js`) | **aparecem** — cinco linhas `img\|\|` | derivado do DOM |
+| leitor de página do painel | **aparecem** — cinco nós `img` sem nome | derivado do DOM |
+| árvore do Chrome, lida pelo protocolo DevTools | **aparecem** — `role: image`, `name: ""`, `ignored: false` | a árvore de verdade |
+
+**Controle (a), o que o plano pediu:** `<img>` sem `alt` plantado FORA de qualquer `role="img"`
+aparece nos três. Sem isso, "não aparecem" não distinguiria ausência de leitura falhada.
+
+**Controle (b), que eu acrescentei:** `<img>` sem `alt` plantado DENTRO do contêiner `role="img"`
+**também aparece nos dois primeiros**. Ou seja: nenhum dos dois implementa "filhos
+apresentacionais", e portanto **nenhum dos dois podia responder à pergunta do item 1**. Eles
+concordavam, e concordavam pelo mesmo ponto cego — duas medições que compartilham a limitação não
+são duas medições.
+
+Por isso a terceira: um Chrome de verdade, em modo headless, com o protocolo DevTools
+(`Accessibility.getPartialAXTree`, `queryAXTree`, `getFullAXTree`), que responde `ignored` e
+`ignoredReasons` por nó. Sem dependência nova no projeto: `WebSocket` é global no Node 22 e o
+Chrome já está instalado. Também medido, e por isso descartado: `getComputedAccessibleNode` não
+existe neste Chrome, e `computedRole`/`computedLabel` não estão em `Element.prototype` — da página
+não se alcança a árvore.
+
+#### O resultado: o navegador não poda, e o axe estava certo
+
+O controle (b) aparece na árvore do Chrome com `ignored: false`: **o Chrome também não aplica a
+regra de filhos apresentacionais** a `role="img"` posto num `div`. Os cinco setores estão
+expostos, e estão na árvore inteira (5 de 5, entre 855 nós). Quem usa leitor de tela recebia os
+cinco, sem nome.
+
+**E a árvore mostrou muito mais do que o axe acusava:**
+
+| Contêiner com `role="img"` e nome, em `/gestao?tab=relatorios` | nós na subárvore | expostos | expostos SEM NOME |
+|---|---:|---:|---:|
+| rosca dos tipos de intervenção | 15 | 14 | **13** |
+| gráfico de linhas do progresso | 72 | 71 | **28** |
+| radar dos objetivos | 47 | 46 | **19** |
+
+Fora os nós sem nome, o leitor recebe os rótulos crus dos eixos como texto solto — "Jan", "Fev",
+…, "0", "3", "6", "9", "12" — depois de já ter ouvido o nome do contêiner e tendo os mesmos
+valores em texto ao lado.
+
+**A direção do erro era o inverso da hipótese escrita no plano.** O plano previa o par: o axe
+aceitou `placeholder` como nome onde a pessoa perdia o rótulo (achado 22) e acusou cinco nós que a
+árvore **pode** não expor. A medição fechou para o outro lado: o axe acusou **5 dos 13** nós sem
+nome que realmente chegam na rosca, e não disse nada sobre os **47** dos dois contêineres vizinhos
+— porque `svg-img-alt` só olha quem tem `role` explícito, e o Recharts só põe `role="img"` no
+setor (`Sector.js:217`). **Era subcontagem, não falso positivo.** A hipótese fica registrada com o
+número que a derrubou.
+
+#### O conserto, e por que este e não o outro
+
+Entre as duas saídas do item 3 — nomear cada setor com rótulo e valor, ou retirar a exposição —
+vale o que a pessoa recebe. O contêiner já tem `role="img"` com nome, e a lista ao lado já traz
+nome e porcentagem de cada fatia em texto: nomear os cinco repetiria em voz, cinco vezes, o que
+já está escrito. **Retirar a exposição**, então, com `aria-hidden="true"` no gráfico inteiro.
+
+Três coisas foram medidas antes de escolher o lugar do atributo:
+
+- `role` **não** se sobrescreve por prop: `Sector.js:217` põe `role: "img"` DEPOIS do spread dos
+  props. O que o Recharts aceita é `aria-hidden`, que está na lista de atributos espalháveis
+  (`SVGElementPropKeys`, 302 chaves) e chega ao `<svg>` pelo `Surface`.
+- O `ResponsiveContainer` **não** repassa `aria-*` (ele monta o `div` só com `className`, `style`
+  e `ref`), então o atributo vai no gráfico — `<PieChart aria-hidden="true">` —, e não precisa de
+  `div` nova nem muda layout.
+- **O projeto já tinha essa decisão tomada**, e para o mesmo tipo de desenho: a mini-sparkline do
+  cartão de área (`ProgressChart.tsx`) é `aria-hidden="true"` desde a Etapa 3, com a justificativa
+  escrita ao lado ("Decorativa: o cartão já traz '7/10' e '70%' em texto logo abaixo"). O que esta
+  etapa fez foi **aplicar à rosca uma decisão que já existia** e que tinha escapado dela.
+
+Depois, medido na mesma árvore do Chrome: o contêiner da rosca passa de **15 nós, 14 expostos, 13
+sem nome** para **3 nós, 2 expostos, 1 sem nome** — o que sobra é o `div` do Recharts, sem papel e
+sem nome, que leitor de tela em modo de leitura não anuncia.
+
+E o axe, com a mesma condição declarada que acusava: **`/gestao?tab=relatorios`, 10 passadas,
+condição "`path.recharts-sector` presente + 400 ms sem mutação", resultado idêntico em 10/10:
+ZERO**. A regra não foi silenciada — o controle positivo do instrumento, na mesma rodada, acusou
+`image-alt(1)` com a `<img>` plantada e `ZERO` sem ela.
+
+#### O caso do movimento reduzido: o que a Etapa 13 mediu, esta etapa consertou
+
+A animação do Recharts é JavaScript (`react-smooth`) e não consultava preferência nenhuma.
+Agora consulta, por `src/hooks/useReducedMotion.ts`, que lê **as duas fontes em OU**: o atributo
+`data-a11y-motion="reduzido"` que o app escreve (observado por `MutationObserver`, então o ajuste
+vale sem recarregar) e `prefers-reduced-motion` do sistema (observado por `matchMedia`).
+
+A enumeração, feita antes de editar e conferida pelo próprio script de edição: **19 séries
+animáveis e 11 tooltips, em 7 arquivos, 9 componentes** — 30 atributos `isAnimationActive`, nem um
+a mais. `<Sector>` ficou fora de propósito: é a fatia em destaque do hover, desenho estático.
+
+O efeito, medido na tela (tempo do remonte até o setor existir no DOM):
+
+| Gráfico | Sem a preferência | Com a preferência |
+|---|---:|---:|
+| rosca dos tipos de intervenção (`/gestao?tab=relatorios`) | 1 466 ms | **73 ms** |
+| rosca da distribuição por tipo (agenda, dia 30/11/2025) | 529 ms | **24 ms** |
+
+O ramo do **sistema** não é medível aqui (achado 23: `matchMedia(...).matches` responde `false` e
+não há como mudá-lo), e por isso ele é verificado por teste — `src/test/movimento-reduzido.test.ts`,
+seis casos, incluindo o que falsifica: atributo presente com outro valor não reduz, porque é o
+valor que decide e não a presença.
+
+**A varredura por outra animação em JavaScript** (escopo `src/**/*.{ts,tsx}`, sem exceção; padrões
+`requestAnimationFrame|cancelAnimationFrame`, `setTimeout|setInterval`, e import de biblioteca de
+animação com `-i`): zero `requestAnimationFrame`, zero import de biblioteca de animação, e dois
+`setTimeout` — ambos em `src/hooks/use-toast.ts`, que agendam a **remoção** do aviso, não
+transição visual (a animação do aviso é CSS, e o CSS já é zerado pela preferência). Controle
+positivo do padrão no corpus onde se sabe que ele casa: `node_modules/react-smooth/lib`, onde
+`requestAnimationFrame` aparece. **Então a única animação em JavaScript do projeto era a do
+Recharts.**
+
+Como a rosca da agenda só existe num dia com atendimento e o dado semeado termina em 29/11/2025, a
+medição dela exigiu navegar o calendário 315 dias para trás, até 30/11/2025 — está dito aqui para
+quem for repetir não concluir que o gráfico não existe.
+
+#### O que fica medido e NÃO consertado
+
+- **O arreio não vê este conserto.** Ele continua listando cinco `img||` na rota da rosca, porque
+  mede `[role]` no DOM e não modela `aria-hidden` — é o inverso do achado 21: instrumento que
+  reporta o que já não chega a ninguém. Vira pendência própria, e não mudou nesta etapa de
+  propósito: mexer no arreio no mesmo commit que muda o produto trocaria a régua junto com a coisa
+  medida.
+- **Os outros nove gráficos.** A enumeração, medida: **12 gráficos** no sistema, em 7 arquivos —
+  11 dentro de um contêiner `role="img"` com nome, e 1 (a mini-sparkline do cartão de área) dentro
+  de um `div` que já era `aria-hidden` desde a Etapa 3. Desses 11, **2 são as roscas** desta etapa;
+  sobram **9**: dois em `/gestao?tab=relatorios` (progresso, 28 nós sem nome, e radar, 19), dois na
+  aba de orçamento, três no diálogo do meu perfil, um no de desempenho do aluno e um no detalhe de
+  área do progresso. O conserto é o mesmo atributo no mesmo lugar, mas exige conferir, um por um, se
+  cada gráfico tem equivalente textual ao lado — sem isso, esconder o desenho tira informação em vez
+  de tirar ruído, e a decisão passa a ser de produto. Está **proposto, não feito** (Pendência 6).
+- **A condição das rotas sem gráfico ainda é fraca.** Medido: com "400 ms sem mutação", `/`,
+  `/observacoes` e `/agenda-atendimentos` deram **faixa** — ZERO em 4/5, 3/5 e 4/5, e
+  `color-contrast` com 29, 5, 21 e 70 nós nas demais, a contagem variando junto, que é a assinatura
+  de pintura incompleta do achado 23. Com condição mais forte (`document.fonts.ready` + 1 500 ms) a
+  faixa **estreita e não fecha**: `/` ZERO em 8/8, `/agenda-atendimentos` ZERO em 8/8,
+  `/observacoes` ZERO em 19 de 20. O que a Etapa 14 afirma do axe, então, é só o que mediu com
+  marcador de objeto: a rota dos relatórios e o estado da rosca da agenda, 10/10 cada.
+
+#### A nota de método
+
+Esta é a primeira verificação da série em que **mais repetição teria confirmado o erro em vez de
+corrigi-lo**. O "`svg-img-alt(5)` em 10/10" da Etapa 13 era estável, repetível e incompleto: cem
+passadas teriam devolvido o mesmo cinco. Todas as correções anteriores cederam a **medir mais** —
+mais rotas, mais estados, mais passadas. Esta cedeu a perguntar **de que o número era função**: de
+`role` explícito no DOM, e não de o nó chegar a alguém. A pergunta que move não é "quantas vezes
+você mediu", é "o que a sua medida é função".
+
+---
+
 ## Pendências abertas
+
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
 etapa pode afirmar sem ele e o que **não** pode.
@@ -1902,6 +2068,39 @@ decisão, no mesmo dia. A mensagem do commit fica como está, porque história n
 texto vivo foi corrigido e esta pendência registra a substituição, como a Pendência 1 faz com a
 ordem dos testes manuais. O prazo do achado 18 não se mede em etapas: mede-se no tempo entre
 escrever e decidir, e aqui foram horas.
+
+### 5. O arreio não modela `aria-hidden` (Etapa 14) — reporta o que já não chega a ninguém
+
+A medida `a11y` do arreio lista tudo que casa `[role]` e está visível, e `aria-hidden` não entra na
+conta. Depois do conserto da Etapa 14 ele continua listando **cinco `img||`** na rota da rosca, de
+nós que o Chrome já não expõe — medido: na árvore do navegador o contêiner passou de 14 nós
+expostos para 2. É o inverso do achado 21: lá a capacidade existia e foi declarada ausente; aqui o
+instrumento afirma presença de uma coisa que saiu.
+
+**Por que não foi feito nesta etapa:** mexer no arreio no mesmo commit que muda o produto trocaria
+a régua junto com a coisa medida, e a comparação das 23 superfícies desta etapa (0 diferenças)
+deixaria de significar o que significa. O conserto é somar à medida `a11y` a poda de subárvore sob
+`[aria-hidden="true"]`, com controle positivo plantado dentro de uma subárvore escondida, e
+**declarar a diferença esperada** na fotografia das rotas com gráfico.
+
+**O que o repositório pode afirmar sem isso:** que as quatro medidas do arreio não mudaram entre a
+base e o fim da Etapa 14 (23 superfícies, 743 px, 0 diferenças). **O que não pode:** que a medida
+`a11y` do arreio seja uma leitura do que chega à tecnologia assistiva — ela é uma leitura do DOM, e
+para a pergunta de acessibilidade quem responde é a árvore do navegador (achado 24).
+
+### 6. Nove gráficos ainda expõem o desenho inteiro (Etapa 14) — medido, proposto, não feito
+
+A Etapa 14 tirou da árvore o desenho das **duas roscas**. Os outros nove continuam como estavam, e
+dois deles estão medidos na mesma rota: o contêiner do gráfico de linhas do progresso expõe **28
+nós sem nome** mais os rótulos crus dos eixos como texto solto, e o do radar expõe **19**. Nenhum
+desses nós tem `role` explícito, e por isso **nenhuma regra do axe os acusa** — foi a árvore que os
+mostrou.
+
+**O conserto é o mesmo atributo no mesmo lugar** (`aria-hidden="true"` no componente de gráfico,
+que o Recharts repassa ao `<svg>`), mas exige uma conferência por gráfico antes: cada um precisa
+ter nome no contêiner **e** equivalente textual ao lado. Onde não houver, esconder o desenho tira
+informação em vez de tirar ruído — e aí a decisão é de produto. A enumeração dos doze — 11 em
+contêiner nomeado, 1 já escondido desde a Etapa 3 — está no achado 24.
 
 ---
 

@@ -23,6 +23,7 @@ import {
   FileText
 } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { illustrativeScenario } from '@/config/institution';
@@ -61,6 +62,7 @@ interface PendingApproval {
 }
 
 const OrcamentoContent = () => {
+  const movimentoReduzido = useReducedMotion();
   // Annual Budget Summary
   const budgetSummary = {
     total: 850000,
@@ -248,12 +250,13 @@ const OrcamentoContent = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
               <YAxis dataKey="categoria" type="category" width={150} />
-              <Tooltip 
+              <Tooltip
+                isAnimationActive={!movimentoReduzido}
                 formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
               />
               <Legend />
-              <Bar dataKey="orcado" fill="#94a3b8" name="Orçado" />
-              <Bar dataKey="executado" fill="#3b82f6" name="Executado" />
+              <Bar isAnimationActive={!movimentoReduzido} dataKey="orcado" fill="#94a3b8" name="Orçado" />
+              <Bar isAnimationActive={!movimentoReduzido} dataKey="executado" fill="#3b82f6" name="Executado" />
             </BarChart>
           </ResponsiveContainer>
           </div>
@@ -296,12 +299,13 @@ const OrcamentoContent = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="mes" />
               <YAxis tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
-              <Tooltip 
+              <Tooltip
+                isAnimationActive={!movimentoReduzido}
                 formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
               />
               <Legend />
-              <Line type="monotone" dataKey="orcado" stroke="#94a3b8" name="Orçado" strokeWidth={2} />
-              <Line type="monotone" dataKey="executado" stroke="#3b82f6" name="Executado" strokeWidth={2} />
+              <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="orcado" stroke="#94a3b8" name="Orçado" strokeWidth={2} />
+              <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="executado" stroke="#3b82f6" name="Executado" strokeWidth={2} />
             </LineChart>
           </ResponsiveContainer>
           </div>

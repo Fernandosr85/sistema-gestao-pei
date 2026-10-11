@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Download, Share2, Printer, Award } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { PeiGoalProgressList } from '@/components/PeiGoalProgressList';
@@ -65,6 +66,7 @@ interface StudentPerformanceDialogProps {
  * Etapa 9 tornou possível — antes a mesma conta servia das duas.
  */
 export const StudentPerformanceDialog = ({ open, onOpenChange, studentId }: StudentPerformanceDialogProps) => {
+  const movimentoReduzido = useReducedMotion();
   const { state } = useDemoStore();
   const studentName = studentNameOf(state, studentId);
   const pei = activePeiOf(state, studentId);
@@ -150,8 +152,9 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentId }: Stud
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                             <XAxis dataKey="rotulo" stroke="hsl(var(--muted-foreground))" />
                             <YAxis stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />
-                            <Tooltip />
+                            <Tooltip isAnimationActive={!movimentoReduzido} />
                             <Line
+                              isAnimationActive={!movimentoReduzido}
                               type="monotone"
                               dataKey="valor"
                               stroke="hsl(var(--primary))"

@@ -13,6 +13,7 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Line, LineChart } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
 import { DEMO_USER_NAME } from '@/config/institution';
 import DemoDataNotice from '@/components/DemoDataNotice';
@@ -23,6 +24,7 @@ interface MeuPerfilDialogProps {
 }
 
 const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
+  const movimentoReduzido = useReducedMotion();
   const [selectedTab, setSelectedTab] = useState('dados-pessoais');
 
   // Mock data for charts
@@ -442,8 +444,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="ano" />
                     <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="alunos" stroke="hsl(var(--primary))" strokeWidth={2} />
+                    <Tooltip isAnimationActive={!movimentoReduzido} />
+                    <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="alunos" stroke="hsl(var(--primary))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
                 </div>
@@ -484,8 +486,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="ano" />
                     <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="taxa" fill="hsl(var(--primary))" />
+                    <Tooltip isAnimationActive={!movimentoReduzido} />
+                    <Bar isAnimationActive={!movimentoReduzido} dataKey="taxa" fill="hsl(var(--primary))" />
                   </BarChart>
                 </ResponsiveContainer>
                 </div>
@@ -579,8 +581,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="mes" />
                     <YAxis domain={[0, 5]} />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="satisfacao" stroke="hsl(var(--primary))" strokeWidth={2} />
+                    <Tooltip isAnimationActive={!movimentoReduzido} />
+                    <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="satisfacao" stroke="hsl(var(--primary))" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
                 </div>

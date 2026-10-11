@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
 
 const data = [
@@ -13,6 +14,7 @@ const data = [
 ];
 
 const PEIRadarChart = () => {
+  const movimentoReduzido = useReducedMotion();
   return (
     <Card className="shadow-lg">
       <CardHeader>
@@ -35,7 +37,8 @@ const PEIRadarChart = () => {
               domain={[0, 10]}
               tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
             />
-            <Tooltip 
+            <Tooltip
+              isAnimationActive={!movimentoReduzido}
               contentStyle={{ 
                 backgroundColor: 'hsl(var(--card))', 
                 border: '1px solid hsl(var(--border))',
@@ -46,7 +49,8 @@ const PEIRadarChart = () => {
               wrapperStyle={{ paddingTop: '10px' }}
               iconType="line"
             />
-            <Radar 
+            <Radar
+              isAnimationActive={!movimentoReduzido}
               name="Meta esperada" 
               dataKey="meta" 
               stroke="hsl(var(--muted-foreground))" 
@@ -55,7 +59,8 @@ const PEIRadarChart = () => {
               strokeDasharray="5 5"
               strokeWidth={2}
             />
-            <Radar 
+            <Radar
+              isAnimationActive={!movimentoReduzido}
               name="Progresso atual" 
               dataKey="atual" 
               stroke="hsl(var(--success))" 
