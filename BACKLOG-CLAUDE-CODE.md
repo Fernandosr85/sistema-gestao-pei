@@ -1495,13 +1495,43 @@ sem fronteira de palavra devolveria são "identidade", "complexidade" e "funcion
 `\bidade\b`, zero. O mesmo tipo de falso positivo que "custo" dentro de "customizados" produziu na
 busca por decisão.)
 
+**Decidido na Etapa 10g (11/10/2026): removido.** A proposta do agente era outra — está logo
+abaixo, como foi escrita —, e o que decidiu contra ela foi a última medição desta sequência: o guia
+tinha **duas afirmações falsas que a medição da Etapa 10f não pegou**, porque o vocabulário dela
+também era um escopo (ver "O terceiro falso positivo", adiante).
+
 **Proposta do agente, justificada pela medida: corrigir as linhas erradas e manter.** O guia não é
 o caso dos outros três — 18 de 18 componentes existem, nenhuma afirmação estrutural falsa, e o
 defeito mede **três linhas e meia** num arquivo de 207. Remover custaria 18 descrições de
 componente que nada mais no repositório oferece, para resolver o que cabe em seis linhas de
 correção. **O contra-argumento, que é do autor decidir:** o guia envelhece outra vez no primeiro
 commit que mudar uma prop, e nenhuma verificação deste repositório reprova texto — foi assim que as
-três linhas erradas chegaram até aqui. **Decisão pendente.**
+três linhas erradas chegaram até aqui. **O autor decidiu pelo contra-argumento em 11/10/2026.**
+
+#### O terceiro falso positivo, e por que ele fechou a decisão
+
+Antes de apagar o guia, a Etapa 10g foi procurar nele **informação única** — e achou, de passagem,
+duas afirmações que a medição da 10f não tinha visto:
+
+- `GUIA_DE_COMPONENTES.md:182`: "Análise preditiva com IA."
+- `GUIA_DE_COMPONENTES.md:167`: o título "## Componentes de Relatórios **Inteligentes**".
+
+As duas violam o **vocabulário proibido pela invariante 2** do CLAUDE.md — "Inteligência
+Artificial", "modelo", "predição" para descrever dado estático —, que a Etapa 1 varreu e tirou das
+telas. **Medido em 11/10: zero ocorrências desse vocabulário no README, três no guia.** O que a
+auditoria tirou da tela sobreviveu nove etapas num arquivo de `docs/`.
+
+**E a primeira busca do agente perdeu uma das duas.** O padrão `intelig` foi escrito sem `-i` e
+não casou "**I**nteligentes", na linha 167: a ocorrência apareceu só na segunda passada, com
+`-i`. É o **terceiro falso negativo de precisão desta sequência**, todos em dois dias — "custo"
+casando "customizados" (10f), "idade" casando "identidade" (10f), e agora maiúscula inicial
+escapando de um padrão minúsculo. Os três vêm da mesma raiz: **o padrão é parte do instrumento, e
+instrumento não medido não mede.**
+
+Com isso, o argumento do autor virou o argumento vencedor: três linhas erradas atravessaram a
+auditoria da Etapa 5, e mais duas atravessaram a medição da 10f que existia para achá-las. **Não é
+que o guia estivesse errado demais — é que nada neste repositório o reprova**, e cada passada
+encontra o que o seu vocabulário alcança.
 
 ---
 
@@ -3438,6 +3468,48 @@ verificações, nenhum arreio e nenhuma varredura deste repositório mede ordem 
     seja, nenhum buraco onde o card saiu.
 
 ---
+
+### O que se salvou do guia antes de apagar: nada, e cada candidata já estava em outro lugar
+
+A busca foi por **informação que não existisse em nenhum outro lugar do repositório** — ressalva de
+comportamento, nota histórica, registro de por que um componente é como é. Quatro candidatas, todas
+já registradas:
+
+| Candidata | Onde já estava |
+|---|---|
+| `200-204`: a nota de que `NavigationBar`, `ComplexityCard` e `ActionPanel` saíram na Etapa 5 por serem inalcançáveis | **neste backlog**, na tabela de resultado da Etapa 5 ("importados por ninguém… 4 → 0" e "alcançáveis só pelos anteriores (`reports/ActionPanel`) 1 → 0"), com a contagem ao lado — e também no item 8 da lista de arquivos sem uso |
+| `84`: "os números do BenchmarkingPanel são fixos no código e não representam uma coorte real" | **no próprio componente**, como `DemoDataNotice` com o texto "Os números são fixos no código e não mudam conforme o aluno exibido. Não há base de casos nem medida de eficácia." (`src/components/BenchmarkingPanel.tsx:80-82`), mais o comentário da linha 18 e a linha "Análise preditiva / benchmarking ❌ Números fixos no código, sem modelo" do README |
+| `10-14`: a árvore de `src/components` | no README, na seção "Estrutura do projeto" — que tinha **a mesma lacuna**: listava `ui/`, `gestao/` e `reports/`, sem `printable-report/`. Conferido ao escrever esta tabela, e corrigido no mesmo commit; a árvore do README agora tem as quatro medidas por `ls -d src/components/*/` |
+| `190-197`: "Boas Práticas para Componentes" | triado na Etapa 10e, item a item: o que o projeto cobra está no CLAUDE.md, o resto é genérico |
+
+**Nada subiu para o backlog**, porque nada era único. O que o guia tinha de próprio eram as
+descrições de uma linha por componente — "Card estatístico com ícone e indicador de tendência" — e
+elas descrevem o que o nome do arquivo já diz.
+
+### O balanço do `docs/` (11/10/2026)
+
+`docs/` começou a Etapa 10 com **quatro** arquivos e terminou com **um**. Três foram removidos
+porque descreviam o que não existe: um desenho de integração de calendário sobre um backend
+descartado (482 linhas), uma referência de API com 23 endpoints propostos (152), e um documento de
+arquitetura cuja tabela de stack tinha **4 de 12 linhas falsas** (133). O quarto, o guia de
+componentes (207), foi removido **por outro motivo**: estava quase certo, já havia sido auditado na
+Etapa 5, e **três afirmações falsas atravessaram aquela auditoria** — nenhuma verificação deste
+repositório reprova prosa, e um teste de existência de componente não teria pegado nenhuma das
+três, porque os 18 componentes que ele cita existem.
+
+**O que sobrou como fonte, e o que reprova cada uma:**
+
+| Fonte | Diz o quê | O que a reprova quando fica falsa |
+|---|---|---|
+| `README.md` | o estado: a tabela "O que está implementado" | nada automático — releitura com uso ao fechar etapa |
+| `CLAUDE.md` | as invariantes e as regras de trabalho | nada automático — a mesma releitura |
+| `src/types/` e `src/store/schemas.ts` | o modelo | **o typecheck e a suíte** |
+| a suíte (131 testes) | o comportamento | **ela mesma, e as 47 mutações versionadas** |
+| este backlog | a história e as decisões | nada automático — e é por isso que o achado 18 existe |
+| `docs/DESENVOLVIMENTO.md` | como rodar e verificar | o CI, que roda os quatro comandos que ele descreve |
+
+Três das seis fontes não têm quem as reprove, e as três são texto. **O registro dessa assimetria é
+o que esta etapa deixa**, mais do que os arquivos removidos.
 
 ## Decisões fechadas
 

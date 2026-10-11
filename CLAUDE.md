@@ -40,6 +40,12 @@ botão desabilitado na tela. Texto não tem a do meio: aviso dizendo que o docum
 é o botão inerte com etiqueta, e saiu do README na Etapa 10f. Documento anterior a uma decisão se
 corrige linha a linha ou se remove inteiro; o histórico preserva.
 
+**Busca por vocabulário sem fronteira de palavra conta substring, e sem `-i` perde a maiúscula.**
+Nesta série: "custo" casou "customizados", "idade" casou "identidade", "complexidade" e
+"funcionalidade", e `intelig` não casou "Inteligentes". Use `\b`, cuide do caso, e **registre a
+precisão junto com a contagem** — quantas ocorrências e quantas sobraram depois de descartar falso
+positivo. Contagem sem precisão não é medida.
+
 **O escopo de uma varredura é parte do resultado dela, e isso inclui o vocabulário.** Diga onde procurou, junto do que achou:
 varredura cujo escopo não está declarado não distingue "não há ocorrências" de "não procuramos
 ali". As quatro verificações leem `src/`; a fotografia mede rotas; a busca institucional é a única

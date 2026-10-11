@@ -56,7 +56,6 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 - [Antes de usar com dados reais](#antes-de-usar-com-dados-reais)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Contribuindo](#contribuindo)
-- [Documentação técnica](#documentação-técnica)
 - [Licença](#licença)
 
 ---
@@ -101,7 +100,9 @@ npm run dev
 `npm ci` instala exatamente o que está no `package-lock.json` e é o que o CI roda — `npm install`
 pode atualizar o lockfile sem ninguém pedir.
 
-A aplicação sobe em `http://localhost:8080`.
+A aplicação sobe em `http://localhost:8080`. Os detalhes de ambiente — as quatro verificações,
+a estrutura de pastas e onde ficam as invariantes — estão em
+[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
 
 ### Scripts
 
@@ -580,7 +581,8 @@ sistema-gestao-pei/
 │   ├── components/         # Componentes React
 │   │   ├── ui/             # Primitivos shadcn/ui
 │   │   ├── gestao/         # Abas do painel de gestão
-│   │   └── reports/        # Gráficos e painéis de relatório
+│   │   ├── reports/        # Gráficos e painéis de relatório
+│   │   └── printable-report/ # Blocos do relatório que o navegador imprime
 │   ├── config/
 │   │   └── institution.ts  # Configuração da instituição (ponto único)
 │   ├── data/               # Dados fictícios de demonstração
@@ -594,7 +596,7 @@ sistema-gestao-pei/
 │   ├── types/
 │   ├── App.tsx
 │   └── main.tsx
-├── docs/                   # Documentação técnica
+├── docs/                   # DESENVOLVIMENTO.md: rodar e verificar localmente
 ├── scripts/                # Arreio de fotografia de superfície (prova de regressão)
 ├── .env.example
 ├── LICENSE
@@ -612,16 +614,6 @@ encontrar um erro, abra uma issue — sem garantia de resposta.
 
 Para rodar e verificar o projeto localmente, veja
 [docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
-
----
-
-## Documentação técnica
-
-Os dois arquivos que existem em `docs/`, conferidos em 07/10/2026:
-
-- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md) — pré-requisitos,
-  `npm ci`, as quatro verificações e a estrutura de pastas
-- [Guia de componentes](docs/GUIA_DE_COMPONENTES.md) — os 18 componentes principais, um a um
 
 ---
 
