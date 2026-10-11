@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, Plus, Filter, Download } from 'lucide-react';
 import StudentCard from '@/components/StudentCard';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -61,8 +62,17 @@ const Students = () => {
       <div className="flex flex-col md:flex-row gap-4 p-6 bg-card rounded-lg border">
         <div className="flex-1">
           <div className="relative">
+            {/*
+              O rótulo é `sr-only` porque o desenho da barra põe o ícone de lupa no lugar do
+              rótulo visível. O que não pode faltar é o nome que PERSISTE: o `placeholder`
+              desaparece quando o usuário digita, e com ele o nome acessível do campo.
+            */}
+            <Label htmlFor="busca-alunos" className="sr-only">
+              Buscar aluno por nome ou matrícula
+            </Label>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              id="busca-alunos"
               placeholder="Buscar por nome ou matrícula..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

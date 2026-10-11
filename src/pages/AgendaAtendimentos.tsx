@@ -504,6 +504,8 @@ const AgendaAtendimentos = () => {
                           <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                               <Pie
+                                /* Mesma parada muda do InterventionDonut: ver o comentário de lá. */
+                                rootTabIndex={-1}
                                 data={Object.entries(distribuicaoPorTipo).map(([tipo, count]) => ({
                                   name: tipo,
                                   value: count,

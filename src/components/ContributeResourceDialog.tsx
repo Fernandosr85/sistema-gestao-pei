@@ -400,8 +400,10 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   </div>
 
                   <div>
-                    <Label>Vídeo Demonstrativo (opcional)</Label>
+                    {/* O rótulo visível já existia e não estava associado: só faltava o par id/htmlFor. */}
+                    <Label htmlFor="video-demonstrativo">Vídeo Demonstrativo (opcional)</Label>
                     <Input
+                      id="video-demonstrativo"
                       placeholder="Insira link do YouTube/Vimeo"
                       className="mt-2"
                       disabled

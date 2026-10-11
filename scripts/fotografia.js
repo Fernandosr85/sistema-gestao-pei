@@ -84,6 +84,16 @@
       const v = el.getAttribute(attr);
       if (v !== null) partes.push(`${attr}=${v}`);
     }
+    /*
+     * Rádio e caixa de seleção NATIVOS não têm atributo que mostre a marcação: `checked` é
+     * propriedade do elemento, e o atributo HTML só diz o valor inicial. Sem esta linha a medida
+     * devolvia `input:radio|3 estrelas|` com o estado vazio, e uma varredura de "o que está
+     * marcado" devolvia vazio em toda tela — o que passa por "sem problema". Instrumento que não
+     * mede um estado faz esse estado desaparecer do registro (achado 21).
+     */
+    if (el.tagName === 'INPUT' && (el.type === 'radio' || el.type === 'checkbox')) {
+      partes.push(el.indeterminate ? 'checked=mixed' : `checked=${el.checked}`);
+    }
     if (el.disabled) partes.push('disabled');
     if (el.hasAttribute('hidden')) partes.push('hidden');
     return partes.join(',');

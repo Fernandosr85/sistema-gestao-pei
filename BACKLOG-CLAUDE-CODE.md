@@ -1535,6 +1535,65 @@ encontra o que o seu vocabulário alcança.
 
 ---
 
+### 21. Capacidade do instrumento dada como ausente sem medição (Etapa 12, 11/10/2026)
+
+**O arreio alcança diálogo.** A limitação "o arreio não chega aos diálogos" foi declarada,
+repetida entre sessões e **nunca medida**: o portal do Radix é filho do `body`, e a função
+`blocos()` do `scripts/fotografia.js` sempre incluiu os filhos diretos do `body` — diálogo e toast
+estiveram dentro do alcance das quatro medidas desde a Etapa 5. Por várias etapas o escopo da
+verificação ficou menor do que o instrumento permitia, e a pendência de "estender o arreio a
+diálogos" descrevia trabalho que **em boa parte já estava feito**: falta interação, não medição.
+
+**Medido em 11/10/2026**, abrindo cada diálogo pelo controle que o abre e chamando `medir()`: o Ver
+PEI sai como `dialog|Plano Educacional Individualizado (PEI)|data-state=open`, o botão de fechar
+como `button|Fechar|`, as abas e as estrelas do "Sua nota" todas na medida de foco. Nada disso
+exigiu mudar o arreio.
+
+**É o inverso dos vinte anteriores:** não é verificação que devolveu resultado falso, é
+**capacidade falsamente dada como ausente**. Compõe com o achado 20 — o escopo foi encurtado por
+uma suposição não medida sobre a ferramenta, e escopo encurtado devolve zero sem distinguir "não
+há" de "não olhei ali".
+
+> **Regra: limitação de instrumento é afirmação e precisa de medida.** Herdar de sessão anterior o
+> que a ferramenta não faz, sem testar, é aceitar resultado sem evidência.
+
+**O que o arreio de fato não fazia** apareceu na mesma medição, e é outra coisa: ele não reportava
+a marcação de rádio e caixa de seleção nativos (`input:radio|3 estrelas|`, estado vazio), porque
+`checked` é propriedade e não atributo. Corrigido em `59b1ebe`, com controle positivo de quatro
+casos (marcado, desmarcado, indeterminado e a remoção do controle). Enquanto faltava, qualquer
+varredura desse estado devolvia vazio em toda tela — o silêncio do instrumento parecia resultado.
+
+---
+
+### 22. O que a ferramenta automática não reclama (Etapa 12, 11/10/2026)
+
+**O campo de busca de `/alunos` não tinha nome acessível** — só `placeholder` — **e o axe
+passava.** O axe está correto: a especificação de accname aceita `placeholder` como último
+recurso. O "124 → 0 violações" da Etapa 3 é verdadeiro **e** o campo continuava sem rótulo,
+perdendo o nome assim que o usuário digita. Mesma coisa numa parada de tabulação sem nome dentro de
+um gráfico: o `<g tabindex="0">` do `Pie` do Recharts, medido pelo arreio como `g[0]|`.
+
+**Ferramenta automática mede conformidade com a especificação, não utilidade para quem usa. Zero
+violação é o piso, não o resultado** — e as duas correções desta etapa saíram de **leitura dirigida
+do que a ferramenta não reclama**, feita ao preparar a coluna do esperado dos M1–M9.
+
+**A contagem das duas varreduras, com escopo e falso positivo declarados.** Campos: 48 com
+`placeholder` em 109 arquivos `.tsx`; 35 sinalizados pela leitura estática; **28 eram falso
+positivo** do padrão `<FormItem><FormLabel/><FormControl>` do shadcn, que gera `id` e `htmlFor` em
+tempo de execução — nenhuma varredura estática vê isso, e a medição no navegador é que decide.
+Sobraram **6**, todos corrigidos; a contagem depois é **0**. Paradas sem nome: **2 superfícies de
+23** antes (a mesma `g[0]|` em `/relatorios` e `/gestao?tab=relatorios`), **0 de 23** depois.
+
+**E o axe deste projeto não é estável sozinho**, o que nenhuma etapa havia registrado. Em cerca de
+19 passadas rota×estado apareceram **duas intermitências**: `svg-img-alt(5)` duas vezes — uma antes
+dos consertos, uma depois — e `color-contrast(18)` uma vez, antes. Mesma árvore, mesma rota,
+esperas diferentes: com 2,6 s a mesma rota devolveu 0 numa passada e `svg-img-alt(5)` na seguinte.
+**Causa não investigada**; o padrão aponta para corrida na montagem dos gráficos. Fica registrado
+porque **"0 violações" sem regra de espera declarada não é medida** — e o "124 → 0" da Etapa 3
+herda a ressalva. Decidir se isso vira pendência própria é do autor.
+
+---
+
 ## Pendências abertas
 
 Trabalho de uma etapa já mesclada que ficou sem fazer. Cada item diz o que falta, o que a
@@ -1651,10 +1710,22 @@ antes de uma decisão: consertar a locale do `moment` ou trocar o localizador po
 usado no projeto (o `date-fns` já está instalado e o `ptBR` dele já é importado nesta mesma
 tela).
 
-### 3. O arreio de superfície não alcança diálogo (Etapa 9) — trabalho próprio, depois da etapa
+### 3. O arreio não INTERAGE: falta abrir o diálogo, não medi-lo (Etapa 9, remedida na 12)
 
-**Estado em 02/10/2026:** `scripts/fotografia.js` mede 23 superfícies **sem interagir**. Diálogo,
-toast, menu e aba de diálogo só existem depois de um clique, e nenhum deles entra na medida.
+> **Corrigida em 11/10/2026 (achado 21): o título desta pendência estava errado.** Ela dizia
+> "o arreio não alcança diálogo", e isso nunca foi medido — o portal do Radix é filho do `body` e
+> as quatro medidas sempre o cobriram. O que falta é a **interação**: a lista de 23 superfícies
+> navega por URL e não clica em nada, então diálogo, toast e menu não estão **abertos** na hora da
+> medida. Com o diálogo aberto à mão, a medida sai inteira — foi assim que a folha dos M1–M9 pôde
+> citar string medida em seis passos de diálogo.
+
+**Estado em 11/10/2026:** `scripts/fotografia.js` mede 23 superfícies **sem interagir**. Diálogo,
+toast, menu e aba de diálogo só existem depois de um clique, e nenhum deles está aberto quando a
+lista de superfícies é percorrida.
+
+**O que falta, concretamente:** uma lista de interações declaradas — "nesta superfície, clique
+neste controle" —, com o controle identificado pelo nome acessível e não por seletor de CSS, e com
+**controle positivo próprio**: uma quebra plantada dentro do diálogo que a medida tem de acusar.
 
 **O que isso significa na prática.** Nos commits da Etapa 9 que mudaram o Ver PEI e o botão de
 fechar, a fotografia deu zero — e o zero não era evidência de nada, porque o instrumento não
