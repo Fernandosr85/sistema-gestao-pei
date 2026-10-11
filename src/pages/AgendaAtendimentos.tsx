@@ -504,7 +504,15 @@ const AgendaAtendimentos = () => {
                           aria-label="Gráfico de rosca da distribuição de atendimentos por tipo. Os mesmos valores estão na lista acima."
                         >
                           <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
+                            <PieChart
+                              /*
+                               * Mesmo caso da rosca dos relatórios, e a mesma razão medida: os
+                               * setores do Recharts chegam com `role="img"` e sem nome, e a
+                               * lista acima já traz tipo, contagem e porcentagem em texto. Ver
+                               * o comentário longo em InterventionDonut.tsx.
+                               */
+                              aria-hidden="true"
+                            >
                               <Pie
                                 isAnimationActive={!movimentoReduzido}
                                 /* Mesma parada muda do InterventionDonut: ver o comentário de lá. */

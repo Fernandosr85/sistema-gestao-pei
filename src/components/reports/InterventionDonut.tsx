@@ -62,7 +62,25 @@ const InterventionDonut = () => {
             aria-label="Gráfico de rosca dos tipos de intervenção, com a porcentagem de cada um. Os mesmos valores estão na lista ao lado."
           >
             <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
+              <PieChart
+                /*
+                 * O DESENHO SAI DA ÁRVORE DE ACESSIBILIDADE, E O NOME FICA NO CONTÊINER
+                 * (Etapa 14, achado 24).
+                 *
+                 * O Recharts põe `role="img"` em CADA setor da rosca (Sector.js:217, depois do
+                 * spread dos props — não dá para sobrescrever por prop) e não dá nome a nenhum.
+                 * Medido na árvore de acessibilidade do Chrome, não no DOM: os cinco setores
+                 * estavam expostos (`ignored: false`, `name: ""`), e com eles o `SvgRoot` e seis
+                 * grupos, também sem nome — 13 dos 14 nós expostos deste contêiner não tinham
+                 * nome nenhum.
+                 *
+                 * Entre nomear os cinco e retirar a exposição, vale o que a pessoa recebe:
+                 * nomear repetiria em voz, cinco vezes, o que a lista ao lado já diz em texto.
+                 * O contêiner continua com `role="img"` e nome, e o desenho volta a ser o que
+                 * sempre foi — ilustração de um dado que está escrito ao lado.
+                 */
+                aria-hidden="true"
+              >
                 <Pie
                   isAnimationActive={!movimentoReduzido}
                   /*
