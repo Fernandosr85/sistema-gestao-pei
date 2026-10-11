@@ -170,7 +170,14 @@ const ProgressChart = () => {
           aria-label="Gráfico de linhas do progresso do PEI ao longo de 2024, comparando objetivos alcançados com a meta esperada, mês a mês. Os mesmos números estão na tabela abaixo."
         >
         <ResponsiveContainer width="100%" height={350}>
-          <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          {/*
+            * O desenho sai da árvore de acessibilidade, e o nome fica no contêiner: mesma decisão
+            * das roscas (Etapa 14) e da mini-sparkline (Etapa 3), agora com as duas condições
+            * medidas antes de esconder — o nome do contêiner na árvore do Chrome, por CDP, e o
+            * equivalente textual na página (tabela com legenda, 3 colunas e 12 linhas). Antes:
+            * 71 nós expostos, 28 sem nome e 21 textos soltos (os rótulos de eixo).
+            */}
+          <ComposedChart aria-hidden="true" data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="colorProgresso" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -488,7 +495,8 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
           aria-label={`Gráfico de linhas de ${area.nome} no primeiro semestre, comparando o valor alcançado com a meta de cada mês. Os mesmos números estão na tabela abaixo.`}
         >
         <ResponsiveContainer width="100%" height={300}>
-          <ComposedChart data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+          {/* Mesma decisão e mesma medição do gráfico geral, acima. Antes: 33 expostos, 12 sem nome. */}
+          <ComposedChart aria-hidden="true" data={area.dados} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id={`gradient-${area.nome}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={area.cor} stopOpacity={0.4}/>

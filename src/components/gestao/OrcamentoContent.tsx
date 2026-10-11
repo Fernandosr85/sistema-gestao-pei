@@ -246,7 +246,12 @@ const OrcamentoContent = () => {
             aria-label="Gráfico de barras do orçamento por categoria, comparando o valor orçado com o executado. Os mesmos valores estão na lista abaixo."
           >
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={categoryData} layout="vertical">
+            {/*
+              * Desenho fora da árvore, nome no contêiner (Etapa 15). Aqui o equivalente textual é a
+              * LISTA abaixo, não uma tabela, e foi medida: as cinco categorias com porcentagem e os
+              * dois valores (executado de orçado). Antes: 43 nós expostos, 18 sem nome.
+              */}
+            <BarChart aria-hidden="true" data={categoryData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />
               <YAxis dataKey="categoria" type="category" width={150} />
@@ -295,7 +300,8 @@ const OrcamentoContent = () => {
             aria-label="Gráfico de linhas dos gastos mensais, comparando o orçado com o executado mês a mês. Os mesmos valores estão na tabela abaixo."
           >
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyData}>
+            {/* Mesma decisão, com tabela de 12 linhas ao lado. Antes: 64 expostos, 25 sem nome. */}
+            <LineChart aria-hidden="true" data={monthlyData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="mes" />
               <YAxis tickFormatter={(value) => `R$ ${(value / 1000).toFixed(0)}k`} />

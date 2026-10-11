@@ -26,7 +26,11 @@ const PEIRadarChart = () => {
           aria-label="Gráfico de radar dos objetivos do PEI em sete áreas, comparando o progresso atual com a meta esperada, numa escala de 0 a 10. Os mesmos números estão na tabela abaixo."
         >
         <ResponsiveContainer width="100%" height={350}>
-          <RadarChart data={data}>
+          {/*
+            * Desenho fora da árvore, nome no contêiner (Etapa 15). Medido antes: nome presente na
+            * árvore do Chrome, tabela com as sete áreas ao lado, e 46 nós expostos com 19 sem nome.
+            */}
+          <RadarChart aria-hidden="true" data={data}>
             <PolarGrid stroke="hsl(var(--border))" />
             <PolarAngleAxis 
               dataKey="subject" 
