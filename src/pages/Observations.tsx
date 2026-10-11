@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, Plus, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
@@ -49,8 +50,12 @@ const Observations = () => {
       <div className="flex flex-col md:flex-row gap-4 p-6 bg-card rounded-lg border">
         <div className="flex-1">
           <div className="relative">
+            <Label htmlFor="busca-observacoes" className="sr-only">
+              Buscar observação por nome do aluno
+            </Label>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
+              id="busca-observacoes"
               placeholder="Buscar por aluno..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Resource, ResourceReview } from '@/types/resource';
@@ -275,7 +276,11 @@ export function ResourceDetailModal({
                     </span>
                   </div>
                 </fieldset>
+                <Label htmlFor="comentario-recurso" className="sr-only">
+                  Comentário sobre este recurso
+                </Label>
                 <Textarea
+                  id="comentario-recurso"
                   placeholder="Deixe um comentário sobre sua experiência com este recurso..."
                   value={userComment}
                   onChange={(e) => setUserComment(e.target.value)}

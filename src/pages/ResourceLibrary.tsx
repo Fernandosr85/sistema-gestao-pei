@@ -126,8 +126,12 @@ export default function ResourceLibrary() {
 
           {/* Search Bar */}
           <div className="relative">
+            <Label htmlFor="busca-recursos" className="sr-only">
+              Buscar recurso por título, tipo ou autor
+            </Label>
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input
+              id="busca-recursos"
               placeholder="Buscar recursos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

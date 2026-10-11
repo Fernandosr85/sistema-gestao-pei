@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -64,8 +65,13 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
         <div className="space-y-4">
           <div className="flex gap-2">
             <div className="relative flex-1">
+              {/* Desabilitado continua sendo anunciado: campo sem nome é "edição indisponível". */}
+              <Label htmlFor="busca-anexos" className="sr-only">
+                Buscar documento anexado
+              </Label>
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
+                id="busca-anexos"
                 placeholder="Buscar documentos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
