@@ -1,0 +1,26 @@
+[
+  {
+    "arquivo": "README.md",
+    "trecho": "Nenhum modelo estatístico ou de machine learning é executado",
+    "ocorrencias": 1,
+    "razao": "negação explícita, no bloco de aviso do topo: a frase existe para dizer que nenhum modelo é executado. Tirá-la deixaria o leitor sem a informação."
+  },
+  {
+    "arquivo": "README.md",
+    "trecho": "Análise preditiva / benchmarking",
+    "ocorrencias": 1,
+    "razao": "linha da tabela 'O que está implementado' que nomeia a funcionalidade inexistente, marcada ❌ com 'Números fixos no código, sem modelo'. O nome da funcionalidade é o que o leitor procura para saber que ela não existe."
+  },
+  {
+    "arquivo": "src/components/reports/IllustrativeProjection.tsx",
+    "trecho": "como saído de modelo, predição ou confiança estatística",
+    "ocorrencias": 2,
+    "razao": "comentário que registra o que a Etapa 0 tirou desta tela — probabilidades somando 137%, '156 casos similares', 'taxa de sucesso'. Casa dois padrões na mesma frase (predição e confiança estatística), e é por isso que a contagem é 2: a entrada declara ocorrências, não linhas."
+  },
+  {
+    "arquivo": "src/components/reports/IllustrativeProjection.tsx",
+    "trecho": "Maquete de interface • Nenhum modelo preditivo é executado",
+    "ocorrencias": 1,
+    "razao": "subtítulo visível na tela: negação, e é a frase que o nome antigo do componente (PredictiveAnalysis) contradizia até a Etapa 11."
+  }
+]

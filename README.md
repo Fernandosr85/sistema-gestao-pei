@@ -56,7 +56,6 @@ biblioteca de recursos adaptados e referências do marco legal brasileiro.
 - [Antes de usar com dados reais](#antes-de-usar-com-dados-reais)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Contribuindo](#contribuindo)
-- [Documentação técnica](#documentação-técnica)
 - [Licença](#licença)
 
 ---
@@ -101,7 +100,9 @@ npm run dev
 `npm ci` instala exatamente o que está no `package-lock.json` e é o que o CI roda — `npm install`
 pode atualizar o lockfile sem ninguém pedir.
 
-A aplicação sobe em `http://localhost:8080`.
+A aplicação sobe em `http://localhost:8080`. Os detalhes de ambiente — as quatro verificações,
+a estrutura de pastas e onde ficam as invariantes — estão em
+[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
 
 ### Scripts
 
@@ -406,7 +407,8 @@ sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 obse
 ### Testes automatizados (Etapa 7)
 
 Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`. A
-tabela é da Etapa 9, que levou a suíte de 73 para 131 testes.
+tabela está em **143 testes em 16 arquivos**: a Etapa 9 levou a suíte de 73 para 131, e a Etapa 11
+acrescentou os 12 do verificador de vocabulário.
 
 | Arquivo | Testes | O que trava |
 |---|---:|---|
@@ -425,10 +427,11 @@ tabela é da Etapa 9, que levou a suíte de 73 para 131 testes.
 | `src/test/verpei.test.tsx` | 3 | o plano do estudante aberto, e "Sem PEI vigente" para quem não tem |
 | `src/test/minha-agenda.test.tsx` | 2 | os atendimentos do store, inclusive os agendados com data já passada |
 | `src/test/observacao.test.tsx` | 2 | só o que foi registrado, e as metas que citam aquela observação |
+| `src/test/vocabulario.test.ts` | 12 | o verificador da invariante 2: um caso por padrão, a prova de que `\bIA\b` é sensível a caso, as três regras da linha de base, e que um script que não lê arquivo nenhum reprova |
 
-**O risco, com o número absoluto: são 131 testes, cobrindo as correções das Etapas 1 a 6, a
-guarda de navegação da Etapa 8 e as cinco telas da Etapa 9. O restante do código não tem
-teste.** Não há porcentagem de cobertura aqui, de propósito:
+**O risco, com o número absoluto: são 143 testes, cobrindo as correções das Etapas 1 a 6, a
+guarda de navegação da Etapa 8, as cinco telas da Etapa 9 e o verificador de vocabulário da Etapa
+11. O restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 
 Três decisões que dizem o que a suíte significa:
@@ -437,18 +440,19 @@ Três decisões que dizem o que a suíte significa:
   a conta que produzia o defeito, `periodChange` com o `+100%` inventado. Assim "o teste passa"
   significa "o defeito não voltou", e não "o código rodou".
 - **Nenhum teste foi aceito antes de reprovar.** O defeito que cada um diz pegar foi plantado no
-  código de produção e a suíte teve de reprovar: **74 mutações, todas acusadas** — 27 da Etapa 7,
-  3 da guarda de navegação da Etapa 8, 43 da Etapa 9 e 1 da varredura de coerência —,
+  código de produção e a suíte teve de reprovar: **80 mutações, todas acusadas** — 27 da Etapa 7,
+  3 da guarda de navegação da Etapa 8, 43 da Etapa 9, 1 da varredura de coerência e 6 do
+  verificador de vocabulário da Etapa 11 —,
   reexecutadas depois de trocar o runner para o `vitest` 4. Duas revelaram defeito no próprio
   teste, e quatro revelaram que os DADOS de teste não distinguiam o certo do errado: as duas
   coisas estão registradas no backlog (achados 11 e 17).
-  **47 delas estão em [`scripts/mutacoes/`](scripts/mutacoes/) e qualquer pessoa reexecuta com
+  **53 delas estão em [`scripts/mutacoes/`](scripts/mutacoes/) e qualquer pessoa reexecuta com
   `node scripts/mutacoes/executar.cjs`.** As 27 da Etapa 7 foram escritas em scripts que viviam
   no diretório temporário da sessão e não sobreviveram: o resultado delas está registrado, e
   **não é reproduzível a partir deste repositório**. Está dito assim no README dos scripts, e
   **não serão reescritas**: mutação escrita a partir do teste de hoje casa com o teste de hoje,
   não com o defeito de 18/09 (Pendências abertas, item 4, com a premissa medida). O número
-  honesto é **47 reproduzíveis e 27 atestadas**, não 74 reproduzíveis.
+  honesto é **53 reproduzíveis e 27 atestadas**, não 80 reproduzíveis.
 - **O fuso é fixado no config** (`TZ=America/Sao_Paulo`), porque o CI roda em UTC, onde os
   defeitos de data não existem — a suíte de datas passava lá sem exercitar um caso sequer.
 
@@ -580,7 +584,8 @@ sistema-gestao-pei/
 │   ├── components/         # Componentes React
 │   │   ├── ui/             # Primitivos shadcn/ui
 │   │   ├── gestao/         # Abas do painel de gestão
-│   │   └── reports/        # Gráficos e painéis de relatório
+│   │   ├── reports/        # Gráficos e painéis de relatório
+│   │   └── printable-report/ # Blocos do relatório que o navegador imprime
 │   ├── config/
 │   │   └── institution.ts  # Configuração da instituição (ponto único)
 │   ├── data/               # Dados fictícios de demonstração
@@ -594,7 +599,7 @@ sistema-gestao-pei/
 │   ├── types/
 │   ├── App.tsx
 │   └── main.tsx
-├── docs/                   # Documentação técnica
+├── docs/                   # DESENVOLVIMENTO.md: rodar e verificar localmente
 ├── scripts/                # Arreio de fotografia de superfície (prova de regressão)
 ├── .env.example
 ├── LICENSE
@@ -612,16 +617,6 @@ encontrar um erro, abra uma issue — sem garantia de resposta.
 
 Para rodar e verificar o projeto localmente, veja
 [docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
-
----
-
-## Documentação técnica
-
-Os dois arquivos que existem em `docs/`, conferidos em 07/10/2026:
-
-- [Desenvolvimento: rodar e verificar localmente](docs/DESENVOLVIMENTO.md) — pré-requisitos,
-  `npm ci`, as quatro verificações e a estrutura de pastas
-- [Guia de componentes](docs/GUIA_DE_COMPONENTES.md) — os 18 componentes principais, um a um
 
 ---
 

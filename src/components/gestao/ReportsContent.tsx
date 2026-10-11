@@ -2,7 +2,7 @@ import ProgressChart from '@/components/reports/ProgressChart';
 import ObservationHeatmap from '@/components/reports/ObservationHeatmap';
 import MilestonesCard from '@/components/reports/MilestonesCard';
 import AlertsCard from '@/components/reports/AlertsCard';
-import PredictiveAnalysis from '@/components/reports/PredictiveAnalysis';
+import IllustrativeProjection from '@/components/reports/IllustrativeProjection';
 import PEIRadarChart from '@/components/reports/PEIRadarChart';
 import InterventionDonut from '@/components/reports/InterventionDonut';
 import DemoDataNotice from '@/components/DemoDataNotice';
@@ -48,8 +48,8 @@ const ReportsContent = () => {
         {/* Alertas e Recomendações */}
         <AlertsCard />
 
-        {/* Análise Preditiva */}
-        <PredictiveAnalysis />
+        {/* Projeção ilustrativa */}
+        <IllustrativeProjection />
 
         {/* Grid de 2 colunas para Radar e Donut */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

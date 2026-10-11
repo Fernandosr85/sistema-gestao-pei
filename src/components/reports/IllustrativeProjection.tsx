@@ -62,7 +62,7 @@ const estrategiasExemplo = [
   }
 ];
 
-const PredictiveAnalysis = () => {
+const IllustrativeProjection = () => {
   const [expandido, setExpandido] = useState(false);
   const [abaAtiva, setAbaAtiva] = useState('projecao');
 
@@ -601,4 +601,4 @@ function AlertasIA() {
   );
 }
 
-export default PredictiveAnalysis;
+export default IllustrativeProjection;

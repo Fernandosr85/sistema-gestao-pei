@@ -1495,13 +1495,43 @@ sem fronteira de palavra devolveria são "identidade", "complexidade" e "funcion
 `\bidade\b`, zero. O mesmo tipo de falso positivo que "custo" dentro de "customizados" produziu na
 busca por decisão.)
 
+**Decidido na Etapa 10g (11/10/2026): removido.** A proposta do agente era outra — está logo
+abaixo, como foi escrita —, e o que decidiu contra ela foi a última medição desta sequência: o guia
+tinha **duas afirmações falsas que a medição da Etapa 10f não pegou**, porque o vocabulário dela
+também era um escopo (ver "O terceiro falso positivo", adiante).
+
 **Proposta do agente, justificada pela medida: corrigir as linhas erradas e manter.** O guia não é
 o caso dos outros três — 18 de 18 componentes existem, nenhuma afirmação estrutural falsa, e o
 defeito mede **três linhas e meia** num arquivo de 207. Remover custaria 18 descrições de
 componente que nada mais no repositório oferece, para resolver o que cabe em seis linhas de
 correção. **O contra-argumento, que é do autor decidir:** o guia envelhece outra vez no primeiro
 commit que mudar uma prop, e nenhuma verificação deste repositório reprova texto — foi assim que as
-três linhas erradas chegaram até aqui. **Decisão pendente.**
+três linhas erradas chegaram até aqui. **O autor decidiu pelo contra-argumento em 11/10/2026.**
+
+#### O terceiro falso positivo, e por que ele fechou a decisão
+
+Antes de apagar o guia, a Etapa 10g foi procurar nele **informação única** — e achou, de passagem,
+duas afirmações que a medição da 10f não tinha visto:
+
+- `GUIA_DE_COMPONENTES.md:182`: "Análise preditiva com IA."
+- `GUIA_DE_COMPONENTES.md:167`: o título "## Componentes de Relatórios **Inteligentes**".
+
+As duas violam o **vocabulário proibido pela invariante 2** do CLAUDE.md — "Inteligência
+Artificial", "modelo", "predição" para descrever dado estático —, que a Etapa 1 varreu e tirou das
+telas. **Medido em 11/10: zero ocorrências desse vocabulário no README, três no guia.** O que a
+auditoria tirou da tela sobreviveu nove etapas num arquivo de `docs/`.
+
+**E a primeira busca do agente perdeu uma das duas.** O padrão `intelig` foi escrito sem `-i` e
+não casou "**I**nteligentes", na linha 167: a ocorrência apareceu só na segunda passada, com
+`-i`. É o **terceiro falso negativo de precisão desta sequência**, todos em dois dias — "custo"
+casando "customizados" (10f), "idade" casando "identidade" (10f), e agora maiúscula inicial
+escapando de um padrão minúsculo. Os três vêm da mesma raiz: **o padrão é parte do instrumento, e
+instrumento não medido não mede.**
+
+Com isso, o argumento do autor virou o argumento vencedor: três linhas erradas atravessaram a
+auditoria da Etapa 5, e mais duas atravessaram a medição da 10f que existia para achá-las. **Não é
+que o guia estivesse errado demais — é que nada neste repositório o reprova**, e cada passada
+encontra o que o seu vocabulário alcança.
 
 ---
 
@@ -3439,6 +3469,48 @@ verificações, nenhum arreio e nenhuma varredura deste repositório mede ordem 
 
 ---
 
+### O que se salvou do guia antes de apagar: nada, e cada candidata já estava em outro lugar
+
+A busca foi por **informação que não existisse em nenhum outro lugar do repositório** — ressalva de
+comportamento, nota histórica, registro de por que um componente é como é. Quatro candidatas, todas
+já registradas:
+
+| Candidata | Onde já estava |
+|---|---|
+| `200-204`: a nota de que `NavigationBar`, `ComplexityCard` e `ActionPanel` saíram na Etapa 5 por serem inalcançáveis | **neste backlog**, na tabela de resultado da Etapa 5 ("importados por ninguém… 4 → 0" e "alcançáveis só pelos anteriores (`reports/ActionPanel`) 1 → 0"), com a contagem ao lado — e também no item 8 da lista de arquivos sem uso |
+| `84`: "os números do BenchmarkingPanel são fixos no código e não representam uma coorte real" | **no próprio componente**, como `DemoDataNotice` com o texto "Os números são fixos no código e não mudam conforme o aluno exibido. Não há base de casos nem medida de eficácia." (`src/components/BenchmarkingPanel.tsx:80-82`), mais o comentário da linha 18 e a linha "Análise preditiva / benchmarking ❌ Números fixos no código, sem modelo" do README |
+| `10-14`: a árvore de `src/components` | no README, na seção "Estrutura do projeto" — que tinha **a mesma lacuna**: listava `ui/`, `gestao/` e `reports/`, sem `printable-report/`. Conferido ao escrever esta tabela, e corrigido no mesmo commit; a árvore do README agora tem as quatro medidas por `ls -d src/components/*/` |
+| `190-197`: "Boas Práticas para Componentes" | triado na Etapa 10e, item a item: o que o projeto cobra está no CLAUDE.md, o resto é genérico |
+
+**Nada subiu para o backlog**, porque nada era único. O que o guia tinha de próprio eram as
+descrições de uma linha por componente — "Card estatístico com ícone e indicador de tendência" — e
+elas descrevem o que o nome do arquivo já diz.
+
+### O balanço do `docs/` (11/10/2026)
+
+`docs/` começou a Etapa 10 com **quatro** arquivos e terminou com **um**. Três foram removidos
+porque descreviam o que não existe: um desenho de integração de calendário sobre um backend
+descartado (482 linhas), uma referência de API com 23 endpoints propostos (152), e um documento de
+arquitetura cuja tabela de stack tinha **4 de 12 linhas falsas** (133). O quarto, o guia de
+componentes (207), foi removido **por outro motivo**: estava quase certo, já havia sido auditado na
+Etapa 5, e **três afirmações falsas atravessaram aquela auditoria** — nenhuma verificação deste
+repositório reprova prosa, e um teste de existência de componente não teria pegado nenhuma das
+três, porque os 18 componentes que ele cita existem.
+
+**O que sobrou como fonte, e o que reprova cada uma:**
+
+| Fonte | Diz o quê | O que a reprova quando fica falsa |
+|---|---|---|
+| `README.md` | o estado: a tabela "O que está implementado" | nada automático — releitura com uso ao fechar etapa |
+| `CLAUDE.md` | as invariantes e as regras de trabalho | nada automático — a mesma releitura |
+| `src/types/` e `src/store/schemas.ts` | o modelo | **o typecheck e a suíte** |
+| a suíte (131 testes) | o comportamento | **ela mesma, e as 47 mutações versionadas** |
+| este backlog | a história e as decisões | nada automático — e é por isso que o achado 18 existe |
+| `docs/DESENVOLVIMENTO.md` | como rodar e verificar | o CI, que roda os quatro comandos que ele descreve |
+
+Três das seis fontes não têm quem as reprove, e as três são texto. **O registro dessa assimetria é
+o que esta etapa deixa**, mais do que os arquivos removidos.
+
 ## Decisões fechadas
 
 Decisões do autor que **não** são pendência: não há trabalho esperando, e reabrir exige argumento
@@ -3461,6 +3533,83 @@ dados que o conteúdo não tem.
 **Para reabrir**, duas perguntas precisam de resposta: o que o documento diria que o tipo não diz,
 e **qual verificação o reprovaria** no dia em que ele ficasse falso. Sem a segunda, a resposta é
 não.
+
+---
+
+## Etapa 11 — a primeira regra que se executa
+
+**A invariante 2 passou a ter verificação executável.** Três commits: o nome do componente
+corrigido, o verificador com linha de base e teste, e este registro.
+
+### Resultado da etapa
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Invariantes com verificação executável | 0 de 7 | **1 de 7** (a 2, na parte enumerável) |
+| Testes / arquivos de teste | 131 / 15 | **143 / 16** |
+| Mutações do conjunto / reproduzíveis | 74 / 47 | **80 / 53** |
+| Passos do job `verify` no CI | 5 | **6** |
+| Identificador afirmando predição em `src/` | 1 (`PredictiveAnalysis`) | **0** |
+
+### O nome que a tela já tinha
+
+`PredictiveAnalysis` → `IllustrativeProjection`, por `git mv`, com o `import`, o uso, a declaração,
+o `export default` e o comentário de seção. A tela se chama "PROJEÇÃO ILUSTRATIVA" desde a Etapa 0,
+e o componente continuava afirmando o contrário no nome do arquivo — **nome de identificador é
+afirmação como qualquer outra**. Varrido o resto da família (`predictive`, `preditiv`,
+`analisePreditiva`, `dadosAnalisePreditiva`, em arquivo, variável, tipo, rota, chave de tradução,
+`data-testid` e nome de teste): zero sobras. O que ficou de `preditiv` em `src/` é a negação na
+própria tela, "Nenhum modelo preditivo é executado", medida no navegador junto do título e do
+`DemoDataNotice`.
+
+### O verificador, e a pergunta que ele faz
+
+**O verificador não pergunta se existe ocorrência, e sim se existe ocorrência nova.** O
+repositório contém o vocabulário legitimamente — negação, citação, a própria regra —, e um
+verificador cujo estado correto fosse "zero" exigiria classificar prosa dentro de um grep. A linha
+de base commitada **não impede o texto de mentir**: impede uma afirmação nova de entrar sem
+aparecer num diff. O modo de falha real foi esse — duas violações viveram nove etapas em `docs/`
+sem passar por revisão nenhuma.
+
+O escopo e o vocabulário estão declarados no topo do script, com as flags por padrão e com o que
+ficou **fora** da lista e por quê (`modelo`, por 53 ocorrências de sentido de domínio;
+`acurácia/eficácia/precisão`, por não estarem na invariante). A saída diz sempre quantos arquivos
+varreu: **143 arquivos, 5 ocorrências, 4 entradas na linha de base**.
+
+### A regra que estava escrita e não impediu a repetição
+
+**A regra sobre precisão de busca estava no `CLAUDE.md` desde a Etapa 0 e não impediu novas
+ocorrências da própria classe:** `intelig` sem `-i`, `preditivo` em vez de `preditiv`, e um
+instrumento de medição que recompilava cada padrão com flags default, sobrepondo a declaração. Das
+seis fontes que sobraram depois da limpeza do `docs/`, **três são texto e nada as reprova** — o
+`CLAUDE.md` entre elas. A invariante 2 foi a única com vocabulário enumerável, e por isso a única
+que virou script; **as outras seis continuam sendo promessa.**
+
+A regra foi reescrita como uma só, substituindo a da Etapa 0, e agora exige o que faltava: que a
+varredura declare vocabulário, flags e precisão, e que **seja testada contra um caso que ela deve
+achar** antes de o resultado valer como evidência. É a diferença entre a regra da Etapa 0 e esta:
+a primeira pedia cuidado, a segunda pede prova.
+
+### A medição da 10f subestimou o arquivo que ela existia para julgar
+
+**A medição da Etapa 10f existia para decidir o destino de `docs/GUIA_DE_COMPONENTES.md` e
+subestimou o arquivo:** devolveu 3 linhas erradas e "nenhuma afirmação estrutural falsa", e depois
+apareceram **duas violações da invariante 2** — "Análise preditiva com IA" e "Relatórios
+Inteligentes" — **e uma lacuna de árvore que ela atribuíra só ao guia**, quando o README tinha a
+mesma. A decisão de remover foi tomada **contra o número**, pelo argumento de que nada reprova
+prosa, e o número era o lado errado.
+
+O que a Etapa 11 acrescenta a isso: o vocabulário da 10f não incluía os termos da invariante 2, e
+nenhuma varredura declarada daquela etapa teria achado as duas violações. O defeito não estava na
+atenção de quem mediu — estava no padrão, que é parte do instrumento.
+
+### As seis mutações, e as três que acharam lacuna no plano
+
+O lote `scripts/mutacoes/11-vocabulario.cjs` é o primeiro em que o código de produção é um
+**verificador**. Seis mutações, seis acusadas. Três delas só reprovam por causa de casos que **não
+estavam no plano da etapa**: plantar `if (false)` na exigência de razão, deixar a contagem passar e
+deixar a entrada obsoleta passar não reprovavam nenhum dos quatro casos pedidos. Os casos foram
+escritos por causa da bateria — a mutação achou o furo no teste, que é o que ela existe para fazer.
 
 ---
 
