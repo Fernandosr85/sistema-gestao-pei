@@ -19,12 +19,17 @@ Nenhuma alteração é considerada pronta antes de as quatro passarem:
 ```bash
 npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
-npm test            # 131 testes, 15 arquivos. Zero teste encontrado reprova.
+npm test            # 143 testes, 16 arquivos. Zero teste encontrado reprova.
 npm run build       # conclui
 ```
 
 Rode as quatro antes de cada commit. Se uma quebrar, conserte antes de seguir — não
 acumule.
+
+O **verificador de vocabulário** (`node scripts/verifica-vocabulario.mjs`, invariante 2) tem passo
+próprio no CI, depois do lint, e também roda dentro de `npm test`: o caso 1 de
+`src/test/vocabulario.test.ts` o executa contra o repositório. Por isso as obrigatórias continuam
+sendo quatro.
 
 **Zero é ausência de resultado, não resultado de ausência.** Antes de afirmar que algo não
 existe — verificação, ocorrência, execução — rode o comando que o lista e confirme com controle
@@ -40,12 +45,6 @@ botão desabilitado na tela. Texto não tem a do meio: aviso dizendo que o docum
 é o botão inerte com etiqueta, e saiu do README na Etapa 10f. Documento anterior a uma decisão se
 corrige linha a linha ou se remove inteiro; o histórico preserva.
 
-**Busca por vocabulário sem fronteira de palavra conta substring, e sem `-i` perde a maiúscula.**
-Nesta série: "custo" casou "customizados", "idade" casou "identidade", "complexidade" e
-"funcionalidade", e `intelig` não casou "Inteligentes". Use `\b`, cuide do caso, e **registre a
-precisão junto com a contagem** — quantas ocorrências e quantas sobraram depois de descartar falso
-positivo. Contagem sem precisão não é medida.
-
 **O escopo de uma varredura é parte do resultado dela, e isso inclui o vocabulário.** Diga onde procurou, junto do que achou:
 varredura cujo escopo não está declarado não distingue "não há ocorrências" de "não procuramos
 ali". As quatro verificações leem `src/`; a fotografia mede rotas; a busca institucional é a única
@@ -56,10 +55,17 @@ tabela de stack de um projeto que não a instala é falso e não casa nenhuma de
 
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser
-defeito da ferramenta. Classes de caractere com acento ([áa]) não casam a letra acentuada
-neste ambiente; use script com regex Unicode. grep -i não muda o caso de letra acentuada:
-'licença' não casa 'LICENÇA'. Vale para qualquer busca por termo em maiúsculas em código
-escrito em português.
+defeito da ferramenta.
+
+**Busca é código e erra como código.** `-i` não muda caso de letra acentuada ('licença' não casa
+'LICENÇA') e classes com acento (`[áa]`) não casam a letra acentuada neste ambiente; sem `-i`,
+`intelig` não casa `Inteligentes`; `preditivo` não casa `preditiva`; sem `\b`, `custo` casa
+`customizados` e `idade` casa `identidade`; com `-i`, `\bIA\b` casa o verbo "ia". **As flags são
+parte do padrão e viajam com ele** — instrumento que recompila a regex com flags default ignora a
+declaração. Toda varredura declara vocabulário, flags e **precisão** (quantas ocorrências, quantas
+sobraram depois do falso positivo), e é **testada contra um caso que ela deve achar** antes de o
+resultado valer como evidência. Em vez de `grep` com classe acentuada, use script com regex
+Unicode.
 
 Controle positivo incidental não serve: ele pode desaparecer com a própria mudança que está
 sendo verificada — foi o que aconteceu com o `useSidebar` da busca institucional. Plante o
@@ -175,6 +181,19 @@ código. Regras:
 
 Se implementar uma métrica de verdade, ela deve derivar de um dataset datado via seletor
 compartilhado — nunca de um literal duplicado em outro componente.
+
+**Esta invariante tem verificação executável**, na parte que é enumerável:
+`node scripts/verifica-vocabulario.mjs`, no CI depois do lint e com teste próprio
+(`src/test/vocabulario.test.ts`). Ela varre `README.md`, `docs/**/*.md`, `index.html` e
+`src/**/*.{ts,tsx,css}` procurando `\bintelig`, `\bpredi`, `\bIA\b` (sensível a caso),
+`confian[cç]a\s+estat[íi]stic` e `machine learning|aprendizado de m[aá]quina`. Ficam **fora**
+`BACKLOG*`, `CLAUDE.md`, `scripts/` e `src/test/`, porque esses arquivos existem para discutir o
+vocabulário — e fora da lista de padrões ficam `modelo` (53 ocorrências medidas, quase todas o
+sentido de domínio) e `acurácia/eficácia/precisão` (não estão nesta invariante). A ocorrência
+legítima — negação, citação, comentário que registra o que saiu — vive em
+`scripts/vocabulario-permitido.json`, **uma entrada por ocorrência, cada uma com a razão escrita**:
+entrada sem razão reprova, e entrada que descreve o que não existe mais reprova também. O que o
+script pega é afirmação **nova**; o que ele não pega é texto que já estava errado e foi declarado.
 
 ### 3. Nenhuma afirmação falsa de funcionalidade
 O README tem uma tabela "O que está implementado" com ✅/⚠️/❌. Se você implementar ou

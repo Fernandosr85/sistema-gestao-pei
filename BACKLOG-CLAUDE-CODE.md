@@ -3536,6 +3536,83 @@ não.
 
 ---
 
+## Etapa 11 — a primeira regra que se executa
+
+**A invariante 2 passou a ter verificação executável.** Três commits: o nome do componente
+corrigido, o verificador com linha de base e teste, e este registro.
+
+### Resultado da etapa
+
+| Medida | Antes | Depois |
+|---|---:|---:|
+| Invariantes com verificação executável | 0 de 7 | **1 de 7** (a 2, na parte enumerável) |
+| Testes / arquivos de teste | 131 / 15 | **143 / 16** |
+| Mutações do conjunto / reproduzíveis | 74 / 47 | **80 / 53** |
+| Passos do job `verify` no CI | 5 | **6** |
+| Identificador afirmando predição em `src/` | 1 (`PredictiveAnalysis`) | **0** |
+
+### O nome que a tela já tinha
+
+`PredictiveAnalysis` → `IllustrativeProjection`, por `git mv`, com o `import`, o uso, a declaração,
+o `export default` e o comentário de seção. A tela se chama "PROJEÇÃO ILUSTRATIVA" desde a Etapa 0,
+e o componente continuava afirmando o contrário no nome do arquivo — **nome de identificador é
+afirmação como qualquer outra**. Varrido o resto da família (`predictive`, `preditiv`,
+`analisePreditiva`, `dadosAnalisePreditiva`, em arquivo, variável, tipo, rota, chave de tradução,
+`data-testid` e nome de teste): zero sobras. O que ficou de `preditiv` em `src/` é a negação na
+própria tela, "Nenhum modelo preditivo é executado", medida no navegador junto do título e do
+`DemoDataNotice`.
+
+### O verificador, e a pergunta que ele faz
+
+**O verificador não pergunta se existe ocorrência, e sim se existe ocorrência nova.** O
+repositório contém o vocabulário legitimamente — negação, citação, a própria regra —, e um
+verificador cujo estado correto fosse "zero" exigiria classificar prosa dentro de um grep. A linha
+de base commitada **não impede o texto de mentir**: impede uma afirmação nova de entrar sem
+aparecer num diff. O modo de falha real foi esse — duas violações viveram nove etapas em `docs/`
+sem passar por revisão nenhuma.
+
+O escopo e o vocabulário estão declarados no topo do script, com as flags por padrão e com o que
+ficou **fora** da lista e por quê (`modelo`, por 53 ocorrências de sentido de domínio;
+`acurácia/eficácia/precisão`, por não estarem na invariante). A saída diz sempre quantos arquivos
+varreu: **143 arquivos, 5 ocorrências, 4 entradas na linha de base**.
+
+### A regra que estava escrita e não impediu a repetição
+
+**A regra sobre precisão de busca estava no `CLAUDE.md` desde a Etapa 0 e não impediu novas
+ocorrências da própria classe:** `intelig` sem `-i`, `preditivo` em vez de `preditiv`, e um
+instrumento de medição que recompilava cada padrão com flags default, sobrepondo a declaração. Das
+seis fontes que sobraram depois da limpeza do `docs/`, **três são texto e nada as reprova** — o
+`CLAUDE.md` entre elas. A invariante 2 foi a única com vocabulário enumerável, e por isso a única
+que virou script; **as outras seis continuam sendo promessa.**
+
+A regra foi reescrita como uma só, substituindo a da Etapa 0, e agora exige o que faltava: que a
+varredura declare vocabulário, flags e precisão, e que **seja testada contra um caso que ela deve
+achar** antes de o resultado valer como evidência. É a diferença entre a regra da Etapa 0 e esta:
+a primeira pedia cuidado, a segunda pede prova.
+
+### A medição da 10f subestimou o arquivo que ela existia para julgar
+
+**A medição da Etapa 10f existia para decidir o destino de `docs/GUIA_DE_COMPONENTES.md` e
+subestimou o arquivo:** devolveu 3 linhas erradas e "nenhuma afirmação estrutural falsa", e depois
+apareceram **duas violações da invariante 2** — "Análise preditiva com IA" e "Relatórios
+Inteligentes" — **e uma lacuna de árvore que ela atribuíra só ao guia**, quando o README tinha a
+mesma. A decisão de remover foi tomada **contra o número**, pelo argumento de que nada reprova
+prosa, e o número era o lado errado.
+
+O que a Etapa 11 acrescenta a isso: o vocabulário da 10f não incluía os termos da invariante 2, e
+nenhuma varredura declarada daquela etapa teria achado as duas violações. O defeito não estava na
+atenção de quem mediu — estava no padrão, que é parte do instrumento.
+
+### As seis mutações, e as três que acharam lacuna no plano
+
+O lote `scripts/mutacoes/11-vocabulario.cjs` é o primeiro em que o código de produção é um
+**verificador**. Seis mutações, seis acusadas. Três delas só reprovam por causa de casos que **não
+estavam no plano da etapa**: plantar `if (false)` na exigência de razão, deixar a contagem passar e
+deixar a entrada obsoleta passar não reprovavam nenhum dos quatro casos pedidos. Os casos foram
+escritos por causa da bateria — a mutação achou o furo no teste, que é o que ela existe para fazer.
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
