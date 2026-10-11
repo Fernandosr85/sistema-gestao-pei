@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector, type SectorProps } from 'recharts';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 /*
  * As cores vêm dos tokens da marca, que são medidos. Como valor literal, três delas
@@ -41,6 +42,7 @@ const renderActiveShape = ({ cx, cy, innerRadius, outerRadius, startAngle, endAn
 );
 
 const InterventionDonut = () => {
+  const movimentoReduzido = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
@@ -62,6 +64,7 @@ const InterventionDonut = () => {
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
+                  isAnimationActive={!movimentoReduzido}
                   /*
                    * rootTabIndex={-1}: o <g> raiz do Pie entra na ordem de tabulação por padrão
                    * (recharts 2.x, Pie.js:328 e 433) e chega ao teclado SEM nome acessível —
@@ -90,7 +93,8 @@ const InterventionDonut = () => {
                     />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
+                  isAnimationActive={!movimentoReduzido}
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
