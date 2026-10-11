@@ -1577,11 +1577,27 @@ um gráfico: o `<g tabindex="0">` do `Pie` do Recharts, medido pelo arreio como 
 violação é o piso, não o resultado** — e as duas correções desta etapa saíram de **leitura dirigida
 do que a ferramenta não reclama**, feita ao preparar a coluna do esperado dos M1–M9.
 
-**A contagem das duas varreduras, com escopo e falso positivo declarados.** Campos: 48 com
-`placeholder` em 109 arquivos `.tsx`; 35 sinalizados pela leitura estática; **28 eram falso
-positivo** do padrão `<FormItem><FormLabel/><FormControl>` do shadcn, que gera `id` e `htmlFor` em
-tempo de execução — nenhuma varredura estática vê isso, e a medição no navegador é que decide.
-Sobraram **6**, todos corrigidos; a contagem depois é **0**. Paradas sem nome: **2 superfícies de
+**A contagem das duas varreduras, com escopo e falso positivo declarados — e com a correção que a
+Etapa 13 fez nela.** A primeira redação dizia "48 campos com `placeholder` em 109 arquivos; 35
+sinalizados; 28 falso positivo; 6 reais", e **a conta não fecha: 35 − 28 = 7, não 6.** O sétimo é
+`src/__controle-campo.tsx:2`, **o controle positivo que eu mesmo plantei** — ele estava no disco
+quando aquela contagem foi tirada, e por isso entrou nos 48 arquivos, nos 48 campos e nos 35
+sinalizados. Não era falso positivo (era verdadeiro, de propósito) nem foi contado duas vezes: era
+instrumento dentro da amostra.
+
+Os números, agora com o estado em que cada um foi medido:
+
+| Medida | Com o controle plantado | Sem o controle | Hoje, árvore limpa |
+|---|---:|---:|---:|
+| arquivos `.tsx` varridos | 109 | 108 | 108 |
+| campos com `placeholder` | 48 | 47 | 47 |
+| sinalizados pela leitura estática | 35 | 34 | 28 |
+| falso positivo do padrão `FormControl` | 28 | 28 | 28 |
+| campos soltos, que precisavam de conserto | 6 | 6 | **0** |
+
+**A lição é a mesma classe de sempre:** contagem tirada com o instrumento dentro da amostra precisa
+dizer isso, senão a soma não fecha e quem conferir depois acha erro onde havia só estado não
+declarado. Paradas sem nome: **2 superfícies de
 23** antes (a mesma `g[0]|` em `/relatorios` e `/gestao?tab=relatorios`), **0 de 23** depois.
 
 **E o axe deste projeto não é estável sozinho**, o que nenhuma etapa havia registrado. Em cerca de
@@ -1591,6 +1607,102 @@ esperas diferentes: com 2,6 s a mesma rota devolveu 0 numa passada e `svg-img-al
 **Causa não investigada**; o padrão aponta para corrida na montagem dos gráficos. Fica registrado
 porque **"0 violações" sem regra de espera declarada não é medida** — e o "124 → 0" da Etapa 3
 herda a ressalva. Decidir se isso vira pendência própria é do autor.
+
+---
+
+### 23. O instrumento que varia, e o número que virou registro (Etapa 13, 11/10/2026)
+
+**O axe deste projeto varia entre passadas na mesma árvore, na mesma rota, mudando só a espera:**
+em ~19 passadas rota×estado da Etapa 12 apareceram `svg-img-alt(5)` duas vezes e
+`color-contrast(18)` uma. Os dois números pelos quais a Etapa 3 é conhecida — **124** e **0** — são
+**uma passada cada**, sem contagem de repetições, sem regra de espera e sem condição declarada.
+
+**A direção da intermitência importa.** O mecanismo que faz uma violação aparecer na segunda
+passada é o mesmo que a faz estar ausente na primeira. O "0" pode ser **subcontagem**, não só pouco
+verificado — um `<svg>` cujo nome ainda não existe no DOM passa como se tivesse nome.
+
+> **Regra: resultado de instrumento não determinístico exige N passadas e condição declarada.**
+> "Zero violações" sem N e sem condição é uma **amostra**, não uma medida. Isto vale
+> retroativamente para o "124 → 0" da Etapa 3, que fica marcado como **amostra única** enquanto não
+> for remedido pelo protocolo desta etapa.
+
+#### O protocolo, e o que cada resultado significaria — escrito antes de medir
+
+Hipótese a testar: as duas regras que piscaram falham **durante** transição de renderização, e não
+por tempo insuficiente. Três condições, 10 passadas cada, nas rotas onde a intermitência apareceu
+mais as que têm gráfico:
+
+| Condição | O que é |
+|---|---|
+| **A** | espera fixa de 2,6 s, a mesma que a Etapa 12 usou |
+| **B** | preferência de movimento reduzido ligada |
+| **C** | espera por **condição determinada**: o elemento que só existe depois de o gráfico estar pintado |
+
+O que cada resultado significaria: **B e C iguais em 10/10 e A não** → corrida de renderização, e a
+medição passa a exigir condição determinada. **B continuando a variar** → hipótese errada, parar e
+relatar. **Alguma regra aparecendo de forma estável em B ou C** → não é intermitência, é
+**violação real que a passada única perdia**.
+
+#### O resultado: o terceiro caso, e a hipótese pela metade
+
+| Rota | Condição | Passadas | Resultado |
+|---|---|---:|---|
+| `/gestao?tab=relatorios` | A — espera fixa 2,6 s | 10 | **ZERO em 10/10** |
+| `/gestao?tab=relatorios` | C — `path.recharts-sector` presente + 400 ms sem mutação | 10 | **`svg-img-alt(5)` em 10/10** |
+| `/gestao?tab=relatorios` | B+C — movimento reduzido ligado, espera pelo objeto | 5 | **`svg-img-alt(5)` em 5/5** |
+| `/gestao?tab=relatorios` | A sob B — espera fixa, movimento reduzido | 5 | ZERO em 4/5, `svg-img-alt(5)` em 1/5 |
+| `/` | A | 5 | ZERO em 5/5 |
+| `/` | C (sem gráfico: só silêncio) | 5 | ZERO em 5/5 |
+| `/observacoes` | C (sem gráfico: só silêncio) | 5 | ZERO em 5/5 |
+
+**A hipótese estava pela metade, e as duas metades são mecanismos diferentes:**
+
+- **`color-contrast`** é transitório, como a hipótese dizia: aparece com espera de 0 ms
+  (`color-contrast(58)`) e 120 ms (`color-contrast(34)`) em `/`, e desaparece com 2,6 s. A
+  contagem de nós cai junto — 58, 34, 0 —, que é a assinatura de pintura incompleta. E a rota não
+  tem gráfico nenhum: a corrida é de CSS e fonte, não de animação.
+- **`svg-img-alt` é o contrário**, e é a descoberta: ele **só aparece depois** do fim da animação.
+  Medido quadro a quadro: `path[role="img"]` é **0 até ~2 850 ms** e **5 a partir daí**, e os cinco
+  **permanecem** (conferido em +0 s, +2 s e +4 s, com o axe acusando no mesmo instante). A espera
+  fixa de 2,6 s da Etapa 12 caía **logo antes**, e por isso devolvia zero — a previsão é exata: nas
+  passadas de A sob B, as que mediram com `setores presentes: 0` deram ZERO e a que mediu com
+  `setores presentes: 5` deu `svg-img-alt(5)`.
+
+**A condição C levou três marcadores até ficar de pé, e os dois primeiros erraram de lado:** contar
+`path[name]` oscila durante a animação e mediu o meio dela; esperar silêncio mede **antes** de o
+gráfico começar (471 ms de "quieto" numa passada cega contra 2 359 ms numa que viu). O marcador que
+funciona é o **objeto**: os setores da rosca, identificados pelo `name` que carrega o rótulo do dado.
+
+#### A violação real, e o caso particular dos gráficos
+
+**Não é intermitência: é violação.** `svg-img-alt`, 5 nós, em `/gestao?tab=relatorios`, **10 de 10
+passadas** sob condição declarada. Os nós são os setores do gráfico de rosca de tipos de
+intervenção: `<path class="recharts-sector transition-all" role="img" name="Adaptações
+Curriculares">` e os outros quatro, **sem `aria-label` e sem `<title>`**. O `role="img"` vem do
+Recharts; o nome, de ninguém.
+
+**Está relatado e não corrigido**, porque conserto aqui é decisão de produto — e muda a folha dos
+M1–M9 outra vez.
+
+**E o caso particular que o plano mandou conferir de todo modo: os gráficos NÃO respeitam a
+preferência de movimento reduzido.** Com "Reduzir animações" ligada no app (medido:
+`data-a11y-motion="reduzido"` no `<html>` e `transition-duration: 1e-05s` nos cartões), os setores
+continuam aparecendo entre **3,3 s e 4,0 s** — igual a sem a preferência. O CSS do projeto zera
+transição; a animação do Recharts é JavaScript e não consulta nem a preferência do app nem a do
+sistema. **Medido, não corrigido.**
+
+**Sobre a emulação:** `prefers-reduced-motion` no nível do sistema **não é emulável** com as
+ferramentas desta sessão — medido, `matchMedia('(prefers-reduced-motion: reduce)').matches` responde
+`false` e não há como mudá-lo. A condição B foi feita pelo caminho que o app oferece. E o axe não
+tem comportamento próprio ligado a essa preferência: o que ele mede é o DOM no instante da passada,
+e é isso que a condição declarada controla.
+
+#### O instrumento que fica
+
+`scripts/axe-com-condicao.js` (commit `0d97bf1`): N passadas, condição declarada na saída, controle
+positivo próprio, e **faixa** quando as passadas discordam. O formato da saída é fixo —
+`N passadas, condição X, resultado idêntico em N/N: …` —, para número de violação não voltar ao
+registro sem as duas coisas que o qualificam.
 
 ---
 
