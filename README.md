@@ -215,7 +215,7 @@ commit da etapa e depois do último:
 
 | Medida | Antes | Depois |
 |---|---:|---:|
-| **Violações do axe-core (WCAG 2.1 A e AA)** | **124** | **0** |
+| **Violações do axe-core (WCAG 2.1 A e AA)** — *amostra única, sem condição declarada* | **124** | **0** |
 | — contraste de cor (1.4.3) | 47 | 0 |
 | — barra de progresso sem nome (4.1.2) | 62 | 0 |
 | — botão sem nome (4.1.2) | 14 | 0 |
@@ -229,9 +229,22 @@ commit da etapa e depois do último:
 | Lugares com status carregado só por emoji | 6 | 0 |
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
 | Campos cujo único nome acessível era o `placeholder` (Etapa 12) | 6 | 0 |
+| Gráficos que respeitam "Reduzir animações" (Etapa 13, medido) | — | **0 de 2** |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
-> **O zero do axe é o piso, não o resultado, e tem uma ressalva de método (medida em 11/10/2026).**
+> **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
+> condição de espera declarada.** Medido em 11/10/2026 com o protocolo da Etapa 13 (achado 23), o
+> axe deste projeto **varia entre passadas** conforme a espera, e a variação tem direção: na rota
+> `/gestao?tab=relatorios`, espera fixa de 2,6 s devolveu **ZERO em 10 de 10 passadas**, e espera
+> pela condição determinada ("os setores do gráfico presentes + 400 ms sem mutação") devolveu
+> **`svg-img-alt` com 5 nós em 10 de 10**. Não era instabilidade: era **violação real que a passada
+> única perdia** — cinco setores do gráfico de rosca com `role="img"` e sem nome acessível,
+> relatada e **não corrigida**, porque conserto ali é decisão de produto. A medição passa a ser
+> feita por `scripts/axe-com-condicao.js`, que relata sempre
+> `N passadas, condição X, resultado idêntico em N/N` — e **faixa**, quando as passadas discordam.
+> Enquanto o "124 → 0" não for remedido por esse protocolo, ele fica marcado como amostra única.
+>
+> **O zero do axe é o piso, não o resultado, e tem uma segunda ressalva (medida em 11/10/2026).**
 > As duas linhas da Etapa 12 são de coisas que **o axe não reclama**: ele aceita `placeholder` como
 > nome de último recurso, e não exige nome em parada de tabulação dentro de gráfico. As duas foram
 > achadas lendo o que a ferramenta não cobre, não rodando a ferramenta. Além disso, o axe deste
