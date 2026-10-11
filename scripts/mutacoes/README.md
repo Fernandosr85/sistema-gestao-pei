@@ -33,7 +33,8 @@ interromper o processo, `git status` mostra o arquivo sujo e `git checkout --` o
 | `09-apresentacao.cjs` | 6 | os slides vindos do plano, o nome da região e o foco ao abrir |
 | `09-detalhe-da-observacao.cjs` | 3 | as metas que citam a observação, e o tipo da evidência |
 | `09-minha-agenda.cjs` | 4 | os atendimentos do store, o bloco de atrasados e os rótulos |
-| **total** | **47** | |
+| `11-vocabulario.cjs` | 6 | o verificador de vocabulário: as flags de cada padrão, o escopo, a leitura de arquivo e a exigência de razão na linha de base |
+| **total** | **53** | |
 
 ## A regra de contagem, e o que falta
 
@@ -41,7 +42,7 @@ interromper o processo, `git status` mostra o arquivo sujo e `git checkout --` o
 não por lembrança: foi uma recontagem por script que corrigiu "18 mutações" para 27 na Etapa 7
 (achado 11 do BACKLOG).
 
-**O conjunto da série tem 74 mutações; 47 estão aqui.** As 27 da Etapa 7 — persistência e
+**O conjunto da série tem 80 mutações; 53 estão aqui.** As 27 da Etapa 7 — persistência e
 migrações (4), datas (3), seletores (6), reducer (5), rotas (3) e fluxo (6) — foram escritas em
 scripts que viviam no diretório temporário da sessão e **não sobreviveram**: o diretório foi
 limpo entre sessões. O resultado delas está registrado no BACKLOG e nas mensagens dos commits da
@@ -54,8 +55,14 @@ teste daquela etapa mudaram depois dela, e o `studentProgress` que as seis muta�
 atacavam foi reescrito na Etapa 9 (a conta antiga virou `assessmentProgress`). Seriam 27 mutações
 novas com aparência de reconstituição, e isso é pior que 27 declaradas perdidas.
 
-**O que este diretório afirma: 47 reproduzíveis. O que o BACKLOG atesta: 27 acusadas em
+**O que este diretório afirma: 53 reproduzíveis. O que o BACKLOG atesta: 27 acusadas em
 18/09/2026, sem reprodução.** Os dois números não se somam numa afirmação só.
+
+O lote `11-vocabulario.cjs` é o primeiro em que o **código de produção é um verificador**: o alvo
+é `scripts/verifica-vocabulario.mjs`, e o teste que ele põe à prova é `src/test/vocabulario.test.ts`.
+Três das seis mutações só reprovam por causa de casos que **não estavam no plano da etapa** — a
+bateria mostrou que as regras do comparador (razão obrigatória, entrada obsoleta, contagem) não
+tinham teste, e os casos foram escritos por causa disso.
 
 É por isso que estes scripts estão versionados: um número que ninguém consegue reproduzir não é
 medida, e era o número mais citado da série.
