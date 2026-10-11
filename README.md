@@ -229,7 +229,8 @@ commit da etapa e depois do último:
 | Lugares com status carregado só por emoji | 6 | 0 |
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
 | Campos cujo único nome acessível era o `placeholder` (Etapa 12) | 6 | 0 |
-| Gráficos que respeitam "Reduzir animações" (Etapa 13, medido) | — | **0 de 2** |
+| Séries de gráfico que respeitam "Reduzir animações" (Etapas 13 e 14, medido) | 0 de 19 | **19 de 19** |
+| Nós sem nome expostos pela rosca de intervenções, na árvore do Chrome (Etapa 14) | 13 de 14 | **1 de 2** |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
@@ -238,8 +239,12 @@ commit da etapa e depois do último:
 > `/gestao?tab=relatorios`, espera fixa de 2,6 s devolveu **ZERO em 10 de 10 passadas**, e espera
 > pela condição determinada ("os setores do gráfico presentes + 400 ms sem mutação") devolveu
 > **`svg-img-alt` com 5 nós em 10 de 10**. Não era instabilidade: era **violação real que a passada
-> única perdia** — cinco setores do gráfico de rosca com `role="img"` e sem nome acessível,
-> relatada e **não corrigida**, porque conserto ali é decisão de produto. A medição passa a ser
+> única perdia** — cinco setores do gráfico de rosca com `role="img"` e sem nome acessível.
+> **Corrigida na Etapa 14, depois de medir na árvore de acessibilidade do Chrome que os cinco
+> chegavam mesmo à tecnologia assistiva** (e que outros oito nós do mesmo contêiner também
+> chegavam, sem nome, sem o axe reclamar): o desenho da rosca passou a ser `aria-hidden`, com o
+> nome no contêiner e os valores em texto ao lado, e a mesma condição declarada devolve agora
+> **ZERO em 10 de 10**. A medição passa a ser
 > feita por `scripts/axe-com-condicao.js`, que relata sempre
 > `N passadas, condição X, resultado idêntico em N/N` — e **faixa**, quando as passadas discordam.
 > Enquanto o "124 → 0" não for remedido por esse protocolo, ele fica marcado como amostra única.
@@ -250,9 +255,10 @@ commit da etapa e depois do último:
 > achadas lendo o que a ferramenta não cobre, não rodando a ferramenta. Além disso, o axe deste
 > projeto **não é estável sozinho**: em cerca de 19 passadas rota×estado apareceram duas
 > intermitências (`svg-img-alt` duas vezes, `color-contrast` uma), com a mesma árvore e a mesma
-> rota, variando só a espera — causa não investigada, provavelmente corrida na montagem dos
-> gráficos. Um número de violação sem regra de espera declarada não é medida; está no achado 22 do
-> backlog.
+> rota, variando só a espera. **A causa foi investigada na Etapa 13** e são duas, em sentidos
+> opostos: `color-contrast` aparece durante a pintura e decai para zero conforme a página fica
+> pronta, e `svg-img-alt` só aparecia depois do fim da animação. Um número de violação sem regra de
+> espera declarada não é medida; está nos achados 22, 23 e 24 do backlog.
 
 O que isso significa na prática:
 
@@ -277,7 +283,9 @@ Em **Configurações → Acessibilidade** há cinco preferências que funcionam 
 contraste, tamanho da fonte, reduzir animações, destacar o foco do teclado e aumentar o
 tamanho dos botões. Elas são aplicadas na hora, ficam guardadas **neste navegador**, na
 chave `pei-a11y-preferences`, e não dependem de conta nem saem daqui. Reduzir animações
-também respeita a preferência do sistema operacional.
+também respeita a preferência do sistema operacional, e desde a Etapa 14 isso vale **também
+para os gráficos**, cuja animação é JavaScript e não era alcançada pelo CSS: medido, a rosca
+dos relatórios passou de 1 466 ms para 73 ms até o desenho ficar pronto.
 
 Leitor de tela, navegação por voz, descrição de imagens em áudio e ampliação da página não
 ficam ali: são recursos do sistema operacional, da tecnologia assistiva ou do próprio

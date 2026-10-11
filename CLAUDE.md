@@ -39,6 +39,24 @@ alcançou o painel de PR — onde `0 passando, 0 falhando, 0 pendentes` foi lido
 com 36 execuções verdes no GitHub (achado 19; é o achado 7 numa regra de verificação, enumerar o
 conhecido em vez da classe).
 
+**Instrumento erra de dois jeitos: variando, e sendo firme na resposta errada.** Repetição detecta
+o primeiro e **confirma** o segundo — a espera fixa de 2,6 s devolveu zero em 10 de 10 passadas
+porque caía logo antes do limiar em que a violação passa a existir (achado 23). O que valida a
+medida é a **condição**: esperar pelo objeto, não pelo relógio. N serve para detectar variância,
+não para produzir validade. E não existe espera fixa correta quando os modos de falha apontam para
+lados opostos no tempo — `color-contrast` decai para zero conforme a página pinta, `svg-img-alt`
+aparece depois do fim da animação. Resultado que varia entre passadas não é resultado: é **faixa**,
+e se relata como faixa. **"Nada mudou" não é "acabou":** esperar silêncio mede antes de a coisa
+começar.
+
+**E a condição é sobre o que a medida é função.** Duas medições que compartilham a mesma limitação
+não são duas medições: na Etapa 14, o arreio e o leitor de página do painel concordaram que os
+cinco setores da rosca estavam na árvore de acessibilidade, e concordavam porque **nenhum dos dois
+modela filhos apresentacionais** — o que só apareceu porque um controle foi plantado DENTRO do
+elemento que deveria podá-los. Quando a pergunta é sobre o que chega à tecnologia assistiva, quem
+responde é a árvore do navegador (`Accessibility.getPartialAXTree` pelo protocolo DevTools), não
+uma leitura do DOM (achado 24).
+
 **Documento tem duas saídas: descrever o que existe, ou sair.** Controle inerte tem três —
 implementar, desabilitar com explicação visível, ou remover —, e por isso a Etapa 2 pôde deixar
 botão desabilitado na tela. Texto não tem a do meio: aviso dizendo que o documento ao lado é falso
@@ -76,6 +94,12 @@ O controle plantado precisa **asseverar que a quebra foi plantada**, não só ex
 substituição. Na Etapa 7 um `replace` mirou um trecho que não existia no arquivo escolhido: a
 quebra nunca entrou, a varredura continuou devolvendo zero, e o zero foi lido como "a
 varredura funciona". Conte as ocorrências, exija exatamente uma, e só então rode.
+
+**O controle plantado sai da contagem.** Ele é instrumento, não resultado — e se ficar na amostra,
+inflaciona o que a varredura mediu: na Etapa 12 o controle positivo estava no disco quando os
+números foram tirados, e entrou nos 109 arquivos, nos 48 campos e nos 35 sinalizados, deixando a
+conta sem fechar por um (35 − 28 = 7, e havia 6 consertos). **Reporte nos dois estados: com o
+controle e sem.**
 
 Todo número registrado vem acompanhado da regra que o produz. Número sem regra de contagem
 não é medida e não deve ser repetido.
