@@ -138,14 +138,47 @@
     ...b.querySelectorAll(seletor),
   ]);
 
+  /*
+   * Fora da árvore de acessibilidade: `aria-hidden="true"` no próprio nó ou em qualquer
+   * ancestral. Vale a subárvore inteira, porque `aria-hidden` é herdado — e `aria-hidden="false"`
+   * não esconde nada, por isso o seletor é pelo valor e não pela presença do atributo.
+   *
+   * Entrou na Etapa 15 (Pendência 5). Até a 14, a medida `a11y` listava cinco `img||` da rosca de
+   * intervenções que o navegador já não expunha: medido na árvore do Chrome pelo protocolo
+   * DevTools, aquele contêiner passou de 14 nós expostos para 2 quando o desenho virou
+   * `aria-hidden`. Instrumento que afirma presença do que saiu é o inverso do achado 21, e faz o
+   * registro mentir na direção mais caprichosa: a de um defeito que não existe mais.
+   *
+   * A poda é SÓ da medida `a11y`, de propósito:
+   *  - `foco` NÃO poda. Parada de tabulação dentro de subárvore escondida é defeito próprio (é o
+   *    que a regra `aria-hidden-focus` do axe cobre), e podar ali apagaria a única medida que o
+   *    pegaria. Esconder não é desfocar.
+   *  - `numeros` e `titulos` NÃO podam. As duas medem o que está RENDERIZADO, para pegar
+   *    regressão visual e de hierarquia; `aria-hidden` não apaga texto da tela.
+   */
+  const foraDaArvore = (el) => el.closest('[aria-hidden="true"]') !== null;
+
   /* ---------- as quatro medidas ---------- */
 
   // 1. Árvore de acessibilidade reduzida a papel|nome|estado, em ordem de documento.
   const medidaA11y = () =>
     buscar(SELETOR_SEMANTICO)
       .filter(visivel)
+      .filter((el) => !foraDaArvore(el))
       .map((el) => `${papel(el)}|${nomeAcessivel(el)}|${estado(el)}`)
       .join('\n');
+
+  /*
+   * O que a poda tirou, nesta superfície: as linhas que a medida `a11y` listaria se não houvesse
+   * a regra do `aria-hidden`. Existe para a diferença entre duas bases poder ser EXPLICADA nó por
+   * nó, em vez de ser só um hash que mudou — a fotografia diz QUE algo mudou, e esta função diz
+   * o quê, no único caso em que a mudança é do instrumento e não da tela.
+   */
+  const podados = () =>
+    buscar(SELETOR_SEMANTICO)
+      .filter(visivel)
+      .filter(foraDaArvore)
+      .map((el) => `${papel(el)}|${nomeAcessivel(el)}|${estado(el)}`);
 
   // 2. Sequência de números do texto renderizado. É a fotografia usada na Etapa 4.
   const medidaNumeros = () =>
@@ -312,6 +345,67 @@
       return () => { alvo.textContent = antes; };
     });
 
+    /*
+     * 5 a 10. A poda da medida `a11y` (Etapa 15).
+     *
+     * Os quatro primeiros casos são a regra nova, e são quatro porque "desapareceu" sozinho não
+     * distingue a poda de uma captura quebrada: é preciso ver o nó APARECER antes, sair com o
+     * atributo, sair também quando o atributo está no pai, e VOLTAR quando o atributo sai.
+     *
+     * Os dois últimos não testam código novo — medem uma premissa que seria fácil supor: que
+     * `display:none` e `visibility:hidden` já estavam de fora. Estão, por `checkVisibility`, e
+     * agora isso é medido a cada chamada em vez de ficar por conta da leitura do navegador.
+     */
+    const LINHA_DO_CONTROLE = 'button|CONTROLE DA PODA|';
+    const plantar = () => {
+      const caixa = document.createElement('div');
+      caixa.innerHTML = '<button type="button">CONTROLE DA PODA</button>';
+      document.body.appendChild(caixa);
+      return { caixa, botao: caixa.firstElementChild, remover: () => caixa.remove() };
+    };
+    const provarPresenca = (nome, montar, esperado) => {
+      const { remover } = montar();
+      const presente = medidaA11y().split('\n').includes(LINHA_DO_CONTROLE);
+      remover();
+      const ok = presente === esperado;
+      resultado.push({
+        controle: nome,
+        medida: 'a11y',
+        esperado: esperado ? 'na captura' : 'fora da captura',
+        obtido: presente ? 'na captura' : 'fora da captura',
+        ok,
+      });
+      return ok;
+    };
+
+    provarPresenca('nó visível e nomeado', () => plantar(), true);
+    provarPresenca('o mesmo nó com aria-hidden="true"', () => {
+      const p = plantar();
+      p.botao.setAttribute('aria-hidden', 'true');
+      return p;
+    }, false);
+    provarPresenca('filho de um aria-hidden="true"', () => {
+      const p = plantar();
+      p.caixa.setAttribute('aria-hidden', 'true');
+      return p;
+    }, false);
+    provarPresenca('o atributo removido de novo', () => {
+      const p = plantar();
+      p.caixa.setAttribute('aria-hidden', 'true');
+      p.caixa.removeAttribute('aria-hidden');
+      return p;
+    }, true);
+    provarPresenca('premissa: display:none já estava fora', () => {
+      const p = plantar();
+      p.botao.style.display = 'none';
+      return p;
+    }, false);
+    provarPresenca('premissa: visibility:hidden já estava fora', () => {
+      const p = plantar();
+      p.botao.style.visibility = 'hidden';
+      return p;
+    }, false);
+
     const todosOk = resultado.every((r) => r.ok);
     return { todosOk, resultado };
   };
@@ -382,6 +476,6 @@
     return { igual: difs.length === 0, difs };
   };
 
-  window.__foto = { medir, hashes, tudo, controles, estavel, comparar, congelarRelogio, soltarRelogio, ir, SUPERFICIES, hash };
+  window.__foto = { medir, hashes, tudo, controles, estavel, comparar, congelarRelogio, soltarRelogio, ir, podados, SUPERFICIES, hash };
   return 'fotografia pronta: __foto.controles() antes, __foto.tudo() depois';
 })();

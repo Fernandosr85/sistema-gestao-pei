@@ -12,7 +12,7 @@ parada de tabulação sem mexer em número nenhum.
 
 | Medida | O que pega |
 |---|---|
-| `a11y` | árvore reduzida a `papel│nome│estado`, em ordem de documento — controle removido, renomeado ou sem nome |
+| `a11y` | árvore reduzida a `papel│nome│estado`, em ordem de documento, **sem o que está sob `aria-hidden="true"`** — controle removido, renomeado ou sem nome |
 | `numeros` | sequência de números do texto renderizado — a medida da Etapa 4 |
 | `foco` | ordem de tabulação, com o nome acessível de cada parada — regressão de foco |
 | `titulos` | `document.title` e o esqueleto de headings — hierarquia quebrada por remoção |
@@ -84,13 +84,62 @@ O arreio não precisou de nenhuma mudança para isso: ele não tem referência a
 `/src/` nem `import.meta`, e tudo o que mede é relativo à página. `dist/` é ignorado pelo git,
 então a cópia do arreio não entra em commit nenhum.
 
+## A poda por `aria-hidden` (Etapa 15)
+
+A medida `a11y` **não lista** o que está sob `aria-hidden="true"` — nem o nó, nem os
+descendentes. `aria-hidden="false"` não esconde nada, por isso a regra é pelo valor e não
+pela presença do atributo.
+
+Ela entrou porque o instrumento estava afirmando presença do que já havia saído: a Etapa 14
+tirou da árvore o desenho das duas roscas, e a medida continuava listando os cinco setores
+quando chamada numa página assentada. Instrumento que reporta defeito que não existe mais
+faz o registro mentir na direção mais caprichosa.
+
+**A poda é só da `a11y`, e as outras três ficam como estavam, de propósito:**
+
+- `foco` **não poda**. Parada de tabulação dentro de subárvore escondida é defeito próprio —
+  é o que a regra `aria-hidden-focus` do axe cobre — e podar ali apagaria a única medida que o
+  pegaria. Esconder não é desfocar.
+- `numeros` e `titulos` **não podam**. As duas medem o que está renderizado, para pegar
+  regressão visual e de hierarquia, e `aria-hidden` não apaga texto da tela.
+
+**`__foto.podados()`** devolve as linhas que a poda tirou na superfície atual. Serve para
+explicar nó por nó a diferença entre duas bases quando a mudança é do instrumento, e não da
+tela: hash que muda diz *que* mudou, não *o quê*.
+
+## A base publicada
+
+`scripts/fotografia-base.json` tem os quatro hashes das 23 superfícies, medidos a
+**1280×900**, com `localStorage` vazio e o relógio congelado no padrão. A largura está no
+arquivo porque a medida `numeros` depende dela — o Recharts escolhe quantos rótulos de eixo
+cabem —, e `comparar()` recusa comparação entre larguras diferentes.
+
+```js
+__foto.comparar(
+  (await (await fetch('/scripts/fotografia-base.json')).json()).superficies,
+  await __foto.tudo(),
+)
+```
+
+A base do arquivo foi conferida pelo próprio instrumento depois de escrita: medição nova
+contra arquivo publicado, 23 superfícies, zero diferenças. Transcrição a mão se verifica
+assim, não se promete.
+
 ## Os dois controles, e por que nenhum é opcional
 
-**`__foto.controles()` — a ferramenta enxerga?** Quebra de propósito uma coisa de cada
-tipo e confere que a medida correspondente acusa: renomeia um botão (`a11y`), muda um
-número (`numeros`), tira um link da ordem de tabulação (`foco`), rebaixa um heading
-(`titulos`). Uma comparação que sempre devolve "igual" não é evidência de que nada mudou;
-pode ser a ferramenta que não vê. É o achado 7 aplicado ao próprio instrumento.
+**`__foto.controles()` — a ferramenta enxerga?** Dez casos. Os quatro primeiros quebram de
+propósito uma coisa de cada tipo e conferem que a medida correspondente acusa: renomeia um
+botão (`a11y`), muda um número (`numeros`), tira um link da ordem de tabulação (`foco`),
+rebaixa um heading (`titulos`). Uma comparação que sempre devolve "igual" não é evidência de
+que nada mudou; pode ser a ferramenta que não vê. É o achado 7 aplicado ao próprio
+instrumento.
+
+Os seis seguintes são da poda, e são seis porque "desapareceu" sozinho não distingue a regra
+nova de uma captura quebrada: um nó visível e nomeado tem de **aparecer**; o mesmo nó com
+`aria-hidden="true"` tem de **sair**; um **filho** de um nó escondido tem de sair também; e
+com o atributo **removido de novo** ele tem de **voltar**. Os dois últimos não testam código
+novo — medem uma premissa que seria fácil supor: que `display:none` e `visibility:hidden` já
+estavam de fora. Estão, por `checkVisibility`, e agora isso é medido a cada chamada.
 
 **`__foto.estavel()` — a fotografia se repete, e não depende da ordem?** Três passagens.
 Duas na ordem normal: se discordam, a comparação entre commits mede ruído, não código. A
@@ -120,6 +169,31 @@ mede `404`; com ela desligada, mede `404 20` — o `20` é o "R$ 20k" do gráfic
 rascunho acaba guardando algum rótulo, e as três passagens concordam. Ela pega outra coisa:
 resíduo cujo *conteúdo* depende de qual superfície veio antes — estado no documento, portal
 que não desmonta, foco preso. As duas coberturas são diferentes e nenhuma substitui a outra.
+
+## O que a poda tirou da base, e o que isso revelou (medido na Etapa 15)
+
+A diferença entre a base antiga e a nova é **só na medida `a11y`**, em **14 das 23
+superfícies**, e são **125 nós** — todos legitimamente escondidos, nenhum deles do conserto da
+Etapa 14:
+
+| Nó podado | Quantos | De onde vem |
+|---|---:|---|
+| `progressbar\|\|data-state=indeterminate` | **121** | `src/components/ui/progress.tsx`: barra sem nome recebe `aria-hidden` desde a **Etapa 3**, porque rótulo e valor já estão em texto ao lado |
+| `combobox\|<opções concatenadas>\|` | 4 | o `<select>` nativo que o Radix Select mantém escondido para o formulário |
+| setores da rosca (`img\|\|`) | **0** | não estavam na fotografia — ver abaixo |
+
+**E aqui está o achado: a fotografia nunca viu os cinco setores.** Ela assenta **260 ms** depois
+de entrar na rota, e a animação da rosca leva mais de um segundo. Medido na rota dos relatórios:
+no instante da fotografia há **0 setores** e 2 nós podados (as duas barras de progresso); depois
+de 2,5 s há **5 setores** e 7 nós podados. A Pendência 5 dizia que "o arreio continua listando
+cinco `img||`" — e isso vale para `__foto.medir()` numa página assentada, que foi como a medição
+da Etapa 14 foi feita, **não** para `__foto.tudo()`.
+
+É a mesma classe do achado 23, agora dentro deste instrumento: **o assentamento da fotografia é
+relógio, não objeto.** Enquanto for 260 ms fixos, toda superfície com gráfico é medida antes de o
+gráfico existir — o que mantém a fotografia estável e a torna cega para a metade da tela que
+aparece depois. Está registrado como pendência; trocar o assentamento por condição de objeto muda
+a base de novo, e isso é etapa própria.
 
 ## O relógio
 
