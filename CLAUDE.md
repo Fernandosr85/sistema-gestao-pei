@@ -49,6 +49,14 @@ aparece depois do fim da animação. Resultado que varia entre passadas não é 
 e se relata como faixa. **"Nada mudou" não é "acabou":** esperar silêncio mede antes de a coisa
 começar.
 
+**Concordância entre instrumentos só é evidência se eles forem independentes.** Instrumentos com a
+mesma derivação concordam também quando estão os dois errados: o arreio e o leitor de página do
+painel disseram que os cinco setores da rosca estavam na árvore de acessibilidade, e os dois leem o
+DOM. Antes de somar duas medições, pergunte **de que cada uma deriva**, e plante um controle que
+**distinga as duas hipóteses** — não um que as duas passem. O controle de fora do contêiner passava
+nos três instrumentos e não decidia nada; o que decidiu foi plantado DENTRO do `role="img"`, no
+lugar onde as hipóteses divergiam (achado 25).
+
 **E a condição é sobre o que a medida é função.** Duas medições que compartilham a mesma limitação
 não são duas medições: na Etapa 14, o arreio e o leitor de página do painel concordaram que os
 cinco setores da rosca estavam na árvore de acessibilidade, e concordavam porque **nenhum dos dois
@@ -100,6 +108,12 @@ inflaciona o que a varredura mediu: na Etapa 12 o controle positivo estava no di
 números foram tirados, e entrou nos 109 arquivos, nos 48 campos e nos 35 sinalizados, deixando a
 conta sem fechar por um (35 − 28 = 7, e havia 6 consertos). **Reporte nos dois estados: com o
 controle e sem.**
+
+**Ferramenta de regras enumeradas não é medida.** O axe verifica combinações conhecidas de
+elemento e papel, não a propriedade "nó exposto sem nome": na rota dos relatórios ele acusava 5
+enquanto a árvore do navegador tinha 60 (achado 24, corrigido na Etapa 15). "Zero violações" é "nenhum
+teste desta lista falhou", e a distância entre isso e "não há o que consertar" é a lista. Quando a
+pergunta é sobre uma propriedade, meça a propriedade.
 
 Todo número registrado vem acompanhado da regra que o produz. Número sem regra de contagem
 não é medida e não deve ser repetido.

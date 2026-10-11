@@ -440,7 +440,11 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   aria-label="Gráfico de linhas do número de alunos acompanhados por ano, de 2015 a 2024. Os mesmos números estão na tabela abaixo."
                 >
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={alunosAoLongoAnos}>
+                  {/*
+                    * Desenho fora da árvore, nome no contêiner (Etapa 15). Medido no diálogo aberto:
+                    * nome presente na árvore, tabela de 10 anos ao lado, 48 expostos e 17 sem nome.
+                    */}
+                  <LineChart aria-hidden="true" data={alunosAoLongoAnos}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="ano" />
                     <YAxis />
@@ -482,7 +486,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   aria-label="Gráfico de barras da taxa de sucesso por ano, de 2019 a 2024, em porcentagem. Os mesmos números estão na tabela abaixo."
                 >
                 <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={taxaSucessoAnos}>
+                  {/* Mesma decisão, tabela de 6 anos ao lado. Antes: 36 expostos, 13 sem nome. */}
+                  <BarChart aria-hidden="true" data={taxaSucessoAnos}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="ano" />
                     <YAxis />
@@ -577,7 +582,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                   aria-label="Gráfico de linhas da satisfação das famílias mês a mês, numa escala de 0 a 5. Os mesmos números estão na tabela abaixo."
                 >
                 <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={satisfacaoFamilias}>
+                  {/* Mesma decisão, tabela de 11 meses ao lado. Antes: 45 expostos, 16 sem nome. */}
+                  <LineChart aria-hidden="true" data={satisfacaoFamilias}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="mes" />
                     <YAxis domain={[0, 5]} />

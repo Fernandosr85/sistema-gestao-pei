@@ -30,9 +30,18 @@
  *                `path.recharts-sector`, os setores da rosca, que carregam o rótulo do dado no
  *                atributo `name` ("Adaptações Curriculares", "Apoio Individualizado", …).
  *
- * Rota sem gráfico não precisa do marcador: `medir` aceita `{ marcador: null }` e cai no silêncio,
- * que para essas rotas é suficiente — medido em `/` e `/observacoes`, que não têm nenhum gráfico
- * do Recharts (0 setores, 0 curvas, 0 barras) e dão ZERO em 5 de 5 passadas.
+ * Rota sem gráfico não precisa do marcador: `medir` aceita `{ marcador: null }` e cai no silêncio.
+ * Medido na Etapa 15: das 23 superfícies, só três têm gráfico do Recharts
+ * (`/gestao?tab=relatorios`, o redirecionamento `/relatorios` e `/gestao?tab=orcamento`).
+ *
+ * O SEGUNDO MODO DE FALHA, e a condição que o fecha (Etapa 15): `color-contrast` é o inverso de
+ * `svg-img-alt` — ele existe ANTES de a pintura terminar e decai para zero (58, 34, 0 nós, medido).
+ * Silêncio e espera não fechavam a faixa: com `document.fonts.ready` + 1 500 ms, `/observacoes`
+ * ainda dava `color-contrast(21)` em 1 de 20 passadas. A condição que fecha não é esperar mais, é
+ * **não haver transição**: `{ semTransicao: true }` liga `data-a11y-motion="reduzido"` no elemento
+ * raiz (o CSS da Etapa 3 zera transição e animação, medido em `1e-05s`), espera
+ * `document.fonts.ready`, mede e restaura o atributo. Com ela, as 23 superfícies dão ZERO em 10 de
+ * 10 passadas cada.
  *
  * Dependências: `axe.min.js` (de `/node_modules/axe-core/`) e, para navegar entre rotas sem
  * recarregar, o `__foto.ir` de `scripts/fotografia.js`. Os dois são colados no console antes.
@@ -76,10 +85,43 @@
     };
   };
 
-  const umaPassada = async (rota, marcador) => {
+  /**
+   * A condição do OUTRO modo de falha: `color-contrast` medido no meio de uma transição de cor.
+   *
+   * Os dois modos apontam para lados opostos no tempo — `svg-img-alt` só existe DEPOIS do fim da
+   * animação, `color-contrast` existe ANTES de a pintura terminar — e por isso não há espera fixa
+   * correta (achado 23). Para o segundo, a condição não é esperar mais: é **não haver transição**.
+   * O app já oferece o interruptor, e ele é medível: com `data-a11y-motion="reduzido"` no elemento
+   * raiz, o CSS da Etapa 3 zera `transition-duration` e `animation-duration` em tudo (medido:
+   * `1e-05s`). Mais `document.fonts.ready`, porque trocar a fonte depois de pintar também muda cor
+   * medida.
+   *
+   * Isto não é "esperar o bastante": é tirar do caminho a coisa que fazia a contagem decair de 58
+   * para 34 e para 0 nós.
+   */
+  const semTransicao = () => {
+    const raiz = document.documentElement;
+    const antes = raiz.getAttribute('data-a11y-motion');
+    raiz.setAttribute('data-a11y-motion', 'reduzido');
+    return () => (antes === null ? raiz.removeAttribute('data-a11y-motion') : raiz.setAttribute('data-a11y-motion', antes));
+  };
+
+  const esperarFontes = async () => {
+    try {
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const umaPassada = async (rota, marcador, opcoes = {}) => {
+    const restaurar = opcoes.semTransicao ? semTransicao() : null;
     await irPara(rota);
     const espera = await esperarCondicao(marcador);
+    if (opcoes.semTransicao) espera.fontesProntas = await esperarFontes();
     const resultado = await window.axe.run(document, { runOnly: { type: 'tag', values: TAGS } });
+    if (restaurar) restaurar();
     const regras = resultado.violations
       .map((v) => `${v.id}(${v.nodes.length})`)
       .sort()
@@ -90,18 +132,21 @@
   /**
    * Mede uma rota N vezes sob a condição declarada.
    * @param {string} rota
-   * @param {{ passadas?: number, marcador?: string|null, nomeDaCondicao?: string }} opcoes
+   * @param {{ passadas?: number, marcador?: string|null, nomeDaCondicao?: string, semTransicao?: boolean }} opcoes
    */
   const medir = async (rota, opcoes = {}) => {
     const passadas = opcoes.passadas ?? 10;
     const marcador = opcoes.marcador === undefined ? MARCADOR_PADRAO : opcoes.marcador;
+    const semTransicaoLigada = opcoes.semTransicao === true;
     const nomeDaCondicao = opcoes.nomeDaCondicao
-      ?? (marcador
-        ? `${marcador} presente + ${QUIETO_MS} ms sem mutação`
-        : `${QUIETO_MS} ms sem mutação (rota sem gráfico)`);
+      ?? [
+        marcador ? `${marcador} presente` : null,
+        `${QUIETO_MS} ms sem mutação`,
+        semTransicaoLigada ? "movimento reduzido pelo atributo do app + document.fonts.ready" : null,
+      ].filter(Boolean).join(" + ");
 
     const resultados = [];
-    for (let i = 0; i < passadas; i += 1) resultados.push(await umaPassada(rota, marcador));
+    for (let i = 0; i < passadas; i += 1) resultados.push(await umaPassada(rota, marcador, { semTransicao: semTransicaoLigada }));
 
     const distintos = [...new Set(resultados.map((r) => r.regras))];
     const identico = distintos.length === 1;
@@ -119,7 +164,13 @@
     if (naoAtingiram) console.warn(`  ATENÇÃO: a condição não foi atingida em ${naoAtingiram}/${passadas} passadas — o resultado delas não vale.`);
     console.log(`  espera por passada, ms: ${esperas.join(', ')}`);
 
-    return { rota, condicao: nomeDaCondicao, passadas, identico, resultados: resultados.map((r) => r.regras), linha, esperas, naoAtingiram };
+    const comFontes = resultados.filter((r) => r.espera.fontesProntas === true).length;
+    return {
+      rota, condicao: nomeDaCondicao, passadas, identico,
+      resultados: resultados.map((r) => r.regras),
+      linha, esperas, naoAtingiram,
+      passadasComFontesProntas: semTransicaoLigada ? comFontes : null,
+    };
   };
 
   /** Controle positivo do próprio instrumento: planta uma violação e exige que ela apareça. */
@@ -137,6 +188,6 @@
     return { acusou, comControle: comControle.regras, semControle: semControle.regras };
   };
 
-  window.__axe = { medir, controle, umaPassada, TAGS, MARCADOR_PADRAO, QUIETO_MS };
+  window.__axe = { medir, controle, umaPassada, semTransicao, TAGS, MARCADOR_PADRAO, QUIETO_MS };
   return 'axe com condição pronto: __axe.controle() antes, __axe.medir(rota) depois';
 })();
