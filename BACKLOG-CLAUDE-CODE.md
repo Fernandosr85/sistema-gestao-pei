@@ -1947,6 +1947,91 @@ errada no número, e quem conferisse depois acharia um defeito que não estava l
 
 ---
 
+### 26. O arreio media antes do objeto, e o projeto teve duas definições de "pronto" (Etapa 16, 19/10/2026)
+
+O arreio assentava **260 ms** e a rosca leva mais de um segundo: durante toda a vida do instrumento,
+a captura `a11y` das três superfícies com Recharts foi tirada **antes de o gráfico existir**. As
+provas de "zero diferenças" das Etapas 5, 12, 14 e 15 seguem válidas **como comparação** — os dois
+lados cegam igual —, mas **nunca cobriram conteúdo de gráfico**. Na direção oposta, a mesma captura
+listava 121 barras de progresso escondidas desde a Etapa 3, em 14 das 23 superfícies: **cega num
+eixo, inflada no outro.**
+
+É o mecanismo do achado 23 dentro do próprio instrumento de medida, e o segundo caso de relógio em
+lugar de objeto. O projeto chegou a ter **duas definições de "pronto"** ao mesmo tempo, uma medida e
+outra herdada: o axe esperava o objeto do gráfico desde a Etapa 13, e o arreio esperava os 260 ms
+herdados da Etapa 5, quando nenhuma medida dependia de gráfico.
+
+> **Regra: o que conta como "pronto" é definido num lugar só e compartilhado por todos os
+> instrumentos.** Instrumento com critério próprio de prontidão produz resultado que não se compara
+> com o dos outros.
+
+**O conserto:** `scripts/condicao-de-pronto.js`, exigido pelos dois scripts — objeto do gráfico onde
+há gráfico, 400 ms sem mutação, movimento reduzido pelo atributo do app, `document.fonts.ready`. No
+mesmo passo, o movimento reduzido deixou de ser opcional no axe (era `{ semTransicao: true }`: duas
+condições possíveis dentro do mesmo script é o mesmo problema em miniatura) e o marcador padrão
+passou a ser o **da rota**, resolvido pelo módulo.
+
+**O controle, e o que ele mostrou de inesperado.** Com a condição e sem, na rota dos relatórios:
+sem, 0 setores no DOM e 2 nós podados; com, 5 setores e 7 podados. Mas **as quatro medidas são
+idênticas nas duas capturas**, e a base publicada não se moveu em nenhuma das 23 superfícies. Não é
+a condição falhando: o que ela acrescenta à captura é exatamente o que a poda por `aria-hidden` da
+Etapa 15 tira da medida `a11y`, e os rótulos de eixo, que `numeros` mede, já estavam lá porque eixo
+não é animado. A diferença existe e aparece **uma camada antes**, em `podados()`.
+
+#### A correção da Pendência 5, que era minha
+
+Ela afirmava que o arreio "continua listando cinco setores". **Falso para o caminho completo:** a
+medição da Etapa 14 usou `medir()` numa página já assentada, e eu generalizei para `tudo()`, que
+assenta 260 ms e nunca os viu. **Número de pendência escrito sem a regra que o produz é afirmação
+como qualquer outra** — e esta ficou dez dias no registro dizendo que havia cinco nós onde a
+fotografia mostrava zero.
+
+#### A conta que fecha a série: instrumentos achados errados depois de terem produzido conclusão
+
+**A regra de contagem**, escrita antes de contar: a unidade é o par **(instrumento, mecanismo)**.
+Mesmo instrumento errado por dois mecanismos diferentes conta duas vezes, porque foram dois
+consertos; dois instrumentos errados pelo mesmo mecanismo contam duas vezes, porque foram dois a
+declarar. E só entra quem **produziu conclusão** — número ou afirmação que foi usada.
+
+| # | Instrumento | Mecanismo | Onde está | Entrou em registro antes de ser pego? |
+|---|---|---|---|---|
+| 1 | busca por vocabulário | classe acentuada `[áa]` não casa a forma acentuada: resultado parcial com cara de completo | achado 7 | sim |
+| 2 | `typecheck` | rodava contra o `tsconfig.json` raiz, com `"files": []` — zero arquivos checados | achado 6, tabela | sim |
+| 3 | prova pelo módulo servido | o esbuild elimina import sem uso, então a checagem não distinguia antes de depois | achado 10 | sim |
+| 4 | arreio (`numeros`) | rascunho que o Recharts pendura no `body`: 25 superfícies acusaram diferença sem mudança | achado 8 | sim |
+| 5 | arreio (navegação) | entrar numa rota em que já se está não re-renderiza: a leitura saía do render anterior | achado 8 | sim |
+| 6 | varredura de rotas órfãs | o controle não foi plantado: o `replace` mirou trecho inexistente e o zero passou por "funciona" | achado 11 | sim |
+| 7 | painel de PR | `0/0/0` segundos depois de abrir o PR lido como ausência de CI, com 36 execuções verdes | achado 19 | sim |
+| 8 | arreio (alcance) | limitação declarada sem medição: ele sempre alcançou diálogo, porque portal é filho do `body` | achado 21 | sim |
+| 9 | axe | aceita `placeholder` como nome de último recurso: "0 violações" com campo sem rótulo | achado 22 | sim |
+| 10 | axe | espera fixa de 2,6 s, que caía antes do fim da animação: ZERO em 10/10 com violação presente | achado 23 | sim |
+| 11 | axe | regras enumeradas por elemento e papel, não a propriedade "nó exposto sem nome": 5 contra 60 | achado 24 | sim |
+| 12 | arreio (`a11y`) | lê o DOM e não modela filho apresentacional | achado 25 | sim |
+| 13 | leitor de página do painel | o mesmo ponto cego do 12, e por isso a concordância entre os dois não era evidência | achado 25 | sim |
+| 14 | medidor de vocabulário | recompilava cada padrão com flags default, sobrepondo a declaração | Etapa 11 | sim |
+| 15 | arreio (assentamento) | 260 ms de relógio, antes de o gráfico existir | este achado | sim |
+| 16 | contador de passos da folha M1–M9 | lia `\|` escapado dentro de código como separador de coluna: 22 passos viraram 8 | aqui, agora | **não** |
+| 17 | varredura de ícones do lucide | `[\s\S]*?` até `from 'lucide-react'` engolia o import anterior: 309 ícones em vez de 260 | aqui, agora | **não** |
+
+**O número que o backlog sustenta é 15**, e são **17 com os dois que entram no registro por este
+commit** — o contador de passos e a varredura de ícones foram pegos na mesma sessão em que mediram,
+antes de a conclusão deles virar registro, e ficam marcados assim na tabela em vez de inflarem a
+conta.
+
+A conta do autor era sete, e a diferença não é discordância: é que a lista dele enumerou os casos
+**lembrados**, e a tabela enumera os casos **que o registro sustenta** — é o achado 7 outra vez, em
+mim e nele. Dos sete que ele listou, seis estão aqui (o `typecheck` vazio, o medidor de vocabulário,
+a espera de 2,6 s, os dois leitores de árvore, o contador de passos e o assentamento do arreio); o
+que faltou na lista dele foram os oito mais antigos, de achados que o registro já tinha.
+
+**O que a conta diz, e é o motivo de ela existir:** em dezesseis etapas, **quinze vezes** um
+instrumento deste projeto afirmou alguma coisa que depois se mostrou errada. Nenhuma delas foi
+descoberta por desconfiança genérica do instrumento: todas apareceram quando alguém perguntou **de
+que o número era função** — o escopo, a flag, a espera, a derivação, o assentamento. É a mesma
+pergunta do achado 24, e é a única que tem rendido.
+
+---
+
 ## Pendências abertas
 
 
@@ -2174,7 +2259,7 @@ para a pergunta de acessibilidade quem responde é a árvore do navegador (achad
 > vale para `__foto.medir()` numa página assentada, que foi como a Etapa 14 mediu, e não para
 > `__foto.tudo()`. Isso virou a **Pendência 7**.
 
-### 6. Nove gráficos ainda expunham o desenho inteiro (Etapa 14) — FECHADA em 8 de 9 na Etapa 15
+### 6. Nove gráficos ainda expunham o desenho inteiro (Etapa 14) — FECHADA por inteiro na Etapa 16
 
 A Etapa 14 tirou da árvore o desenho das **duas roscas**. Os outros nove continuam como estavam, e
 dois deles estão medidos na mesma rota: o contêiner do gráfico de linhas do progresso expõe **28
@@ -2204,8 +2289,16 @@ contêiner nomeado, 1 já escondido desde a Etapa 3 — está no achado 24.
 >
 > O que sobrou dos oito está na **Pendência 8**: a legenda do Recharts, que fica fora do `<svg>` e
 > sobrevive ao atributo.
+>
+> **FECHADA POR INTEIRO em 19/10/2026, na Etapa 16 (commit `b02846c`).** O nono gráfico foi medido
+> depois de a segunda avaliação ser criada **pela interface**: nome do contêiner presente na árvore
+> (`ignored: false`) e tabela de duas linhas ao lado. Satisfeitas as duas condições, o desenho saiu
+> da árvore como nos outros oito — **25 nós / 24 expostos / 9 sem nome → 3 / 2 / 1**. Os dois
+> caminhos do componente ficaram medidos: com uma avaliação, nenhum `<svg>` e o texto "Uma única
+> avaliação registrada"; com duas, o gráfico com `aria-hidden`. **12 de 12 gráficos** estão fora da
+> árvore.
 
-### 7. O assentamento da fotografia é relógio, não objeto (Etapa 15) — medido, não consertado
+### 7. O assentamento da fotografia é relógio, não objeto (Etapa 15) — FECHADA na Etapa 16, virou o achado 26
 
 `__foto.tudo()` espera **260 ms** depois de entrar numa superfície e então mede. Nas três superfícies
 com gráfico isso é cedo: medido na rota dos relatórios, no instante da fotografia há **0 setores** e,
@@ -2222,7 +2315,12 @@ marcador).
 no estado em que a tela está 260 ms depois de montar. **O que não pode:** que a fotografia cubra o
 que os gráficos desenham — ela não cobre, e o número que prova isso é 0 contra 5.
 
-### 8. A legenda do Recharts sobrevive ao `aria-hidden` do gráfico (Etapa 15) — medido, é dado
+> **FECHADA em 19/10/2026, na Etapa 16 (commit `99a5068`), e promovida a achado 26.** O
+> assentamento saiu; a condição passou a ser a compartilhada com o axe. Medido com e sem: 0 setores
+> e 2 nós podados contra 5 setores e 7 podados. A base publicada **não se moveu** — o que a condição
+> acrescenta é o que a poda da Etapa 15 tira —, e isso está dito no README do arreio.
+
+### 8. A legenda do Recharts sobrevivia ao `aria-hidden` do gráfico (Etapa 15) — FECHADA na Etapa 16
 
 O atributo vai no `<svg>` (pelo `Surface` do Recharts) e cobre tudo que está dentro dele, inclusive
 os rótulos de eixo. A **legenda**, não: ela é um `<ul>` irmão, dentro do `.recharts-wrapper`, e
@@ -2231,10 +2329,39 @@ série com nome e 5 ícones `<svg>` sem nome (progresso 3+3, radar 2+2); **orça
 **diálogos** 0 — os gráficos de lá não têm legenda.
 
 Os rótulos com nome ("Progresso real", "Meta esperada", "Orçado", "Executado") são informação
-legítima e provavelmente ficam. Os **ícones sem nome** são ruído, e nenhuma regra do axe os alcança
-porque não têm `role` — é o mesmo caso do achado 24. Esconder a legenda inteira tiraria os rótulos
-junto; esconder só os ícones exige prop do Recharts ou CSS, e nenhum dos dois foi medido ainda.
-**Está aqui como dado, não como conserto.**
+legítima e ficaram. Os **ícones sem nome** são ruído, e nenhuma regra do axe os alcança porque não
+têm `role` — é o mesmo caso do achado 24.
+
+> **FECHADA em 19/10/2026, na Etapa 16 (commit `8eee659`).** Não havia prop que acrescentasse
+> `aria-hidden` ao ícone — ele é montado dentro da biblioteca —, então a legenda passou a usar
+> `content`: `src/components/ChartLegend.tsx` desenha o marcador como `<span>` com
+> `aria-hidden="true"` e **mantém o rótulo**. Medido na árvore: **5 → 0** em
+> `/gestao?tab=relatorios` e **4 → 0** em `/gestao?tab=orcamento`. O marcador segue a forma do ícone
+> que substituiu, e um defeito foi pego antes do commit: o primeiro marcador saía invisível, porque
+> a área usa `fill="url(#colorProgresso)"` e `background-color: url(…)` é inválido — a cor passou a
+> ter cadeia declarada, com a primeira parada do gradiente no meio dela. O que sobra de imagem sem
+> nome nas rotas são os ícones do lucide, na **Pendência 9**.
+
+### 9. Duzentos e sessenta ícones decorativos ainda expostos sem nome (Etapa 16) — medido, não consertado
+
+Depois de a legenda sair da árvore (commit `8eee659`), o que sobra de imagem sem nome nas rotas de
+gráfico são **18 por rota**, e todas são ícones do lucide (`svg.lucide-*`). Estaticamente, em
+`src/**/*.tsx`: **260 ícones sem `aria-hidden` em 45 arquivos**, contra 54 que já o têm.
+
+**Por que não é mecânico, e por isso não foi feito aqui:** ícone que é o ÚNICO conteúdo de um botão
+carrega o nome dele. Esconder sem conferir deixa o botão mudo — trocaria uma imagem sem nome por um
+controle sem nome, que é pior. São 260 sítios para classificar um a um (ícone ao lado de texto →
+esconde; ícone sozinho → precisa de `aria-label` ou texto `sr-only` no controle antes de esconder).
+
+**A contagem também passou por conserto**, e fica registrado porque é a classe de sempre: a primeira
+varredura devolveu **309** porque o padrão do import (`[\s\S]*?` até `from 'lucide-react'`) engolia o
+import anterior e `<TabsContent …/>` entrava como ícone. Com `[^}]*`, que não cruza chave, são 260 —
+e os 54 com `aria-hidden` são o controle positivo do padrão: se viesse zero, ele não estaria casando
+nada.
+
+**O que o repositório pode afirmar sem isso:** que nenhum gráfico expõe o desenho, e que a legenda
+não expõe marcador decorativo. **O que não pode:** que a árvore das rotas esteja limpa de imagem sem
+nome — são 18 por rota nas duas rotas de gráfico, e a varredura por rota está no achado 26.
 
 ---
 

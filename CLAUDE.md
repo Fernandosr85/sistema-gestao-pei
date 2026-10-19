@@ -49,6 +49,12 @@ aparece depois do fim da animação. Resultado que varia entre passadas não é 
 e se relata como faixa. **"Nada mudou" não é "acabou":** esperar silêncio mede antes de a coisa
 começar.
 
+**O que conta como "pronto" é definido num lugar só e compartilhado por todos os instrumentos.**
+Instrumento com critério próprio de prontidão produz resultado que não se compara com o dos outros:
+até a Etapa 16 o axe esperava o objeto do gráfico e o arreio esperava 260 ms de relógio, e por isso
+a captura das três superfícies com gráfico era tirada antes de o gráfico existir (achado 26). A
+condição mora em `scripts/condicao-de-pronto.js`, e os dois instrumentos a exigem.
+
 **Concordância entre instrumentos só é evidência se eles forem independentes.** Instrumentos com a
 mesma derivação concordam também quando estão os dois errados: o arreio e o leitor de página do
 painel disseram que os cinco setores da rosca estavam na árvore de acessibilidade, e os dois leem o
