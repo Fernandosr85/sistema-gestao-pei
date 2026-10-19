@@ -16,6 +16,18 @@
  * Sem dependência: JavaScript puro, roda no console.
  */
 (() => {
+  /*
+   * A CONDIÇÃO DE PRONTO NÃO É DAQUI. Ela vem de `scripts/condicao-de-pronto.js`, e é a mesma que o
+   * `axe-com-condicao.js` usa — objeto do gráfico onde há gráfico, 400 ms sem mutação, movimento
+   * reduzido pelo atributo do app e `document.fonts.ready`. Dois instrumentos do mesmo projeto com
+   * duas noções de "pronto" produzem números que não se comparam, e foi o que aconteceu até a
+   * Etapa 15 (achado 26): aqui o assentamento era 260 ms de relógio, e a captura das três
+   * superfícies com gráfico saía antes de o gráfico existir.
+   */
+  if (!window.__pronto) {
+    throw new Error('fotografia: cole scripts/condicao-de-pronto.js antes deste arquivo');
+  }
+
   const RELOGIO_PADRAO = '2026-03-17T09:00:00-03:00';
 
   /* ---------- utilidades ---------- */
@@ -234,9 +246,6 @@
   /* ---------- navegação ---------- */
 
   const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
-  // requestAnimationFrame não dispara em aba oculta, e a fotografia precisa rodar
-  // com o painel escondido. A espera é por tempo, não por quadro.
-  const assentar = () => esperar(260);
 
   const empurrar = (caminho) => {
     window.history.pushState({}, '', caminho);
@@ -248,11 +257,35 @@
   // primeira leitura de '/' saiu com o relógio real, antes de ser congelado.
   const NEUTRA = '/__fotografia__';
 
+  /*
+   * O assentamento era `esperar(260)` — relógio — desde a Etapa 5, quando nenhuma medida dependia de
+   * gráfico. Agora é a condição compartilhada, que espera o OBJETO nas três superfícies que têm
+   * gráfico. A última espera registrada fica em `ultimaEspera`, para a medição poder dizer o que
+   * esperou em vez de prometer.
+   */
+  let ultimaEspera = null;
+
   const ir = async (caminho) => {
     empurrar(NEUTRA);
     await esperar(60);
     empurrar(caminho);
-    await assentar();
+    ultimaEspera = await window.__pronto.esperar({ rota: caminho });
+    return ultimaEspera;
+  };
+
+  /*
+   * A captura completa de uma superfície, com a condição ligada do começo ao fim: medir com o
+   * movimento reduzido ligado e esperar com ele desligado seria ter duas condições outra vez.
+   * `tudo()` chama isto, e medição à mão deve chamar isto também.
+   */
+  const medirPronto = async (caminho) => {
+    const restaurar = window.__pronto.semTransicao();
+    try {
+      await ir(caminho);
+      return medir();
+    } finally {
+      restaurar();
+    }
   };
 
   /* ---------- superfícies ---------- */
@@ -273,18 +306,23 @@
 
   const tudo = async ({ relogio = RELOGIO_PADRAO, superficies = SUPERFICIES } = {}) => {
     congelarRelogio(relogio);
+    const restaurarMovimento = window.__pronto.semTransicao();
     const saida = {};
-    for (const s of superficies) {
-      await ir(s);
-      saida[s] = {
-        ...hashes(),
-        url: window.location.pathname + window.location.search,
-        // A largura entra na fotografia porque a medida numeros depende dela: o Recharts
-        // escolhe os rótulos de eixo conforme o espaço, e "R$ 0k / R$ 150k / R$ 300k" são
-        // números como quaisquer outros. Comparar larguras diferentes acusa diferença que
-        // não é do código.
-        largura: window.innerWidth,
-      };
+    try {
+      for (const s of superficies) {
+        const bruto = await medirPronto(s);
+        saida[s] = {
+          ...Object.fromEntries(Object.entries(bruto).map(([k, v]) => [k, hash(v)])),
+          url: window.location.pathname + window.location.search,
+          // A largura entra na fotografia porque a medida numeros depende dela: o Recharts
+          // escolhe os rótulos de eixo conforme o espaço, e "R$ 0k / R$ 150k / R$ 300k" são
+          // números como quaisquer outros. Comparar larguras diferentes acusa diferença que
+          // não é do código.
+          largura: window.innerWidth,
+        };
+      }
+    } finally {
+      restaurarMovimento();
     }
     return saida;
   };
@@ -476,6 +514,10 @@
     return { igual: difs.length === 0, difs };
   };
 
-  window.__foto = { medir, hashes, tudo, controles, estavel, comparar, congelarRelogio, soltarRelogio, ir, podados, SUPERFICIES, hash };
+  window.__foto = {
+    medir, medirPronto, hashes, tudo, controles, estavel, comparar,
+    congelarRelogio, soltarRelogio, ir, podados, SUPERFICIES, hash,
+    ultimaEspera: () => ultimaEspera,
+  };
   return 'fotografia pronta: __foto.controles() antes, __foto.tudo() depois';
 })();
