@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
+import ChartLegend from '@/components/ChartLegend';
 
 const data = [
   { subject: 'Leitura', meta: 8, atual: 9 },
@@ -49,7 +50,9 @@ const PEIRadarChart = () => {
                 borderRadius: '8px'
               }}
             />
-            <Legend 
+            <Legend
+              /* O marcador de cor sai da árvore e o rótulo fica: ver ChartLegend.tsx. */
+              content={<ChartLegend />}
               wrapperStyle={{ paddingTop: '10px' }}
               iconType="line"
             />

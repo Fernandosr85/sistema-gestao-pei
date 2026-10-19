@@ -6,6 +6,7 @@ import { ComposedChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Resp
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { TrendingUp, TrendingDown, Minus, Lightbulb, AlertCircle, CheckCircle2 } from 'lucide-react';
 import ChartDataTable from '@/components/ChartDataTable';
+import ChartLegend from '@/components/ChartLegend';
 
 const data = [
   { mes: 'Jan', progresso_real: 2, meta_esperada: 1 },
@@ -221,7 +222,9 @@ const ProgressChart = () => {
               }}
             />
             
-            <Legend 
+            <Legend
+              /* O marcador de cor sai da árvore e o rótulo fica: ver ChartLegend.tsx. */
+              content={<ChartLegend />}
               wrapperStyle={{ paddingTop: '20px' }}
               formatter={(value) => {
                 if (value === 'progresso_real') return 'Progresso real';
