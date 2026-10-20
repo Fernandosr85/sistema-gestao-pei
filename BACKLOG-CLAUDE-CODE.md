@@ -2024,11 +2024,66 @@ mim e nele. Dos sete que ele listou, seis estão aqui (o `typecheck` vazio, o me
 a espera de 2,6 s, os dois leitores de árvore, o contador de passos e o assentamento do arreio); o
 que faltou na lista dele foram os oito mais antigos, de achados que o registro já tinha.
 
+#### A nota da contagem, ditada pelo autor em 19/10/2026
+
+> A conta de instrumentos consertados foi pedida com um número já na pergunta — sete — produzido de
+> memória, enumerando os casos lembrados. O registro sustenta quinze. A diferença não foi
+> discordância sobre os fatos: foi contagem sem regra, que é o próprio defeito que o registro existe
+> para impedir, cometido na contagem dos defeitos.
+>
+> Os dois instrumentos corrigidos nesta etapa ficam marcados como **pegos antes de a conclusão virar
+> registro**, e não entram na conta — senão a conta premia o erro.
+
+E a correção do achado 27, acima: a lista dos sete estava completa, e o "seis de sete" que eu
+escrevi comparava marcadores com casos. A nota do autor continua valendo inteira — a conta de
+memória deu sete e o registro sustenta quinze —, e o que muda é só que **nenhum dos sete era
+invenção**.
+
 **O que a conta diz, e é o motivo de ela existir:** em dezesseis etapas, **quinze vezes** um
 instrumento deste projeto afirmou alguma coisa que depois se mostrou errada. Nenhuma delas foi
 descoberta por desconfiança genérica do instrumento: todas apareceram quando alguém perguntou **de
 que o número era função** — o escopo, a flag, a espera, a derivação, o assentamento. É a mesma
 pergunta do achado 24, e é a única que tem rendido.
+
+---
+
+### 27. O sétimo da lista, e a contagem que compara unidades diferentes (Etapa 17, 19/10/2026)
+
+**A pergunta era qual dos sete casos da lista do autor não estava na tabela do achado 26: caso que o
+registro não sustenta, ou caso real que o registro perdeu? A resposta medida é NENHUM DOS DOIS — os
+sete estão lá.** O item sem destino foi produzido pela minha própria frase.
+
+| Na lista do autor | Na tabela do achado 26 |
+|---|---|
+| o `typecheck` contra o tsconfig vazio | linha 2 |
+| o script de medição que recompilava a regex com flags default | linha 14 |
+| a espera de 2,6 s do axe | linha 10 |
+| **os dois leitores de árvore com o mesmo ponto cego** | linhas **12 e 13** |
+| o contador de passos que lia pipe escapado como separador | linha 16 |
+| o assentamento do arreio | linha 15 |
+
+São **seis marcadores e sete casos**, porque "os dois leitores de árvore" é um marcador e duas
+ocorrências — e é assim que o autor chegou a sete. Eu escrevi "dos sete que ele listou, seis estão
+aqui" contando MARCADORES contra um número de CASOS, e com isso inventei um sétimo desaparecido que
+nunca existiu. **A lista do autor está completa e o registro não perdeu nada.**
+
+#### A segunda ocorrência da mesma classe, registrada junto
+
+A primeira foi o **achado 18**: a tabela de incoerências foi registrada como "vinte itens" e tinha
+22 rótulos, porque um contava ITENS e o outro contava CLASSES. A regra que saiu dali — *nesta tabela
+o item é a unidade e a classe é o rótulo* — resolveu aquele caso e não impediu este, porque foi
+escrita para aquela tabela em vez de para a classe. É o mesmo mecanismo do achado 19 e da nota de
+premissa da Etapa 15: **regra escrita para uma tabela não é regra do projeto.**
+
+> **Regra: diferença entre listas é resultado, e resultado precisa de destino item a item.**
+> Comparar dois números é comparar duas contagens, e duas contagens só se comparam quando a unidade
+> de cada uma está dita. "Seis de sete" não é resultado: é um total sem destino para o que falta —
+> e quando se vai procurar o que falta, o que aparece é a unidade trocada.
+
+**O que isto custou:** nada, desta vez, porque a diferença era minha e não do registro. Mas a frase
+ficou num commit mesclado dizendo que a lista do autor tinha um item a mais que o registro, e isso é
+exatamente o tipo de afirmação que o registro existe para não deixar passar. A correção fica aqui, e
+o commit continua como está — história não se reescreve.
 
 ---
 
@@ -2342,7 +2397,7 @@ têm `role` — é o mesmo caso do achado 24.
 > ter cadeia declarada, com a primeira parada do gradiente no meio dela. O que sobra de imagem sem
 > nome nas rotas são os ícones do lucide, na **Pendência 9**.
 
-### 9. Duzentos e sessenta ícones decorativos ainda expostos sem nome (Etapa 16) — medido, não consertado
+### 9. Duzentos e sessenta ícones decorativos expostos sem nome (Etapa 16) — FECHADA na Etapa 17
 
 Depois de a legenda sair da árvore (commit `8eee659`), o que sobra de imagem sem nome nas rotas de
 gráfico são **18 por rota**, e todas são ícones do lucide (`svg.lucide-*`). Estaticamente, em
@@ -2362,6 +2417,43 @@ nada.
 **O que o repositório pode afirmar sem isso:** que nenhum gráfico expõe o desenho, e que a legenda
 não expõe marcador decorativo. **O que não pode:** que a árvore das rotas esteja limpa de imagem sem
 nome — são 18 por rota nas duas rotas de gráfico, e a varredura por rota está no achado 26.
+
+> **FECHADA em 19/10/2026, na Etapa 17 (commit `13c3bfa`), com uma categoria relatada em vez de
+> consertada.** A classificação foi feita na árvore do Chrome, não no JSX: dos nós expostos sem
+> nome, **85 eram decorativos dentro de controle nomeado (A), 139 não tinham ancestral interativo e
+> TODOS acompanhavam texto que diz a mesma coisa (C), e 0 eram a única fonte de nome de um controle
+> (B)** nas 12 superfícies medidas. Aplicados **262** `aria-hidden`: 254 ícones do lucide em 45
+> arquivos, 8 sítios de ícone renderizado por variável (`<Icon/>`, `<item.icon/>`, `<StatusIcon/>`…)
+> e 1 `<svg>` escrito à mão. Medido depois: **de 210 imagens expostas sem nome para 0** nas
+> superfícies remedidas. Os seis sítios da categoria B viraram a **Pendência 10**.
+
+### 10. Seis controles cujo único portador de nome é o ícone (Etapa 17) — medido, relatado, não consertado
+
+A classificação dos ícones separou três categorias, e a segunda — **controle que depende do ícone
+para ter nome** — tem seis sítios. Eles ficaram de fora do `aria-hidden` de propósito: esconder ali
+não corrige nada, só troca uma imagem sem nome por um **controle** sem nome.
+
+    src/components/MeuPerfilDialog.tsx:357  <Edit/>   dentro de <Button variant="ghost" size="sm">
+    src/components/MeuPerfilDialog.tsx:358  <Trash2/> dentro de <Button variant="ghost" size="sm">
+    src/components/MeuPerfilDialog.tsx:374  <Edit/>   dentro de <Button variant="ghost" size="sm">
+    src/components/MeuPerfilDialog.tsx:375  <Trash2/> dentro de <Button variant="ghost" size="sm">
+    src/pages/NewObservation.tsx:271        <Trash2/> dentro de <Button size="icon"> (remover situação)
+    src/pages/NewObservation.tsx:340        <Trash2/> dentro de <Button size="icon"> (remover interação)
+
+**E eles já estão mudos hoje — o defeito é anterior a esta etapa.** O ícone do lucide não tem nome
+próprio, então o botão não tem nome nenhum. Medido na árvore do Chrome em `/observacoes/nova`,
+depois de clicar "Adicionar Situação" e "Adicionar Interação": **4 botões com papel `button` e nome
+vazio**. A varredura por rota nunca os viu porque esses blocos só existem depois da interação — é a
+Pendência 3 aparecendo de novo, e é a terceira vez que a falta de interação do arreio esconde um
+defeito real.
+
+**O conserto é de produto, e por isso não foi feito:** cada um desses botões precisa de nome, e o
+nome é texto que alguém escreve ("Editar formação", "Remover situação"). Pode sair como `aria-label`
+ou como `<span class="sr-only">`, e a escolha entre os dois muda o que o leitor anuncia.
+
+**O que o repositório pode afirmar sem isso:** que nenhum ícone decorativo sobrou exposto nas rotas
+medidas. **O que não pode:** que todo controle do sistema tenha nome — seis não têm, e estão
+nomeados aqui.
 
 ---
 

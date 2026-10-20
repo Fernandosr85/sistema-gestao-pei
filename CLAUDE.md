@@ -49,6 +49,20 @@ aparece depois do fim da animação. Resultado que varia entre passadas não é 
 e se relata como faixa. **"Nada mudou" não é "acabou":** esperar silêncio mede antes de a coisa
 começar.
 
+**Condição de medição sem testemunha no resultado não está verificada.** Se desligá-la não muda
+nada no que é comparado, nada impede que ela se perca — e a contagem que ela afeta entra na base.
+A condição de prontidão do arreio ficou assim por uma etapa inteira: o que ela fazia entrar na
+captura era exatamente o que a poda por `aria-hidden` tirava, e as quatro medidas não se moviam.
+A testemunha é uma medida que muda com a condição (`podados`, Etapa 17), e a guarda é um controle
+que **exige a reprovação** com a condição desligada. E desligue a condição INTEIRA: as partes dela
+não são independentes — desligar só o relógio não movia nada, porque o movimento reduzido, que é a
+outra metade, já fazia o objeto chegar antes.
+
+**Diferença entre listas é resultado, e precisa de destino item a item.** Dois números só se
+comparam quando a unidade de cada um está dita: "seis de sete" foi marcador contra caso, e inventou
+um desaparecido que não existia (achado 27). É a mesma classe do "vinte itens" com 22 rótulos do
+achado 18.
+
 **O que conta como "pronto" é definido num lugar só e compartilhado por todos os instrumentos.**
 Instrumento com critério próprio de prontidão produz resultado que não se compara com o dos outros:
 até a Etapa 16 o axe esperava o objeto do gráfico e o arreio esperava 260 ms de relógio, e por isso
