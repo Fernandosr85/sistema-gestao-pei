@@ -2080,6 +2080,19 @@ premissa da Etapa 15: **regra escrita para uma tabela não é regra do projeto.*
 > de cada uma está dita. "Seis de sete" não é resultado: é um total sem destino para o que falta —
 > e quando se vai procurar o que falta, o que aparece é a unidade trocada.
 
+#### Uma nota do ambiente de medição, achada ao reemitir o número
+
+A varredura do axe nas 23 superfícies **travou** no painel do app: 0 de 23 superfícies em mais de um
+minuto, e antes disso 15 de 23 com oito minutos parados numa só. A causa não é o instrumento — é o
+navegador: **aba em segundo plano tem os temporizadores estrangulados**, e as esperas de 60–80 ms do
+instrumento viram cerca de um segundo cada. A mesma varredura, no Chrome headless com
+`--disable-background-timer-throttling`, terminou em **4 minutos e meio**, com 10 a 16 segundos por
+superfície.
+
+Fica registrado porque é a classe do achado 23 no ambiente em vez de no código: **o número depende
+de onde se mede**, e "o instrumento travou" é uma afirmação sobre o instrumento que, medida, era
+sobre a janela.
+
 **O que isto custou:** nada, desta vez, porque a diferença era minha e não do registro. Mas a frase
 ficou num commit mesclado dizendo que a lista do autor tinha um item a mais que o registro, e isso é
 exatamente o tipo de afirmação que o registro existe para não deixar passar. A correção fica aqui, e
