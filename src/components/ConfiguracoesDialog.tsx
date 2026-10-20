@@ -57,7 +57,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
-            <Settings className="h-6 w-6" />
+            <Settings aria-hidden="true" className="h-6 w-6" />
             Configurações - {DEMO_USER_NAME}
           </DialogTitle>
           <DialogDescription>
@@ -75,27 +75,27 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="notificacoes">
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell aria-hidden="true" className="h-4 w-4 mr-2" />
               Notificações
             </TabsTrigger>
             <TabsTrigger value="aparencia">
-              <Palette className="h-4 w-4 mr-2" />
+              <Palette aria-hidden="true" className="h-4 w-4 mr-2" />
               Aparência
             </TabsTrigger>
             <TabsTrigger value="privacidade">
-              <Shield className="h-4 w-4 mr-2" />
+              <Shield aria-hidden="true" className="h-4 w-4 mr-2" />
               Privacidade
             </TabsTrigger>
             <TabsTrigger value="integracoes">
-              <Plug className="h-4 w-4 mr-2" />
+              <Plug aria-hidden="true" className="h-4 w-4 mr-2" />
               Integrações
             </TabsTrigger>
             <TabsTrigger value="idioma">
-              <Globe className="h-4 w-4 mr-2" />
+              <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
               Idioma
             </TabsTrigger>
             <TabsTrigger value="acessibilidade">
-              <Accessibility className="h-4 w-4 mr-2" />
+              <Accessibility aria-hidden="true" className="h-4 w-4 mr-2" />
               Acessibilidade
             </TabsTrigger>
           </TabsList>
@@ -563,7 +563,7 @@ const ConfiguracoesDialog = ({ open, onOpenChange }: ConfiguracoesDialogProps) =
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button variant="outline" disabled aria-describedby="configuracoes-ilustrativas">Restaurar Padrões</Button>
           <Button disabled aria-describedby="configuracoes-ilustrativas">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings aria-hidden="true" className="h-4 w-4 mr-2" />
             Salvar
           </Button>
         </div>

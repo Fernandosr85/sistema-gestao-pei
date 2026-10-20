@@ -150,10 +150,10 @@ const OrcamentoContent = () => {
 
   const getExpenseStatusIcon = (status: string) => {
     switch (status) {
-      case 'Aprovado': return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'Pendente': return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'Executado': return <CheckCircle className="h-4 w-4 text-blue-600" />;
-      default: return <XCircle className="h-4 w-4 text-gray-600" />;
+      case 'Aprovado': return <CheckCircle aria-hidden="true" className="h-4 w-4 text-green-600" />;
+      case 'Pendente': return <Clock aria-hidden="true" className="h-4 w-4 text-yellow-600" />;
+      case 'Executado': return <CheckCircle aria-hidden="true" className="h-4 w-4 text-blue-600" />;
+      default: return <XCircle aria-hidden="true" className="h-4 w-4 text-gray-600" />;
     }
   };
 
@@ -173,7 +173,7 @@ const OrcamentoContent = () => {
       <Card className={`border-2 ${getStatusBg(budgetSummary.status)}`}>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
+            <DollarSign aria-hidden="true" className="h-5 w-5" />
             Resumo Orçamentário 2024
           </CardTitle>
           <CardDescription>Visão geral da execução financeira anual</CardDescription>
@@ -209,9 +209,9 @@ const OrcamentoContent = () => {
               </p>
               <div className="flex items-center gap-2 mt-1">
                 {budgetSummary.saldoFinal > 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
+                  <TrendingUp aria-hidden="true" className="h-4 w-4 text-green-600" />
                 ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
+                  <TrendingDown aria-hidden="true" className="h-4 w-4 text-red-600" />
                 )}
                 <span className="text-sm text-muted-foreground">4.4% do orçamento</span>
               </div>
@@ -222,7 +222,7 @@ const OrcamentoContent = () => {
 
           {budgetSummary.percentualExecutado < 10 && (
             <Alert className="mt-4 border-red-200 bg-red-50">
-              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertTriangle aria-hidden="true" className="h-4 w-4 text-red-600" />
               <AlertDescription className="text-red-800">
                 Atenção: Saldo abaixo de 10% do orçamento total. Revisar gastos programados.
               </AlertDescription>
@@ -235,7 +235,7 @@ const OrcamentoContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
+            <BarChart3 aria-hidden="true" className="h-5 w-5" />
             Execução por Categoria
           </CardTitle>
           <CardDescription>Distribuição e utilização do orçamento por área</CardDescription>
@@ -291,7 +291,7 @@ const OrcamentoContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
+            <TrendingUp aria-hidden="true" className="h-5 w-5" />
             Tendência de Gastos Mensais
           </CardTitle>
           <CardDescription>Comparação entre orçamento planejado e gastos reais</CardDescription>
@@ -336,7 +336,7 @@ const OrcamentoContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <Calendar aria-hidden="true" className="h-5 w-5" />
               Despesas Programadas
             </CardTitle>
             <CardDescription>Próximos gastos previstos</CardDescription>
@@ -366,7 +366,7 @@ const OrcamentoContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
+              <BarChart3 aria-hidden="true" className="h-5 w-5" />
               Comparativo com Outras Unidades
             </CardTitle>
             <CardDescription>Execução orçamentária - Percentual executado</CardDescription>
@@ -401,7 +401,7 @@ const OrcamentoContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <FileText aria-hidden="true" className="h-5 w-5" />
             Aprovações Pendentes
           </CardTitle>
           <CardDescription>
@@ -452,7 +452,7 @@ const OrcamentoContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <Calendar aria-hidden="true" className="h-5 w-5" />
             Planejamento Orçamentário 2025
           </CardTitle>
           <CardDescription>Projeção e planejamento para o próximo ano fiscal</CardDescription>

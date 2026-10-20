@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const ResourcesPanel = () => {
   const resources = [
     {
-      icon: <Users className="h-6 w-6 text-primary" />,
+      icon: <Users aria-hidden="true" className="h-6 w-6 text-primary" />,
       title: 'APOIO HUMANO',
       total: '18 profis.',
       items: [
@@ -18,7 +18,7 @@ const ResourcesPanel = () => {
       coverage: 85,
     },
     {
-      icon: <Laptop className="h-6 w-6 text-primary" />,
+      icon: <Laptop aria-hidden="true" className="h-6 w-6 text-primary" />,
       title: 'TECNOLOGIA ASSISTIVA',
       total: '45 recursos',
       items: [
@@ -30,7 +30,7 @@ const ResourcesPanel = () => {
       coverage: 78,
     },
     {
-      icon: <BookOpen className="h-6 w-6 text-primary" />,
+      icon: <BookOpen aria-hidden="true" className="h-6 w-6 text-primary" />,
       title: 'MATERIAIS ADAPTADOS',
       total: '234 itens',
       items: [
@@ -44,7 +44,7 @@ const ResourcesPanel = () => {
       link: { label: 'Ir para a Biblioteca de Recursos', to: '/biblioteca-recursos' }
     },
     {
-      icon: <School className="h-6 w-6 text-primary" />,
+      icon: <School aria-hidden="true" className="h-6 w-6 text-primary" />,
       title: 'SALAS AEE',
       total: '8 salas',
       items: [

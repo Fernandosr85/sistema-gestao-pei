@@ -597,7 +597,7 @@ const NewStudent = () => {
               Cancelar
             </Button>
             <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
+              <Save aria-hidden="true" className="mr-2 h-4 w-4" />
               Salvar Aluno
             </Button>
           </div>

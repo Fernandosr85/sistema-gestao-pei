@@ -40,11 +40,11 @@ const MilestonesCard = () => {
           <div key={idx} className="space-y-2">
             <div className="flex items-start gap-3">
               {milestone.status === 'completo' ? (
-                <CheckCircle2 className="h-6 w-6 text-success mt-0.5 flex-shrink-0" />
+                <CheckCircle2 aria-hidden="true" className="h-6 w-6 text-success mt-0.5 flex-shrink-0" />
               ) : milestone.status === 'em_progresso' ? (
-                <Loader2 className="h-6 w-6 text-warning mt-0.5 flex-shrink-0" />
+                <Loader2 aria-hidden="true" className="h-6 w-6 text-warning mt-0.5 flex-shrink-0" />
               ) : (
-                <Target className="h-6 w-6 text-destructive mt-0.5 flex-shrink-0" />
+                <Target aria-hidden="true" className="h-6 w-6 text-destructive mt-0.5 flex-shrink-0" />
               )}
               
               <div className="flex-1 space-y-2">

@@ -92,7 +92,7 @@ const ExpandedComplexityCard = ({
     <Card className={`${bgColor} border-l-4 ${borderColor} shadow-lg hover:shadow-xl transition-shadow duration-300`}>
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-3 text-lg">
-          <Icon className="h-6 w-6 text-foreground" />
+          <Icon aria-hidden="true" className="h-6 w-6 text-foreground" />
           <span>{title}</span>
         </CardTitle>
       </CardHeader>
@@ -105,7 +105,7 @@ const ExpandedComplexityCard = ({
                   <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-foreground">{item.label}</span>
-                      {expandedItems.includes(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      {expandedItems.includes(index) ? <ChevronUp aria-hidden="true" className="h-4 w-4" /> : <ChevronDown aria-hidden="true" className="h-4 w-4" />}
                     </div>
                   </Button>
                 </CollapsibleTrigger>
@@ -145,7 +145,7 @@ const ExpandedComplexityCard = ({
                   <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-foreground">{item.label}</span>
-                      {expandedItems.includes(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      {expandedItems.includes(index) ? <ChevronUp aria-hidden="true" className="h-4 w-4" /> : <ChevronDown aria-hidden="true" className="h-4 w-4" />}
                     </div>
                   </Button>
                 </CollapsibleTrigger>
@@ -175,7 +175,7 @@ const ExpandedComplexityCard = ({
                   <Button variant="ghost" size="sm" className="p-0 h-auto hover:bg-transparent">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-foreground">{item.label}</span>
-                      {expandedItems.includes(index) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      {expandedItems.includes(index) ? <ChevronUp aria-hidden="true" className="h-4 w-4" /> : <ChevronDown aria-hidden="true" className="h-4 w-4" />}
                     </div>
                   </Button>
                 </CollapsibleTrigger>
@@ -216,7 +216,7 @@ const ExpandedComplexityCard = ({
 
         <div className="mt-4 pt-4 border-t">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-            <TrendingUp className="h-4 w-4" />
+            <TrendingUp aria-hidden="true" className="h-4 w-4" />
             <span className="font-medium">
               {type === 'health' ? 'TENDÊNCIA ANUAL' : type === 'educational' ? 'EVOLUÇÃO TRIMESTRAL' : 'EVOLUÇÃO SEMESTRAL'}
             </span>

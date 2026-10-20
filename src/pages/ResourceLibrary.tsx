@@ -119,7 +119,7 @@ export default function ResourceLibrary() {
               className="bg-brand-green hover:bg-brand-green/90"
               size="lg"
             >
-              <Plus className="h-5 w-5 mr-2" />
+              <Plus aria-hidden="true" className="h-5 w-5 mr-2" />
               Contribuir com Recurso
             </Button>
           </div>
@@ -129,7 +129,7 @@ export default function ResourceLibrary() {
             <Label htmlFor="busca-recursos" className="sr-only">
               Buscar recurso por título, tipo ou autor
             </Label>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <Input
               id="busca-recursos"
               placeholder="Buscar recursos..."
@@ -319,7 +319,7 @@ export default function ResourceLibrary() {
 
                     <div>
                       <h3 className="font-semibold mb-4 flex items-center gap-2">
-                        <Award className="h-5 w-5" />
+                        <Award aria-hidden="true" className="h-5 w-5" />
                         Badges Conquistadas
                       </h3>
                       {myBadges.length === 0 ? (

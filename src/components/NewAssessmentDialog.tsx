@@ -251,7 +251,7 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
                         !assessmentDate && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <CalendarIcon aria-hidden="true" className="mr-2 h-4 w-4" />
                       {assessmentDate ? formatDate(assessmentDate, "PPP", { locale: ptBR }) : "Selecione"}
                     </Button>
                   </PopoverTrigger>
@@ -440,11 +440,11 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
             Cancelar
           </Button>
           <Button variant="outline" disabled aria-describedby="avaliacao-rascunho-indisponivel" className="gap-2">
-            <Save className="h-4 w-4" />
+            <Save aria-hidden="true" className="h-4 w-4" />
             Salvar Rascunho
           </Button>
           <Button onClick={handleFinalize} className="gap-2">
-            <Send className="h-4 w-4" />
+            <Send aria-hidden="true" className="h-4 w-4" />
             Finalizar Avaliação
           </Button>
         </div>

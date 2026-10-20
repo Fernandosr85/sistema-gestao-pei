@@ -52,27 +52,27 @@ const Gestao = () => {
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 mb-6">
             <TabsTrigger value="visao-geral" className="gap-2">
-              <BarChart3 className="h-4 w-4" />
+              <BarChart3 aria-hidden="true" className="h-4 w-4" />
               Visão Geral
             </TabsTrigger>
             <TabsTrigger value="alertas" className="gap-2">
-              <AlertTriangle className="h-4 w-4" />
+              <AlertTriangle aria-hidden="true" className="h-4 w-4" />
               Alertas e Riscos
             </TabsTrigger>
             <TabsTrigger value="analise" className="gap-2">
-              <TrendingUp className="h-4 w-4" />
+              <TrendingUp aria-hidden="true" className="h-4 w-4" />
               Análise
             </TabsTrigger>
             <TabsTrigger value="relatorios" className="gap-2">
-              <FileText className="h-4 w-4" />
+              <FileText aria-hidden="true" className="h-4 w-4" />
               Relatórios
             </TabsTrigger>
             <TabsTrigger value="equipe" className="gap-2">
-              <Users className="h-4 w-4" />
+              <Users aria-hidden="true" className="h-4 w-4" />
               Equipe
             </TabsTrigger>
             <TabsTrigger value="orcamento" className="gap-2">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign aria-hidden="true" className="h-4 w-4" />
               Orçamento
             </TabsTrigger>
           </TabsList>

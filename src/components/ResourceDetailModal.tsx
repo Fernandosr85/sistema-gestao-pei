@@ -77,7 +77,7 @@ export function ResourceDetailModal({
                     <Heart className={cn('h-4 w-4', isFavorite && 'fill-current')} aria-hidden="true" />
                   </Button>
                   <Button disabled aria-describedby="download-detalhe-indisponivel">
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download aria-hidden="true" className="h-4 w-4 mr-2" />
                     Baixar
                   </Button>
                 </div>

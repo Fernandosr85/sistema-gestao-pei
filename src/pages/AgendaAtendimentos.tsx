@@ -74,7 +74,7 @@ const renderWeekChange = (change: PeriodChange, className?: string) => {
   if (change.kind === 'noBaseline') {
     return (
       <Badge variant="secondary" className={cn('gap-1', className)}>
-        <Minus className="h-3 w-3" />
+        <Minus aria-hidden="true" className="h-3 w-3" />
         sem base<span className="sr-only"> de comparação com a semana anterior</span>
       </Badge>
     );
@@ -86,11 +86,11 @@ const renderWeekChange = (change: PeriodChange, className?: string) => {
       className={cn('gap-1', className)}
     >
       {percent > 0 ? (
-        <TrendingUp className="h-3 w-3" />
+        <TrendingUp aria-hidden="true" className="h-3 w-3" />
       ) : percent < 0 ? (
-        <TrendingDown className="h-3 w-3" />
+        <TrendingDown aria-hidden="true" className="h-3 w-3" />
       ) : (
-        <Minus className="h-3 w-3" />
+        <Minus aria-hidden="true" className="h-3 w-3" />
       )}
       {percent > 0 ? '+' : ''}{percent}%
     </Badge>
@@ -184,7 +184,7 @@ const AgendaAtendimentos = () => {
           </p>
         </div>
         <Button onClick={() => setNovoAtendimentoOpen(true)} size="lg">
-          <Plus className="mr-2 h-5 w-5" />
+          <Plus aria-hidden="true" className="mr-2 h-5 w-5" />
           Novo Atendimento
         </Button>
       </div>
@@ -224,7 +224,7 @@ const AgendaAtendimentos = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
+            <Filter aria-hidden="true" className="h-5 w-5" />
             Filtros
           </CardTitle>
         </CardHeader>
@@ -290,19 +290,19 @@ const AgendaAtendimentos = () => {
       <Tabs defaultValue="lista" className="w-full">
         <TabsList className="grid w-full md:w-auto grid-cols-4 mb-4">
           <TabsTrigger value="mes" className="gap-2">
-            <Calendar className="h-4 w-4" />
+            <Calendar aria-hidden="true" className="h-4 w-4" />
             Mês
           </TabsTrigger>
           <TabsTrigger value="semana" className="gap-2">
-            <CalendarDays className="h-4 w-4" />
+            <CalendarDays aria-hidden="true" className="h-4 w-4" />
             Semana
           </TabsTrigger>
           <TabsTrigger value="dia" className="gap-2">
-            <CalendarCheck className="h-4 w-4" />
+            <CalendarCheck aria-hidden="true" className="h-4 w-4" />
             Dia
           </TabsTrigger>
           <TabsTrigger value="lista" className="gap-2">
-            <List className="h-4 w-4" />
+            <List aria-hidden="true" className="h-4 w-4" />
             Lista
           </TabsTrigger>
         </TabsList>
@@ -440,7 +440,7 @@ const AgendaAtendimentos = () => {
                 <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <CalendarCheck className="h-5 w-5" />
+                      <CalendarCheck aria-hidden="true" className="h-5 w-5" />
                       Resumo de {format(currentDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                     </CardTitle>
                   </CardHeader>
@@ -557,7 +557,7 @@ const AgendaAtendimentos = () => {
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
+                        <TrendingUp aria-hidden="true" className="h-5 w-5" />
                         Comparação: Semana Atual vs. Semana Anterior
                       </CardTitle>
                       <p className="text-sm text-muted-foreground">
@@ -619,7 +619,7 @@ const AgendaAtendimentos = () => {
                       "w-[240px] justify-start text-left font-normal"
                     )}
                   >
-                    <Calendar className="mr-2 h-4 w-4" />
+                    <Calendar aria-hidden="true" className="mr-2 h-4 w-4" />
                     {format(currentDate, "PPP", { locale: ptBR })}
                   </Button>
                 </PopoverTrigger>
@@ -732,11 +732,11 @@ const AgendaAtendimentos = () => {
                         </div>
                         <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar aria-hidden="true" className="h-4 w-4" />
                             {formatLocalDate(atendimento.data)}
                           </div>
                           <div className="flex items-center gap-2">
-                            <CalendarClock className="h-4 w-4" />
+                            <CalendarClock aria-hidden="true" className="h-4 w-4" />
                             {atendimento.horarioInicio} - {atendimento.horarioFim}
                           </div>
                           <Badge variant="outline" className="text-xs">

@@ -49,7 +49,7 @@ const StudentCard = ({ student }: StudentCardProps) => {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <UserCircle className="h-8 w-8 text-primary" />
+              <UserCircle aria-hidden="true" className="h-8 w-8 text-primary" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">{student.nomeCompleto}</h3>
@@ -63,19 +63,19 @@ const StudentCard = ({ student }: StudentCardProps) => {
 
         <div className="space-y-3 mb-4">
           <div className="flex items-center gap-2 text-sm">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <BookOpen aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Série:</span>
             <span className="font-medium">{student.serie} - Turma {student.turma}</span>
           </div>
           
           <div className="flex items-center gap-2 text-sm">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Idade:</span>
             <span className="font-medium">{calculateAge(student.dataNascimento)} anos</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm">
-            <UserCircle className="h-4 w-4 text-muted-foreground" />
+            <UserCircle aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">Professor:</span>
             <span className="font-medium">{student.professorResponsavel}</span>
           </div>
@@ -109,7 +109,7 @@ const StudentCard = ({ student }: StudentCardProps) => {
           
           <Link to={`/alunos/${student.id}`}>
             <Button className="w-full" variant="outline" size="sm">
-              <Eye className="mr-2 h-4 w-4" />
+              <Eye aria-hidden="true" className="mr-2 h-4 w-4" />
               Ver Detalhes
             </Button>
           </Link>

@@ -18,7 +18,7 @@ const QuickActions = () => {
             onClick={() => navigate('/alunos/novo')}
             className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
           >
-            <Users className="h-12 w-12" />
+            <Users aria-hidden="true" className="h-12 w-12" />
             <span className="text-lg font-semibold">Novo Cadastro</span>
           </Button>
 
@@ -27,7 +27,7 @@ const QuickActions = () => {
             onClick={() => navigate('/observacoes/nova')}
             className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
           >
-            <ClipboardList className="h-12 w-12" />
+            <ClipboardList aria-hidden="true" className="h-12 w-12" />
             <span className="text-lg font-semibold">Nova Observação</span>
           </Button>
 
@@ -36,7 +36,7 @@ const QuickActions = () => {
             onClick={() => setAssessmentDialogOpen(true)}
             className="h-auto flex-col gap-4 p-6 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
           >
-            <ClipboardCheck className="h-12 w-12" />
+            <ClipboardCheck aria-hidden="true" className="h-12 w-12" />
             <span className="text-lg font-semibold">Nova Avaliação</span>
           </Button>
         </div>

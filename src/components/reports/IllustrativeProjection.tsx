@@ -90,11 +90,11 @@ const IllustrativeProjection = () => {
           >
             {expandido ? (
               <>
-                Recolher <ChevronUp className="ml-2 w-4 h-4" />
+                Recolher <ChevronUp aria-hidden="true" className="ml-2 w-4 h-4" />
               </>
             ) : (
               <>
-                Ver detalhes do exemplo <ChevronDown className="ml-2 w-4 h-4" />
+                Ver detalhes do exemplo <ChevronDown aria-hidden="true" className="ml-2 w-4 h-4" />
               </>
             )}
           </Button>
@@ -139,27 +139,27 @@ const IllustrativeProjection = () => {
               <TabButton
                 ativo={abaAtiva === 'projecao'}
                 onClick={() => setAbaAtiva('projecao')}
-                icone={<TrendingUp className="w-4 h-4" />}
+                icone={<TrendingUp aria-hidden="true" className="w-4 h-4" />}
                 texto="Projeção Detalhada"
               />
               <TabButton
                 ativo={abaAtiva === 'casos'}
                 onClick={() => setAbaAtiva('casos')}
-                icone={<Users className="w-4 h-4" />}
+                icone={<Users aria-hidden="true" className="w-4 h-4" />}
                 texto="Casos de exemplo"
                 badge={String(casosExemplo.length)}
               />
               <TabButton
                 ativo={abaAtiva === 'estrategias'}
                 onClick={() => setAbaAtiva('estrategias')}
-                icone={<Lightbulb className="w-4 h-4" />}
+                icone={<Lightbulb aria-hidden="true" className="w-4 h-4" />}
                 texto="Estratégias"
                 badge={String(estrategiasExemplo.length)}
               />
               <TabButton
                 ativo={abaAtiva === 'alertas'}
                 onClick={() => setAbaAtiva('alertas')}
-                icone={<AlertCircle className="w-4 h-4" />}
+                icone={<AlertCircle aria-hidden="true" className="w-4 h-4" />}
                 texto="Alertas"
                 badge="2"
                 alerta
@@ -221,7 +221,7 @@ function MiniGrafico({ titulo, valor, tendencia }: MiniGraficoProps) {
       <div className="flex items-baseline gap-2">
         <p className="text-xl font-bold text-primary">{valor}</p>
         {tendencia === 'positiva' && (
-          <TrendingUp className="w-4 h-4 text-success" />
+          <TrendingUp aria-hidden="true" className="w-4 h-4 text-success" />
         )}
       </div>
       {/* Mini gráfico visual */}
@@ -379,7 +379,7 @@ function AreaProgresso({ nome, atual, projetado, risco }: AreaProgressoProps) {
         </div>
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <TrendingUp className="w-3 h-3 text-success" />
+          <TrendingUp aria-hidden="true" className="w-3 h-3 text-success" />
           Ganho esperado: +{projetado - atual}%
         </div>
       </div>
@@ -511,7 +511,7 @@ function AlertasIA() {
       <div className="bg-[hsl(var(--alert-critical-bg))] rounded-lg p-5 border-2 border-[hsl(var(--alert-critical-border))]">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--alert-critical-icon))] flex items-center justify-center flex-shrink-0">
-            <AlertCircle className="w-5 h-5 text-white" />
+            <AlertCircle aria-hidden="true" className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
@@ -558,7 +558,7 @@ function AlertasIA() {
       <div className="bg-[hsl(var(--alert-warning-bg))] rounded-lg p-5 border-2 border-[hsl(var(--alert-warning-border))]">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-full bg-[hsl(var(--alert-warning-icon))] flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-5 h-5 text-white" />
+            <AlertTriangle aria-hidden="true" className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
@@ -580,7 +580,7 @@ function AlertasIA() {
       <div className="bg-success/5 rounded-lg p-5 border-2 border-success/30">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center flex-shrink-0">
-            <TrendingUp className="w-5 h-5 text-white" />
+            <TrendingUp aria-hidden="true" className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
