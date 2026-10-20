@@ -353,9 +353,15 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                         <p className="text-sm text-muted-foreground">Bacharelado - 2010 a 2014</p>
                       </div>
                     </div>
+                    {/*
+                      * Nome com a AÇÃO E O OBJETO (invariante 4, Etapa 18). Aqui o objeto tem título
+                      * próprio na tela, então o nome o repete — "Editar", sozinho, não diz o quê.
+                      * Estes quatro botões estão dentro de `<fieldset disabled>`: desabilitado
+                      * continua na árvore de acessibilidade e continua precisando de nome.
+                      */}
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="sm"><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" aria-label="Editar formação: Pedagogia"><Edit aria-hidden="true" className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" aria-label="Remover formação: Pedagogia"><Trash2 aria-hidden="true" className="h-4 w-4" /></Button>
                     </div>
                   </div>
                 </div>
@@ -371,8 +377,8 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="sm"><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="sm"><Trash2 className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" aria-label="Editar formação: Especialização em Educação Inclusiva"><Edit aria-hidden="true" className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="sm" aria-label="Remover formação: Especialização em Educação Inclusiva"><Trash2 aria-hidden="true" className="h-4 w-4" /></Button>
                     </div>
                   </div>
                 </div>
