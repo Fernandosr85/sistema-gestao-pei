@@ -54,9 +54,39 @@ nada no que é comparado, nada impede que ela se perca — e a contagem que ela 
 A condição de prontidão do arreio ficou assim por uma etapa inteira: o que ela fazia entrar na
 captura era exatamente o que a poda por `aria-hidden` tirava, e as quatro medidas não se moviam.
 A testemunha é uma medida que muda com a condição (`podados`, Etapa 17), e a guarda é um controle
-que **exige a reprovação** com a condição desligada. E desligue a condição INTEIRA: as partes dela
-não são independentes — desligar só o relógio não movia nada, porque o movimento reduzido, que é a
-outra metade, já fazia o objeto chegar antes.
+que **exige a reprovação** com a condição desligada.
+
+**Controle negativo tem de negar a condição inteira.** Desligar uma parte e deixar outra ligada faz
+o controle passar por um caminho diferente do que ele diz testar — foi o que aconteceu com a guarda
+da condição de prontidão, em que só o relógio era desligado e o movimento reduzido entregava o
+objeto em 63 ms assim mesmo. Vale para qualquer controle negativo, não só para essa guarda: antes de
+confiar numa reprovação (ou na falta dela), enumere as partes da condição e confirme que todas
+saíram. *(Esta regra estava escrita como cláusula da regra da testemunha, amarrada à condição de
+prontidão; subiu a regra própria na Etapa 18, porque regra escrita para um caso não é regra do
+projeto — achado 27.)*
+
+**Ambiente é parte da condição.** Temporizador estrangulado em aba de segundo plano muda a espera
+por um fator de dez; o número medido lá não é o mesmo número. Medido na Etapa 18 a diferença foi
+**maior que isso** — fator 47 —, no mesmo Chrome, trocando só o que se queria medir. Cinco esperas
+pedidas de 20 ms em cada caso, e o que decide é a **mediana** delas: **21 ms** em primeiro plano,
+**995 ms** em aba oculta sem `--disable-background-timer-throttling`, **21 ms** em aba oculta com
+ele. Por isso o ambiente é **medido pelo instrumento** (`__pronto.ambiente()`, que sonda o próprio
+relógio) e não declarado por quem roda, e os instrumentos **recusam** rodar com o relógio
+estrangulado — incluindo no meio da passada, porque na Etapa 17 foi assim que aconteceu.
+
+**E a estatística faz parte da medida.** Média e mínimo foram tentados e caíram medidos: a média sobe
+com o laço de eventos ocupado (amostras `[188, 132, 45, 20, 21]` logo depois de colar os
+instrumentos — média 81, mediana 45), e o mínimo é sorteio em aba estrangulada, porque a primeira
+espera mede só o resto do segundo corrente (`[576, 1011, 995, 1007, 990]`). Ao resumir uma
+distribuição num número, diga **qual** resumo e por que ele resiste ao que você sabe que acontece.
+
+**Quem tem a medida não decide pelo prognóstico.** Indício correlacionado com o defeito não é o
+defeito: a primeira versão do detector de ambiente recusava por `document.visibilityState`, e o
+controle mostrou que a recusa seria falsa — em aba oculta com `--disable-background-timer-throttling`
+a espera custou os mesmos 21 ms do primeiro plano (achado 29). Instrumento que decide pelo indício
+quando tem a medida produz falso negativo com a mesma facilidade com que produz falso positivo. É
+parente do achado 24, onde o DOM era o indício e a árvore do navegador era a medida. O indício
+continua valendo como **aviso**, nunca como veredito.
 
 **Diferença entre listas é resultado, e precisa de destino item a item.** Dois números só se
 comparam quando a unidade de cada um está dita: "seis de sete" foi marcador contra caso, e inventou
@@ -98,6 +128,18 @@ que entra em `docs/`, e só por dois termos — foi assim que 152 linhas de afir
 nove etapas em `docs/API_REFERENCE.md` (achado 20). Vocabulário de prontidão ("pronto",
 "implementado", "funcional") não acha afirmação **estrutural** falsa: "TanStack Query 5.x" numa
 tabela de stack de um projeto que não a instala é falso e não casa nenhuma dessas palavras.
+
+**Rota não é estado, e varredura por rota só mede o estado inicial de cada rota.** Toda varredura
+deste projeto — fotografia, axe, paradas de tabulação, ícones — visitou URLs: as 23 superfícies são
+13 rotas, 3 redirecionamentos, 1 curinga e 6 abas do `/gestao`, todas alcançadas pelo endereço.
+Interface que **cria controle depois do clique** fica fora por construção: quatro botões com papel
+`button` e nome vazio em `/observacoes/nova` atravessaram dezessete etapas, três auditorias de
+acessibilidade e 230 passadas do axe com condição declarada, porque só existem depois de "Adicionar
+Situação" (Etapa 18). Quando o alvo é uma propriedade da interface e não da rota, enumere os pontos
+em que a interface cria controle novo — adicionar item, abrir diálogo, trocar aba, expandir seção —,
+visite cada um e **declare a lista dos visitados**. E isolamento é parte disso: com navegação por
+`pushState` o estado do React sobrevive à troca de rota, e um diálogo aberto num ponto deixa o resto
+do documento sob `aria-hidden`, o que faz a árvore devolver **zero** por contaminação.
 
 Toda varredura inclui um controle positivo: uma ocorrência que se sabe existir e que precisa
 aparecer na saída. Varredura sem controle positivo não produz evidência — um zero pode ser

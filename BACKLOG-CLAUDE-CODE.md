@@ -2100,6 +2100,279 @@ o commit continua como está — história não se reescreve.
 
 ---
 
+### 28. Toda varredura visitou rotas; nenhuma visitou estados (Etapa 18, 20/10/2026)
+
+#### A nota do autor, 20/10/2026
+
+> Quatro controles com papel `button` e nome vazio atravessaram dezessete etapas, três auditorias
+> de acessibilidade e 230 passadas do axe com condição declarada — porque só existem depois de o
+> usuário clicar em "Adicionar". Toda varredura deste projeto visitou rotas; nenhuma visitou
+> estados. A Pendência 3 deixa de ser hipótese: o que falta ao arreio é interação, e o custo de não
+> tê-la está medido em quatro botões mudos.
+
+**Os três números da nota, com destino** — porque número sem regra de contagem não se repete. As
+**dezessete etapas**: os dois sítios de `/observacoes/nova` estão no código desde o commit inicial
+(`a031785`, 24/11/2025) e os do perfil desde `03689d8` (29/11/2025), ambos **antes da Etapa 0**, de
+modo que atravessaram as Etapas 1 a 17 inteiras. As **três auditorias de acessibilidade**: a Etapa 3
+("Acessibilidade profunda", axe 124 → 0 e `jsx-a11y` 8 → 0), a Etapa 12 (nomes acessíveis: 6 campos
+e 2 paradas de tabulação) e a série 13–17 (axe com condição declarada e árvore de acessibilidade).
+As **230 passadas**: 23 superfícies × 10 passadas, reemitidas na Etapa 15, na 16 e na 17, sempre
+ZERO.
+
+#### O que a medição mostra, e por que não é "a varredura falhou"
+
+O que estava fora de alcance não era o nome dos botões: eram os botões. Medido na árvore do Chrome
+em `/observacoes/nova`, nos dois blocos que os contêm:
+
+| Estado | "Situação 1" | "Interação 1" |
+|---|---|---|
+| ao carregar a rota | `textbox│Contexto *`, `textbox│Resposta do Aluno *` — **nenhum botão** | `textbox│Tipo de Interação *`, `textbox│Descrição *` — **nenhum botão** |
+| depois de "Adicionar Situação" e "Adicionar Interação" | `button│(VAZIO)` + os dois campos | `button│(VAZIO)` + os dois campos |
+| depois do conserto desta etapa | `button│Remover situação 1` e `button│Remover situação 2` | `button│Remover interação 1` e `button│Remover interação 2` |
+
+O JSX esconde o botão de remover quando há uma linha só (`situacoesFields.length > 1`), então um
+clique cria **dois** botões — o da linha nova e o da que já existia. Dois sítios no código, quatro
+botões na tela. A varredura por rota não os mediu sem nome: ela mediu uma página em que eles não
+existiam. **O zero dela era verdadeiro e irrelevante**, que é a forma mais difícil de zero errado.
+
+#### Os quatro do diálogo do perfil: outra forma do mesmo buraco
+
+Os outros dois sítios (quatro botões) estão na aba "Formação" do diálogo "Meu Perfil", a três
+cliques da raiz: `Menu da conta` → `Meu Perfil` → aba `Formação`. Eles existem no DOM assim que a
+aba é montada — não dependem de "Adicionar" —, mas nenhuma superfície da lista chega lá, porque o
+diálogo não tem URL. Estão dentro de `<fieldset disabled>`: **desabilitado continua na árvore de
+acessibilidade e continua precisando de nome** — medido, `button│(VAZIO)` quatro vezes, e depois do
+conserto `button│Editar formação: Pedagogia`, `button│Remover formação: Pedagogia` e o par
+correspondente da "Especialização em Educação Inclusiva".
+
+**O controle positivo sobrevive ao conserto**, que é o que faz o zero valer: plantando um `<button>`
+sem nome no mesmo bloco depois da interação, a leitura acusou **5 vazios com o controle contra 4 sem**
+antes do conserto, e **1 contra 0** depois. O instrumento continua enxergando botão mudo; o que
+deixou de existir foram os oito.
+
+#### A varredura por estado, e o escopo dela
+
+`scripts/varredura-de-estados.cjs`, novo nesta etapa. Em cada superfície, enumera mecanicamente os
+gatilhos — elemento com `aria-haspopup`, com `aria-expanded`, com `data-state="closed"`, `[role=tab]`
+não selecionada, e botão, item de menu ou `summary` cujo nome casa o vocabulário de criação e
+abertura —, visita cada um a partir de um **documento novo** e lê a árvore do Chrome inteira,
+contando nó interativo exposto com nome vazio. Desce até **três** cliques, e só por dentro do que
+abriu.
+
+**O que fica fora, declarado:** links (navegam, e rota já é coberta); controle de ação destrutiva ou
+de gravação (remover, excluir, salvar, enviar, cancelar, confirmar, restaurar), que não cria controle
+e alguns gravam; e `[role=option]` de seletor, porque escolher valor é mudar dado — se alguma tela
+revelar bloco novo só depois de um valor escolhido, esta varredura não a alcança. **Isso é limite
+declarado, não resultado.**
+
+**O ESCOPO MEDIDO, superfície por superfície** — porque escopo é parte do resultado. Medido em
+20/10/2026, profundidade 3, Chrome headless a 1280×900:
+
+| superfície | gatilhos (1º nível) | pontos visitados | pontos com controle sem nome | não medidos |
+|---|---:|---:|---:|---:|
+| `/` | 10 | 50 | 14 | 0 |
+| `/alunos` | 8 | 21 | 5 | 0 |
+| `/alunos/novo` | 6 | 19 | 5 | 0 |
+| `/alunos/1` | 7 | 154 | 5 | 0 |
+| `/observacoes` | 3 | 18 | 3 | 0 |
+| `/observacoes/nova` | 5 | 18 | 7 | 0 |
+| `/gestao` | 7 | 20 | 3 | 0 |
+| `/legislacao` | 28 | 68 | 3 | 0 |
+| `/manual` | 11 | 30 | 3 | 0 |
+| `/biblioteca-recursos` | 7 | 20 | 3 | 0 |
+| `/agenda-atendimentos` | 13 | 47 | 20 | 0 |
+| `/minha-agenda` | 1 | 14 | 3 | 0 |
+| `/relatorio` | 1 | 14 | 3 | 0 |
+| `/gestao?tab=visao-geral` | 7 | 20 | 3 | 0 |
+| `/gestao?tab=alertas` | 23 | 48 | 3 | 0 |
+| `/gestao?tab=analise` | 34 | 58 | 3 | 0 |
+| `/gestao?tab=relatorios` | 10 | 23 | 3 | 0 |
+| `/gestao?tab=equipe` | 16 | 39 | 3 | 0 |
+| `/gestao?tab=orcamento` | 7 | 20 | 3 | 0 |
+| **total** | **204** | **701** | **95** | **0** |
+
+**Depois do conserto, a mesma varredura:** 701 pontos, 0 não medidos, **74** com controle sem nome e
+**zero caminho com achado novo** — os 80 nós de papel `button` sem nome foram a 0, em 21 caminhos que
+deixaram de ter achado, e as outras três classes ficaram nos mesmos 51, 19 e 4 nós, como se esperava
+de um conserto que não as toca.
+
+Os três redirecionamentos e o curinga ficam fora: resolvem nas mesmas telas das rotas e os gatilhos
+seriam os mesmos. **Nenhum ponto ficou sem medir** — a primeira passada completa deste instrumento
+morreu na quinta superfície com "Inspected target navigated or closed" (a avaliação caía no documento
+que o carregamento estava destruindo) e, por isso, ponto que explode agora **entra no relatório como
+não medido**, em vez de desaparecer: é a coluna da direita, e ela está em zero.
+
+As 95 ocorrências são **quatro classes**, e os 80 nós de botão são os seis sítios desta etapa — 4 por
+superfície na aba "Formação" (76) mais 2 + 2 em `/observacoes/nova`:
+
+| papel na árvore | nós | caminhos distintos | superfícies | o que é |
+|---|---:|---:|---:|---|
+| `button` | 80 | 3 | 19 | **os seis sítios desta etapa** |
+| `listbox` | 51 | 30 | 19 | a caixa de opções do seletor do shadcn |
+| `combobox` | 19 | 1 | 19 | "Página inicial padrão", em Meu Perfil > Preferências |
+| `slider` | 4 | 4 | 1 | "Progresso", em Nova Avaliação |
+
+**Isolamento é parte da medida, e isso foi medido.** A primeira versão navegava por `pushState`, como
+o arreio. Com ele o estado do React sobrevive à troca de rota: um diálogo aberto num ponto continuava
+aberto nos pontos seguintes e, com diálogo modal aberto, o Radix põe `aria-hidden` no resto do
+documento — a árvore devolvia **zero controle sem nome** em `/observacoes/nova`, inclusive depois de
+"Adicionar Situação". O instrumento media limpo por contaminação. Cada ponto passou a começar de um
+`Page.navigate` de verdade, com `localStorage` e `sessionStorage` vazios.
+
+**Clique de mouse de verdade, também medido.** `el.click()` não abre menu do Radix — o gatilho escuta
+`pointerdown`, e "Menu da conta" devolvia zero contêiner aberto. Com evento de ponteiro pelo
+protocolo, nas coordenadas do elemento e conferindo que o ponto cai sobre o alvo, o menu abre e o
+caminho de três cliques até a aba "Formação" existe.
+
+#### O que mais apareceu, e não foi consertado
+
+Além dos seis, a varredura achou três classes de controle exposto sem nome e, ao medir o axe nesses
+mesmos estados, uma violação grave que não é sobre nome — todas atrás de interação. **Nenhuma delas
+foi consertada nesta etapa** — é componente ou é texto que alguém escreve, e a decisão é do autor
+(Pendência 11):
+
+| O que é | Onde | Papel na árvore |
+|---|---|---|
+| gatilho de seletor sem rótulo associado ("Página inicial padrão") | `MeuPerfilDialog.tsx:779` e `:781` — `<Label>` sem `htmlFor`, `<SelectTrigger>` sem `id` | `combobox│(VAZIO)` |
+| controle deslizante sem rótulo associado ("Progresso") | `NewAssessmentDialog.tsx:310` e `:311` — `<Label>` sem `htmlFor`, `<Slider>` sem `aria-label` | `slider│(VAZIO)` |
+| a caixa de opções do seletor do shadcn | `src/components/ui/select.tsx` (`SelectContent`), em todo seletor do sistema | `listbox│(VAZIO)` |
+| **e uma que não é sobre nome:** com o seletor aberto, o invólucro da aplicação fica `aria-hidden` com elemento focável dentro | Radix, via `select.tsx`; medido em `/observacoes/nova` | `aria-hidden-focus`, grave, 3 de 3 passadas |
+
+Os dois primeiros são a **mesma classe dos seis campos da Etapa 12** — rótulo visível que não está
+associado ao controle — e sobreviveram àquela varredura pelo mesmo motivo que os quatro botões:
+estão atrás de dois ou três cliques. O terceiro é do componente, não da tela, e aparece em todo
+seletor.
+
+#### E o que o axe diz nesses estados — medido, depois de eu quase registrar a previsão
+
+A primeira versão deste achado dizia que `aria-input-field-name` cobre `combobox`, `listbox` e
+`slider`, "de modo que o axe os acusaria se a varredura dele abrisse o seletor". **Isso era previsão
+sobre a cobertura da ferramenta, que é exatamente o mecanismo do achado 24.** Medido — três estados,
+três passadas cada, resultado idêntico nas três:
+
+| Estado | Nó sem nome na árvore | O que o axe diz |
+|---|---|---|
+| `/observacoes/nova` + abrir "Selecione o aluno" | `listbox│(VAZIO)` | **nada sobre nome** — e sim `aria-hidden-focus(1)` [serious] |
+| `Menu da conta > Meu Perfil > Preferências` | `combobox│(VAZIO)` | `button-name(1)` [critical] — regra diferente da prevista |
+| `Nova Avaliação > Objetivos` | `slider│(VAZIO)` | `aria-input-field-name(1)` [serious] — a prevista |
+
+**Um de três pela regra que eu previ, dois de três por alguma regra, e o terceiro por nenhuma.** O
+`listbox` sem nome não é violação para o axe; o `combobox` é, mas como `button-name`, porque o
+elemento é um `<button>` com `role="combobox"` — e papel de combobox não toma nome do conteúdo, o
+que é a razão de ele estar sem nome na árvore enquanto o `innerText` dele tem o valor selecionado.
+
+**E apareceu uma violação que nenhuma varredura por rota podia ver:** com o seletor aberto, o Radix
+põe `aria-hidden="true"` em `.min-h-screen`, o invólucro da aplicação, que continua contendo
+elemento focável — `aria-hidden-focus`, grave, em 3 de 3 passadas. Não é sobre nome: é 4.1.2 por
+outro caminho, e entra na Pendência 11 como o quarto item.
+
+O número do projeto — ZERO em 10 de 10 nas 23 superfícies — continua verdadeiro e continua sendo
+sobre o **estado inicial** de cada rota. **Nos três primeiros estados interagidos que alguém mediu,
+o axe devolveu uma violação em cada um.**
+
+#### A terceira ocorrência da comparação entre listas, e a conta dela
+
+O autor pediu que a comparação "seis marcadores contra sete casos" fosse registrada como a
+**terceira** ocorrência, junto das duas anteriores. O achado 27 a havia registrado como a
+**segunda**. As duas contas estão certas, com regras diferentes — e é por isso que a regra manda
+dar destino item a item em vez de somar:
+
+| # | Onde | As duas contagens | O que diferia |
+|---|---|---|---|
+| 1 | achado 18 (03/10/2026) | "vinte itens" × 22 rótulos | **unidade**: uma contava itens, a outra classes |
+| 2 | nota da contagem dos instrumentos, achado 26 (19/10/2026) | "sete" × quinze | **escopo**: uma enumerava os casos lembrados, a outra os que o registro sustenta |
+| 3 | achado 27 (19/10/2026) | "seis de sete" | **unidade**: uma contava marcadores, a outra casos |
+
+Pela classe estreita — *contagens cuja unidade difere* — são duas, 1 e 3, e o achado 27 está certo
+ao dizer "segunda". Pela classe larga — *duas contagens comparadas sem destino para cada item* —
+são três, e o autor está certo ao dizer "terceira", porque a de número 2 é do mesmo mecanismo: um
+total contra outro, sem dizer de que cada um era função. **O defeito do achado 27 não foi o número:
+foi não dizer qual das duas classes estava contando** — que é o mesmo defeito, um nível acima.
+Nenhuma das três pode ser citada como "N ocorrências" sem a regra ao lado.
+
+---
+
+### 29. O ambiente entra na condição, e o detector não decide pelo indício (Etapa 18, 20/10/2026)
+
+**O que acontecia.** A condição de pronto (Etapa 16) é feita de esperas, e espera depende do
+relógio de quem mede. Na Etapa 17 a varredura do axe travou no painel do app — 15 de 23 superfícies
+com oito minutos parados numa só, depois 0 de 23 em mais de um minuto — e a causa era a aba em
+segundo plano, que tem os temporizadores estrangulados. A mesma varredura, em Chrome headless com
+`--disable-background-timer-throttling`, terminou em 4 minutos e meio. **Isso ficou registrado como
+nota e resolvido por memória:** o sinalizador entrou na linha de comando de um script do diretório
+temporário, e nada no repositório obrigava a próxima passada a usá-lo.
+
+**O que passou a existir.** `__pronto.ambiente()` **mede o próprio relógio** — sonda uma espera
+curta e compara com o que pediu —, e `__pronto.exigirAmbiente()` **recusa** a medição quando o
+relógio está estrangulado. A condição também conta quanto custaram as esperas de cada superfície,
+porque na Etapa 17 o estrangulamento começou **no meio** da passada. Os dois instrumentos — arreio
+e axe — exigem o ambiente, e `__axe.varrer()` emite a frase do número com o ambiente dentro dela.
+Sem escape: um `{ permitirAmbienteRuim: true }` devolveria ao instrumento duas condições possíveis,
+que é o defeito do achado 26.
+
+**A medição que justifica o limiar**, no mesmo Chrome, trocando só o que se queria medir:
+
+| Situação | Mediana de 5 esperas de 20 ms | Amostras |
+|---|---:|---|
+| aba em primeiro plano | **21 ms** | 21, 21, 21, 21, 20 |
+| aba oculta, **sem** os sinalizadores | **995 ms** | 576, 1011, 995, 1007, 990 |
+| aba oculta, **com** os sinalizadores | **21 ms** | 21, 20, 22, 20, 21 |
+
+**E a estatística é parte da medida — esta foi a terceira que eu tentei, e as duas primeiras caíram
+medidas, não discutidas.** A **média** foi descartada porque na verificação desta etapa a sonda
+rodou logo depois de colar os quatro instrumentos, com o laço de eventos ocupado, e a média deu
+112 ms contra os 21 ms da página parada: nada reprovou, mas a margem para o limiar caiu a 1,8x. O
+**mínimo** foi descartado porque as amostras mostraram que a primeira espera de uma aba estrangulada
+mede só o resto do segundo corrente (576 ms numa passada, 422 ms noutra) — é um sorteio em [0, 1000]
+e, com cerca de uma chance em cinco, passaria por limpo. A **mediana** é imune às duas coisas: uma
+tarefa longa isolada não a move, e o resto do primeiro segundo é uma amostra só. Numa passada
+posterior, com a sonda rodando logo depois dos quatro instrumentos, as amostras foram
+`[188, 132, 45, 20, 21]`: média 81, **mediana 45**, limiar 200 — a distribuição decaindo conforme o
+laço esvazia, e a mediana onde se queria que ela estivesse.
+
+**Três versões do mesmo detector em uma etapa, cada troca forçada por uma medição** e nenhuma por
+opinião. É também por isso que as amostras saem no resultado: quem lê o número pode refazer a conta.
+
+**O achado é a terceira linha da tabela.** A primeira versão do detector recusava quando
+`document.visibilityState !== 'visible'`, e o controle mostrou que essa recusa seria **falsa**: em
+aba oculta com os sinalizadores ligados, o relógio é o mesmo do primeiro plano. Aba oculta é
+**prognóstico** de estrangulamento, não o estrangulamento. O detector passou a decidir pela medida
+que tem — o custo real da espera — e a visibilidade saiu como **aviso**, porque o estrangulamento
+pode começar depois.
+
+> **Regra, no `CLAUDE.md`: quem tem a medida não decide pelo prognóstico.** Indício correlacionado
+> com o defeito não é o defeito, e instrumento que recusa pelo indício produz falso negativo com a
+> mesma facilidade com que produziria falso positivo. É parente do achado 24 — ali o DOM era o
+> indício e a árvore do navegador era a medida.
+
+#### O número reemitido, com o ambiente dentro dele (20/10/2026)
+
+Emitido por `__axe.varrer()`, não escrito à mão:
+
+> ZERO em 10 de 10 em cada uma das 23 superfícies;
+> 230 passadas;
+> condição atingida em 230 de 230;
+> condição "objeto do gráfico onde há gráfico (3 de 23 superfícies) + 400 ms sem mutação + movimento reduzido pelo atributo do app + document.fonts.ready";
+> ambiente MEDIDO: Chrome headless, aba visible, espera de 20 ms custou 21 ms de mediana (amostras: 21, 21, 21, 21, 21;
+> limiar 200 ms sobre a mediana), janela 1280x900;
+> ambiente DECLARADO por quem rodou: Chrome headless, --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows, Emulation.setDeviceMetricsOverride 1280x900, servidor de desenvolvimento em localhost:8080;
+> passada completa em 272 s
+
+E o resto da verificação de navegador, no mesmo ambiente: 10 de 10 controles do arreio; fotografia
+contra a base publicada **igual nas 23 superfícies, 0 diferenças**, com as cinco medidas; guarda da
+condição **reprovando** sem ela (2 diferenças, `podados` nas duas superfícies da rosca) e passando
+com ela; estabilidade por repetição e por ordem inversa sem diferença; controle positivo do axe
+acusando `image-alt(1)` com a imagem plantada e ZERO sem.
+
+**E uma afirmação minha que isto corrige.** O relato da Etapa 17 disse que a varredura terminou em
+4,5 min "no Chrome headless com `--disable-background-timer-throttling`", pondo o sinalizador como
+causa. O que estava medido era a correlação: headless **e** com o sinalizador **e** com a aba em
+primeiro plano, contra painel com aba oculta. Medido agora, o sinalizador é de fato o que decide em
+aba oculta (995 ms → 21 ms de mediana) — a afirmação se sustenta, mas ela só se sustenta **a partir desta
+etapa**. Até aqui era uma causa declarada, não medida.
+
+---
+
 ## Pendências abertas
 
 
@@ -2225,6 +2498,23 @@ tela).
 > navega por URL e não clica em nada, então diálogo, toast e menu não estão **abertos** na hora da
 > medida. Com o diálogo aberto à mão, a medida sai inteira — foi assim que a folha dos M1–M9 pôde
 > citar string medida em seis passos de diálogo.
+
+> **Continua aberta em 20/10/2026, e deixou de ser hipótese (Etapa 18, achado 28).** O custo de não
+> ter interação está medido: quatro botões com papel `button` e nome vazio em `/observacoes/nova`
+> atravessaram dezessete etapas, três auditorias de acessibilidade e 230 passadas do axe com condição
+> declarada, porque só existem depois de "Adicionar Situação" — e antes do clique aqueles blocos não
+> têm botão nenhum, de modo que o zero das varreduras era verdadeiro e irrelevante. Mais três classes
+> de controle sem nome apareceram pelo mesmo caminho (Pendência 11).
+>
+> **O que a Etapa 18 acrescentou, e o que ela NÃO resolve.** `scripts/varredura-de-estados.cjs` visita
+> os pontos em que a interface cria controle novo e lê a árvore de acessibilidade do Chrome — mas mede
+> **uma coisa só**, nó interativo exposto sem nome, e não as quatro medidas deste arreio. Ele também
+> não serve de modelo direto para o arreio em dois pontos medidos: navega com **carregamento de
+> verdade** a cada ponto, porque com `pushState` o estado do React sobrevive à troca de rota e um
+> diálogo aberto deixa o resto do documento sob `aria-hidden` (a árvore devolvia zero por
+> contaminação); e clica com **evento de ponteiro do protocolo**, porque `el.click()` não abre menu do
+> Radix. O arreio de diálogo que esta pendência pede continua a ser escrito, e agora tem dois defeitos
+> conhecidos para não repetir.
 
 **Estado em 11/10/2026:** `scripts/fotografia.js` mede 23 superfícies **sem interagir**. Diálogo,
 toast, menu e aba de diálogo só existem depois de um clique, e nenhum deles está aberto quando a
@@ -2440,7 +2730,26 @@ nome — são 18 por rota nas duas rotas de gráfico, e a varredura por rota est
 > e 1 `<svg>` escrito à mão. Medido depois: **de 210 imagens expostas sem nome para 0** nas
 > superfícies remedidas. Os seis sítios da categoria B viraram a **Pendência 10**.
 
-### 10. Seis controles cujo único portador de nome é o ícone (Etapa 17) — medido, relatado, não consertado
+### 10. Seis controles cujo único portador de nome é o ícone (Etapa 17) — FECHADA na Etapa 18
+
+> **FECHADA em 20/10/2026, na Etapa 18.** Os seis ganharam `aria-label` com a ação e o objeto, por
+> duas regras: onde o objeto tem título próprio, ação + título ("Editar formação: Pedagogia"); onde
+> é linha recém criada e ainda vazia, ação + a posição com o rótulo do campo ("Remover situação 2"),
+> que é como a linha se identifica na tela. O conteúdo do campo **não** entra no nome: ele começa
+> vazio e muda a cada tecla. Os ícones desses seis botões receberam `aria-hidden="true"` no mesmo
+> commit — eles tinham ficado de fora dos 262 da Etapa 17 exatamente por serem o único portador de
+> nome. Medido na árvore do Chrome depois da interação: os oito botões dos dois casos saem de
+> `button│(VAZIO)` para os oito nomes, com controle plantado conferindo a leitura (5 vazios com ele,
+> 4 sem). **A regra das duas contagens, porque esta etapa é sobre isso:** são **seis sítios no
+> código** e **oito botões na tela** — os dois sítios de `/observacoes/nova` renderizam uma linha
+> cada, e com duas linhas o mesmo sítio produz dois botões. "Seis" e "oito" são a mesma coisa contada
+> por unidades diferentes; o título desta pendência conta sítios, e a medição na árvore conta botões.
+>
+> O que esta pendência dizia sobre a escolha entre `aria-label` e `<span class="sr-only">`
+> resolveu-se pela convenção já medida no projeto: fora de `components/ui/`, controle só-de-ícone
+> usa `aria-label` (`Favoritar …`, `Recolher o detalhe do risco …`, `Menu da conta`).
+
+**O texto abaixo é o estado em 19/10/2026, quando esta pendência foi escrita, e fica como estava.**
 
 A classificação dos ícones separou três categorias, e a segunda — **controle que depende do ícone
 para ter nome** — tem seis sítios. Eles ficaram de fora do `aria-hidden` de propósito: esconder ali
@@ -2467,6 +2776,71 @@ ou como `<span class="sr-only">`, e a escolha entre os dois muda o que o leitor 
 **O que o repositório pode afirmar sem isso:** que nenhum ícone decorativo sobrou exposto nas rotas
 medidas. **O que não pode:** que todo controle do sistema tenha nome — seis não têm, e estão
 nomeados aqui.
+
+---
+
+### 11. Quatro achados da varredura por estado, atrás de interação (Etapa 18) — medido, relatado, não consertado
+
+A varredura por estado (`scripts/varredura-de-estados.cjs`) achou, além dos seis que esta etapa
+nomeou, **três classes de controle exposto sem nome na árvore do Chrome** e, ao medir o axe nesses
+mesmos estados, **uma violação grave que não é sobre nome** — quatro itens, todos atrás de dois ou
+três cliques. **Nome de controle é produto**, e a mesma regra que manteve os seis em aberto por uma
+etapa mantém estes: ficam medidos, com arquivo e linha, e não consertados.
+
+    src/components/MeuPerfilDialog.tsx:779-781   <Label>Página inicial padrão</Label> sem htmlFor +
+                                                 <SelectTrigger className="mt-2"> sem id
+                                                 -> combobox│(VAZIO)
+                                                 caminho: Menu da conta > Meu Perfil > Preferências
+
+    src/components/NewAssessmentDialog.tsx:310-311  <Label>Progresso: {progress[0]}%</Label> sem
+                                                 htmlFor + <Slider> sem aria-label
+                                                 -> slider│(VAZIO)
+                                                 caminho: Nova Avaliação > (aba de objetivo)
+
+    src/components/ui/select.tsx (SelectContent)  a caixa de opções de TODO seletor do sistema
+                                                 -> listbox│(VAZIO)
+                                                 caminho: qualquer seletor, depois de abrir
+
+**Os dois primeiros são a mesma classe dos seis campos da Etapa 12** — rótulo visível que existe,
+mas não está associado ao controle. O conserto deles é de uma linha (`htmlFor` + `id`, ou
+`aria-label`), e ainda assim é produto: o que o leitor vai anunciar é texto que alguém escolhe. Eles
+sobreviveram à varredura da Etapa 12 pelo mesmo motivo que os quatro botões desta: aquela varredura
+mediu paradas de tabulação **por rota**, e estes só existem depois do clique.
+
+**O terceiro é do componente, não da tela**, e por isso é a decisão mais pesada dos três: mexer em
+`src/components/ui/select.tsx` muda todo seletor do sistema de uma vez. O nome do gatilho (o
+`combobox`) está correto na maioria dos casos; o que não tem nome é a caixa que abre. A opção óbvia
+— dar à caixa o nome do gatilho — é a que o Radix deixou de fora de propósito, e precisa ser medida
+com leitor de tela antes de entrar, não só na árvore.
+
+**O QUARTO ITEM, que não é sobre nome e só existe depois do clique.** Com o seletor aberto, o Radix
+põe `aria-hidden="true"` em `.min-h-screen` — o invólucro da aplicação inteira —, e ele continua
+contendo elemento focável. O axe chama isso de `aria-hidden-focus`, **grave**, e acusou em 3 de 3
+passadas em `/observacoes/nova` com "Selecione o aluno" aberto. Também é do componente, também não é
+texto que alguém escreve, e também fica relatado em vez de consertado.
+
+**O que o axe diz desses quatro, medido (e não previsto).** A primeira versão desta pendência dizia
+que `aria-input-field-name` cobria os três e que "o axe os acusaria se a varredura dele abrisse o
+seletor". Medido, três estados com três passadas cada:
+
+    listbox  (/observacoes/nova, seletor aberto)      -> o axe NÃO diz nada sobre nome
+                                                         (diz aria-hidden-focus, que é outra coisa)
+    combobox (Meu Perfil > Preferências)              -> button-name, critical — regra DIFERENTE
+                                                         da prevista
+    slider   (Nova Avaliação > Objetivos)             -> aria-input-field-name, serious — a prevista
+
+Um de três pela regra prevista, dois de três por alguma regra, e o terceiro por nenhuma. É o achado
+24 outra vez: **previsão sobre o que a ferramenta cobre não é medida da ferramenta.**
+
+**O que isto significa para o número do axe.** O ZERO em 10 de 10 nas 23 superfícies continua
+verdadeiro sob a condição em que foi medido — **estado inicial de cada rota** —, e nos três primeiros
+estados interagidos que alguém mediu o axe devolveu **uma violação em cada um**. É a Pendência 3 que
+separa esse número do número que valeria para o sistema inteiro.
+
+**O que o repositório pode afirmar:** que os seis controles cujo único portador de nome era o ícone
+têm nome, e que nas 23 superfícies, no estado inicial de cada uma, nenhum nó interativo é exposto sem
+nome. **O que não pode:** que todo controle do sistema tenha nome — três classes não têm, e estão
+nomeadas aqui —, nem que o sistema esteja em ZERO depois de o usuário clicar.
 
 ---
 

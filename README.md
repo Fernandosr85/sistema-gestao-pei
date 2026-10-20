@@ -234,7 +234,9 @@ commit da etapa e depois do último:
 | Gráficos cujo desenho fica fora da árvore de acessibilidade (Etapas 3, 14, 15 e 16) | 1 de 12 | **12 de 12** |
 | Ícones de legenda expostos sem nome, nas rotas com gráfico (Etapa 16) | 9 | **0** |
 | Ícones decorativos expostos sem nome na árvore do Chrome, nas rotas medidas (Etapa 17) | 210 | **0** |
-| Controles cujo único portador de nome é o ícone (Etapa 17, medido e **não corrigido**) | 6 | 6 |
+| Controles cujo único portador de nome é o ícone — **sítios no código** (Etapas 17 e 18) | 6 | **0** |
+| Os mesmos, **contados na árvore do Chrome depois da interação** (dois sítios rendem duas linhas) | 8 | **0** |
+| Achados da varredura por **estado**, atrás de 2 ou 3 cliques (Etapa 18, medido e **não corrigido**) | 4 | 4 |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
@@ -258,6 +260,22 @@ commit da etapa e depois do último:
 > `document.fonts.ready`".** A condição foi atingida em 230 de 230 passadas, sem passada descartada.
 > O "124" continua amostra única: é de março, de uma ponta que não existe mais.
 >
+> **Remedido em 20/10/2026, depois da Etapa 18, e o número não se moveu — agora com o ambiente na
+> frase, emitida pelo próprio instrumento (`__axe.varrer()`) em vez de escrita à mão:**
+>
+> > ZERO em 10 de 10 em cada uma das 23 superfícies;
+> > 230 passadas;
+> > condição atingida em 230 de 230;
+> > condição "objeto do gráfico onde há gráfico (3 de 23 superfícies) + 400 ms sem mutação + movimento reduzido pelo atributo do app + document.fonts.ready";
+> > ambiente MEDIDO: Chrome headless, aba visible, espera de 20 ms custou 21 ms de mediana
+> > (amostras: 21, 21, 21, 21, 21; limiar 200 ms sobre a mediana), janela 1280x900;
+> > ambiente DECLARADO por quem rodou: Chrome headless, --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows, Emulation.setDeviceMetricsOverride 1280x900, servidor de desenvolvimento em localhost:8080;
+> > passada completa em 272 s
+>
+> O ambiente entrou porque ele muda o resultado: aba em segundo plano estrangula o temporizador, e a
+> mediana da mesma espera pedida de 20 ms vai de 21 ms para 995 ms (achado 29). Os instrumentos
+> **recusam** medir com o relógio estrangulado.
+>
 > **Remedido em 19/10/2026, depois da Etapa 16, e o número não se moveu:** ZERO em 10 de 10 em cada
 > uma das 23 superfícies, condição atingida em 230 de 230 passadas. A condição agora mora num lugar
 > só — `scripts/condicao-de-pronto.js` —, e é a mesma que a fotografia de superfície usa: enquanto
@@ -271,6 +289,17 @@ commit da etapa e depois do último:
 >
 > **O que esse número não cobre, e fica dito junto:** os 15 diálogos, porque o instrumento navega por
 > rota e não interage (Pendência 3), e o estado da rosca da agenda, que exige um dia com atendimento.
+> **Na Etapa 18 esse limite deixou de ser só declarado e passou a ter custo medido:** uma varredura
+> por **estado** — que clica em cada ponto onde a interface cria controle novo, 701 pontos em 19
+> superfícies — achou **oito** botões com papel `button` e nome vazio: quatro em `/observacoes/nova`,
+> que só existem depois de "Adicionar Situação", e quatro na aba "Formação" de "Meu Perfil", a três
+> cliques da raiz. Mais três classes de controle sem nome atrás de dois ou três cliques (achado 28).
+> Os oito foram corrigidos; as três classes estão medidas e nomeadas na Pendência 11, junto de uma
+> quarta coisa que apareceu ao rodar o axe nesses estados: com um seletor aberto, o Radix põe
+> `aria-hidden="true"` no invólucro da aplicação, que continua contendo elemento focável
+> (`aria-hidden-focus`, grave, 3 de 3 passadas). **O zero acima é sobre o estado inicial de cada
+> rota: nos três primeiros estados interagidos que alguém mediu, o axe devolveu uma violação em cada
+> um.** O instrumento da varredura por estado é `scripts/varredura-de-estados.cjs`.
 >
 > **O zero do axe é o piso, não o resultado, e tem uma segunda ressalva (medida em 11/10/2026).**
 > As duas linhas da Etapa 12 são de coisas que **o axe não reclama**: ele aceita `placeholder` como
