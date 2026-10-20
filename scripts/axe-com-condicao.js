@@ -8,6 +8,12 @@
  *     10 passadas, condição "setores do gráfico presentes + 400 ms sem mutação",
  *     resultado idêntico em 10/10: svg-img-alt(5)
  *
+ * Para o número do projeto inteiro, chame `await __axe.varrer()`: ele percorre as 23 superfícies e
+ * devolve A FRASE — resultado, passadas, condição atingida, condição, **o ambiente medido**, o
+ * ambiente declarado por quem rodou e o tempo total. A frase existe para não ser montada à mão no
+ * registro, e o ambiente entrou nela na Etapa 18 (achado 29): aba em segundo plano estrangula
+ * temporizador, e o número medido lá não é o mesmo número.
+ *
  * POR QUE ISSO EXISTE (achado 23). A medição anterior era **uma passada com espera fixa**, e o
  * resultado dela variava: na rota dos relatórios, `svg-img-alt(5)` aparecia ou não conforme a
  * espera caísse antes ou depois do fim da animação do gráfico de rosca — que termina entre 3,2 s e
@@ -89,6 +95,18 @@
     const espera = await window.__pronto.esperar(
       marcador === undefined ? { rota } : { rota, marcador },
     );
+    /*
+     * AMBIENTE ESTRANGULADO PARA A PASSADA (Etapa 18). Foi o que aconteceu na Etapa 17: a aba foi
+     * para segundo plano e esta varredura passou de 4,5 min para mais de 40 sem terminar a primeira
+     * superfície. O que ela devolveria, se devolvesse, seria medido com outro relógio.
+     */
+    if (espera.estrangulado) {
+      restaurar();
+      throw new Error(`AMBIENTE RECUSADO em ${rota || '(rota atual)'} — as esperas da condição `
+        + `custaram ${espera.esperas.custoMedianoMs} ms (mediana de ${espera.esperas.voltas}) para `
+        + `${espera.esperas.pedidoMedioMs} ms pedidos `
+        + 'pedidos. Aba em segundo plano estrangula temporizador; o número daqui não é o número.');
+    }
     const resultado = await window.axe.run(document, { runOnly: { type: 'tag', values: TAGS } });
     restaurar();
     const regras = resultado.violations
@@ -105,6 +123,10 @@
    */
   const medir = async (rota, opcoes = {}) => {
     const passadas = opcoes.passadas ?? 10;
+    // Recusa antes de gastar dez passadas. `varrer()` já recusou uma vez, e medir uma rota à mão
+    // tem de recusar também — senão a garantia depende de qual porta se entrou.
+    const ambiente = opcoes.ambiente ?? await window.__pronto.exigirAmbiente();
+    const t0 = performance.now();
     // O marcador padrão é o DA ROTA, do módulo da condição: era 'path.recharts-sector' para
     // qualquer rota, o que obrigava quem media o orçamento a passar o marcador à mão.
     const marcador = opcoes.marcador === undefined ? window.__pronto.marcadorDe(rota) : opcoes.marcador;
@@ -141,7 +163,61 @@
       resultados: resultados.map((r) => r.regras),
       linha, esperas, naoAtingiram,
       passadasComFontesProntas: comFontes,
+      ambiente,
+      duracaoMs: Math.round(performance.now() - t0),
     };
+  };
+
+  /*
+   * A VARREDURA INTEIRA, e a FRASE DO NÚMERO (Etapa 18).
+   *
+   * O número do projeto ("ZERO em 10 de 10 nas 23 superfícies") não se sustenta sozinho: ele vale
+   * sob a condição de pronto E no ambiente onde foi medido. Esta função é o lugar onde os três se
+   * juntam, para que a frase não seja montada à mão no registro.
+   *
+   * `comoFoiIniciado` é DECLARAÇÃO de quem roda — os sinalizadores da linha de comando do Chrome
+   * não são legíveis da página. O que é MEDIDO é o resto: o agente, a visibilidade, o custo real de
+   * uma espera curta, a janela e o tempo total. Se a declaração mentir, a medição a contradiz.
+   */
+  const varrer = async (superficies, opcoes = {}) => {
+    const lista = superficies ?? window.__foto?.SUPERFICIES;
+    if (!lista) throw new Error('varrer: passe as superfícies ou cole scripts/fotografia.js');
+    const ambiente = await window.__pronto.exigirAmbiente();
+    const t0 = performance.now();
+    const porSuperficie = {};
+    for (const s of lista) porSuperficie[s] = await medir(s, { ...opcoes, ambiente });
+    const duracaoMs = Math.round(performance.now() - t0);
+
+    const passadas = porSuperficie[lista[0]].passadas;
+    const todosIdenticos = lista.every((s) => porSuperficie[s].identico);
+    const distintos = [...new Set(lista.map((s) => porSuperficie[s].resultados[0]))];
+    const atingiram = lista.reduce((n, s) => n + (passadas - porSuperficie[s].naoAtingiram), 0);
+    const comMarcador = lista.filter((s) => window.__pronto.marcadorDe(s)).length;
+    const total = lista.length * passadas;
+
+    const frase = [
+      todosIdenticos && distintos.length === 1 && distintos[0] === 'ZERO'
+        ? `ZERO em ${passadas} de ${passadas} em cada uma das ${lista.length} superfícies`
+        : `resultado NÃO uniforme: ${distintos.join(' | ')}`,
+      `${total} passadas`,
+      `condição atingida em ${atingiram} de ${total}`,
+      // A condição NÃO é a da primeira superfície. Medido na primeira emissão desta frase: `lista[0]`
+      // é `/`, que não tem gráfico, e a frase saiu sem a espera pelo objeto — a parte da condição
+      // que vale justamente para as três superfícies em que ela importa. A frase descreve a
+      // condição INTEIRA e diz em quantas superfícies cada parte se aplica.
+      `condição "objeto do gráfico onde há gráfico (${comMarcador} de ${lista.length} superfícies) + `
+        + `${QUIETO_MS} ms sem mutação + movimento reduzido pelo atributo do app + document.fonts.ready"`,
+      `ambiente MEDIDO: ${/Headless/.test(ambiente.agente) ? 'Chrome headless' : 'Chrome'}`
+        + `, aba ${ambiente.visibilidade}, espera de ${ambiente.pedidoMs} ms custou `
+        + `${ambiente.msMediana} ms de mediana (amostras: ${ambiente.amostrasMs.join(', ')}; `
+        + `limiar ${ambiente.limiteMs} ms sobre a mediana), janela ${ambiente.janela}`
+        + (ambiente.aviso ? ` [aviso: ${ambiente.aviso.split('.')[0]}]` : ''),
+      `ambiente DECLARADO por quem rodou: ${opcoes.comoFoiIniciado || '(não declarado)'}`,
+      `passada completa em ${Math.round(duracaoMs / 1000)} s`,
+    ].join('; ');
+
+    console.log(frase);
+    return { frase, duracaoMs, ambiente, todosIdenticos, distintos, atingiram, total, porSuperficie };
   };
 
   /** Controle positivo do próprio instrumento: planta uma violação e exige que ela apareça. */
@@ -159,6 +235,6 @@
     return { acusou, comControle: comControle.regras, semControle: semControle.regras };
   };
 
-  window.__axe = { medir, controle, umaPassada, TAGS, QUIETO_MS };
-  return 'axe com condição pronto: __axe.controle() antes, __axe.medir(rota) depois';
+  window.__axe = { medir, varrer, controle, umaPassada, TAGS, QUIETO_MS };
+  return 'axe com condição pronto: __axe.controle() antes, __axe.varrer() depois';
 })();
