@@ -78,7 +78,10 @@ estrangulado — incluindo no meio da passada, porque na Etapa 17 foi assim que 
 com o laço de eventos ocupado (amostras `[188, 132, 45, 20, 21]` logo depois de colar os
 instrumentos — média 81, mediana 45), e o mínimo é sorteio em aba estrangulada, porque a primeira
 espera mede só o resto do segundo corrente (`[576, 1011, 995, 1007, 990]`). Ao resumir uma
-distribuição num número, diga **qual** resumo e por que ele resiste ao que você sabe que acontece.
+distribuição num número, diga **qual** resumo e por que ele resiste ao que você sabe que acontece —
+e **publique as amostras junto do resumo**, porque as duas quedas acima apareceram olhando a
+distribuição, não o resumo. Os dois erram em direções opostas: a média recusa ambiente limpo, o
+mínimo aceita ambiente preso. **O resumo é uma escolha, e a escolha é parte da medida** (achado 29).
 
 **Quem tem a medida não decide pelo prognóstico.** Indício correlacionado com o defeito não é o
 defeito: a primeira versão do detector de ambiente recusava por `document.visibilityState`, e o
@@ -128,6 +131,15 @@ que entra em `docs/`, e só por dois termos — foi assim que 152 linhas de afir
 nove etapas em `docs/API_REFERENCE.md` (achado 20). Vocabulário de prontidão ("pronto",
 "implementado", "funcional") não acha afirmação **estrutural** falsa: "TanStack Query 5.x" numa
 tabela de stack de um projeto que não a instala é falso e não casa nenhuma dessas palavras.
+
+**Antes de melhorar COMO se mede, pergunte sobre O QUE se mede.** Escopo errado não se conserta com
+rigor: repetição, controle positivo e condição declarada validam a medida, não a pergunta. Dezoito
+etapas afiaram o método — N passadas, condição declarada, testemunha, guarda que reprova,
+instrumento independente, ambiente medido — e nenhuma dessas melhorias podia encontrar oito
+controles sem nome, porque todas mediam páginas em repouso (achado 28). O resultado foi um **zero
+verdadeiro e irrelevante**, que é a forma mais difícil de zero errado: sobrevive a todos os
+controles que este projeto aprendeu a exigir. **Quando um número está estável há várias etapas, a
+hipótese a testar não é mais "ele varia?", e sim "ele é sobre o quê?".**
 
 **Rota não é estado, e varredura por rota só mede o estado inicial de cada rota.** Toda varredura
 deste projeto — fotografia, axe, paradas de tabulação, ícones — visitou URLs: as 23 superfícies são

@@ -195,8 +195,9 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Testes automatizados | ✅ Suíte em Vitest + jsdom (`npm test`), cobrindo o que as Etapas 1 a 6 corrigiram, a guarda de navegação da Etapa 8 e o PEI da Etapa 9 — não o código todo. A tabela por arquivo está em [Testes automatizados](#testes-automatizados-etapa-7) |
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
-desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero
-violação automatizada de WCAG 2.1 AA — os números estão em [Acessibilidade](#acessibilidade).
+desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero violação
+automatizada de WCAG 2.1 AA **no estado inicial de cada rota** — essa fronteira, e o que fica fora
+dela, estão em [Acessibilidade](#acessibilidade).
 Na Etapa 4, todo número que descreve os registros passou a ser calculado, e o que não tinha
 registro de origem virou cenário nomeado ou saiu — os números estão em [Números](#números).
 Na Etapa 9, o PEI virou entidade do modelo e as cinco telas que mostravam exemplo sob o nome de
@@ -209,9 +210,21 @@ tela.
 
 ## Acessibilidade
 
-A meta é **WCAG 2.1 nível AA**. A Etapa 3 do [backlog](BACKLOG-CLAUDE-CODE.md) foi dedicada
-a isso, e estes são os números, medidos nas dezessete rotas do sistema antes do primeiro
-commit da etapa e depois do último:
+A meta é **WCAG 2.1 nível AA**.
+
+**A fronteira do número, antes dos números.** O que está medido é: **ZERO violações de WCAG 2.1
+A e AA nas 23 superfícies, 10 passadas em cada uma — 230 passadas —, com condição de pronto e
+ambiente de medição declarados**, e isso vale **sobre o estado inicial de cada rota**. Estados
+interagidos — diálogo aberto, aba de diálogo trocada, linha de formulário acrescentada, seletor
+aberto — **não estão cobertos**: dos três primeiros que alguém mediu, **os três devolveram uma
+violação** (`aria-hidden-focus` com o seletor aberto, `button-name` no gatilho do seletor de
+Preferências, `aria-input-field-name` no controle deslizante de Nova Avaliação). E **quatro
+controles seguem sem nome acessível ou com defeito de árvore**, medidos, relatados e **não
+consertados**: estão nomeados com arquivo e linha na Pendência 11 do
+[backlog](BACKLOG-CLAUDE-CODE.md).
+
+A Etapa 3 do backlog foi a etapa dedicada a isso, e estes são os números, medidos nas dezessete
+rotas do sistema antes do primeiro commit da etapa e depois do último:
 
 | Medida | Antes | Depois |
 |---|---:|---:|
@@ -258,6 +271,7 @@ commit da etapa e depois do último:
 > 230 passadas —, a 1280×900, com `localStorage` vazio, sob a condição "objeto do gráfico presente
 > onde há gráfico + 400 ms sem mutação + movimento reduzido pelo atributo do app +
 > `document.fonts.ready`".** A condição foi atingida em 230 de 230 passadas, sem passada descartada.
+> **E vale sobre o estado inicial de cada rota** — a fronteira está no começo desta seção.
 > O "124" continua amostra única: é de março, de uma ponta que não existe mais.
 >
 > **Remedido em 20/10/2026, depois da Etapa 18, e o número não se moveu — agora com o ambiente na

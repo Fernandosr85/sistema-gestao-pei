@@ -2270,6 +2270,47 @@ O número do projeto — ZERO em 10 de 10 nas 23 superfícies — continua verda
 sobre o **estado inicial** de cada rota. **Nos três primeiros estados interagidos que alguém mediu,
 o axe devolveu uma violação em cada um.**
 
+#### O fecho da série, ditado pelo autor em 21/10/2026
+
+> A varredura por rota não mediu os oito controles sem nome: mediu páginas em que eles não
+> existiam. O zero dela era verdadeiro e irrelevante — a forma mais difícil de zero errado,
+> porque sobrevive a repetição, a controle positivo e a condição declarada. Tudo estava certo
+> menos a pergunta.
+>
+> Dezoito etapas melhoraram o método. A varredura por estado foi a primeira a mudar o objeto:
+> 701 pontos, 0 não medidos, 80 nós que nenhuma medição anterior podia alcançar porque todas
+> mediam páginas em repouso.
+>
+> Regra: antes de melhorar como se mede, pergunte sobre o que se mede. Escopo errado não se
+> conserta com rigor.
+
+**Uma nota de numeração, porque ela é a diferença entre duas listas.** O autor numerou este fecho
+como "achado 29". Neste registro o 29 é outro: é o **ambiente entrando na condição**, escrito na
+mesma etapa. O destino item a item, para a numeração não ficar com dois donos:
+
+| O que o autor chamou | Onde entrou aqui | Por quê |
+|---|---|---|
+| "achado 29, e é o que fecha a série" — a varredura que mediu páginas em repouso | **achado 28**, nesta seção de fecho | é o assunto do 28, e o texto o descreve sem ambiguidade |
+| a cadeia do detector de ambiente, pedida no mesmo parágrafo | **achado 29**, na seção "a estatística era o defeito" | é o assunto do 29, e já estava lá |
+
+Nada foi renumerado e nenhum achado novo foi aberto: o que entrou foi texto, nos dois lugares a
+que ele se refere. **Segunda vez nesta série que um número meu e um número do autor apontam para
+coisas diferentes** — a primeira foi o achado 27 —, e as duas se resolveram do mesmo jeito: dando
+destino a cada item em vez de escolher um dos dois números.
+
+**O que este fecho acrescenta ao que o achado 28 já dizia.** O 28 registrou o mecanismo (rota não é
+estado) e o custo (oito botões, dezessete etapas). O fecho registra a **ordem das perguntas**: a
+série passou dezessete etapas afiando *como* medir — N passadas, condição declarada, testemunha,
+guarda que reprova, instrumento independente, ambiente medido — e todas essas melhorias são reais e
+nenhuma delas podia encontrar os oito botões, porque o objeto da medição nunca mudou. Rigor sobre o
+escopo errado produz **zero verdadeiro e irrelevante**, que passa por todos os controles que o
+projeto aprendeu a exigir.
+
+> **Regra, no `CLAUDE.md`: antes de melhorar como se mede, pergunte sobre o que se mede.** Escopo
+> errado não se conserta com rigor — repetição, controle positivo e condição declarada validam a
+> medida, não a pergunta. Quando um número está estável há várias etapas, a hipótese a testar não é
+> mais "ele varia?", e sim "ele é sobre o quê?".
+
 #### A terceira ocorrência da comparação entre listas, e a conta dela
 
 O autor pediu que a comparação "seis marcadores contra sete casos" fosse registrada como a
@@ -2364,6 +2405,35 @@ condição **reprovando** sem ela (2 diferenças, `podados` nas duas superfície
 com ela; estabilidade por repetição e por ordem inversa sem diferença; controle positivo do axe
 acusando `image-alt(1)` com a imagem plantada e ZERO sem.
 
+#### A estatística era o defeito, duas vezes (nota do autor, 21/10/2026)
+
+A cadeia inteira do detector, numa etapa só, e o que cada elo tem de diferente:
+
+| Versão | O que decidia | Por que caiu | Classe do defeito |
+|---|---|---|---|
+| 1ª | `document.visibilityState !== 'visible'` | em aba oculta **com** os sinalizadores o relógio é o mesmo do primeiro plano: a recusa seria falsa | **indício no lugar da medida** |
+| 2ª | média de 3 esperas | laço de eventos ocupado levanta a média: `[188, 132, 45, 20, 21]`, média 81 ms contra 21 ms da página parada, margem de 1,8x | **estatística** |
+| 3ª | mínimo de 5 esperas | a primeira espera de uma aba estrangulada mede só o resto do segundo corrente: `[576, 1011, 995, 1007, 990]`, mínimo 576 ms — sorteio em [0, 1000], que passa por limpo cerca de uma vez em cinco | **estatística** |
+| 4ª | **mediana de 5 esperas**, com as amostras no resultado | — | — |
+
+**As duas do meio são a mesma classe, e é uma classe própria:** não era o limiar, não era o
+instrumento, não era a condição — era **o resumo da distribuição**. A média erra por tarefa longa
+isolada, o mínimo erra por amostra de borda, e os dois erram em **direções opostas**: a média produz
+falso positivo (recusa ambiente limpo), o mínimo produz falso negativo (aceita ambiente preso). Um
+número que resume várias amostras carrega uma escolha, e **a escolha é parte da medida**.
+
+A primeira versão é de outra classe — indício no lugar da medida —, e está no corpo deste achado.
+
+> **Regra, no `CLAUDE.md`: ao resumir uma distribuição num número, diga qual resumo e por que ele
+> resiste ao que se sabe que acontece.** E publique as amostras junto do resumo: as duas quedas
+> acima foram descobertas olhando a distribuição, não o resumo.
+
+**Por que isto está no registro em vez de só no código:** as três primeiras versões funcionaram em
+alguma medição. A 1ª nunca reprovou nada por engano nas passadas que rodei; a 2ª passou na
+verificação inteira; a 3ª passaria em quatro de cada cinco passadas. **Nenhuma delas falhou — todas
+caíram na pergunta "em que caso isto erra?"**, feita antes de o número virar registro, que é a única
+pergunta que as pegava.
+
 **E uma afirmação minha que isto corrige.** O relato da Etapa 17 disse que a varredura terminou em
 4,5 min "no Chrome headless com `--disable-background-timer-throttling`", pondo o sinalizador como
 causa. O que estava medido era a correlação: headless **e** com o sinalizador **e** com a aba em
@@ -2434,6 +2504,32 @@ inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" 
 | M7 | Windows → Acessibilidade → Efeitos visuais, desligar animação; F5 | — | As transições somem sem marcar nada no app |
 | M8 | Leitor de tela em `/alunos` e num diálogo (o Ver PEI serve) | Leitura sequencial, e Tab até o botão de fechar | Os títulos não começam com o nome de um emoji; o diálogo anuncia título e descrição; **o botão de fechar é anunciado como "Fechar"**, não "Close" |
 | M9 | `/gestao?tab=relatorios`, "Ver os dados do gráfico em tabela" | Tab até o resumo, Enter | A tabela abre e é lida com cabeçalho de linha e de coluna |
+
+> **São DEZ testes desde 21/10/2026 (Etapa 18b): entrou o M10.** Os nove acima não mudaram — as 22
+> linhas deles continuam as mesmas. O M10 cobre os quatro estados que **nenhum dos 22 passos
+> visita**, porque todos eles partem de uma rota em repouso e esses quatro só existem depois de um
+> clique (achado 28): os botões de remover de `/observacoes/nova`, os quatro controles desabilitados
+> da aba "Formação" do perfil, o seletor aberto com o invólucro sob `aria-hidden`, e a caixa de
+> opções e o controle deslizante sem nome.
+>
+> **No M10 há mais `[derivado]` que nos nove, e é a fronteira que isso marca:** 5 dos 6 passos dele
+> têm `[DOM]` e 4 têm `[árvore AX]`, mas 5 dos 6 também têm `[derivado]`, porque as perguntas são *o
+> que o leitor fala*, *se a remoção é anunciada*, *se o estado desabilitado é dito* e *o que acontece
+> sob `aria-hidden`* — e **nenhuma delas tem instrumento neste repositório**. Para o passo do
+> `aria-hidden-focus`, as duas leituras possíveis estão escritas **antes** da execução, com o
+> critério de falha fixado, para o resultado não escolher o critério depois.
+>
+> **O que o M10 já traz medido, e é desconfortável:** acionar "Remover situação 2" pelo teclado faz
+> a linha sair, esconde os dois botões de remover (de 2 para 0, porque com uma linha só o JSX os
+> omite), **manda o foco para `document.body`** e **não escreve nada na única região viva da
+> página** — `<section aria-live="polite">`, vazia antes e depois, sem mudança. Isso é DOM, não
+> leitor: o que o NVDA faz com isso é o que o teste vai dizer.
+>
+> **E uma correção no instrumento da folha, pega pelo controle de regressão antes de produzir
+> número:** o contador de passos usava `/^## M[1-9] /`, que **não casa `## M10`** — o zero cai onde
+> a regex exigia o espaço, e a seção inteira seria ignorada **sem erro**, devolvendo contagem menor.
+> Corrigido para `M\d+`. Fica marcado como **pego antes de virar registro**, e por isso não entra na
+> conta de instrumentos corrigidos do achado 26.
 
 O M5 tem uma armadilha de teste já verificada: duas setas com menos de ~400 ms entre elas
 parecem não funcionar. É artefato da automação, não do app.
@@ -2779,7 +2875,26 @@ nomeados aqui.
 
 ---
 
-### 11. Quatro achados da varredura por estado, atrás de interação (Etapa 18) — medido, relatado, não consertado
+### 11. Quatro achados da varredura por estado (Etapa 18) — viraram ENTRADA DO M10 na Etapa 18b
+
+> **MUDA DE LUGAR EM 21/10/2026 (Etapa 18b): os quatro itens entram como ENTRADA DA SESSÃO
+> MANUAL (o M10), e não como pendência de código.** O que fica aberto não é "consertar estes
+> quatro": é **executar o M10 e decidir com o que ele devolver**. A decisão é do autor, e esta
+> pendência passa a ser o insumo dela.
+>
+> **O motivo, e ele é medido, não preferência.** Dos quatro, **o `listbox` sem nome não é coberto
+> por nenhuma regra do axe** — medido nesta série: com o seletor aberto, o axe não diz nada sobre
+> nome, e diz `aria-hidden-focus`, que é outra coisa. Os outros três saem por alguma regra, e dois
+> deles por regra diferente da que eu previa. **Consertar pela ferramenta quando nenhuma ferramenta
+> alcança é escolher pelo instrumento em vez de pelo usuário**, e seria a mesma troca que o achado
+> 28 registra: medir o que o instrumento sabe medir em vez do que a pessoa encontra.
+>
+> O que o M10 pergunta, e que a árvore de acessibilidade não responde: o que o NVDA **fala** no
+> lugar do nome que falta; se a remoção de uma linha é anunciada ou se o foco cai no vazio; se o
+> leitor anuncia o estado **desabilitado** junto do nome; e o que acontece de verdade quando o Tab
+> alcança o que está sob `aria-hidden`. **Quatro perguntas de produto, e a resposta delas é que
+> decide o conserto** — não a lista de regras de uma ferramenta.
+
 
 A varredura por estado (`scripts/varredura-de-estados.cjs`) achou, além dos seis que esta etapa
 nomeou, **três classes de controle exposto sem nome na árvore do Chrome** e, ao medir o axe nesses
