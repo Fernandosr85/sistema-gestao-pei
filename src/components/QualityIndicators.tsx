@@ -23,7 +23,7 @@ const QualityIndicators = () => {
       id: '1',
       title: 'Taxa de Implementação dos PEIs',
       description: 'Dos PEIs ativos, quantos têm as adaptações previstas em execução. Não é a parcela de PEIs com objetivos alcançados, da Visão Geral.',
-      icon: <FileText className="h-5 w-5" />,
+      icon: <FileText aria-hidden="true" className="h-5 w-5" />,
       meta: 95,
       realizado: 88,
       anoAnterior: 82,
@@ -34,7 +34,7 @@ const QualityIndicators = () => {
     {
       id: '2',
       title: 'Progressão dos Estudantes',
-      icon: <TrendingUp className="h-5 w-5" />,
+      icon: <TrendingUp aria-hidden="true" className="h-5 w-5" />,
       meta: 75,
       realizado: 82,
       anoAnterior: 78,
@@ -45,7 +45,7 @@ const QualityIndicators = () => {
     {
       id: '3',
       title: 'Formação Docente',
-      icon: <GraduationCap className="h-5 w-5" />,
+      icon: <GraduationCap aria-hidden="true" className="h-5 w-5" />,
       meta: 40,
       realizado: 52,
       anoAnterior: 38,
@@ -57,7 +57,7 @@ const QualityIndicators = () => {
       id: '4',
       title: 'Famílias Satisfeitas',
       description: 'Percentual das famílias que se declararam satisfeitas. Não é a nota média de 1 a 5, da Visão Geral.',
-      icon: <Heart className="h-5 w-5" />,
+      icon: <Heart aria-hidden="true" className="h-5 w-5" />,
       meta: 85,
       realizado: 91,
       anoAnterior: 87,
@@ -68,7 +68,7 @@ const QualityIndicators = () => {
     {
       id: '5',
       title: 'Inclusão Social',
-      icon: <Users className="h-5 w-5" />,
+      icon: <Users aria-hidden="true" className="h-5 w-5" />,
       meta: 70,
       realizado: 65,
       anoAnterior: 60,
@@ -79,7 +79,7 @@ const QualityIndicators = () => {
     {
       id: '6',
       title: 'Tempo de Resposta a Demandas',
-      icon: <Clock className="h-5 w-5" />,
+      icon: <Clock aria-hidden="true" className="h-5 w-5" />,
       meta: 5,
       realizado: 3.2,
       anoAnterior: 4.8,
@@ -158,7 +158,7 @@ const QualityIndicators = () => {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Star className="h-6 w-6 text-warning" />
+          <Star aria-hidden="true" className="h-6 w-6 text-warning" />
           INDICADORES DE QUALIDADE DA INCLUSÃO
         </CardTitle>
       </CardHeader>

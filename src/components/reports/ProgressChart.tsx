@@ -151,7 +151,7 @@ const ProgressChart = () => {
           
           {/* Badge de status */}
           <Badge className={`${status.color} text-white flex items-center gap-1`}>
-            <StatusIcon className="w-3 h-3" />
+            <StatusIcon aria-hidden="true" className="w-3 h-3" />
             {status.label}
           </Badge>
         </div>
@@ -304,7 +304,7 @@ const ProgressChart = () => {
         <div className="mt-4 p-4 bg-accent rounded-lg border border-border">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-              <Lightbulb className="w-5 h-5 text-primary-foreground" />
+              <Lightbulb aria-hidden="true" className="w-5 h-5 text-primary-foreground" />
             </div>
             <div>
               {/* O fundo é `bg-accent`, escuro. O texto usava as cores de fundo claro, e ficava
@@ -346,7 +346,7 @@ const ProgressChart = () => {
 
             {!areaSelecionada && (
               <div className="text-center py-12 text-muted-foreground">
-                <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <AlertCircle aria-hidden="true" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Selecione uma área acima para ver os detalhes</p>
               </div>
             )}
@@ -387,9 +387,9 @@ function MiniCardArea({
   const movimentoReduzido = useReducedMotion();
 
   const getStatusIcon = () => {
-    if (area.status === 'excelente') return <CheckCircle2 className="w-4 h-4 text-green-600" />;
-    if (area.status === 'atencao') return <AlertCircle className="w-4 h-4 text-red-600" />;
-    return <TrendingUp className="w-4 h-4 text-primary" />;
+    if (area.status === 'excelente') return <CheckCircle2 aria-hidden="true" className="w-4 h-4 text-green-600" />;
+    if (area.status === 'atencao') return <AlertCircle aria-hidden="true" className="w-4 h-4 text-red-600" />;
+    return <TrendingUp aria-hidden="true" className="w-4 h-4 text-primary" />;
   };
 
   const getStatusBadge = () => {
@@ -601,7 +601,7 @@ function GraficoAreaDetalhado({ area }: { area: AreaData }) {
         }}
       >
         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-          <Lightbulb className="w-5 h-5" style={{ color: area.cor }} />
+          <Lightbulb aria-hidden="true" className="w-5 h-5" style={{ color: area.cor }} />
           Leitura ilustrativa — regra fixa, nenhum modelo é executado
         </h4>
         <p className="text-sm text-gray-700">

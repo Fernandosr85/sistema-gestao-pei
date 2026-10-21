@@ -60,7 +60,7 @@ const AlertsPanel = () => {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <AlertTriangle className="h-6 w-6 text-destructive" />
+          <AlertTriangle aria-hidden="true" className="h-6 w-6 text-destructive" />
           ALERTAS E AÇÕES PRIORITÁRIAS
         </CardTitle>
       </CardHeader>

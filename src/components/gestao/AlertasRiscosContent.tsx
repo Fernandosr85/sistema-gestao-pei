@@ -342,7 +342,7 @@ const AlertasRiscosContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
+            <AlertTriangle aria-hidden="true" className="h-5 w-5" />
             Resumo de Riscos
           </CardTitle>
         </CardHeader>

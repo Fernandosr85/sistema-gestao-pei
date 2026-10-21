@@ -61,7 +61,7 @@ const StatCard = ({
             {trend && <p className="mt-2 text-xs text-muted-foreground">{describeTrend(trend)}</p>}
           </div>
           <div className={`${bgVariantClasses[variant]} p-4 rounded-xl`}>
-            <Icon className={`h-8 w-8 ${variantClasses[variant]}`} />
+            <Icon aria-hidden="true" className={`h-8 w-8 ${variantClasses[variant]}`} />
           </div>
         </div>
       </CardContent>

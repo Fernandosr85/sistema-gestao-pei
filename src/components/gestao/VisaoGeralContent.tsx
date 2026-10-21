@@ -59,14 +59,14 @@ const VisaoGeralContent = () => {
       <Card className="border-destructive/50 bg-destructive/5">
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2 text-destructive">
-            <AlertTriangle className="h-5 w-5" />
+            <AlertTriangle aria-hidden="true" className="h-5 w-5" />
             Alertas Críticos
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* PEIs Vencidos */}
           <Alert variant="destructive">
-            <FileText className="h-4 w-4" />
+            <FileText aria-hidden="true" className="h-4 w-4" />
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
@@ -85,7 +85,7 @@ const VisaoGeralContent = () => {
 
           {/* Professores em Sobrecarga */}
           <Alert>
-            <Users className="h-4 w-4" />
+            <Users aria-hidden="true" className="h-4 w-4" />
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
@@ -106,7 +106,7 @@ const VisaoGeralContent = () => {
 
           {/* Famílias Sem Resposta */}
           <Alert>
-            <Phone className="h-4 w-4" />
+            <Phone aria-hidden="true" className="h-4 w-4" />
             <AlertDescription>
               <div className="flex items-center justify-between">
                 <div>
@@ -130,7 +130,7 @@ const VisaoGeralContent = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <CheckCircle2 className="h-8 w-8 text-warning" />
+                <CheckCircle2 aria-hidden="true" className="h-8 w-8 text-warning" />
                 <span className="text-2xl font-bold">93%</span>
               </div>
               <p className="text-sm font-medium mb-1">Presença PEI</p>
@@ -149,14 +149,14 @@ const VisaoGeralContent = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <AlertTriangle className="h-8 w-8 text-success" />
+                <AlertTriangle aria-hidden="true" className="h-8 w-8 text-success" />
                 <span className="text-2xl font-bold">1</span>
               </div>
               <p className="text-sm font-medium mb-1">Crises Hoje</p>
               {/* Saiu "Pedro, 9h - Ansiedade": crise de saúde mental atribuída a um aluno nomeado. */}
               <p className="text-xs text-muted-foreground mb-2">1 registro, às 9h</p>
               <div className="flex items-center gap-1 text-xs">
-                <TrendingDown className="h-3 w-3 text-success" />
+                <TrendingDown aria-hidden="true" className="h-3 w-3 text-success" />
                 <span className="text-success">Média: 2 eventos</span>
               </div>
             </CardContent>
@@ -166,13 +166,13 @@ const VisaoGeralContent = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <Clock className="h-8 w-8 text-info" />
+                <Clock aria-hidden="true" className="h-8 w-8 text-info" />
                 <span className="text-2xl font-bold">8</span>
               </div>
               <p className="text-sm font-medium mb-1">Pendências</p>
               <p className="text-xs text-muted-foreground mb-2">Tarefas administrativas</p>
               <div className="flex items-center gap-1 text-xs">
-                <TrendingDown className="h-3 w-3 text-success" />
+                <TrendingDown aria-hidden="true" className="h-3 w-3 text-success" />
                 <span className="text-success">Ontem: 12 (redução)</span>
               </div>
             </CardContent>
@@ -182,7 +182,7 @@ const VisaoGeralContent = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-2">
-                <Award className="h-8 w-8 text-success" />
+                <Award aria-hidden="true" className="h-8 w-8 text-success" />
                 <span className="text-2xl font-bold">4.7</span>
               </div>
               {/* Era "Satisfação Geral": nome dos 91% da aba Análise, que medem outra coisa. */}
@@ -206,7 +206,7 @@ const VisaoGeralContent = () => {
           <CardHeader>
             <CardTitle level={2} className="flex items-center justify-between">
               <span className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+                <Target aria-hidden="true" className="h-5 w-5" />
                 Prioridades da Semana
               </span>
             </CardTitle>
@@ -242,7 +242,7 @@ const VisaoGeralContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <Calendar aria-hidden="true" className="h-5 w-5" />
               Linha do Tempo de Hoje
             </CardTitle>
           </CardHeader>
@@ -262,7 +262,7 @@ const VisaoGeralContent = () => {
                     <div className="absolute left-[15px] top-8 bottom-0 w-[2px] bg-border" />
                   )}
                   <div className={`rounded-full p-2 bg-background border-2 ${event.color} z-10`}>
-                    <event.icon className="h-4 w-4" />
+                    <event.icon aria-hidden="true" className="h-4 w-4" />
                   </div>
                   <div className="flex-1 pt-1">
                     <p className="text-sm font-medium">{event.text}</p>
@@ -282,7 +282,7 @@ const VisaoGeralContent = () => {
           <CardHeader>
             <CardTitle level={2} className="flex items-center justify-between">
               <span className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
+                <Bell aria-hidden="true" className="h-5 w-5" />
                 Notificações Recentes
               </span>
             </CardTitle>
@@ -302,7 +302,7 @@ const VisaoGeralContent = () => {
                     notification.unread ? 'bg-primary/5 border-primary/20' : 'bg-background'
                   }`}
                 >
-                  <notification.icon className={`h-5 w-5 ${notification.color} flex-shrink-0 mt-0.5`} />
+                  <notification.icon aria-hidden="true" className={`h-5 w-5 ${notification.color} flex-shrink-0 mt-0.5`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm">{notification.text}</p>
                     <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
@@ -320,7 +320,7 @@ const VisaoGeralContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+              <TrendingUp aria-hidden="true" className="h-5 w-5" />
               Desempenho da {illustrativeScenario.name}
             </CardTitle>
           </CardHeader>

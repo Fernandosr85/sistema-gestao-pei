@@ -42,12 +42,12 @@ const Students = () => {
         <div className="flex flex-col items-start gap-1 md:items-end">
           <div className="flex gap-2">
             <Button variant="outline" disabled aria-describedby="exportar-alunos-indisponivel">
-              <Download className="mr-2 h-4 w-4" />
+              <Download aria-hidden="true" className="mr-2 h-4 w-4" />
               Exportar
             </Button>
             <Link to="/alunos/novo">
               <Button>
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
                 Novo Aluno
               </Button>
             </Link>
@@ -70,7 +70,7 @@ const Students = () => {
             <Label htmlFor="busca-alunos" className="sr-only">
               Buscar aluno por nome ou matrícula
             </Label>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="busca-alunos"
               placeholder="Buscar por nome ou matrícula..."
@@ -87,7 +87,7 @@ const Students = () => {
           */}
         <Select value={selectedSerie} onValueChange={setSelectedSerie}>
           <SelectTrigger className="w-full md:w-[200px]" aria-label="Filtrar por série">
-            <Filter className="mr-2 h-4 w-4" />
+            <Filter aria-hidden="true" className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Série" />
           </SelectTrigger>
           <SelectContent>
@@ -101,7 +101,7 @@ const Students = () => {
 
         <Select value={selectedSupport} onValueChange={setSelectedSupport}>
           <SelectTrigger className="w-full md:w-[200px]" aria-label="Filtrar por nível de suporte">
-            <Filter className="mr-2 h-4 w-4" />
+            <Filter aria-hidden="true" className="mr-2 h-4 w-4" />
             <SelectValue placeholder="Nível de Suporte" />
           </SelectTrigger>
           <SelectContent>

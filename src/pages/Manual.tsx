@@ -11,7 +11,7 @@ const Manual = () => {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <BookOpen className="h-8 w-8 text-primary" />
+          <BookOpen aria-hidden="true" className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold">Manual de Procedimentos para Inclusão</h1>
         </div>
         <p className="text-muted-foreground text-lg">
@@ -42,7 +42,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
+                <Users aria-hidden="true" className="h-5 w-5" />
                 1. Identificação e Acolhimento
               </CardTitle>
             </CardHeader>
@@ -85,7 +85,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <FileCheck className="h-5 w-5" />
+                <FileCheck aria-hidden="true" className="h-5 w-5" />
                 2. Plano Educacional Individualizado (PEI)
               </CardTitle>
               <CardDescription>
@@ -224,7 +224,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
+                <GraduationCap aria-hidden="true" className="h-5 w-5" />
                 3. Formação de Professores
               </CardTitle>
             </CardHeader>
@@ -268,7 +268,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
+                <Users aria-hidden="true" className="h-5 w-5" />
                 4. Equipe Multidisciplinar
               </CardTitle>
             </CardHeader>
@@ -334,7 +334,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <Heart className="h-5 w-5" />
+                <Heart aria-hidden="true" className="h-5 w-5" />
                 5. Articulação com Famílias
               </CardTitle>
             </CardHeader>
@@ -376,7 +376,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <ClipboardList className="h-5 w-5" />
+                <ClipboardList aria-hidden="true" className="h-5 w-5" />
                 6. Protocolos Específicos
               </CardTitle>
             </CardHeader>
@@ -433,7 +433,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Shield aria-hidden="true" className="h-5 w-5" />
                 9. Documentação Obrigatória
               </CardTitle>
             </CardHeader>
@@ -477,7 +477,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <FileCheck className="h-5 w-5" />
+                <FileCheck aria-hidden="true" className="h-5 w-5" />
                 7. Avaliação Adaptada
               </CardTitle>
             </CardHeader>
@@ -519,7 +519,7 @@ const Manual = () => {
           <Card>
             <CardHeader>
               <CardTitle level={2} className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
+                <BarChart3 aria-hidden="true" className="h-5 w-5" />
                 10. Indicadores de Qualidade
               </CardTitle>
             </CardHeader>

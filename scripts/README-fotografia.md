@@ -16,6 +16,7 @@ parada de tabulação sem mexer em número nenhum.
 | `numeros` | sequência de números do texto renderizado — a medida da Etapa 4 |
 | `foco` | ordem de tabulação, com o nome acessível de cada parada — regressão de foco |
 | `titulos` | `document.title` e o esqueleto de headings — hierarquia quebrada por remoção |
+| `podados` | o que a poda por `aria-hidden` tirou da `a11y` — é a TESTEMUNHA da condição de prontidão (Etapa 17) |
 
 Cada medida vira um hash por superfície. As superfícies são as 13 rotas reais, os 3
 redirecionamentos, a rota curinga e as 6 abas de Gestão — 23 ao todo.
@@ -114,6 +115,30 @@ faz o registro mentir na direção mais caprichosa.
 **`__foto.podados()`** devolve as linhas que a poda tirou na superfície atual. Serve para
 explicar nó por nó a diferença entre duas bases quando a mudança é do instrumento, e não da
 tela: hash que muda diz *que* mudou, não *o quê*.
+
+## A quinta medida, e por que ela existe
+
+Até a Etapa 16 a condição de prontidão **não tinha testemunha**: desligá-la não movia nenhuma das
+quatro medidas, porque o que ela faz entrar na captura — os nós do gráfico — é exatamente o que a
+poda tira da `a11y`. Condição cujo efeito não aparece no que é comparado não está verificada: nada
+impede que ela se perca, e a contagem que ela afeta entra na base sem ninguém notar.
+
+`podados` passou a ser a quinta medida, e com ela a condição tem guarda. O controle é
+`__foto.controleDaCondicao(base)`: ele mede com a condição DESLIGADA e exige que a comparação
+**falhe**, depois mede com ela ligada e exige que **passe**.
+
+```js
+await __foto.controleDaCondicao(
+  (await (await fetch('/scripts/fotografia-base.json')).json()).superficies,
+)
+```
+
+**E o controle precisou de uma correção, medida:** desligar só o relógio não movia nada. Com o
+movimento reduzido ligado — que é a outra metade da condição —, o gráfico do Recharts desenha de uma
+vez (Etapa 14) e o objeto chega em ~63 ms, antes dos 260 ms do assentamento antigo. **As partes da
+condição não são independentes**, e a testemunha só testemunha se desligar a condição inteira.
+Medido com ela certa: sem a condição a comparação falha em 2 superfícies, as duas que mostram a
+rosca (`podados` 714c9704 -> 4e25b60d); com a condição, 0 diferenças em 23.
 
 ## A base publicada
 

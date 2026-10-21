@@ -93,7 +93,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
-            <User className="h-6 w-6" />
+            <User aria-hidden="true" className="h-6 w-6" />
             Meu Perfil - {DEMO_USER_NAME}
           </DialogTitle>
           <DialogDescription>
@@ -110,23 +110,23 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dados-pessoais">
-              <User className="h-4 w-4 mr-2" />
+              <User aria-hidden="true" className="h-4 w-4 mr-2" />
               Dados Pessoais
             </TabsTrigger>
             <TabsTrigger value="formacao">
-              <GraduationCap className="h-4 w-4 mr-2" />
+              <GraduationCap aria-hidden="true" className="h-4 w-4 mr-2" />
               Formação
             </TabsTrigger>
             <TabsTrigger value="estatisticas">
-              <TrendingUp className="h-4 w-4 mr-2" />
+              <TrendingUp aria-hidden="true" className="h-4 w-4 mr-2" />
               Estatísticas
             </TabsTrigger>
             <TabsTrigger value="conquistas">
-              <Award className="h-4 w-4 mr-2" />
+              <Award aria-hidden="true" className="h-4 w-4 mr-2" />
               Conquistas
             </TabsTrigger>
             <TabsTrigger value="preferencias">
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings aria-hidden="true" className="h-4 w-4 mr-2" />
               Preferências
             </TabsTrigger>
           </TabsList>
@@ -143,11 +143,11 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               </Avatar>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload aria-hidden="true" className="h-4 w-4 mr-2" />
                   Alterar foto
                 </Button>
                 <Button variant="outline" size="sm">
-                  <Trash2 className="h-4 w-4 mr-2" />
+                  <Trash2 aria-hidden="true" className="h-4 w-4 mr-2" />
                   Remover
                 </Button>
               </div>
@@ -325,7 +325,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
               <Button disabled aria-describedby="perfil-ilustrativo">
-                <Settings className="h-4 w-4 mr-2" />
+                <Settings aria-hidden="true" className="h-4 w-4 mr-2" />
                 Salvar Alterações
               </Button>
             </div>
@@ -338,7 +338,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <CardHeader>
                 <CardTitle>Formação Acadêmica</CardTitle>
                 <Button variant="outline" size="sm">
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload aria-hidden="true" className="h-4 w-4 mr-2" />
                   Adicionar nova formação
                 </Button>
               </CardHeader>
@@ -346,7 +346,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <div className="border rounded-lg p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex gap-3">
-                      <GraduationCap className="h-5 w-5 text-primary mt-1" />
+                      <GraduationCap aria-hidden="true" className="h-5 w-5 text-primary mt-1" />
                       <div>
                         <h4 className="font-semibold">Pedagogia</h4>
                         <p className="text-sm text-muted-foreground">Universidade de São Paulo (USP)</p>
@@ -363,7 +363,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
                 <div className="border rounded-lg p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex gap-3">
-                      <GraduationCap className="h-5 w-5 text-primary mt-1" />
+                      <GraduationCap aria-hidden="true" className="h-5 w-5 text-primary mt-1" />
                       <div>
                         <h4 className="font-semibold">Especialização em Educação Inclusiva</h4>
                         <p className="text-sm text-muted-foreground">PUC-SP</p>
@@ -645,7 +645,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-yellow-500" />
+                  <Award aria-hidden="true" className="h-5 w-5 text-yellow-500" />
                   Nível: Mestre da Inclusão
                 </CardTitle>
                 <CardDescription>
@@ -812,7 +812,7 @@ const MeuPerfilDialog = ({ open, onOpenChange }: MeuPerfilDialogProps) => {
               <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
               <Button variant="outline" disabled aria-describedby="perfil-ilustrativo">Restaurar Padrões</Button>
               <Button disabled aria-describedby="perfil-ilustrativo">
-                <Settings className="h-4 w-4 mr-2" />
+                <Settings aria-hidden="true" className="h-4 w-4 mr-2" />
                 Salvar
               </Button>
             </div>

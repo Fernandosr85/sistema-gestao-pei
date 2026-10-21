@@ -216,11 +216,11 @@ function EditarCadastroForm({ student, onClose }: EditarCadastroFormProps) {
               <div className="space-y-1">
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" disabled aria-describedby="foto-aluno-indisponivel">
-                    <Camera className="w-4 h-4 mr-2" />
+                    <Camera aria-hidden="true" className="w-4 h-4 mr-2" />
                     Alterar Foto
                   </Button>
                   <Button variant="outline" size="sm" disabled aria-describedby="foto-aluno-indisponivel">
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 aria-hidden="true" className="w-4 h-4 mr-2" />
                     Remover
                   </Button>
                 </div>

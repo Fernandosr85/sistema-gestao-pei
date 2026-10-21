@@ -233,6 +233,8 @@ commit da etapa e depois do último:
 | Nós expostos **sem nome** nos três contêineres de gráfico de `/gestao?tab=relatorios`, na árvore do Chrome (Etapas 14 a 16) | 60 | **12** |
 | Gráficos cujo desenho fica fora da árvore de acessibilidade (Etapas 3, 14, 15 e 16) | 1 de 12 | **12 de 12** |
 | Ícones de legenda expostos sem nome, nas rotas com gráfico (Etapa 16) | 9 | **0** |
+| Ícones decorativos expostos sem nome na árvore do Chrome, nas rotas medidas (Etapa 17) | 210 | **0** |
+| Controles cujo único portador de nome é o ícone (Etapa 17, medido e **não corrigido**) | 6 | 6 |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem

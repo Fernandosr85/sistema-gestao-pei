@@ -40,7 +40,7 @@ const Observations = () => {
         </div>
         <Link to="/observacoes/nova">
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
             Nova Observação
           </Button>
         </Link>
@@ -53,7 +53,7 @@ const Observations = () => {
             <Label htmlFor="busca-observacoes" className="sr-only">
               Buscar observação por nome do aluno
             </Label>
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               id="busca-observacoes"
               placeholder="Buscar por aluno..."
@@ -78,7 +78,7 @@ const Observations = () => {
                     <CardTitle className="text-xl">{studentNameOf(state, observation.studentId)}</CardTitle>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       <Badge variant="outline">
-                        <Calendar className="mr-1 h-3 w-3" />
+                        <Calendar aria-hidden="true" className="mr-1 h-3 w-3" />
                         {formatLocalDate(observation.data)} às {observation.time}
                       </Badge>
                       <Badge variant="outline">Registro rápido</Badge>
@@ -129,7 +129,7 @@ const Observations = () => {
                       <CardTitle className="text-xl">{studentNameOf(state, observation.studentId)}</CardTitle>
                       <div className="flex items-center gap-2 mt-2">
                         <Badge variant="outline">
-                          <Calendar className="mr-1 h-3 w-3" />
+                          <Calendar aria-hidden="true" className="mr-1 h-3 w-3" />
                           {formatLocalDate(observation.data)}
                         </Badge>
                         <Badge variant={observation.periodo === 'manha' ? 'default' : 'secondary'}>

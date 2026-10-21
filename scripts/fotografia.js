@@ -213,11 +213,23 @@
       )
       .join('\n');
 
+  /*
+   * A QUINTA MEDIDA É A TESTEMUNHA DA CONDIÇÃO (Etapa 17). Sem ela, desligar a condição de
+   * prontidão não movia NENHUMA das quatro — porque o que a condição faz entrar na captura (os nós
+   * do gráfico) é exatamente o que a poda por `aria-hidden` tira da medida `a11y`. Uma condição
+   * cujo efeito não aparece no que é comparado não está verificada: nada impede que ela se perca, e
+   * a contagem que ela afeta entra na base sem ninguém notar.
+   *
+   * `podados` é o que a poda tirou, e por isso muda quando a condição muda: na rota dos relatórios
+   * são 2 nós com a espera antiga de 260 ms e 7 com a condição, porque os cinco setores da rosca só
+   * existem depois do fim da animação.
+   */
   const medir = () => ({
     a11y: medidaA11y(),
     numeros: medidaNumeros(),
     foco: medidaFoco(),
     titulos: medidaTitulos(),
+    podados: podados().join('\n'),
   });
 
   const hashes = () => {
@@ -274,6 +286,18 @@
   };
 
   /*
+   * A captura pelo RELÓGIO, como era até a Etapa 15: 260 ms e mede. Não serve para medir nada —
+   * serve para o controle da condição mostrar que a condição faz diferença no que é comparado.
+   */
+  const medirPorRelogio = async (caminho) => {
+    empurrar(NEUTRA);
+    await esperar(60);
+    empurrar(caminho);
+    await esperar(260);
+    return medir();
+  };
+
+  /*
    * A captura completa de uma superfície, com a condição ligada do começo ao fim: medir com o
    * movimento reduzido ligado e esperar com ele desligado seria ter duas condições outra vez.
    * `tudo()` chama isto, e medição à mão deve chamar isto também.
@@ -304,13 +328,25 @@
 
   const SUPERFICIES = [...ROTAS, ...REDIRECIONAMENTOS, ...CURINGA, ...ABAS];
 
-  const tudo = async ({ relogio = RELOGIO_PADRAO, superficies = SUPERFICIES } = {}) => {
+  /*
+   * `semCondicao: true` volta ao assentamento por relógio da Etapa 5 (260 ms). Existe para UMA
+   * coisa: o controle da condição. Rodar com ele e comparar contra a base tem de FALHAR — se
+   * passar, a condição não está sendo guardada por nada.
+   */
+  const tudo = async ({ relogio = RELOGIO_PADRAO, superficies = SUPERFICIES, semCondicao = false } = {}) => {
     congelarRelogio(relogio);
-    const restaurarMovimento = window.__pronto.semTransicao();
+    /*
+     * Com `semCondicao`, o movimento reduzido TAMBÉM sai — e isso foi medido, não suposto: na
+     * primeira versão do controle, desligar só o relógio não movia nada. Com o movimento reduzido
+     * ligado, o gráfico do Recharts desenha de uma vez (Etapa 14) e o objeto chega em ~63 ms, bem
+     * antes dos 260 ms. **As partes da condição não são independentes**, e a testemunha só
+     * testemunha se desligar a condição INTEIRA.
+     */
+    const restaurarMovimento = semCondicao ? () => {} : window.__pronto.semTransicao();
     const saida = {};
     try {
       for (const s of superficies) {
-        const bruto = await medirPronto(s);
+        const bruto = semCondicao ? await medirPorRelogio(s) : await medirPronto(s);
         saida[s] = {
           ...Object.fromEntries(Object.entries(bruto).map(([k, v]) => [k, hash(v)])),
           url: window.location.pathname + window.location.search,
@@ -448,7 +484,23 @@
     return { todosOk, resultado };
   };
 
-  const MEDIDAS = ['a11y', 'numeros', 'foco', 'titulos', 'url', 'largura'];
+  const MEDIDAS = ['a11y', 'numeros', 'foco', 'titulos', 'podados', 'url', 'largura'];
+
+  /*
+   * O CONTROLE DA CONDIÇÃO (Etapa 17). Uma guarda que nunca reprova não é guarda: este controle
+   * desliga a condição, compara contra a base publicada e EXIGE que a comparação falhe; depois
+   * religa e exige que volte a passar. Recebe a base já carregada, para não supor caminho.
+   */
+  const controleDaCondicao = async (base) => {
+    const semCondicao = window.__foto.comparar(base, await tudo({ semCondicao: true }));
+    const comCondicao = window.__foto.comparar(base, await tudo());
+    const ok = semCondicao.igual === false && comCondicao.igual === true;
+    return {
+      ok,
+      semACondicao: { igual: semCondicao.igual, difs: semCondicao.difs },
+      comACondicao: { igual: comCondicao.igual, difs: comCondicao.difs },
+    };
+  };
 
   const difEntre = (a, b, rotulo) => {
     const difs = [];
@@ -515,7 +567,7 @@
   };
 
   window.__foto = {
-    medir, medirPronto, hashes, tudo, controles, estavel, comparar,
+    medir, medirPronto, medirPorRelogio, hashes, tudo, controles, controleDaCondicao, estavel, comparar,
     congelarRelogio, soltarRelogio, ir, podados, SUPERFICIES, hash,
     ultimaEspera: () => ultimaEspera,
   };

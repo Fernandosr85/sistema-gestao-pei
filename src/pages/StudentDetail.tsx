@@ -124,7 +124,7 @@ const StudentDetail = () => {
             </h1>
           </div>
           <div className="hidden md:flex items-center justify-center w-12 h-12 bg-white/20 rounded-full">
-            <User className="h-6 w-6" />
+            <User aria-hidden="true" className="h-6 w-6" />
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@ const StudentDetail = () => {
                     {/* Círculo de Progresso */}
                     <div className="flex flex-col items-center py-4">
                       <div className="relative w-32 h-32">
-                        <svg className="w-32 h-32 transform -rotate-90">
+                        <svg aria-hidden="true" className="w-32 h-32 transform -rotate-90">
                           <circle
                             cx="64"
                             cy="64"
@@ -236,7 +236,7 @@ const StudentDetail = () => {
               <Card className="card-hover">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <BookOpen className="h-5 w-5 text-primary" />
+                    <BookOpen aria-hidden="true" className="h-5 w-5 text-primary" />
                     Informações Acadêmicas
                   </CardTitle>
                 </CardHeader>
@@ -256,7 +256,7 @@ const StudentDetail = () => {
               <Card className="card-hover">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Heart className="h-5 w-5 text-secondary" />
+                    <Heart aria-hidden="true" className="h-5 w-5 text-secondary" />
                     Perfil de Saúde
                   </CardTitle>
                 </CardHeader>
@@ -275,7 +275,7 @@ const StudentDetail = () => {
               <Card className="card-hover">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Activity className="h-5 w-5 text-warning" />
+                    <Activity aria-hidden="true" className="h-5 w-5 text-warning" />
                     Necessidades Específicas
                   </CardTitle>
                 </CardHeader>
@@ -297,7 +297,7 @@ const StudentDetail = () => {
               <Card className="card-hover">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Users className="h-5 w-5 text-info" />
+                    <Users aria-hidden="true" className="h-5 w-5 text-info" />
                     Contexto Familiar
                   </CardTitle>
                 </CardHeader>
@@ -348,7 +348,7 @@ const StudentDetail = () => {
                         item.cor === 'text-info' ? 'bg-info/20' :
                         'bg-muted'
                       }`}>
-                        <item.icone className={`h-4 w-4 ${item.cor}`} />
+                        <item.icone aria-hidden="true" className={`h-4 w-4 ${item.cor}`} />
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium">{item.texto}</p>
@@ -372,7 +372,7 @@ const StudentDetail = () => {
                   size="sm"
                   onClick={() => setPerformanceDialogOpen(true)}
                 >
-                  <BarChart3 className="h-4 w-4" />
+                  <BarChart3 aria-hidden="true" className="h-4 w-4" />
                   Ver Desempenho Completo
                 </Button>
                 <Button 
@@ -381,7 +381,7 @@ const StudentDetail = () => {
                   size="sm"
                   onClick={() => setHistoryDialogOpen(true)}
                 >
-                  <GraduationCap className="h-4 w-4" />
+                  <GraduationCap aria-hidden="true" className="h-4 w-4" />
                   Histórico Acadêmico
                 </Button>
                 <Button 
@@ -390,7 +390,7 @@ const StudentDetail = () => {
                   size="sm"
                   onClick={() => setPresentationDialogOpen(true)}
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileText aria-hidden="true" className="h-4 w-4" />
                   Modo Apresentação/Reunião
                 </Button>
               </CardContent>
@@ -404,7 +404,7 @@ const StudentDetail = () => {
             className="bg-primary hover:bg-primary/90"
             onClick={() => setEditDialogOpen(true)}
           >
-            <Edit className="mr-2 h-4 w-4" />
+            <Edit aria-hidden="true" className="mr-2 h-4 w-4" />
             Editar Cadastro
           </Button>
 
@@ -412,7 +412,7 @@ const StudentDetail = () => {
             className="bg-destructive hover:bg-destructive/90"
             onClick={() => setPeiDialogOpen(true)}
           >
-            <FileText className="mr-2 h-4 w-4" />
+            <FileText aria-hidden="true" className="mr-2 h-4 w-4" />
             Ver PEI Ativo
           </Button>
 
@@ -429,7 +429,7 @@ const StudentDetail = () => {
             className="hover:opacity-90"
             onClick={() => setObservacaoDialogOpen(true)}
           >
-            <Clipboard className="mr-2 h-4 w-4" />
+            <Clipboard aria-hidden="true" className="mr-2 h-4 w-4" />
             Nova Observação
           </Button>
         </div>

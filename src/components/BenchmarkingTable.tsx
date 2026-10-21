@@ -96,7 +96,7 @@ const BenchmarkingTable = () => {
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <BarChart3 className="h-6 w-6 text-primary" />
+          <BarChart3 aria-hidden="true" className="h-6 w-6 text-primary" />
           COMPARATIVOS E BENCHMARKING
         </CardTitle>
       </CardHeader>
@@ -143,7 +143,7 @@ const BenchmarkingTable = () => {
         <Card className="bg-primary/5 border-primary/20 mb-6">
           <CardContent className="p-6">
             <div className="flex items-start gap-3 mb-4">
-              <TrendingUp className="h-5 w-5 text-primary mt-1" />
+              <TrendingUp aria-hidden="true" className="h-5 w-5 text-primary mt-1" />
               <div>
                 <h3 className="font-semibold text-foreground mb-3">LEITURA DO COMPARATIVO:</h3>
                 
@@ -166,7 +166,7 @@ const BenchmarkingTable = () => {
                   </div>
 
                   <div className="flex items-start gap-2 p-3 bg-background rounded-lg mt-3">
-                    <Award className="h-4 w-4 text-warning mt-0.5" />
+                    <Award aria-hidden="true" className="h-4 w-4 text-warning mt-0.5" />
                     <div className="text-xs">
                       <span className="font-medium">🎯 Recomendação:</span>
                       <span className="text-muted-foreground"> Implementar boas práticas da Escola Exemplo B (líder em inclusão social: 89%)</span>

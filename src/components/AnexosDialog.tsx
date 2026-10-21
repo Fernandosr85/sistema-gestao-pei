@@ -69,7 +69,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
               <Label htmlFor="busca-anexos" className="sr-only">
                 Buscar documento anexado
               </Label>
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 id="busca-anexos"
                 placeholder="Buscar documentos..."
@@ -81,7 +81,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
               />
             </div>
             <Button disabled aria-describedby="anexos-indisponiveis">
-              <Upload className="w-4 h-4 mr-2" />
+              <Upload aria-hidden="true" className="w-4 h-4 mr-2" />
               Adicionar Anexo
             </Button>
           </div>
@@ -98,7 +98,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
 
             <TabsContent value="todos" className="space-y-4 mt-4">
               <div className="text-center py-8 text-muted-foreground">
-                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <FileText aria-hidden="true" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 {/* Dizia "Mostrando todos os 21 documentos" sem mostrar nenhum, e a lista de
                     exemplo das outras abas tem oito itens. */}
                 <p>Nenhum documento anexado a este estudante</p>
@@ -108,7 +108,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
 
             <TabsContent value="laudos" className="space-y-4 mt-4">
               <div className="text-center py-12 text-muted-foreground">
-                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <FileText aria-hidden="true" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum laudo anexado</p>
               </div>
             </TabsContent>
@@ -120,7 +120,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
                     <CardContent className="flex items-center justify-between py-4">
                       <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary/10 rounded">
-                          <FileText className="w-5 h-5 text-primary" />
+                          <FileText aria-hidden="true" className="w-5 h-5 text-primary" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
@@ -134,11 +134,11 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
-                          <Eye className="w-4 h-4 mr-1" />
+                          <Eye aria-hidden="true" className="w-4 h-4 mr-1" />
                           Visualizar
                         </Button>
                         <Button variant="outline" size="sm" disabled aria-describedby="anexos-indisponiveis">
-                          <Download className="w-4 h-4 mr-1" />
+                          <Download aria-hidden="true" className="w-4 h-4 mr-1" />
                           Baixar
                         </Button>
                       </div>
@@ -153,7 +153,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
                 {fotos.map((foto, idx) => (
                   <Card key={idx} className="overflow-hidden">
                     <div className="aspect-square bg-muted flex items-center justify-center">
-                      <Image className="w-12 h-12 text-muted-foreground opacity-50" />
+                      <Image aria-hidden="true" className="w-12 h-12 text-muted-foreground opacity-50" />
                     </div>
                     <CardContent className="p-3">
                       <p className="font-medium text-xs truncate">{foto.titulo}</p>
@@ -167,10 +167,10 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
 
             <TabsContent value="videos" className="space-y-4 mt-4">
               <div className="text-center py-12 text-muted-foreground">
-                <Video className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <Video aria-hidden="true" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum vídeo anexado ainda</p>
                 <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
-                  <Upload className="w-4 h-4 mr-2" />
+                  <Upload aria-hidden="true" className="w-4 h-4 mr-2" />
                   Adicionar primeiro vídeo
                 </Button>
               </div>
@@ -178,10 +178,10 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
 
             <TabsContent value="relatorios" className="space-y-4 mt-4">
               <div className="text-center py-12 text-muted-foreground">
-                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <FileText aria-hidden="true" className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>Nenhum relatório anexado ainda</p>
                 <Button variant="outline" size="sm" className="mt-4" disabled aria-describedby="anexos-indisponiveis">
-                  <Upload className="w-4 h-4 mr-2" />
+                  <Upload aria-hidden="true" className="w-4 h-4 mr-2" />
                   Adicionar primeiro relatório
                 </Button>
               </div>
@@ -191,7 +191,7 @@ export function AnexosDialog({ open, onOpenChange, studentName }: AnexosDialogPr
 
         <div className="flex justify-between gap-3 mt-6 pt-6 border-t">
           <Button variant="outline" disabled aria-describedby="anexos-indisponiveis">
-            <Download className="w-4 h-4 mr-2" />
+            <Download aria-hidden="true" className="w-4 h-4 mr-2" />
             Baixar Todos
           </Button>
           <div className="flex gap-2">

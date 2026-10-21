@@ -179,15 +179,15 @@ export function NovaObservacaoDialog({ open, onOpenChange, studentId, studentNam
             <Label>Anexar evidências</Label>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
-                <Camera className="w-4 h-4 mr-2" />
+                <Camera aria-hidden="true" className="w-4 h-4 mr-2" />
                 Foto
               </Button>
               <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
-                <Video className="w-4 h-4 mr-2" />
+                <Video aria-hidden="true" className="w-4 h-4 mr-2" />
                 Vídeo
               </Button>
               <Button variant="outline" size="sm" disabled aria-describedby="evidencias-indisponiveis">
-                <FileText className="w-4 h-4 mr-2" />
+                <FileText aria-hidden="true" className="w-4 h-4 mr-2" />
                 Documento
               </Button>
             </div>

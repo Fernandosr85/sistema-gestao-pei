@@ -54,7 +54,7 @@ const Dashboard = () => {
               onClick={() => setReportDialogOpen(true)}
               data-report-dialog
             >
-              <FileText className="mr-2 h-5 w-5" />
+              <FileText aria-hidden="true" className="mr-2 h-5 w-5" />
               Gerar Relatório
             </Button>
             <Button
@@ -120,7 +120,7 @@ const Dashboard = () => {
             <Link to="/alunos">
               <Button variant="ghost" size="sm">
                 Ver Todos
-                <TrendingUp className="ml-2 h-4 w-4" />
+                <TrendingUp aria-hidden="true" className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>
@@ -137,7 +137,7 @@ const Dashboard = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
+                <Calendar aria-hidden="true" className="h-5 w-5 text-primary" />
                 Próximos Atendimentos
               </CardTitle>
             </CardHeader>

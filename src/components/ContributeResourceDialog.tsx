@@ -376,7 +376,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>Arquivo Principal</Label>
                     <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
-                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <Upload aria-hidden="true" className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
                       <p className="text-xs text-muted-foreground mb-2">
                         📄 Formatos aceitos: PDF, DOC, DOCX, PPT, PPTX, ZIP
@@ -388,7 +388,7 @@ export function ContributeResourceDialog({ open, onOpenChange }: ContributeResou
                   <div>
                     <Label>Imagem de Capa/Thumbnail</Label>
                     <div className="mt-2 border-2 border-dashed rounded-lg p-8 text-center opacity-60">
-                      <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <Upload aria-hidden="true" className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-sm font-medium mb-1">Envio de arquivos indisponível</p>
                       <p className="text-xs text-muted-foreground mb-2">
                         📷 Formatos aceitos: JPG, PNG

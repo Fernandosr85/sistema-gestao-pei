@@ -58,9 +58,9 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
   const getStatusIcon = (status: "above" | "below" | "equal") => {
     switch (status) {
       case "above":
-        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+        return <CheckCircle2 aria-hidden="true" className="h-4 w-4 text-green-600" />;
       case "below":
-        return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+        return <AlertTriangle aria-hidden="true" className="h-4 w-4 text-yellow-600" />;
       case "equal":
         return <span className="text-sm">≈</span>;
     }
@@ -72,7 +72,7 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
     <Card className="border-2 border-primary/20">
       <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Users className="h-5 w-5 text-primary" />
+          <Users aria-hidden="true" className="h-5 w-5 text-primary" />
           Comparativo ilustrativo
         </CardTitle>
       </CardHeader>
@@ -84,7 +84,7 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
         {/* Network Analysis */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-            <Target className="h-4 w-4" />
+            <Target aria-hidden="true" className="h-4 w-4" />
             EXEMPLO: estratégias para alunos com {diagnosis} {diagnosisLevel}
           </div>
 
@@ -117,7 +117,7 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
             <Card className="border-yellow-600/50 bg-yellow-50/50">
               <CardContent className="pt-4">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle aria-hidden="true" className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div className="space-y-2">
                     <p className="text-sm font-medium">ATENÇÃO:</p>
                     <p className="text-sm text-muted-foreground">
@@ -133,7 +133,7 @@ export const BenchmarkingPanel = ({ studentName, diagnosis, diagnosisLevel }: Be
         {/* Benchmarking Section */}
         <div className="space-y-4 pt-4 border-t">
           <h4 className="font-semibold text-sm flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
+            <TrendingUp aria-hidden="true" className="h-4 w-4" />
             BENCHMARKING:
           </h4>
           <p className="text-xs text-muted-foreground">

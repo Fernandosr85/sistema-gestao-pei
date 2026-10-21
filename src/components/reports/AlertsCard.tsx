@@ -48,7 +48,7 @@ const AlertsCard = () => {
               className={`p-4 rounded-lg border-l-4 ${alert.bgColor} ${alert.borderColor} ${alert.textColor} transition-all duration-200 hover:shadow-md`}
             >
               <div className="flex items-start gap-3">
-                <Icon className={`h-6 w-6 ${alert.iconColor} flex-shrink-0 mt-0.5`} />
+                <Icon aria-hidden="true" className={`h-6 w-6 ${alert.iconColor} flex-shrink-0 mt-0.5`} />
                 <p className="text-sm leading-relaxed font-medium">{alert.mensagem}</p>
               </div>
             </div>

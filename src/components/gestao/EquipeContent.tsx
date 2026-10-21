@@ -167,10 +167,10 @@ const EquipeContent = () => {
 
   const getTipoIcon = (tipo: string) => {
     switch (tipo) {
-      case 'professor': return <GraduationCap className="h-4 w-4" />;
-      case 'psicologo': return <Brain className="h-4 w-4" />;
-      case 'terapeuta': return <Stethoscope className="h-4 w-4" />;
-      default: return <Users className="h-4 w-4" />;
+      case 'professor': return <GraduationCap aria-hidden="true" className="h-4 w-4" />;
+      case 'psicologo': return <Brain aria-hidden="true" className="h-4 w-4" />;
+      case 'terapeuta': return <Stethoscope aria-hidden="true" className="h-4 w-4" />;
+      default: return <Users aria-hidden="true" className="h-4 w-4" />;
     }
   };
 
@@ -192,7 +192,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-blue-600" />
+              <GraduationCap aria-hidden="true" className="h-5 w-5 text-blue-600" />
               <span className="text-3xl font-bold">{teamOverview.professores}</span>
             </div>
           </CardContent>
@@ -204,7 +204,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-purple-600" />
+              <Brain aria-hidden="true" className="h-5 w-5 text-purple-600" />
               <span className="text-3xl font-bold">{teamOverview.psicologos}</span>
             </div>
           </CardContent>
@@ -216,7 +216,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Stethoscope className="h-5 w-5 text-green-600" />
+              <Stethoscope aria-hidden="true" className="h-5 w-5 text-green-600" />
               <span className="text-3xl font-bold">{teamOverview.terapeutas}</span>
             </div>
           </CardContent>
@@ -228,7 +228,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-orange-600" />
+              <FileText aria-hidden="true" className="h-5 w-5 text-orange-600" />
               <span className="text-3xl font-bold">{teamOverview.fonoaudiologos}</span>
             </div>
           </CardContent>
@@ -240,7 +240,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-cyan-600" />
+              <Users aria-hidden="true" className="h-5 w-5 text-cyan-600" />
               <span className="text-3xl font-bold">{teamOverview.coordenadores}</span>
             </div>
           </CardContent>
@@ -252,7 +252,7 @@ const EquipeContent = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-gray-600" />
+              <Users aria-hidden="true" className="h-5 w-5 text-gray-600" />
               <span className="text-3xl font-bold">{teamOverview.total}</span>
             </div>
           </CardContent>
@@ -263,7 +263,7 @@ const EquipeContent = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
+            <TrendingUp aria-hidden="true" className="h-5 w-5" />
             Gestão de Carga de Trabalho
           </CardTitle>
           <CardDescription>
@@ -297,9 +297,9 @@ const EquipeContent = () => {
                         <p className="text-sm text-muted-foreground">{member.totalHoras}h/40h</p>
                       </div>
                       {expandedTeacher === member.id ? (
-                        <ChevronUp className="h-5 w-5" />
+                        <ChevronUp aria-hidden="true" className="h-5 w-5" />
                       ) : (
-                        <ChevronDown className="h-5 w-5" />
+                        <ChevronDown aria-hidden="true" className="h-5 w-5" />
                       )}
                     </div>
                   </div>
@@ -328,7 +328,7 @@ const EquipeContent = () => {
 
                   {member.utilizacao >= 90 && (
                     <Alert className="mt-4 border-red-200 bg-red-50">
-                      <AlertTriangle className="h-4 w-4 text-red-600" />
+                      <AlertTriangle aria-hidden="true" className="h-4 w-4 text-red-600" />
                       <AlertDescription className="text-red-800">
                         Profissional com carga de trabalho crítica. Considere redistribuir responsabilidades.
                       </AlertDescription>
@@ -346,7 +346,7 @@ const EquipeContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
+              <Calendar aria-hidden="true" className="h-5 w-5" />
               Contratações e Renovações
             </CardTitle>
             <CardDescription>Contratos a vencer nos próximos 90 dias</CardDescription>
@@ -374,7 +374,7 @@ const EquipeContent = () => {
         <Card>
           <CardHeader>
             <CardTitle level={2} className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
+              <AlertTriangle aria-hidden="true" className="h-5 w-5" />
               Histórico de Afastamentos
             </CardTitle>
             <CardDescription>Afastamentos ativos e recentes</CardDescription>

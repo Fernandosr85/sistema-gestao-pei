@@ -46,7 +46,7 @@ const Header = () => {
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-2 text-white hover:opacity-90 transition-opacity">
-              <GraduationCap className="h-8 w-8" />
+              <GraduationCap aria-hidden="true" className="h-8 w-8" />
               <span className="text-xl font-bold">{institution.shortName}</span>
             </Link>
             
@@ -85,7 +85,7 @@ const Header = () => {
                 <Button variant="ghost" className="text-white hover:bg-white/20" aria-label="Menu da conta">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center">
-                      <User className="h-5 w-5" />
+                      <User aria-hidden="true" className="h-5 w-5" />
                     </div>
                     <span className="hidden md:inline">{DEMO_USER_NAME}</span>
                   </div>
@@ -93,15 +93,15 @@ const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setIsPerfilOpen(true)}>
-                  <User className="mr-2 h-4 w-4" />
+                  <User aria-hidden="true" className="mr-2 h-4 w-4" />
                   Meu Perfil
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setIsConfigOpen(true)}>
-                  <Settings className="mr-2 h-4 w-4" />
+                  <Settings aria-hidden="true" className="mr-2 h-4 w-4" />
                   Configurações
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/minha-agenda')}>
-                  <Calendar className="mr-2 h-4 w-4" />
+                  <Calendar aria-hidden="true" className="mr-2 h-4 w-4" />
                   Minha Agenda
                 </DropdownMenuItem>
               </DropdownMenuContent>

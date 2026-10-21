@@ -143,7 +143,7 @@ export function ResourceCard({ resource, rating, isFavorite, onView, onToggleFav
           aria-describedby="download-indisponivel"
           className="flex-1"
         >
-          <Download className="h-4 w-4 mr-1" />
+          <Download aria-hidden="true" className="h-4 w-4 mr-1" />
           Baixar
         </Button>
         <Button
@@ -151,7 +151,7 @@ export function ResourceCard({ resource, rating, isFavorite, onView, onToggleFav
           onClick={() => onView(resource)}
           className="flex-1"
         >
-          <Eye className="h-4 w-4 mr-1" />
+          <Eye aria-hidden="true" className="h-4 w-4 mr-1" />
           Ver
         </Button>
       </CardFooter>

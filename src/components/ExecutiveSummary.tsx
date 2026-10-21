@@ -54,7 +54,7 @@ const ExecutiveSummary = () => {
   const criticalAlerts = scenarioAlerts.filter((alert) => alert.type === 'critical').length;
   const metrics = [
     {
-      icon: <Users className="h-5 w-5 text-primary" />,
+      icon: <Users aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: illustrativeScenario.studentsWithPei,
       label: 'ALUNOS',
       sublabel: 'com PEI',
@@ -63,7 +63,7 @@ const ExecutiveSummary = () => {
       status: 'success' as const
     },
     {
-      icon: <FileText className="h-5 w-5 text-primary" />,
+      icon: <FileText aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: '88%',
       label: 'PEIs',
       sublabel: 'em implementação',
@@ -72,7 +72,7 @@ const ExecutiveSummary = () => {
       status: 'warning' as const
     },
     {
-      icon: <GraduationCap className="h-5 w-5 text-primary" />,
+      icon: <GraduationCap aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: '52h/ano',
       label: 'PROF.',
       sublabel: 'formação',
@@ -81,7 +81,7 @@ const ExecutiveSummary = () => {
       status: 'success' as const
     },
     {
-      icon: <BarChart3 className="h-5 w-5 text-primary" />,
+      icon: <BarChart3 aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: '8.2',
       label: 'ÍNDICE',
       sublabel: 'inclusão',
@@ -90,7 +90,7 @@ const ExecutiveSummary = () => {
       status: 'success' as const
     },
     {
-      icon: <Target className="h-5 w-5 text-primary" />,
+      icon: <Target aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: 312,
       label: 'OBJETO',
       sublabel: 'alcançad.',
@@ -99,7 +99,7 @@ const ExecutiveSummary = () => {
       status: 'success' as const
     },
     {
-      icon: <AlertTriangle className="h-5 w-5 text-primary" />,
+      icon: <AlertTriangle aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: scenarioAlerts.length,
       label: 'ALERT',
       sublabel: 'ativos',
@@ -108,7 +108,7 @@ const ExecutiveSummary = () => {
       status: 'error' as const
     },
     {
-      icon: <Heart className="h-5 w-5 text-primary" />,
+      icon: <Heart aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: '91%',
       label: 'FAMÍLIAS',
       sublabel: 'satisfeitas',
@@ -117,7 +117,7 @@ const ExecutiveSummary = () => {
       status: 'success' as const
     },
     {
-      icon: <TrendingUp className="h-5 w-5 text-primary" />,
+      icon: <TrendingUp aria-hidden="true" className="h-5 w-5 text-primary" />,
       value: '82%',
       label: 'PROGR',
       sublabel: 'alunos',
@@ -138,7 +138,7 @@ const ExecutiveSummary = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <BarChart3 className="h-6 w-6" />
+              <BarChart3 aria-hidden="true" className="h-6 w-6" />
               RESUMO EXECUTIVO - SNAPSHOT ATUAL
             </h2>
           </div>

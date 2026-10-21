@@ -314,7 +314,7 @@ const NewObservation = () => {
                 variant="outline"
                 onClick={() => appendSituacao({ contexto: '', resposta: '' })}
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
                 Adicionar Situação
               </Button>
             </CardContent>
@@ -380,7 +380,7 @@ const NewObservation = () => {
                 variant="outline"
                 onClick={() => appendInteracao({ tipo: '', descricao: '' })}
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
                 Adicionar Interação
               </Button>
             </CardContent>
@@ -498,7 +498,7 @@ const NewObservation = () => {
               Cancelar
             </Button>
             <Button type="submit">
-              <Save className="mr-2 h-4 w-4" />
+              <Save aria-hidden="true" className="mr-2 h-4 w-4" />
               Salvar Observação
             </Button>
           </div>

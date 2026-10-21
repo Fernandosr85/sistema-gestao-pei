@@ -107,7 +107,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           {/* Informações do Aluno */}
           <div className="space-y-2">
             <h3 className="font-semibold text-lg flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
+              <Users aria-hidden="true" className="h-5 w-5 text-primary" />
               Aluno
             </h3>
             <Link to={`/alunos/${current.studentId}`} className="text-primary hover:underline">
@@ -119,7 +119,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
+                <Calendar aria-hidden="true" className="h-4 w-4" />
                 <span className="font-medium">Data</span>
               </div>
               <p>{formatLocalDate(current.data, {
@@ -132,7 +132,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
 
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
+                <Clock aria-hidden="true" className="h-4 w-4" />
                 <span className="font-medium">Horário</span>
               </div>
               <p>{current.horarioInicio} - {current.horarioFim}</p>
@@ -143,7 +143,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
+                <MapPin aria-hidden="true" className="h-4 w-4" />
                 <span className="font-medium">Local</span>
               </div>
               <p>{current.local}</p>
@@ -151,7 +151,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
 
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <FileText className="h-4 w-4" />
+                <FileText aria-hidden="true" className="h-4 w-4" />
                 <span className="font-medium">Tipo</span>
               </div>
               <Badge variant="outline">{appointmentTypeLabel(current.tipo)}</Badge>
@@ -161,7 +161,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           {/* Profissionais Envolvidos */}
           <div className="space-y-2">
             <h3 className="font-semibold flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
+              <Users aria-hidden="true" className="h-5 w-5 text-primary" />
               Profissionais Envolvidos
             </h3>
             <div className="flex flex-wrap gap-2">
@@ -176,7 +176,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           {/* Objetivos */}
           <div className="space-y-2">
             <h3 className="font-semibold flex items-center gap-2">
-              <Target className="h-5 w-5 text-primary" />
+              <Target aria-hidden="true" className="h-5 w-5 text-primary" />
               Objetivos do Atendimento
             </h3>
             <p className="text-sm text-muted-foreground bg-muted p-4 rounded-md">
@@ -188,7 +188,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           {(current.status === 'realizado' || isEditingAta) && (
             <div className="space-y-2">
               <h3 className="font-semibold flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
+                <FileText aria-hidden="true" className="h-5 w-5 text-primary" />
                 Ata/Resumo da Reunião
               </h3>
               {isEditingAta || !current.ata ? (
@@ -221,7 +221,7 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
                       setIsEditingAta(true);
                     }}
                   >
-                    <Edit className="h-4 w-4 mr-2" />
+                    <Edit aria-hidden="true" className="h-4 w-4 mr-2" />
                     Editar Ata
                   </Button>
                 </div>
@@ -235,11 +235,11 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
           {isOpenAppointment(current.status) && (
             <>
               <Button variant="default" onClick={handleMarcarRealizado}>
-                <CheckCircle className="h-4 w-4 mr-2" />
+                <CheckCircle aria-hidden="true" className="h-4 w-4 mr-2" />
                 Marcar como Realizado
               </Button>
               <Button variant="outline" onClick={() => openForm('reschedule')}>
-                <CalendarIcon className="h-4 w-4 mr-2" />
+                <CalendarIcon aria-hidden="true" className="h-4 w-4 mr-2" />
                 Remarcar
               </Button>
             </>
@@ -250,13 +250,13 @@ export const DetalhesAtendimentoDialog = ({ open, onOpenChange, atendimento }: D
             </p>
           ) : (
             <Button variant="outline" onClick={() => openForm('edit')}>
-              <Edit className="h-4 w-4 mr-2" />
+              <Edit aria-hidden="true" className="h-4 w-4 mr-2" />
               Editar
             </Button>
           )}
           {isOpenAppointment(current.status) && (
             <Button variant="destructive" className="ml-auto" onClick={() => setConfirmCancelOpen(true)}>
-              <XCircle className="h-4 w-4 mr-2" />
+              <XCircle aria-hidden="true" className="h-4 w-4 mr-2" />
               Cancelar atendimento
             </Button>
           )}

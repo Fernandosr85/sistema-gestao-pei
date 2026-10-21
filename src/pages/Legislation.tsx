@@ -10,7 +10,7 @@ const Legislation = () => {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">
-          <Gavel className="h-8 w-8 text-primary" />
+          <Gavel aria-hidden="true" className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-bold">Marco Legal da Educação Inclusiva</h1>
         </div>
         <p className="text-muted-foreground text-lg">
@@ -24,7 +24,7 @@ const Legislation = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <Scale className="h-5 w-5" />
+            <Scale aria-hidden="true" className="h-5 w-5" />
             Legislação Federal
           </CardTitle>
           <CardDescription>
@@ -127,7 +127,7 @@ const Legislation = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <FileText aria-hidden="true" className="h-5 w-5" />
             Resoluções e Pareceres do CNE
           </CardTitle>
           <CardDescription>
@@ -166,7 +166,7 @@ const Legislation = () => {
       <Card>
         <CardHeader>
           <CardTitle level={2} className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
+            <BookOpen aria-hidden="true" className="h-5 w-5" />
             Legislação Estadual (São Paulo)
           </CardTitle>
           <CardDescription>
