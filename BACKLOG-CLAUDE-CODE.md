@@ -2443,6 +2443,77 @@ etapa**. Até aqui era uma causa declarada, não medida.
 
 ---
 
+### 30. Remover uma linha perdia o foco e não anunciava nada (Etapa 19, 21/10/2026)
+
+**Achado do M10 antes de o M10 ser executado.** O passo 2 do M10 foi escrito na Etapa 18b com o
+esperado **medido** e o critério declarado **antes** da execução: *é falha se o NVDA não anunciar
+nada E o foco se perder; é aceitável se houver anúncio (por região viva) OU o foco cair em elemento
+vizinho sensato.* As duas metades desse critério são DOM — e medidas, davam **falha nos quatro
+casos**. O teste manual não precisou rodar para o defeito aparecer: **escrever o critério antes já
+tinha decidido o resultado**.
+
+**O defeito, medido em Chrome por CDP, acionando o botão com Enter de verdade pelo protocolo:**
+
+| Caso | Estado | Antes: foco | Antes: anúncio | Antes |
+|---|---|---|---|---|
+| A | situações, 2 linhas, remove a 2ª | `document.body` | nada | **FALHA** |
+| B | situações, 3 linhas, remove a 3ª | `document.body` | nada | **FALHA** |
+| C | situações, 3 linhas, remove a 1ª | `document.body` | nada | **FALHA** |
+| D | interações, 2 linhas, remove a 2ª | `document.body` | nada | **FALHA** |
+
+**O caso B é o que mostra que o defeito não era só o botão desaparecer.** Em A e D sobra uma linha
+só, o JSX esconde os dois botões de remover (de 2 para 0) e o nó focado deixa de existir — ali a
+perda de foco teria explicação "natural". Em **B sobram duas linhas e o botão da linha anterior
+continua lá**, e o foco se perdeu do mesmo jeito: o React desmonta o nó focado e **ninguém põe o
+foco em lugar nenhum**. Não era efeito colateral do JSX condicional; era a falta de uma decisão.
+
+**Depois do conserto, os mesmos quatro casos, pelo mesmo instrumento:**
+
+| Caso | Depois: foco | Depois: anúncio | Depois |
+|---|---|---|---|
+| A | `button[Adicionar Situação]` | "Situação removida. Resta 1 situação na lista." | **ACEITÁVEL** |
+| B | `button[aria-label="Remover situação 2"]` | "Situação removida. Restam 2 situações na lista." | **ACEITÁVEL** |
+| C | `button[Adicionar Situação]` | "Situação removida. Restam 2 situações na lista." | **ACEITÁVEL** |
+| D | `button[Adicionar Interação]` | "Interação removida. Resta 1 interação na lista." | **ACEITÁVEL** |
+
+**A regra do alvo do foco, e por que ela tem dois ramos:** a **linha anterior** quando ela existe
+**e continua tendo botão de remover**; o botão **"Adicionar"** nos outros casos. O segundo ramo não é
+preferência — é medição: com uma linha só o JSX esconde os botões de remover, e focar um nó que vai
+desaparecer é perder o foco outra vez. Os casos A, C e D caem no "Adicionar" por motivos diferentes
+(sobrou uma linha; não havia linha anterior; sobrou uma linha), e o B é o único que exercita o
+primeiro ramo.
+
+**A contagem no texto anunciado é estrutural, não enfeite.** Região viva com o **mesmo** conteúdo
+duas vezes não é reanunciada pelo leitor de tela, e remover duas linhas em seguida é exatamente o
+caso em que o texto se repetiria. Com a contagem, cada remoção produz texto diferente — e há um
+teste que assevera justamente isso, comparando os dois textos consecutivos.
+
+**A região viva: `sr-only`, não `hidden`.** O que está em `display:none` sai da árvore de
+acessibilidade e não é anunciado. Ela é **única** para as duas listas (duas regiões concorrentes se
+atropelam) e fica **montada desde o começo, vazia**: região viva criada no mesmo instante em que
+recebe texto costuma não ser anunciada, porque o leitor precisa já estar observando o nó.
+
+**O que isto NÃO resolve, e fica dito:** o que o NVDA realmente fala continua sendo do M10. O que
+está medido é que **as duas metades do critério declarado deixaram de ser atendidas pela falha** —
+há anúncio na região viva e o foco cai em elemento vizinho sensato. Se o leitor não falar a região
+viva, o passo volta a reprovar, e aí o defeito é outro.
+
+**O arreio acusou a mudança, e uma só.** A fotografia contra a base publicada deu **uma** diferença:
+`/observacoes/nova :: a11y :: 2ed09168 -> a9e19c00` — a região viva nova, exatamente onde ela foi
+posta. As outras 22 superfícies e as outras quatro medidas não se moveram. A base foi republicada com
+esse único valor e o motivo escrito; depois dela, 23 superfícies e 0 diferenças, e a guarda da
+condição volta a reprovar sem a condição e passar com ela.
+
+**Uma correção minha, dentro desta etapa.** A primeira versão do conserto guardava o alvo do foco em
+estado e o limpava dentro do efeito; junto disso apareceu um aviso de `act()` nos testes, e eu
+atribuí o aviso a essa escolha e troquei por `ref`. **Medido depois: o aviso vinha do teste**, que
+chamava `.focus()` fora de `act` — com a chamada embrulhada, zero avisos, e o `ref` não tinha nada a
+ver com isso. A troca ficou (economiza um render), mas o comentário no código foi reescrito para
+dizer o motivo verdadeiro. É a classe do achado 29: **atribuir causa por vizinhança em vez de por
+medição.**
+
+---
+
 ## Pendências abertas
 
 
@@ -2519,11 +2590,18 @@ inteiro só com teclado, sem ficar preso nem encontrar controle inalcançável" 
 > `aria-hidden-focus`, as duas leituras possíveis estão escritas **antes** da execução, com o
 > critério de falha fixado, para o resultado não escolher o critério depois.
 >
-> **O que o M10 já traz medido, e é desconfortável:** acionar "Remover situação 2" pelo teclado faz
-> a linha sair, esconde os dois botões de remover (de 2 para 0, porque com uma linha só o JSX os
-> omite), **manda o foco para `document.body`** e **não escreve nada na única região viva da
-> página** — `<section aria-live="polite">`, vazia antes e depois, sem mudança. Isso é DOM, não
-> leitor: o que o NVDA faz com isso é o que o teste vai dizer.
+> **O que o M10 já trazia medido em 21/10/2026, e era desconfortável:** acionar "Remover situação 2"
+> pelo teclado fazia a linha sair, escondia os dois botões de remover (de 2 para 0, porque com uma
+> linha só o JSX os omite), **mandava o foco para `document.body`** e **não escrevia nada na única
+> região viva da página** — `<section aria-live="polite">`, vazia antes e depois.
+>
+> **CONSERTADO na Etapa 19, no mesmo dia (achado 30), e o passo 2 mudou de esperado.** Medido nos
+> quatro casos das duas listas: o foco passa a cair na linha anterior quando ela sobra com botão, e
+> no botão "Adicionar" nos outros casos; a remoção é anunciada numa região viva própria da tela
+> (`role="status"`, `sr-only`), com a contagem no texto para que duas remoções seguidas não
+> produzam o mesmo anúncio. Pelo critério que este passo declarou antes de medir, os quatro casos
+> saíram de FALHA para ACEITÁVEL. **O que o NVDA fala continua sendo da sessão manual:** o que está
+> medido é que as duas metades do critério deixaram de ser atendidas pela falha.
 >
 > **E uma correção no instrumento da folha, pega pelo controle de regressão antes de produzir
 > número:** o contador de passos usava `/^## M[1-9] /`, que **não casa `## M10`** — o zero cai onde

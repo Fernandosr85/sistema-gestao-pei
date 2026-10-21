@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -85,6 +86,78 @@ const NewObservation = () => {
     name: 'interacoes',
   });
 
+  /*
+   * REMOVER UMA LINHA PERDIA O FOCO E NÃO ANUNCIAVA NADA (Etapa 19, passo 2 do M10).
+   *
+   * Medido antes do conserto, nos quatro casos (as duas listas, com e sem linha anterior
+   * sobrevivente): acionar o botão de remover pelo teclado mandava o foco para `document.body` e
+   * não escrevia nada em região viva nenhuma — a única da página era a do sistema de avisos, vazia
+   * antes e depois. Pelo critério que o M10 declarou ANTES da execução (é falha se não houver
+   * anúncio E o foco se perder), os quatro casos davam FALHA.
+   *
+   * O conserto tem duas partes, e as duas são necessárias: quem não vê precisa saber que a linha
+   * saiu (a região viva) e precisa continuar em algum lugar (o foco).
+   */
+  const [avisoDeLista, setAvisoDeLista] = useState('');
+  /*
+   * O foco só pode ser movido DEPOIS de o React recomprometer o DOM: o alvo é escolhido por índice,
+   * e os índices mudam na remoção. Por isso o `useEffect` abaixo procura o alvo no documento já
+   * atualizado, por `data-foco`, em vez de guardar o nó antes de remover — nó guardado antes pode
+   * ser justamente o que saiu da árvore.
+   */
+  const alvoDoFoco = useRef<string | null>(null);
+  const [pedidosDeFoco, setPedidosDeFoco] = useState(0);
+
+  /*
+   * O alvo fica num `ref` e o gatilho é um contador, para o efeito não precisar atualizar estado: a
+   * primeira versão guardava o alvo em estado e o limpava aqui dentro, o que custava um render a
+   * mais por remoção. Contador em vez de booleano porque duas remoções seguidas precisam disparar
+   * duas vezes.
+   *
+   * (Essa primeira versão também apareceu junto de um aviso de `act()` nos testes, e eu atribuí o
+   * aviso a ela. Errado: medido, o aviso vinha do TESTE chamando `.focus()` fora de `act` — com a
+   * chamada embrulhada, zero avisos, e o `ref` não tem nada a ver com isso. A troca fica porque
+   * economiza um render, não porque conserta aviso.)
+   */
+  useEffect(() => {
+    if (!pedidosDeFoco || !alvoDoFoco.current) return;
+    document.querySelector<HTMLElement>(`[data-foco="${alvoDoFoco.current}"]`)?.focus();
+    alvoDoFoco.current = null;
+  }, [pedidosDeFoco]);
+
+  /**
+   * Remove uma linha de uma das duas listas, move o foco e anuncia.
+   *
+   * O alvo do foco é a **linha anterior, quando ela existe e continua tendo botão de remover** —
+   * o JSX esconde esses botões quando sobra uma linha só, e focar um nó que vai desaparecer é
+   * perder o foco de novo. Nos outros casos (removeu a primeira linha, ou sobrou uma linha só) o
+   * alvo é o botão "Adicionar", que está sempre lá.
+   *
+   * A contagem entra no texto anunciado de propósito: região viva com o MESMO texto duas vezes não
+   * é reanunciada, e remover duas linhas em seguida é exatamente o caso em que o texto se repetiria.
+   * Com a contagem, cada remoção produz um texto diferente — e a informação é útil por si.
+   */
+  const removerLinha = (
+    lista: 'situacoes' | 'interacoes',
+    indice: number,
+    quantasAntes: number,
+  ) => {
+    const remover = lista === 'situacoes' ? removeSituacao : removeInteracao;
+    remover(indice);
+
+    const sobram = quantasAntes - 1;
+    const temLinhaAnterior = indice > 0 && sobram > 1;
+    alvoDoFoco.current = temLinhaAnterior ? `${lista}-remover-${indice - 1}` : `${lista}-adicionar`;
+    setPedidosDeFoco((n) => n + 1);
+
+    const nome = lista === 'situacoes' ? 'Situação' : 'Interação';
+    const plural = lista === 'situacoes' ? 'situações' : 'interações';
+    const singular = lista === 'situacoes' ? 'situação' : 'interação';
+    setAvisoDeLista(
+      `${nome} removida. ${sobram === 1 ? `Resta 1 ${singular}` : `Restam ${sobram} ${plural}`} na lista.`,
+    );
+  };
+
   const onSubmit = (data: ObservationForm) => {
     const student = state.students.find((s) => s.id === data.studentId);
     if (!student) {
@@ -152,6 +225,17 @@ const NewObservation = () => {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/*
+            * A região viva das duas listas. Fica aqui, montada desde o começo e vazia: região viva
+            * criada no mesmo instante em que recebe texto costuma não ser anunciada, porque o leitor
+            * de tela precisa já estar observando o nó. Única na página para as duas listas — duas
+            * regiões concorrentes se atropelam.
+            *
+            * `sr-only` e não `hidden`: o que está em `display:none` sai da árvore de acessibilidade
+            * e não é anunciado. Isto é texto que só quem ouve recebe.
+            */}
+          <p className="sr-only" role="status" aria-live="polite">{avisoDeLista}</p>
+
           {/* Informações Básicas */}
           <Card>
             <CardHeader>
@@ -273,7 +357,8 @@ const NewObservation = () => {
                          * visível do bloco, então o que o leitor anuncia casa o que está na tela.
                          */
                         aria-label={`Remover situação ${index + 1}`}
-                        onClick={() => removeSituacao(index)}
+                        data-foco={`situacoes-remover-${index}`}
+                        onClick={() => removerLinha('situacoes', index, situacoesFields.length)}
                       >
                         <Trash2 aria-hidden="true" className="h-4 w-4" />
                       </Button>
@@ -319,6 +404,7 @@ const NewObservation = () => {
               <Button
                 type="button"
                 variant="outline"
+                data-foco="situacoes-adicionar"
                 onClick={() => appendSituacao({ contexto: '', resposta: '' })}
               >
                 <Plus aria-hidden="true" className="mr-2 h-4 w-4" />
@@ -344,7 +430,8 @@ const NewObservation = () => {
                         size="icon"
                         // Mesma regra do botão de remover situação: posição, não conteúdo.
                         aria-label={`Remover interação ${index + 1}`}
-                        onClick={() => removeInteracao(index)}
+                        data-foco={`interacoes-remover-${index}`}
+                        onClick={() => removerLinha('interacoes', index, interacoesFields.length)}
                       >
                         <Trash2 aria-hidden="true" className="h-4 w-4" />
                       </Button>
@@ -387,6 +474,7 @@ const NewObservation = () => {
               <Button
                 type="button"
                 variant="outline"
+                data-foco="interacoes-adicionar"
                 onClick={() => appendInteracao({ tipo: '', descricao: '' })}
               >
                 <Plus aria-hidden="true" className="mr-2 h-4 w-4" />

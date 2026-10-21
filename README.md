@@ -251,6 +251,7 @@ rotas do sistema antes do primeiro commit da etapa e depois do último:
 | Os mesmos, **contados na árvore do Chrome depois da interação** (dois sítios rendem duas linhas) | 8 | **0** |
 | Achados da varredura por **estado**, atrás de 2 ou 3 cliques (Etapa 18, medido e **não corrigido**) | 4 | 4 |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
+| Remoções de linha que perdem o foco e não anunciam nada, nas duas listas da observação nova (Etapa 19, medido em 4 casos) | 4 de 4 | **0 de 4** |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
 > condição de espera declarada.** Medido em 11/10/2026 com o protocolo da Etapa 13 (achado 23), o
