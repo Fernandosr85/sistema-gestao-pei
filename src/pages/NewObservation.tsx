@@ -266,9 +266,16 @@ const NewObservation = () => {
                         type="button"
                         variant="ghost"
                         size="icon"
+                        /*
+                         * Nome pela POSIÇÃO, não pelo conteúdo (invariante 4, Etapa 18). A linha
+                         * nasce vazia e o texto muda a cada tecla; nome de controle que muda a cada
+                         * tecla é reanunciado a cada tecla. "Situação {index + 1}" é o título
+                         * visível do bloco, então o que o leitor anuncia casa o que está na tela.
+                         */
+                        aria-label={`Remover situação ${index + 1}`}
                         onClick={() => removeSituacao(index)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 aria-hidden="true" className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
@@ -335,9 +342,11 @@ const NewObservation = () => {
                         type="button"
                         variant="ghost"
                         size="icon"
+                        // Mesma regra do botão de remover situação: posição, não conteúdo.
+                        aria-label={`Remover interação ${index + 1}`}
                         onClick={() => removeInteracao(index)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 aria-hidden="true" className="h-4 w-4" />
                       </Button>
                     )}
                   </div>

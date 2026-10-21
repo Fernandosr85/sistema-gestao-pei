@@ -254,6 +254,44 @@ Diálogos. São 15, alcançáveis por caminhos diferentes, e dirigi-los de forma
 custaria mais do que vale nesta etapa: nenhum commit da Etapa 5 remove diálogo. Se uma
 etapa futura mexer neles, o arreio precisa crescer antes.
 
+**O que isso custou, medido na Etapa 18 (achado 28).** As 23 superfícies são todas alcançadas
+pelo endereço, então o arreio mede o **estado inicial** de cada rota. Oito botões com papel
+`button` e nome vazio atravessaram dezessete etapas por baixo de todas as varreduras deste projeto
+— fotografia, axe, paradas de tabulação, ícones: quatro em `/observacoes/nova`, que só existem
+depois de "Adicionar Situação", e quatro na aba "Formação" de "Meu Perfil", a três cliques da raiz.
+Antes do clique, aqueles blocos de `/observacoes/nova` não têm botão nenhum: o zero das varreduras
+era verdadeiro e irrelevante.
+
+A varredura por estado vive em `scripts/varredura-de-estados.cjs` e é **separada deste arreio**:
+ela sobe um Chrome próprio, navega com carregamento de verdade a cada ponto (com `pushState`, um
+diálogo aberto num ponto deixa o resto do documento sob `aria-hidden` e a árvore devolve zero por
+contaminação) e lê a árvore de acessibilidade do navegador. Ela **não** substitui as quatro medidas
+daqui — mede uma coisa só, nó interativo exposto sem nome — e por isso a Pendência 3 continua
+aberta.
+
+## O ambiente de medição (Etapa 18)
+
+A condição de pronto é feita de esperas, e espera depende do relógio de quem mede. Aba em segundo
+plano tem os temporizadores estrangulados: medido no mesmo Chrome, a **mediana** de cinco esperas
+pedidas de 20 ms foi **21 ms** em primeiro plano, **995 ms** em aba oculta sem
+`--disable-background-timer-throttling` e **21 ms** em aba oculta com ele. Na Etapa 17 isso parou a
+varredura do axe no meio (15 de 23 superfícies, depois 0 de 23).
+
+A estatística é a mediana porque as outras duas foram medidas e descartadas: a **média** subiu a
+112 ms com o laço de eventos ocupado (margem de 1,8x para o limiar), e o **mínimo** é um sorteio em
+aba estrangulada, porque a primeira espera mede só o resto do segundo corrente — amostras
+medidas: 576, 1011, 995, 1007, 990.
+
+Por isso o arreio **recusa** medir com o relógio estrangulado, em vez de depender de quem o roda:
+`__foto.tudo()` chama `__pronto.exigirAmbiente()` antes de começar, e cada superfície remede o custo
+das próprias esperas, porque o estrangulamento pode começar no meio. `__foto.ambienteDaPassada()`
+devolve o ambiente medido da última passada, para a frase do número poder dizer **onde** mediu.
+
+O controle do detector é `node scripts/controle-do-ambiente.cjs`, e ele se roda **das duas formas**:
+sem os sinalizadores, a aba em segundo plano tem de fazer tudo recusar; com eles, não pode recusar
+nada — só avisar. É essa diferença que mostra que o detector mede o relógio em vez de adivinhar pela
+visibilidade da aba (achado 29).
+
 ## Por que a suíte de testes não substitui isto (Etapa 7)
 
 A Etapa 7 trouxe `npm test` (Vitest + jsdom), e **as quatro medidas deste arreio não migram

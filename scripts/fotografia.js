@@ -276,6 +276,8 @@
    * esperou em vez de prometer.
    */
   let ultimaEspera = null;
+  // O ambiente medido na última passada completa, para a frase do número poder dizer ONDE mediu.
+  let ambienteDaPassada = null;
 
   const ir = async (caminho) => {
     empurrar(NEUTRA);
@@ -305,7 +307,21 @@
   const medirPronto = async (caminho) => {
     const restaurar = window.__pronto.semTransicao();
     try {
-      await ir(caminho);
+      const esperou = await ir(caminho);
+      /*
+       * O AMBIENTE É PARTE DA CONDIÇÃO (Etapa 18). `tudo()` já recusou ambiente estrangulado antes
+       * de começar, mas na Etapa 17 o estrangulamento apareceu NO MEIO da passada — a aba foi para
+       * segundo plano e a varredura parou na 15ª superfície. Aqui a própria condição diz quanto
+       * custaram as esperas dela, e a captura para onde o relógio mudou, em vez de devolver hash
+       * tirado sob outra condição.
+       */
+      if (esperou && esperou.estrangulado) {
+        throw new Error(`AMBIENTE RECUSADO em ${caminho} — as esperas da condição custaram `
+          + `${esperou.esperas.custoMedianoMs} ms de mediana em ${esperou.esperas.voltas} voltas, `
+          + `para ${esperou.esperas.pedidoMedioMs} ms pedidos. `
+          + 'A aba foi para segundo plano no meio da passada; o resto desta fotografia não é '
+          + 'comparável com a base.');
+      }
       return medir();
     } finally {
       restaurar();
@@ -334,6 +350,13 @@
    * passar, a condição não está sendo guardada por nada.
    */
   const tudo = async ({ relogio = RELOGIO_PADRAO, superficies = SUPERFICIES, semCondicao = false } = {}) => {
+    /*
+     * O ambiente entra antes de tudo e vale para as duas pernas, com condição e sem: o controle
+     * compara as duas, e comparar uma medida de primeiro plano com uma de segundo plano não prova
+     * nada sobre a condição. A recusa é aqui, uma vez, para não gastar doze minutos e descobrir no
+     * fim que o relógio era outro.
+     */
+    ambienteDaPassada = await window.__pronto.exigirAmbiente();
     congelarRelogio(relogio);
     /*
      * Com `semCondicao`, o movimento reduzido TAMBÉM sai — e isso foi medido, não suposto: na
@@ -570,6 +593,7 @@
     medir, medirPronto, medirPorRelogio, hashes, tudo, controles, controleDaCondicao, estavel, comparar,
     congelarRelogio, soltarRelogio, ir, podados, SUPERFICIES, hash,
     ultimaEspera: () => ultimaEspera,
+    ambienteDaPassada: () => ambienteDaPassada,
   };
   return 'fotografia pronta: __foto.controles() antes, __foto.tudo() depois';
 })();
