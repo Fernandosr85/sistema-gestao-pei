@@ -230,8 +230,9 @@ commit da etapa e depois do último:
 | Linhas com emoji em título, aba ou rótulo | 98 | 0 |
 | Campos cujo único nome acessível era o `placeholder` (Etapa 12) | 6 | 0 |
 | Séries de gráfico que respeitam "Reduzir animações" (Etapas 13 e 14, medido) | 0 de 19 | **19 de 19** |
-| Nós expostos **sem nome** nos três contêineres de gráfico de `/gestao?tab=relatorios`, na árvore do Chrome (Etapas 14 e 15) | 60 | **17** |
-| Gráficos cujo desenho fica fora da árvore de acessibilidade (Etapas 3, 14 e 15) | 1 de 12 | **11 de 12** |
+| Nós expostos **sem nome** nos três contêineres de gráfico de `/gestao?tab=relatorios`, na árvore do Chrome (Etapas 14 a 16) | 60 | **12** |
+| Gráficos cujo desenho fica fora da árvore de acessibilidade (Etapas 3, 14, 15 e 16) | 1 de 12 | **12 de 12** |
+| Ícones de legenda expostos sem nome, nas rotas com gráfico (Etapa 16) | 9 | **0** |
 | Superfícies com parada de tabulação sem nome (Etapa 12) | 2 de 23 | 0 de 23 |
 
 > **O "124 → 0" é AMOSTRA ÚNICA: uma passada em cada ponta, sem contagem de repetições e sem
@@ -254,6 +255,11 @@ commit da etapa e depois do último:
 > onde há gráfico + 400 ms sem mutação + movimento reduzido pelo atributo do app +
 > `document.fonts.ready`".** A condição foi atingida em 230 de 230 passadas, sem passada descartada.
 > O "124" continua amostra única: é de março, de uma ponta que não existe mais.
+>
+> **Remedido em 19/10/2026, depois da Etapa 16, e o número não se moveu:** ZERO em 10 de 10 em cada
+> uma das 23 superfícies, condição atingida em 230 de 230 passadas. A condição agora mora num lugar
+> só — `scripts/condicao-de-pronto.js` —, e é a mesma que a fotografia de superfície usa: enquanto
+> cada instrumento tinha a sua, os dois não mediam o mesmo "pronto" (achado 26).
 >
 > A condição tem duas metades porque os modos de falha apontam para lados opostos no tempo:
 > `svg-img-alt` só aparece DEPOIS do fim da animação, e `color-contrast` aparece ANTES de a pintura

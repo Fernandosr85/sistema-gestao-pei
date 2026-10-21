@@ -25,6 +25,7 @@ import {
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import ChartDataTable from '@/components/ChartDataTable';
+import ChartLegend from '@/components/ChartLegend';
 import DemoDataNotice from '@/components/DemoDataNotice';
 import { illustrativeScenario } from '@/config/institution';
 
@@ -259,7 +260,8 @@ const OrcamentoContent = () => {
                 isAnimationActive={!movimentoReduzido}
                 formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
               />
-              <Legend />
+              {/* O marcador de cor sai da árvore e o rótulo fica: ver ChartLegend.tsx. */}
+              <Legend content={<ChartLegend />} />
               <Bar isAnimationActive={!movimentoReduzido} dataKey="orcado" fill="#94a3b8" name="Orçado" />
               <Bar isAnimationActive={!movimentoReduzido} dataKey="executado" fill="#3b82f6" name="Executado" />
             </BarChart>
@@ -309,7 +311,8 @@ const OrcamentoContent = () => {
                 isAnimationActive={!movimentoReduzido}
                 formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
               />
-              <Legend />
+              {/* O marcador de cor sai da árvore e o rótulo fica: ver ChartLegend.tsx. */}
+              <Legend content={<ChartLegend />} />
               <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="orcado" stroke="#94a3b8" name="Orçado" strokeWidth={2} />
               <Line isAnimationActive={!movimentoReduzido} type="monotone" dataKey="executado" stroke="#3b82f6" name="Executado" strokeWidth={2} />
             </LineChart>

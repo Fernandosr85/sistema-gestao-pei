@@ -148,7 +148,17 @@ export const StudentPerformanceDialog = ({ open, onOpenChange, studentId }: Stud
                         aria-label="Gráfico de linhas do progresso medido em cada avaliação, em porcentagem. Os mesmos números estão na tabela abaixo."
                       >
                         <ResponsiveContainer width="100%" height={250}>
-                          <LineChart data={serie}>
+                          {/*
+                            * O nono gráfico: desenho fora da árvore, nome no contêiner — a mesma
+                            * decisão dos outros oito (Etapa 15), tomada aqui só na Etapa 16 porque
+                            * só agora deu para MEDIR. Este gráfico só existe com duas ou mais
+                            * avaliações, e o estado de demonstração traz uma: a condição 1 (nome do
+                            * contêiner na árvore do Chrome) não tinha o que medir. Com a segunda
+                            * avaliação criada pela interface, as duas condições ficaram medidas —
+                            * nome presente, `ignored: false`, e tabela de duas linhas ao lado —, e o
+                            * contêiner tinha 24 nós expostos, 9 deles sem nome.
+                            */}
+                          <LineChart aria-hidden="true" data={serie}>
                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                             <XAxis dataKey="rotulo" stroke="hsl(var(--muted-foreground))" />
                             <YAxis stroke="hsl(var(--muted-foreground))" domain={[0, 100]} />

@@ -33,16 +33,24 @@ saem de `App.tsx`.
 
 ## Como rodar
 
-Com `npm run dev` no ar e a aplicação aberta, cole o conteúdo de `fotografia.js` no
-console (ou `eval(await (await fetch('/scripts/fotografia.js')).text())`), e então:
+Com `npm run dev` no ar e a aplicação aberta, cole **dois** arquivos no console, nesta
+ordem — a condição de pronto primeiro, porque o arreio a exige e falha com mensagem se ela
+não estiver lá:
 
 ```js
+eval(await (await fetch('/scripts/condicao-de-pronto.js')).text())
+eval(await (await fetch('/scripts/fotografia.js')).text())
+
 await __foto.controles()   // 1. a ferramenta enxerga?
 await __foto.estavel()     // 2. repete? e não depende da ordem?
 const antes = (await __foto.estavel()).foto
 // ... troca de commit, recarrega a página, cola de novo ...
 __foto.comparar(antes, await __foto.tudo())
 ```
+
+Para medir uma superfície só, use `await __foto.medirPronto(rota)` em vez de `ir` + `medir`:
+ele aplica a condição do começo ao fim da captura. Medir à mão com outra condição é como o
+projeto chegou a ter duas definições de "pronto" ao mesmo tempo (achado 26).
 
 Deixe o `localStorage` vazio antes de começar: a fotografia mede o que o store contém. E
 fixe a largura da janela, a mesma nas duas pontas: a medida `numeros` inclui os rótulos de
@@ -110,7 +118,9 @@ tela: hash que muda diz *que* mudou, não *o quê*.
 ## A base publicada
 
 `scripts/fotografia-base.json` tem os quatro hashes das 23 superfícies, medidos a
-**1280×900**, com `localStorage` vazio e o relógio congelado no padrão. A largura está no
+**1280×900**, com `localStorage` vazio, o relógio congelado no padrão e a **condição de pronto
+compartilhada** (objeto do gráfico onde há gráfico, 400 ms sem mutação, movimento reduzido pelo
+atributo do app, `document.fonts.ready`). A largura está no
 arquivo porque a medida `numeros` depende dela — o Recharts escolhe quantos rótulos de eixo
 cabem —, e `comparar()` recusa comparação entre larguras diferentes.
 
@@ -189,11 +199,23 @@ de 2,5 s há **5 setores** e 7 nós podados. A Pendência 5 dizia que "o arreio 
 cinco `img||`" — e isso vale para `__foto.medir()` numa página assentada, que foi como a medição
 da Etapa 14 foi feita, **não** para `__foto.tudo()`.
 
-É a mesma classe do achado 23, agora dentro deste instrumento: **o assentamento da fotografia é
-relógio, não objeto.** Enquanto for 260 ms fixos, toda superfície com gráfico é medida antes de o
-gráfico existir — o que mantém a fotografia estável e a torna cega para a metade da tela que
-aparece depois. Está registrado como pendência; trocar o assentamento por condição de objeto muda
-a base de novo, e isso é etapa própria.
+É a mesma classe do achado 23, agora dentro deste instrumento: **o assentamento da fotografia era
+relógio, não objeto.** Com 260 ms fixos, toda superfície com gráfico era medida antes de o gráfico
+existir — o que mantinha a fotografia estável e a tornava cega para a metade da tela que aparece
+depois.
+
+**Consertado na Etapa 16 (achado 26):** o assentamento saiu, e a condição passou a ser a
+compartilhada de `scripts/condicao-de-pronto.js` — a mesma do `axe-com-condicao.js`. Medido, com a
+condição e sem, na rota dos relatórios: **sem**, 0 setores no DOM e 2 nós podados; **com**, 5
+setores e 7 podados. E, medido também: **as quatro medidas não mudaram em nenhuma das 23
+superfícies.** Isso não é a condição falhando, é o encontro de duas coisas — o que a condição
+acrescenta à captura (os nós do gráfico) é exatamente o que a poda por `aria-hidden` tira, e os
+rótulos de eixo, que `numeros` mede, já estavam presentes com 260 ms porque eixo não é animado.
+A diferença aparece em `podados()`, uma camada antes da medida.
+
+Com movimento reduzido ligado durante a captura, o objeto também chega mais rápido do que o relógio
+antigo esperava: o marcador apareceu em **63 ms** na rota dos relatórios, contra os 260 ms de espera
+fixa que não o viam.
 
 ## O relógio
 

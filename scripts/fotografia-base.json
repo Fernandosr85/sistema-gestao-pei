@@ -1,12 +1,14 @@
 {
-  "medido_em": "2026-10-11",
-  "sha_da_arvore": "f6dba42",
-  "etapa": "15, commit 1 — primeira base publicada, com a poda por aria-hidden na medida a11y",
+  "medido_em": "2026-10-19",
+  "sha_da_arvore": "17f4b1f",
+  "etapa": "16, commit 1 — a condição de pronto passou a ser a compartilhada; os hashes não se moveram",
+  "condicao": "objeto do grafico onde ha grafico + 400 ms sem mutacao + movimento reduzido pelo atributo do app + document.fonts.ready (scripts/condicao-de-pronto.js)",
+  "hashes_inalterados_desde": "2026-10-11 (f6dba42), quando o assentamento era 260 ms de relogio: a troca de condicao nao moveu nenhum dos 92 hashes, e o motivo esta no README",
   "largura": 1280,
   "altura": 900,
   "relogio": "2026-03-17T09:00:00-03:00",
   "local_storage": "vazio",
-  "como_comparar": "cole scripts/fotografia.js no console e rode: __foto.comparar((await (await fetch('/scripts/fotografia-base.json')).json()).superficies, await __foto.tudo())",
+  "como_comparar": "cole scripts/condicao-de-pronto.js e scripts/fotografia.js no console, nesta ordem, e rode: __foto.comparar((await (await fetch('/scripts/fotografia-base.json')).json()).superficies, await __foto.tudo())",
   "aviso": "os hashes de numeros dependem da largura; comparar() recusa comparacao entre larguras diferentes",
   "superficies": {
     "/": {"a11y": "76ac0f2a", "numeros": "f6e21603", "foco": "769eff87", "titulos": "4a78a12f", "url": "/", "largura": 1280},

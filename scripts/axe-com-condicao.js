@@ -18,7 +18,11 @@
  * A REGRA: resultado de instrumento não determinístico exige N passadas e condição declarada.
  * Resultado que varia entre passadas não é resultado, é **faixa**, e sai daqui como faixa.
  *
- * AS CONDIÇÕES, e por que o marcador é o objeto e não o tempo nem o silêncio:
+ * AS CONDIÇÕES ESTÃO EM OUTRO ARQUIVO DESDE A ETAPA 16: `scripts/condicao-de-pronto.js`, o mesmo
+ * que o arreio usa. Cole aquele primeiro. O que segue abaixo é o histórico de como a condição foi
+ * escolhida, porque a escolha é parte da medida.
+ *
+ * Por que o marcador é o objeto e não o tempo nem o silêncio:
  *
  *   tempo      — espera fixa. Mede onde o relógio cair: na rota dos relatórios, 2,6 s cai ANTES
  *                dos setores existirem, e o zero é subcontagem.
@@ -38,19 +42,29 @@
  * `svg-img-alt` — ele existe ANTES de a pintura terminar e decai para zero (58, 34, 0 nós, medido).
  * Silêncio e espera não fechavam a faixa: com `document.fonts.ready` + 1 500 ms, `/observacoes`
  * ainda dava `color-contrast(21)` em 1 de 20 passadas. A condição que fecha não é esperar mais, é
- * **não haver transição**: `{ semTransicao: true }` liga `data-a11y-motion="reduzido"` no elemento
- * raiz (o CSS da Etapa 3 zera transição e animação, medido em `1e-05s`), espera
- * `document.fonts.ready`, mede e restaura o atributo. Com ela, as 23 superfícies dão ZERO em 10 de
- * 10 passadas cada.
+ * **não haver transição**: ligar `data-a11y-motion="reduzido"` no elemento raiz (o CSS da Etapa 3
+ * zera transição e animação, medido em `1e-05s`), esperar `document.fonts.ready`, medir e restaurar
+ * o atributo. Com ela, as 23 superfícies dão ZERO em 10 de 10 passadas cada. **Na Etapa 16 isso
+ * deixou de ser opcional:** enquanto era `{ semTransicao: true }`, o mesmo script tinha duas
+ * condições possíveis — e duas condições possíveis é o mesmo problema de dois instrumentos com
+ * critérios diferentes (achado 26).
  *
- * Dependências: `axe.min.js` (de `/node_modules/axe-core/`) e, para navegar entre rotas sem
- * recarregar, o `__foto.ir` de `scripts/fotografia.js`. Os dois são colados no console antes.
+ * Dependências, na ordem: `axe.min.js` (de `/node_modules/axe-core/`),
+ * `scripts/condicao-de-pronto.js` e `scripts/fotografia.js` (de onde vem o `__foto.ir`, que navega
+ * sem recarregar).
  */
 (() => {
+  /*
+   * A CONDIÇÃO DE PRONTO NÃO É DAQUI (Etapa 16). Ela mora em `scripts/condicao-de-pronto.js` e é a
+   * mesma que o arreio usa. Este arquivo ficou com o que é dele: N passadas, faixa quando as
+   * passadas discordam, e o controle positivo do próprio instrumento.
+   */
+  if (!window.__pronto) {
+    throw new Error('axe-com-condicao: cole scripts/condicao-de-pronto.js antes deste arquivo');
+  }
+
   const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
-  const MARCADOR_PADRAO = 'path.recharts-sector';
-  const QUIETO_MS = 400;
-  const LIMITE_MS = 15000;
+  const QUIETO_MS = window.__pronto.QUIETO_MS;
 
   const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -64,64 +78,19 @@
     }
   };
 
-  /** Espera o OBJETO (marcador) e depois o silêncio. Devolve quanto esperou, para ir ao registro. */
-  const esperarCondicao = async (marcador) => {
-    const t0 = performance.now();
-    let marcadorEm = null;
-    if (marcador) {
-      while (performance.now() - t0 < LIMITE_MS && !document.querySelector(marcador)) await esperar(60);
-      marcadorEm = Math.round(performance.now() - t0);
-    }
-    const alvo = document.querySelector('main') || document.body;
-    let ultima = performance.now();
-    const obs = new MutationObserver(() => { ultima = performance.now(); });
-    obs.observe(alvo, { childList: true, subtree: true, attributes: true });
-    while (performance.now() - t0 < LIMITE_MS && performance.now() - ultima < QUIETO_MS) await esperar(80);
-    obs.disconnect();
-    return {
-      marcadorEm,
-      total: Math.round(performance.now() - t0),
-      atingida: marcador ? !!document.querySelector(marcador) : true,
-    };
-  };
-
-  /**
-   * A condição do OUTRO modo de falha: `color-contrast` medido no meio de uma transição de cor.
-   *
-   * Os dois modos apontam para lados opostos no tempo — `svg-img-alt` só existe DEPOIS do fim da
-   * animação, `color-contrast` existe ANTES de a pintura terminar — e por isso não há espera fixa
-   * correta (achado 23). Para o segundo, a condição não é esperar mais: é **não haver transição**.
-   * O app já oferece o interruptor, e ele é medível: com `data-a11y-motion="reduzido"` no elemento
-   * raiz, o CSS da Etapa 3 zera `transition-duration` e `animation-duration` em tudo (medido:
-   * `1e-05s`). Mais `document.fonts.ready`, porque trocar a fonte depois de pintar também muda cor
-   * medida.
-   *
-   * Isto não é "esperar o bastante": é tirar do caminho a coisa que fazia a contagem decair de 58
-   * para 34 e para 0 nós.
+  /*
+   * Uma passada: a condição inteira, sempre. Ela DEIXOU DE SER OPCIONAL na Etapa 16 — enquanto o
+   * movimento reduzido era `{ semTransicao: true }`, o mesmo script tinha duas condições possíveis,
+   * e duas condições possíveis é o mesmo problema de dois instrumentos com critérios diferentes.
    */
-  const semTransicao = () => {
-    const raiz = document.documentElement;
-    const antes = raiz.getAttribute('data-a11y-motion');
-    raiz.setAttribute('data-a11y-motion', 'reduzido');
-    return () => (antes === null ? raiz.removeAttribute('data-a11y-motion') : raiz.setAttribute('data-a11y-motion', antes));
-  };
-
-  const esperarFontes = async () => {
-    try {
-      if (document.fonts && document.fonts.ready) await document.fonts.ready;
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const umaPassada = async (rota, marcador, opcoes = {}) => {
-    const restaurar = opcoes.semTransicao ? semTransicao() : null;
+  const umaPassada = async (rota, marcador) => {
+    const restaurar = window.__pronto.semTransicao();
     await irPara(rota);
-    const espera = await esperarCondicao(marcador);
-    if (opcoes.semTransicao) espera.fontesProntas = await esperarFontes();
+    const espera = await window.__pronto.esperar(
+      marcador === undefined ? { rota } : { rota, marcador },
+    );
     const resultado = await window.axe.run(document, { runOnly: { type: 'tag', values: TAGS } });
-    if (restaurar) restaurar();
+    restaurar();
     const regras = resultado.violations
       .map((v) => `${v.id}(${v.nodes.length})`)
       .sort()
@@ -132,21 +101,23 @@
   /**
    * Mede uma rota N vezes sob a condição declarada.
    * @param {string} rota
-   * @param {{ passadas?: number, marcador?: string|null, nomeDaCondicao?: string, semTransicao?: boolean }} opcoes
+   * @param {{ passadas?: number, marcador?: string|null, nomeDaCondicao?: string }} opcoes
    */
   const medir = async (rota, opcoes = {}) => {
     const passadas = opcoes.passadas ?? 10;
-    const marcador = opcoes.marcador === undefined ? MARCADOR_PADRAO : opcoes.marcador;
-    const semTransicaoLigada = opcoes.semTransicao === true;
+    // O marcador padrão é o DA ROTA, do módulo da condição: era 'path.recharts-sector' para
+    // qualquer rota, o que obrigava quem media o orçamento a passar o marcador à mão.
+    const marcador = opcoes.marcador === undefined ? window.__pronto.marcadorDe(rota) : opcoes.marcador;
     const nomeDaCondicao = opcoes.nomeDaCondicao
       ?? [
         marcador ? `${marcador} presente` : null,
         `${QUIETO_MS} ms sem mutação`,
-        semTransicaoLigada ? "movimento reduzido pelo atributo do app + document.fonts.ready" : null,
-      ].filter(Boolean).join(" + ");
+        'movimento reduzido pelo atributo do app',
+        'document.fonts.ready',
+      ].filter(Boolean).join(' + ');
 
     const resultados = [];
-    for (let i = 0; i < passadas; i += 1) resultados.push(await umaPassada(rota, marcador, { semTransicao: semTransicaoLigada }));
+    for (let i = 0; i < passadas; i += 1) resultados.push(await umaPassada(rota, marcador));
 
     const distintos = [...new Set(resultados.map((r) => r.regras))];
     const identico = distintos.length === 1;
@@ -169,7 +140,7 @@
       rota, condicao: nomeDaCondicao, passadas, identico,
       resultados: resultados.map((r) => r.regras),
       linha, esperas, naoAtingiram,
-      passadasComFontesProntas: semTransicaoLigada ? comFontes : null,
+      passadasComFontesProntas: comFontes,
     };
   };
 
@@ -188,6 +159,6 @@
     return { acusou, comControle: comControle.regras, semControle: semControle.regras };
   };
 
-  window.__axe = { medir, controle, umaPassada, semTransicao, TAGS, MARCADOR_PADRAO, QUIETO_MS };
+  window.__axe = { medir, controle, umaPassada, TAGS, QUIETO_MS };
   return 'axe com condição pronto: __axe.controle() antes, __axe.medir(rota) depois';
 })();
