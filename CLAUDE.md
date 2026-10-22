@@ -19,12 +19,21 @@ Nenhuma alteração é considerada pronta antes de as quatro passarem:
 ```bash
 npm run lint        # 0 erros. 4 warnings react-refresh em src/components/ui/ são aceitos.
 npm run typecheck   # silêncio
-npm test            # 143 testes, 16 arquivos. Zero teste encontrado reprova.
+npm test            # Zero teste encontrado reprova. A contagem não fica aqui: ver abaixo.
 npm run build       # conclui
 ```
 
 Rode as quatro antes de cada commit. Se uma quebrar, conserte antes de seguir — não
 acumule.
+
+**Por que a contagem de testes saiu deste bloco.** Ela dizia "143 testes, 16 arquivos" e o medido
+era **154 em 18** — envelheceu duas vezes sem ninguém notar, porque este bloco é um PROCEDIMENTO e
+não um resultado: quem acrescenta um teste roda os quatro comandos, não relê a lista deles. Datar o
+número aqui não resolveria; só deixaria um número velho com data. O que não envelhece é a asserção
+operacional, e ela fica: **zero teste encontrado reprova**. A contagem vive onde é mantida — a
+tabela por arquivo em [Testes automatizados](README.md#testes-automatizados-etapa-7) do README —, e
+lá o total tem **regra** (é a soma da tabela) e **data**. Número cujo valor muda a cada etapa não
+mora em texto que ninguém reabre ao mudá-lo.
 
 O **verificador de vocabulário** (`node scripts/verifica-vocabulario.mjs`, invariante 2) tem passo
 próprio no CI, depois do lint, e também roda dentro de `npm test`: o caso 1 de

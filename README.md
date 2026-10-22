@@ -124,8 +124,43 @@ portanto **nunca** coloque segredos ali.
 
 ### Deploy
 
-`npm run build` gera arquivos estáticos em `dist/`, servíveis por qualquer host estático
-(Vercel, Netlify, GitHub Pages, Nginx). Não há dependência de plataforma específica.
+**A demonstração é publicada em GitHub Pages:**
+**https://fernandosr85.github.io/sistema-gestao-pei/**
+
+**O que essa URL é, e o que ela não é.** É uma **demonstração** do protótipo, com dados fictícios.
+Os dados ficam **no navegador de quem abre** (`localStorage`), não são enviados a servidor nenhum e
+não são vistos por mais ninguém — não há backend, não há banco, não há conta. Quem limpar os dados
+do navegador perde o que digitou, e quem abrir em outro aparelho começa de novo.
+
+**Ela não é adequada para dado real de estudante.** Dado de criança e adolescente em contexto
+escolar é dado pessoal sensível, e esta página não tem nada do que isso exige — autenticação,
+autorização, trilha de auditoria, retenção, nem servidor onde aplicar qualquer uma dessas coisas.
+Os sete requisitos estão em [Antes de usar com dados reais](#antes-de-usar-com-dados-reais), e
+**todos os sete continuam abertos**; três deles não se resolvem no cliente.
+
+**O que a publicação torna público, e por isso está escrito aqui.** Os quatro achados de
+acessibilidade que seguem **medidos, relatados e não corrigidos** (Pendência 11 do
+[backlog](BACKLOG-CLAUDE-CODE.md)) passam a existir numa página que qualquer pessoa abre —
+inclusive com leitor de tela: a caixa de opções de todo seletor sem nome, o gatilho do seletor de
+"Página inicial padrão", o controle deslizante "Progresso" e o invólucro que fica `aria-hidden` com
+elemento focável dentro enquanto um seletor está aberto. **Não é motivo para não publicar** — é
+motivo para estar escrito, e para a fronteira do número de acessibilidade estar dita em
+[Acessibilidade](#acessibilidade): o ZERO do axe vale sobre o estado inicial de cada rota, e os
+estados interagidos não estão cobertos.
+
+**Como a publicação funciona.** `npm run build` gera `dist/`, servível por qualquer host estático
+(Vercel, Netlify, GitHub Pages, Nginx) — não há dependência de plataforma. Para o GitHub Pages, que
+serve sob o subcaminho `/sistema-gestao-pei/`, três coisas vêm do próprio build:
+
+| O quê | Onde | Por quê |
+|---|---|---|
+| `base` do Vite, condicional por modo | `vite.config.ts` (uma constante, uma vez) | reescreve os caminhos dos recursos; em `dev` e nos testes continua `/` |
+| `basename` do roteador | `src/App.tsx`, lendo `import.meta.env.BASE_URL` | sem ele a aplicação sob subcaminho cai no próprio 404, **medido** — inclusive na raiz |
+| `404.html` (cópia do `index.html` gerado) e `.nojekyll` | escritos pelo build, em `dist/` | o Pages é servidor estático: sem o `404.html`, recarregar `/alunos/1` devolve 404 de verdade |
+
+O fluxo `.github/workflows/deploy-pages.yml` publica em push para `main` **depois de o `verify`
+passar** (gatilho `workflow_run`, não em paralelo), com permissões mínimas por tarefa e uma
+publicação de cada vez. O `ci.yml` não mudou.
 
 ---
 
@@ -193,6 +228,12 @@ versão desconhecida ou ilegíveis são descartados, com aviso na tela.
 | Notificações | ❌ Não implementadas; os controles aparecem desabilitados |
 | Análise preditiva / benchmarking | ❌ Números fixos no código, sem modelo |
 | Testes automatizados | ✅ Suíte em Vitest + jsdom (`npm test`), cobrindo o que as Etapas 1 a 6 corrigiram, a guarda de navegação da Etapa 8 e o PEI da Etapa 9 — não o código todo. A tabela por arquivo está em [Testes automatizados](#testes-automatizados-etapa-7) |
+
+> **A publicação da demonstração (Etapa 20) não muda nenhuma linha desta tabela, e isso foi
+> conferido linha por linha em 22/10/2026.** Publicar não implementa nada: não aparece backend, nem
+> exportação, nem notificação, e nenhum ❌ vira ⚠️ ou ✅. O que muda é **quem alcança** o que já
+> estava aqui — e é por isso que as duas linhas que dizem "grava só no `localStorage` do navegador"
+> passam a valer para o navegador de qualquer pessoa que abra a URL, com a mesma situação de antes.
 
 Na Etapa 2 do [backlog](BACKLOG-CLAUDE-CODE.md), cada controle sem ação foi implementado,
 desabilitado com o motivo na tela ou removido. Na Etapa 3, o sistema foi levado a zero violação
@@ -506,9 +547,19 @@ sem o registro ruim, com "Registros descartados na abertura: 1 estudante, 1 obse
 
 ### Testes automatizados (Etapa 7)
 
-Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`. A
-tabela está em **143 testes em 16 arquivos**: a Etapa 9 levou a suíte de 73 para 131, e a Etapa 11
-acrescentou os 12 do verificador de vocabulário.
+Vitest + jsdom + Testing Library. `npm test` roda no CI entre o `typecheck` e o `build`.
+
+**São 154 testes em 18 arquivos, medidos em 22/10/2026, e o total é a SOMA DA TABELA abaixo** — essa
+é a regra, e é o que permite conferir o número sem rodar nada. A Etapa 9 levou a suíte de 73 para
+131, a Etapa 11 acrescentou os 12 do verificador de vocabulário, a Etapa 14 os 6 do movimento
+reduzido e a Etapa 19 os 5 do foco ao remover linha.
+
+> **Esta contagem já envelheceu duas vezes, e é por isso que ela agora tem regra e data.** Dizia
+> "143 testes em 16 arquivos" — número da Etapa 11 — enquanto o medido era 154 em 18: faltavam na
+> tabela o arquivo da Etapa 14 (6 testes) e o da Etapa 19 (5). O mesmo número velho estava no bloco
+> de verificação obrigatória do `CLAUDE.md`, e **saiu de lá** na Etapa 20: aquele bloco é
+> procedimento, não resultado, e quem acrescenta um teste roda os comandos sem reler a lista deles.
+> Aqui o total é conferível por soma, e quem acrescenta um arquivo de teste mexe nesta tabela.
 
 | Arquivo | Testes | O que trava |
 |---|---:|---|
@@ -528,10 +579,13 @@ acrescentou os 12 do verificador de vocabulário.
 | `src/test/minha-agenda.test.tsx` | 2 | os atendimentos do store, inclusive os agendados com data já passada |
 | `src/test/observacao.test.tsx` | 2 | só o que foi registrado, e as metas que citam aquela observação |
 | `src/test/vocabulario.test.ts` | 12 | o verificador da invariante 2: um caso por padrão, a prova de que `\bIA\b` é sensível a caso, as três regras da linha de base, e que um script que não lê arquivo nenhum reprova |
+| `src/test/movimento-reduzido.test.ts` | 6 | a preferência de movimento reduzido vinda do app OU do sistema, com o atributo e a consulta de mídia como fontes independentes (Etapa 14) |
+| `src/test/foco-ao-remover.test.tsx` | 5 | ao remover linha da observação nova, para onde o foco vai e o que a região viva anuncia — cada caso asseverando o valor errado antigo (Etapa 19) |
 
-**O risco, com o número absoluto: são 143 testes, cobrindo as correções das Etapas 1 a 6, a
-guarda de navegação da Etapa 8, as cinco telas da Etapa 9 e o verificador de vocabulário da Etapa
-11. O restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
+**O risco, com o número absoluto: são 154 testes (medidos em 22/10/2026), cobrindo as correções das
+Etapas 1 a 6, a guarda de navegação da Etapa 8, as cinco telas da Etapa 9, o verificador de
+vocabulário da Etapa 11, o movimento reduzido da Etapa 14 e o foco ao remover linha da Etapa 19. O
+restante do código não tem teste.** Não há porcentagem de cobertura aqui, de propósito:
 cobertura mede linha executada, e linha executada não é defeito travado.
 
 Três decisões que dizem o que a suíte significa:
