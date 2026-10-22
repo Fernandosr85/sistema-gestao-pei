@@ -5042,6 +5042,105 @@ A homepage **não** foi preenchida agora de propósito: apontar o campo para uma
 
 ---
 
+### Etapa 20b — a guarda do deploy, e a primeira publicação de verdade (22/10/2026)
+
+**A primeira execução real do fluxo aconteceu e FALHOU, e é bom que tenha falhado assim.** O
+`workflow_run` disparou certo: CI passou no `main` às 23:46 UTC, a publicação começou às 23:47, e
+nenhuma das duas correu em paralelo com a outra. O que quebrou foi um passo meu, por uma afirmação
+que eu não tinha medido.
+
+Execução **39874042759**, passo `actions/configure-pages@v6`:
+
+```
+##[warning]Get Pages site failed. Error: Not Found
+##[error]Create Pages site failed. Error: Resource not accessible by integration
+```
+
+**A causa não é o Pages estar desabilitado — é eu ter dito que o fluxo o habilitaria.** O comentário
+que eu escrevi em `deploy-pages.yml` dizia que `enablement: true` ligava o Pages sozinho "para a
+publicação não depender de alguém lembrar de mexer nas configurações do repositório". A descrição do
+próprio parâmetro, lida agora em `actions/configure-pages`, diz o contrário:
+
+> *"Try to enable Pages for the repository if it is not already enabled. **This option requires a
+> token other than `GITHUB_TOKEN` to be provided.** In the context of a Personal Access Token, the
+> `repo` scope or Pages write permission is required. In the context of a GitHub App, the
+> `administration:write` and `pages:write` permissions are required."*
+
+Com o `GITHUB_TOKEN` da execução, `enablement: true` **não pode funcionar** — e nenhuma permissão
+declarada no fluxo o faz funcionar, porque o problema é o tipo de token, não o escopo dele. Minha
+primeira hipótese ao ver o erro foi "falta `pages: write` na tarefa de build"; ela também estava
+errada, e caiu na leitura da descrição do parâmetro em vez de numa tentativa.
+
+> **Regra, e é a classe do achado 24 outra vez:** capacidade de ferramenta se **lê na ferramenta**,
+> não se deduz do nome do parâmetro. "Habilita se não estiver habilitado" não diz com qual
+> credencial, e foi exatamente aí que a afirmação entrou no código como comentário — ou seja, como
+> registro.
+
+**O parâmetro saiu.** Com o Pages já habilitado, o passo `configure-pages` só lê a configuração e
+segue, que é para isso que ele está ali. Habilitar é **uma vez, à mão**:
+
+> **Settings → Pages → Build and deployment → Source → GitHub Actions**
+
+#### A guarda: `conclusion` estava, `head_branch` não
+
+Inspecionado como foi mesclado no #32:
+
+```yaml
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+```
+
+```yaml
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+```
+
+`conclusion` **estava** na condição. `head_branch` **não** — a restrição de branch morava só no
+filtro `branches: [main]` do gatilho. Para o `workflow_run` o filtro de fato resolve (ele filtra o
+branch do fluxo que disparou), mas **para o `workflow_dispatch` não havia restrição nenhuma**: um
+disparo manual de qualquer branch que tivesse o arquivo construiria e tentaria publicar aquele
+branch. A condição passou a ser:
+
+```yaml
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run'
+        && github.event.workflow_run.conclusion == 'success'
+        && github.event.workflow_run.head_branch == 'main')
+```
+
+As duas portas pedem `main`, e `head_branch` está na condição em vez de só no filtro. Conferido por
+parser de YAML, não por leitura: os dois gatilhos, `branches: ["main"]`, as duas tarefas, a condição
+numa linha e as permissões (`contents: read` no build; `pages: write` e `id-token: write` só na
+entrega).
+
+#### O que fica BLOQUEADO, e em quê
+
+A reconferência na URL real, o preenchimento da homepage e os números de produção dependem de o site
+existir. Ele não existe: o Pages continua desabilitado, e habilitar é configuração de repositório —
+não código, e não algo que este fluxo possa fazer com o token que tem. **Depois do clique**, a
+publicação sai no push seguinte para o `main` (ou por `workflow_dispatch`), e então:
+
+```bash
+node scripts/confere-publicacao.cjs https://fernandosr85.github.io/sistema-gestao-pei/
+gh repo edit Fernandosr85/sistema-gestao-pei --homepage https://fernandosr85.github.io/sistema-gestao-pei/
+```
+
+Os números a comparar, medidos em 22/10/2026 contra um servidor que imita o contrato do Pages: **23
+de 23** superfícies, recarregamento de rota profunda em duas, **zero** origem de terceiro em 197
+requisições com o controle positivo acusando, e **ZERO em 5 de 5** no axe em cinco rotas (25
+passadas). Se algum divergir em produção, o ambiente publicado é diferente do medido, e isso se
+relata antes de concluir qualquer coisa.
+
+**E a frase que não depende do site estar no ar:** a publicação **não move nenhuma linha** da tabela
+"O que está implementado" — conferido linha por linha em 22/10/2026. Publicar não implementa nada;
+muda **quem alcança** o que já estava lá.
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
