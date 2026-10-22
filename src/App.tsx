@@ -27,8 +27,19 @@ const App = () => (
       * Sem `future`: no react-router 7 os dois comportamentos que o commit anterior ligou
       * (`v7_startTransition` e `v7_relativeSplatPath`) são o padrão, e a prop não existe mais
       * em `BrowserRouterProps` — quem disse isso foi o typecheck, não a documentação.
+      *
+      * `basename` LÊ O MESMO LUGAR QUE O `base` DO VITE (Etapa 20). `import.meta.env.BASE_URL` é
+      * derivado pelo próprio Vite a partir do `base` de `vite.config.ts`: em `dev` e nos testes é
+      * `/`, e no build de produção é `/sistema-gestao-pei/`. Não há a string repetida aqui — se
+      * houvesse, seriam duas fontes para o mesmo fato.
+      *
+      * MEDIDO ANTES DE CONSERTAR, para saber que o controle mede: com o `base` posto e SEM este
+      * `basename`, a aplicação servida sob o subcaminho carrega os recursos certos e renderiza o
+      * 404 DA PRÓPRIA APLICAÇÃO — até na raiz do subcaminho, porque o roteador procura
+      * `/sistema-gestao-pei/` entre as rotas declaradas e não acha. Com ele, a raiz e o
+      * recarregamento de rota profunda funcionam.
       */}
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="min-h-screen bg-background">
         <a
           href="#main-content"

@@ -1,0 +1,77 @@
+# Publica a demonstração no GitHub Pages.
+#
+# POR QUE É UM ARQUIVO SEPARADO DO `ci.yml`, e por que o gatilho é `workflow_run`: a publicação
+# **depende da verificação passar**, e não pode correr em paralelo com ela. `workflow_run` espera o
+# fluxo "CI" terminar e só segue quando a conclusão foi `success` — sem tocar no `ci.yml`, que
+# continua exatamente como estava. Pôr os dois no mesmo arquivo (com `needs:`) obrigaria a mexer na
+# verificação; duplicar os passos de verificação aqui rodaria tudo duas vezes e as duas cópias
+# divergiriam na primeira vez que uma delas mudasse.
+#
+# O QUE ISTO PUBLICA: o `dist/` do build de produção, que inclui `404.html` (cópia do `index.html`
+# gerado, para recarregamento de rota profunda) e `.nojekyll`, os dois escritos pelo próprio build.
+#
+# ATENÇÃO, e isto é consequência do `workflow_run`: o GitHub lê este arquivo a partir do branch
+# PADRÃO. Enquanto ele não estiver no `main`, a publicação não acontece — nem por push, nem por
+# `workflow_dispatch`.
+name: Publicar demonstração
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  # Para republicar sem esperar um push novo — útil quando só a configuração do Pages mudou.
+  workflow_dispatch:
+
+# Nada por omissão; cada tarefa pede o mínimo que precisa.
+permissions: {}
+
+# Uma publicação de cada vez, cancelando a anterior: duas entregas concorrentes podem chegar fora
+# de ordem e deixar publicado um commit mais antigo. Cancelar a que está em curso faz a última
+# vencer, que é o estado que se quer — o custo é perder a entrega intermediária, que ninguém pediu.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Só publica o que passou pela verificação. No `workflow_dispatch` não há verificação a
+    # consultar, e aí a condição é o próprio ato manual.
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # No `workflow_run` o commit a publicar é o que a verificação aprovou, não o topo do
+          # branch: entre os dois pode ter entrado outro push, e publicar o topo seria publicar
+          # código que ninguém verificou.
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v6
+        # Liga o Pages na primeira execução, com a origem em GitHub Actions, para a publicação não
+        # depender de alguém lembrar de mexer nas configurações do repositório.
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publicacao.outputs.page_url }}
+    steps:
+      - id: publicacao
+        uses: actions/deploy-pages@v5
