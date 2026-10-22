@@ -4928,6 +4928,120 @@ escritos por causa da bateria — a mutação achou o furo no teste, que é o qu
 
 ---
 
+## Etapa 20 — a demonstração publicada
+
+**A URL:** https://fernandosr85.github.io/sistema-gestao-pei/
+
+Fluxo em `.github/workflows/deploy-pages.yml`, separado do `ci.yml`, que **não mudou**. Gatilho
+`workflow_run` sobre o fluxo "CI": a publicação só acontece depois de a verificação terminar com
+`success`, e nunca em paralelo com ela. Permissões mínimas por tarefa (`contents: read` no build;
+`pages: write` e `id-token: write` só na entrega), uma publicação de cada vez com cancelamento da
+anterior, e o commit publicado é o que a verificação aprovou (`workflow_run.head_sha`), não o topo
+do branch — entre os dois pode ter entrado outro push.
+
+### O que a publicação cobre
+
+| O quê | Como ficou | Medido |
+|---|---|---|
+| caminho base sob subcaminho | `base` condicional em `vite.config.ts`, numa constante só | recursos do `index.html` gerado saem com `/sistema-gestao-pei/` |
+| roteador sob subcaminho | `basename={import.meta.env.BASE_URL}` em `src/App.tsx` — lê o próprio `base`, sem repetir a string | **medido antes de consertar:** sem ele, a aplicação sob subcaminho cai no 404 DELA MESMA, inclusive na raiz |
+| recarregamento de rota profunda | `404.html`, cópia byte a byte do `index.html` gerado, escrito pelo build | servido com status 404, a aplicação carrega e resolve `/alunos/1` |
+| Jekyll | `.nojekyll` escrito pelo build | existe no `dist/` |
+
+**As 23 superfícies, o recarregamento, a rede e o axe foram medidos contra um servidor que imita o
+CONTRATO do Pages** — serve o arquivo quando existe, e `404.html` com status **404** para qualquer
+outro caminho. Isso foi necessário porque **o `vite preview` tem fallback de página única embutido**:
+no preview a rota profunda funciona mesmo que o `404.html` não exista, de modo que o preview não mede
+o mecanismo que a publicação usa. Com o servidor que imita o contrato, e com o `404.html` removido à
+mão, a rota profunda deixa de carregar — é o controle positivo do próprio controle.
+
+Resultado, em `scripts/confere-publicacao.cjs`, que recebe a URL base e serve para o preview e para
+a página publicada sem mudar nada:
+
+- **23 de 23 superfícies** carregam e resolvem (o curinga `/rota-que-nao-existe` tem de cair no 404
+  da aplicação, e cai);
+- **recarregamento de rota profunda** em `/alunos/1` e `/observacoes/nova`: o mesmo `h1` antes e
+  depois do F5;
+- **nenhuma origem de terceiro** em 197 requisições — só a do próprio site, e a fonte Inter vem de
+  `assets/inter-latin-wght-normal-*.woff2` da própria origem. **Controle positivo:** a página pede
+  um recurso de `https://controle-positivo.invalid/pixel.png` e o coletor **acusa** a origem de
+  fora. O domínio é `.invalid` (RFC 2606) de propósito: nunca resolve, então o controle prova que o
+  coletor vê terceiro sem contatar ninguém;
+- **o axe com condição declarada** numa amostra de cinco rotas:
+
+> ZERO em 5 de 5 em cada uma das 5 superfícies da amostra; amostra: `/`, `/observacoes/nova`,
+> `/gestao?tab=relatorios`, `/relatorios`, `/gestao?tab=orcamento`; 25 passadas; condição "objeto do
+> gráfico onde há gráfico (3 de 5 da amostra) + 400 ms sem mutação + movimento reduzido pelo atributo
+> do app + document.fonts.ready"; ambiente MEDIDO: Chrome headless, aba visible, espera de 20 ms
+> custou 21 ms de mediana (amostras 21, 21, 22, 21, 22; limiar 200 ms), janela 1280x900.
+
+**Duas correções na própria verificação, pegas porque o veredito discordou do que estava na tela.**
+O piso de texto era 40 caracteres e reprovava a página de 404 da aplicação, que tem **39** de
+propósito. E o filtro de terceiro comparava a ORIGEM serializada: `data:` serializa como `"null"`, o
+filtro `/^(data|blob)/` não pegava nada, e as 4 requisições `data:` da página entravam como
+"terceiro" — a varredura reprovava um site que não pede nada a ninguém. Agora o filtro decide pelo
+**esquema** da URL, com cinco casos conferidos.
+
+### O que a publicação NÃO cobre
+
+**Ela não torna o sistema apto a dado real, e não mexe em nenhum dos sete requisitos** de "Antes de
+usar com dados reais" do README. Os sete continuam abertos, e a publicação não aproxima nenhum:
+
+| # | Requisito | Depende de |
+|---|---|---|
+| 1 | base legal documentada por operação | decisão e documento — não é código |
+| 2 | minimização dos campos sensíveis | produto |
+| 3 | autenticação e autorização por perfil | **backend** |
+| 4 | criptografia em trânsito e em repouso | **backend** (em trânsito o Pages já dá TLS; em repouso não há repouso) |
+| 5 | registro de acesso (auditoria) | **backend** |
+| 6 | política de retenção e exclusão | decisão, e depois backend |
+| 7 | fluxo de direitos do titular | decisão, e depois backend |
+
+**Três são de backend (3, 4 e 5), e publicar uma página estática não cria backend.** O armazenamento
+continua sendo o `localStorage` do navegador de quem abre: texto puro, legível por quem tiver acesso
+àquele navegador, e que desaparece quando os dados do site são limpos. A diferença que a publicação
+faz é de **alcance**, não de capacidade: o mesmo protótipo, agora abrível por qualquer pessoa.
+
+**E o que a publicação torna público em acessibilidade.** Os quatro achados da Pendência 11 —
+medidos, relatados e não corrigidos — passam a existir numa página que qualquer pessoa abre,
+inclusive com leitor de tela. Está escrito na seção Deploy do README, junto da fronteira do número:
+o ZERO do axe vale **sobre o estado inicial de cada rota**, e os estados interagidos não estão
+cobertos.
+
+### Conferência manual dos três campos do GitHub (22/10/2026)
+
+Nenhuma verificação deste repositório alcança descrição, tópicos e homepage — eles vivem fora do
+clone. Medido em **22/10/2026, 22:37 UTC**:
+
+| Campo | Estado |
+|---|---|
+| descrição | presente, sem vínculo institucional, dizendo que os dados são fictícios |
+| tópicos | 12, temáticos |
+| homepage | **vazia** — recebe a URL quando a publicação existir |
+| Pages | **não habilitado** (`GET /repos/.../pages` devolve 404), logo **o site ainda não existe** |
+
+### O que ficou BLOQUEADO nesta etapa, e por quê
+
+O item 5 do plano pede reconferência **na URL publicada**. Ela não existe ainda, e isso está
+medido: `GET /repos/Fernandosr85/sistema-gestao-pei/pages` devolve 404. A publicação depende do
+gatilho `workflow_run`, e **o GitHub lê fluxos de `workflow_run` a partir do branch padrão** — este
+arquivo só passa a valer quando estiver no `main`. O plano também diz, no fim, **não fazer merge**.
+As duas instruções não se satisfazem juntas: o merge é do autor.
+
+Então o que ficou feito é o que dá para fazer antes: a mesma verificação, com o mesmo script, contra
+um servidor que reproduz o contrato do Pages. Depois do merge, dois comandos fecham o item 5 — e o
+segundo é o que põe a URL na homepage:
+
+```bash
+node scripts/confere-publicacao.cjs https://fernandosr85.github.io/sistema-gestao-pei/
+gh repo edit Fernandosr85/sistema-gestao-pei --homepage https://fernandosr85.github.io/sistema-gestao-pei/
+```
+
+A homepage **não** foi preenchida agora de propósito: apontar o campo para uma URL que devolve 404
+é pior do que deixá-lo vazio, e o campo é público.
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
