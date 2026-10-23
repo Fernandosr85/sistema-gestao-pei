@@ -3196,7 +3196,7 @@ servidor de desenvolvimento, com `localStorage` limpo antes e depois.
 | 2. Help Users Find What They Need | lista de alunos, observações, biblioteca, anexos | Há busca em quatro telas; **não há busca global** no sistema | `src/pages/Students.tsx`, `src/pages/Observations.tsx`, `src/pages/ResourceLibrary.tsx`, `src/components/AnexosDialog.tsx` | **atende em parte** (4.3.6) |
 | 2 | ficha do aluno | "Ações Rápidas" reúne as sete ações principais do estudante num bloco só | medido em `/alunos/1` | **atende** (4.3.4) |
 | 2 | — | Se as pessoas **encontram** o que precisam | — | **não avaliável sem usuário** (4.3.1, 4.3.2) |
-| 3. Use Clear and Understandable Content | todas | **Siglas sem forma extensa e sem glossário.** `PEI` aparece em **46** arquivos e só **3** trazem a forma extensa no mesmo arquivo; `TDAH` em **8**, nenhum; `CID` em **1**, nenhum; `TEA` em **15**, **1**. **Zero** elementos `<abbr>` no projeto e **nenhum glossário** | varredura dos 112 arquivos `.ts`/`.tsx` fora de `src/test` e `src/components/ui`; `grep -rn "<abbr" src` = 0 | **não atende** (4.4.1, 4.4.7, 4.4.12) |
+| 3. Use Clear and Understandable Content | todas | **Siglas sem forma extensa e sem glossário.** `PEI` aparece em **46** arquivos e só **3** trazem a forma extensa no mesmo arquivo; `TDAH` em **8**, nenhum; `CID` em **1**, nenhum; `TEA` em **15**, **1**. **Zero** elementos `<abbr>` no projeto e **nenhum glossário** | `scripts/verifica-siglas.mjs` (112 arquivos `.ts`/`.tsx` fora de `src/test` e `src/components/ui`); `grep -rn "<abbr" src` = 0 | **não atende** (4.4.1, 4.4.7, 4.4.12) |
 | 3 | ficha do aluno | "Diagnósticos: **TEA - Nível 1**" é mostrado cru, sem dizer o que é | `src/pages/StudentDetail.tsx:265-266`, medido | **não atende** (4.4.1) |
 | 3 | ficha do aluno | O bloco comparativo abre com **"BENCHMARKING:"** em caixa alta — palavra em inglês numa tela usada em reunião com a família — e a lista de requisitos fala em "coorte", "anonimização verificável", "controle de divulgação estatística" e "LGPD" | medido em `/alunos/1` | **não atende** (4.4.1, 4.4.5) |
 | 3 | Modo Apresentação (slide 4) | O slide mostra **"Autorregulação emocional"** e **"40% · Em progresso"** sem dizer o que o 40% mede | medido, slide 4 de 8 | **não atende** (4.4.13) |
@@ -3215,7 +3215,7 @@ servidor de desenvolvimento, com `localStorage` limpo antes e depois.
 | 6 | nova observação | O formulário não exige trazer nada de outra tela: o estudante é escolhido ali mesmo | `src/pages/NewObservation.tsx:251` | **atende** (4.7.5; e 3.3.7 da 2.2) |
 | 6 | novo aluno **[fora das sete]** | **22 campos em 5 seções, numa tela só**, sem indicador de etapa e sem rascunho: quem interrompe, recomeça | `src/pages/NewStudent.tsx` (22 `<FormLabel>`, 5 `<CardTitle>`) | **não atende** (4.7.5, 4.5.9, 4.2.4) |
 | 6 | — | Se a pessoa consegue retomar a tarefa depois de interrompida | — | **não avaliável sem usuário** (4.7.5, 4.5.9) |
-| 7. Provide Help and Support | todas | **Não há ajuda nem contato humano em tela nenhuma** — zero ocorrências de "Ajuda", "Suporte", "Fale conosco". Há um "Manual" no menu, que é conteúdo normativo, não ajuda contextual | `src/components/Header.tsx:39`; varredura por rótulo visível = 0 | **não atende** (4.8.1, 4.8.5) |
+| 7. Provide Help and Support | todas | **Não há ajuda nem contato humano em tela nenhuma** — zero ocorrências de "Ajuda", "Suporte", "Fale conosco". Há um "Manual" no menu, que é conteúdo normativo, não ajuda contextual | `src/components/Header.tsx:39`; varredura por rótulo visível = 0 | **não atende** (4.8.1, 4.8.5) — e é esta ausência que faz **3.2.6 da WCAG 2.2 passar a vazio** |
 | 7 | Ver PEI, Desempenho | As ações desabilitadas dizem por que estão desabilitadas, em vez de simplesmente não responder | medido nos dois diálogos | **atende** (4.8.3) |
 | 7 | — | Se a ajuda que existisse seria suficiente | — | **não avaliável sem usuário** (4.8.1, 4.8.4) |
 | 8. Support Adaptation and Personalization | Configurações → Acessibilidade | Cinco preferências que funcionam: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e aumentar os botões — todas de **percepção e operação** | `pei-a11y-preferences`, README seção "Preferências de acessibilidade" | **atende em parte** (4.9.4) |
@@ -3228,14 +3228,73 @@ servidor de desenvolvimento, com `localStorage` limpo antes e depois.
 **isso é resultado**: cada um dos oito objetivos tem uma pergunta central que **não se decide lendo
 código**.
 
-**A fronteira da própria medição, e ela é diferente da dos números do axe.** As contagens de sigla,
-mensagem e sistema de aviso saíram de uma varredura de uma vez só, **sem instrumento versionado em
-`scripts/`** — ao contrário do arreio e do axe, não há aqui nada que o CI reexecute. A regra de
-contagem fica escrita (arquivos `.ts`/`.tsx` fora de `src/test` e `src/components/ui`; sigla com
-limite de palavra; forma extensa no mesmo arquivo) para quem quiser refazer, e o varredor rodou com
-controle positivo: uma sigla inexistente devolveu 0 e `PEI` devolveu 46. **Contagem por arquivo não
-é contagem por tela:** a forma extensa estar no mesmo arquivo não garante que ela apareça junto da
-sigla na tela, e o inverso também vale.
+**A fronteira da própria medição.** A contagem de siglas **tem instrumento versionado**:
+`scripts/verifica-siglas.mjs`, com escopo declarado no cabeçalho e **três controles que reprovam
+sozinhos** — sigla inexistente tem de dar 0, `PEI` tem de dar o valor esperado, e a fronteira de
+palavra tem de se comportar nos quatro casos plantados. Os três foram exercitados quebrando cópias
+do script: sem `\b` a fronteira acusa e `PEI` sobe de 46 para **49**; com o esperado trocado por
+999 o controle positivo acusa; com o controle negativo apontado para `PEI` ele acusa 46. O script
+intacto sai **0**, os três quebrados saem **1**.
+
+A primeira versão desse varredor existiu só no diretório temporário da sessão, e isso **era a
+mesma classe das 27 mutações perdidas da Etapa 7**: declarar o limite não substituía cumprir a
+regra quando cumprir custava um arquivo. O limite que **permanece** é outro e menor: **as contagens
+de mensagem de validação, de asterisco e de sistema de aviso continuam sem instrumento**, e o
+varredor de siglas **não está no `verify`** — versionar não é o mesmo que reexecutar, e pôr mais um
+passo no CI é decisão do autor, não minha.
+
+**Contagem por arquivo não é contagem por tela:** a forma extensa estar no mesmo arquivo não
+garante que ela apareça junto da sigla na tela, e o inverso também vale.
+
+#### Os dois números de `PEI`, reconciliados — e um terceiro que apareceu no meio
+
+O relatório da etapa citou **36** e o varredor devolveu **46**. **São unidades e escopos
+diferentes**, e o que entrou no registro é o 46:
+
+| Número | O que ele conta | Escopo |
+|---:|---|---|
+| **36** | arquivos | só `.tsx`, **todo** o `src` (inclui `src/test` e `src/components/ui`), via `grep -rlwF` |
+| **35** | arquivos | o mesmo escopo do 36, **sem o falso positivo** do `grep` |
+| **46** | **arquivos — é este que está no registro** | `.ts` **e** `.tsx`, **sem** `src/test` e `src/components/ui` |
+| **152** | **ocorrências**, não arquivos | o mesmo escopo do 46 |
+
+A conta fecha: os dois conjuntos têm **28 arquivos em comum**; só no de 35 há **7** (seis de
+`src/test` e `src/components/ui/progress.tsx`); só no de 46 há **18**, todos `.ts` (`src/lib`,
+`src/store`, `src/types`, `src/data`). 28 + 7 = 35 e 28 + 18 = 46.
+
+**E o terceiro número é um defeito de instrumento, medido com controle plantado.** O 36 do `grep`
+não vira 35 por escopo: vira porque **`grep -wF` conta `comPEI:` como palavra inteira**. Plantado:
+
+| Texto | `grep -wF` | `grep -w` | `grep -wE` | `\bPEI\b` em JS |
+|---|---:|---:|---:|---:|
+| `comPEI: x` | **1** | 0 | 0 | não casa |
+| `o PEI vigente` | 1 | 1 | 1 | casa |
+| `PEIzinho` | 0 | 0 | 0 | não casa |
+
+GNU grep 3.0, nesta máquina. O defeito é **só na borda esquerda** — `PEIzinho` é rejeitado pelos
+quatro. O arquivo que entrava a mais era `src/components/gestao/ComplexityAnalysisContent.tsx`,
+cuja única ocorrência é a chave `comPEI:` de um objeto. **Dos dois instrumentos que discordavam, o
+errado era o meu `grep`**, e o controle de fronteira do script versionado existe para travar
+exatamente isso.
+
+#### A conformidade vazia do 3.2.6 e do 3.3.8
+
+Dois dos três critérios A/AA de cognição da WCAG 2.2 **este sistema cumpre sem ter feito nada**, e
+dizer isso sem a ressalva seria dizer uma meia-verdade:
+
+- **3.2.6 Consistent Help (A) — cumprido por não haver ajuda.** O critério pede que a ajuda, quando
+  existe em várias páginas, apareça na mesma ordem relativa. **Não há ajuda em tela nenhuma** (é o
+  "não atende" do objetivo 7 do COGA, logo acima), então não há o que ficar fora de ordem. O
+  critério está satisfeito **a vazio**: no dia em que existir um botão de ajuda em duas telas, ele
+  passa a ter conteúdo — e pode reprovar.
+- **3.3.8 Accessible Authentication (Minimum) (AA) — não se aplica sem autenticação.** Não há
+  login: nada a resolver, memorizar ou transcrever. **Vira requisito no dia em que o requisito 3 de
+  dado real (autenticação e autorização por perfil) for implementado**, e aí a decisão de como
+  autenticar é uma decisão de acessibilidade cognitiva, não só de segurança.
+
+**É o zero verdadeiro e irrelevante outra vez** (achado 28, e o ruleset do achado 31): conformidade
+que vem da ausência do objeto, não da qualidade da solução. Um painel que dissesse "2 de 3
+critérios de cognição atendidos" estaria tecnicamente certo e seria enganoso.
 
 **E NÃO foi produzido índice de legibilidade** — nem Flesch adaptado nem equivalente. Um número
 saído de fórmula pareceria medida de compreensão sem ser: é o zero verdadeiro e irrelevante em
