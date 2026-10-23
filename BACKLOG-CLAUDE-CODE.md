@@ -2514,6 +2514,63 @@ medição.**
 
 ---
 
+### 31. O selo da proteção é indicador; a medida é o push recusado (23/10/2026)
+
+**A configuração, lida (e isto é indicador, não medida).** Ruleset `24430368`, nome "main
+protegido", alvo `branch`, vigência `active`, `ref_name.include = ["~DEFAULT_BRANCH"]` — **1 alvo**
+—, `exclude` vazio, **`bypass_actors` vazio**, quatro regras: `deletion`, `non_fast_forward`,
+`required_status_checks` (`verify`, `strict=false`) e `pull_request` (**0 aprovações**).
+
+**A medida.** Commit vazio `d8f9b76` no `main` local, `git push origin main` às **12:52:55 UTC de
+23/10/2026**. A mensagem inteira, do remoto:
+
+```
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: Review all repository rules at https://github.com/Fernandosr85/sistema-gestao-pei/rules?ref=refs%2Fheads%2Fmain
+remote:
+remote: - Required status check "verify" is expected.
+remote:
+remote: - Changes must be made through a pull request.
+remote:
+To https://github.com/Fernandosr85/sistema-gestao-pei.git
+ ! [remote rejected] main -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/Fernandosr85/sistema-gestao-pei.git'
+```
+
+**REJEITADO**, saída 1, e o commit não existe mais: `git reset --hard origin/main` levou o `main` de
+volta a `3bf23b0`, `git branch --contains d8f9b76 --all` não lista branch nenhum, e
+`git ls-remote origin refs/heads/main` continua em `3bf23b05cdb0feff252ea2ef894468f3844806ee` — o
+servidor nunca recebeu o objeto.
+
+**O que este push exercitou: 2 das 4 regras.** A recusa citou `required_status_checks` e
+`pull_request`. As outras duas não foram exercitadas porque **o push não era nenhuma das duas coisas**
+— não apagava o branch nem reescrevia história. Dizer "a proteção está medida" seria estender o
+resultado para além do que o instrumento tocou; o que está medido é que **um push direto de commit
+novo no `main` é recusado**.
+
+**E as duas que faltam ficam por decisão, com o motivo dito.** Medir `deletion` é tentar apagar o
+`main`; medir `non_fast_forward` é tentar reescrever a história pública. O pior caso deste controle
+era **um commit de lixo**; o pior caso daqueles dois é **história perdida num repositório público**.
+A assimetria é o motivo de eles não terem sido rodados por iniciativa minha — não é esquecimento, é
+fronteira declarada.
+
+**Uma leitura da configuração que o selo não dá:** com `pull_request` em **0 aprovações** e
+`bypass_actors` vazio, a regra que barra o push direto é a **exigência de PR**, não a de revisão —
+revisão continua não sendo exigida, e o merge segue sendo do autor por convenção, não por
+mecanismo. As duas coisas são verdadeiras ao mesmo tempo, e confundi-las é ler o nome da regra em
+vez do parâmetro dela.
+
+**Nota do autor, e é a razão de isto estar aqui:** o ruleset **chegou a existir com
+`targeting 0 branches`** — três regras ativas, nome tranquilizador, **zero efeito**. Não posso medir
+esse estado, porque quando medi o alvo já era `~DEFAULT_BRANCH`; fica registrado como relato, e o
+relato é o achado. É a classe do **zero verdadeiro e irrelevante** (achado 28: a varredura media
+páginas onde o defeito não existia), agora numa **tela de configuração** em vez de numa varredura:
+quatro regras aplicadas a nenhum branch produzem exatamente o mesmo painel verde que quatro regras
+aplicadas ao branch certo. **O que torna a diferença visível não é olhar a configuração — é tentar
+fazer a coisa que ela deve recusar.**
+
+---
+
 ## Pendências abertas
 
 
