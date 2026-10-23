@@ -127,6 +127,14 @@ portanto **nunca** coloque segredos ali.
 **A demonstração é publicada em GitHub Pages:**
 **https://fernandosr85.github.io/sistema-gestao-pei/**
 
+> **Medida em produção em 23/10/2026**, pelo mesmo `scripts/confere-publicacao.cjs` que rodou contra
+> o servidor local — só muda a URL base. Todos os números iguais aos locais: **23 de 23** superfícies
+> carregam e resolvem, recarregamento de rota profunda ok em duas, **197 requisições com zero origem
+> de terceiro** (e o controle positivo acusando), a Inter da própria origem, e **ZERO em 5 de 5** no
+> axe em cinco rotas (25 passadas, condição e ambiente declarados). Na rota profunda o Pages devolve
+> **status 404** servindo o `404.html` — corpo byte a byte idêntico ao do build — e a aplicação
+> carrega e resolve a rota.
+
 **O que essa URL é, e o que ela não é.** É uma **demonstração** do protótipo, com dados fictícios.
 Os dados ficam **no navegador de quem abre** (`localStorage`), não são enviados a servidor nenhum e
 não são vistos por mais ninguém — não há backend, não há banco, não há conta. Quem limpar os dados

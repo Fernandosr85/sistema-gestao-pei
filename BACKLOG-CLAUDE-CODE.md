@@ -5141,6 +5141,123 @@ muda **quem alcança** o que já estava lá.
 
 ---
 
+### Etapa 20c — a demonstração medida em produção (23/10/2026)
+
+**A URL está no ar:** https://fernandosr85.github.io/sistema-gestao-pei/ — Pages habilitado com
+origem em GitHub Actions, HTTPS forçado, primeira publicação entregue em **23/10/2026**.
+
+**Como ela subiu, e isso importa para a próxima:** houve **duas** execuções do fluxo de publicação
+depois do merge do #33. A automática (`workflow_run`, 00:29 UTC) **falhou** com *"Get Pages site
+failed. Please verify that the repository has Pages enabled"* — o Pages ainda não estava habilitado
+naquele instante. O clique veio entre 00:29 e 00:43, e o **disparo manual** de 00:43
+(`workflow_dispatch`) publicou. Então: **o caminho automático nunca teve uma execução bem-sucedida
+ainda** — não por defeito conhecido, mas porque a única vez que correu foi antes do clique. O
+mecanismo é o mesmo que funcionou no disparo manual, e o merge desta etapa é a primeira chance de
+exercitá-lo de ponta a ponta.
+
+#### Os números, lado a lado
+
+Medido por `scripts/confere-publicacao.cjs`, o **mesmo script** nas duas colunas — só muda a URL
+base. Produção em 23/10/2026, 12:33–12:34 UTC.
+
+| Medida | Local (22/10, imitando o contrato do Pages) | **Produção (23/10)** |
+|---|---|---|
+| Superfícies que carregam e resolvem | 23 de 23 | **23 de 23** |
+| Recarregamento de rota profunda | ok em 2 | **ok em 2** |
+| Requisições de rede | 197 | **197** |
+| Origens de terceiro | 0 | **0** |
+| Controle positivo do coletor (`.invalid`) | acusou | **acusou** |
+| Fontes pedidas | 1, da própria origem | **1, da própria origem** |
+| axe, condição e ambiente declarados | ZERO em 5 de 5, 25 passadas | **ZERO em 5 de 5, 25 passadas** |
+
+> ZERO em 5 de 5 em cada uma das 5 superfícies da amostra; amostra `/`, `/observacoes/nova`,
+> `/gestao?tab=relatorios`, `/relatorios`, `/gestao?tab=orcamento`; 25 passadas; condição "objeto do
+> gráfico onde há gráfico (3 de 5 da amostra) + 400 ms sem mutação + movimento reduzido pelo atributo
+> do app + document.fonts.ready"; ambiente MEDIDO: Chrome headless, aba visible, espera de 20 ms
+> custou 21 ms de mediana (amostras 21, 20, 20, 21, 21; limiar 200 ms), janela 1280×900; alvo
+> https://fernandosr85.github.io/sistema-gestao-pei/
+
+**Nenhum resultado divergiu.** O que mudou foi o que tinha de mudar: a origem
+(`https://fernandosr85.github.io` em vez de `http://localhost:4199`) e a duração de cada medição do
+axe, que se moveu entre −162 ms e +185 ms por superfície — latência de rede, sem efeito no resultado.
+
+#### A contagem de requisições NÃO diferiu, e a previsão era de outra grandeza
+
+O plano previa que o número de requisições **devesse** diferir em produção, "porque o Pages serve
+com compressão e cabeçalhos próprios". Contado: **197 nas duas**. A previsão estava medindo outra
+coisa — o coletor conta `Network.requestWillBeSent`, isto é, **quantas requisições a página faz**, e
+compressão e cabeçalhos mudam a **resposta**, não a quantidade de pedidos. O mesmo build, pedindo os
+mesmos arquivos, pede o mesmo número de vezes em qualquer servidor. Se a contagem tivesse mudado,
+isso sim seria achado: significaria que a página publicada não é a mesma que se mediu.
+
+#### O fallback de `404.html` em produção, com status e corpo
+
+| Caminho | Status em produção |
+|---|---|
+| `/` | **200** |
+| `/alunos/1` | **404** |
+| `/observacoes/nova` | **404** |
+| `/rota-que-nao-existe` | **404** |
+| `/404.html` | **200** |
+| `/.nojekyll` | **404** |
+
+O 404 na rota profunda é o contrato, não defeito: o Pages devolve `404.html` com status 404, e a
+aplicação carrega e **resolve a rota** — medido, `/alunos/1` renderiza a ficha da estudante, e o
+recarregamento mantém o mesmo `h1`. O corpo servido na rota profunda tem **1413 bytes e é byte a
+byte idêntico** ao `dist/404.html` do build: é a prova de que o fallback é o arquivo que o build
+escreveu, e não outra coisa.
+
+**Uma divergência real entre o imitador e o Pages:** `/.nojekyll` devolve **404** em produção e dava
+**200** no servidor local. O Pages **consome** o `.nojekyll` como diretiva de build e não serve
+dotfiles; o meu imitador servia qualquer arquivo existente. Não muda nada do que se queria medir — o
+arquivo faz efeito sendo lido pelo build, não sendo servido —, mas fica registrado porque é
+diferença entre o contrato imitado e o real.
+
+#### Conferência manual dos três campos do GitHub (23/10/2026, 12:34 UTC)
+
+| Campo | Estado |
+|---|---|
+| descrição | presente, sem vínculo institucional, dizendo que os dados são fictícios |
+| tópicos | 12, temáticos |
+| homepage | **https://fernandosr85.github.io/sistema-gestao-pei/** — preenchida nesta etapa, depois de a URL responder 200 |
+
+A homepage ficou vazia de propósito até aqui: campo público apontando para uma URL que devolvia 404
+é pior que vazio. Agora a URL existe, e o campo foi preenchido.
+
+#### O que a publicação NÃO muda
+
+**Nenhuma linha da tabela "O que está implementado"** — conferido linha por linha em 22/10 e nada
+mudou com a publicação: publicar não implementa nada, muda **quem alcança** o que já estava lá.
+
+**Os sete requisitos de dado real seguem todos abertos**, e três deles — autenticação e autorização
+por perfil (3), criptografia em repouso (4) e registro de acesso (5) — dependem de **backend**, que
+uma página estática não cria. O armazenamento continua sendo o `localStorage` do navegador de quem
+abre.
+
+**E os quatro itens da Pendência 11 agora existem numa página pública**, inclusive para quem usa
+leitor de tela: a caixa de opções de todo seletor sem nome, o gatilho do seletor de "Página inicial
+padrão", o controle deslizante "Progresso" e o invólucro que fica `aria-hidden` com elemento focável
+dentro enquanto um seletor está aberto. Seguem medidos, relatados e **não corrigidos**, e a fronteira
+do número está dita: o ZERO do axe vale sobre o **estado inicial** de cada rota.
+
+#### O `enablement`, que é achado e não detalhe
+
+> `actions/configure-pages` com `enablement: true` **não pode funcionar com o `GITHUB_TOKEN`
+> padrão** — está na descrição do próprio parâmetro, que exige Personal Access Token com escopo
+> `repo` ou GitHub App com `administration:write`. A primeira hipótese, tirada da mensagem de erro
+> (*"Resource not accessible by integration"*), foi falta de `pages: write` no job de build, e era
+> **falsa**: o problema é o **tipo** do token, não o escopo, e nenhuma permissão declarada no fluxo o
+> resolve. **A mensagem de erro diz o que falhou, não o que falta.** Capacidade de ferramenta se lê
+> na ferramenta — classe do achado 24, agora numa action de CI.
+
+> E o filtro `branches: [main]` do gatilho cobre o `workflow_run` e **não cobre o
+> `workflow_dispatch`**: duas portas para a mesma sala, uma trancada. Disparo manual de qualquer
+> branch que tivesse o arquivo construiria e publicaria aquele branch. **Apareceu porque os dois
+> blocos foram colados em vez de descritos** — ler o `if` em voz alta ao lado do gatilho mostrou o
+> que resumi-lo escondia.
+
+---
+
 ## Fora de escopo até decisão do autor
 
 - Backend real, autenticação, RBAC
