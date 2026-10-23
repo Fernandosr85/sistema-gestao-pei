@@ -3139,6 +3139,134 @@ nomeadas aqui —, nem que o sistema esteja em ZERO depois de o usuário clicar.
 
 ---
 
+### 12. Acessibilidade cognitiva: declarada como limite, inventariada uma vez, não corrigida (Etapa 21, 23/10/2026)
+
+A auditoria inteira teve a **WCAG 2.1 AA** como alvo. A WCAG AA cobre bem o que se **vê**, se
+**ouve** e se **opera**, e pouco o que se **entende**. Num sistema de PEI isso pesa mais que em
+quase qualquer outro: os estudantes do plano são, em boa parte, neurodivergentes, e as famílias que
+leem o plano também podem ser. Acessibilidade cognitiva ficou fora do escopo desde a Etapa 0, e até
+aqui **nenhum registro dizia isso**.
+
+#### Parte 1 — O que está declarado e o que não está medido
+
+**O limite agora está no README**, na seção Acessibilidade, ao lado da fronteira do número do axe.
+Em uma frase: **acessibilidade cognitiva não foi medida** — compreensão, linguagem, carga de
+atenção, previsibilidade e dependência de memória.
+
+**A referência, buscada na fonte:** *Making Content Usable for People with Cognitive and Learning
+Disabilities*, W3C **Working Group Note de 29 de abril de 2021**
+(<https://www.w3.org/TR/coga-usable/>), com **8 objetivos** e **57 padrões de design**. Os títulos
+usados nesta pendência são os do documento, como estão escritos lá. O documento **não foi
+aplicado** antes desta etapa.
+
+**E a WCAG 2.2** — Recomendação de **5 de outubro de 2023**
+(<https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/>) — acrescentou nove critérios.
+**Três são A/AA e tocam cognição**, e este projeto não avaliou nenhum:
+
+| Critério | Nome | Nível |
+|---|---|---|
+| **3.2.6** | Consistent Help | A |
+| **3.3.7** | Redundant Entry | A |
+| **3.3.8** | Accessible Authentication (Minimum) | AA |
+
+O quarto que a fonte descreve como benefício cognitivo, **3.3.9 Accessible Authentication
+(Enhanced)**, é **AAA** e por isso fica fora da conta de A/AA. Os outros cinco (2.4.11, 2.4.12,
+2.4.13, 2.5.7, 2.5.8) a fonte não descreve como benefício cognitivo. A 2.2 também **removeu 4.1.1
+Parsing**. **O alvo declarado continua sendo 2.1 AA**: trocá-lo é decisão do autor e muda o que
+todos os números anteriores querem dizer.
+
+#### O inventário contra o COGA
+
+**Isto é revisão especializada, não medida de compreensão.** Quem diz se uma família entende a tela
+é a família. O que está aqui é o que dá para observar no código e na tela.
+
+**Escopo declarado:** as sete telas que um **professor** e uma **família** usariam — lista de alunos
+(`/alunos`), ficha do aluno (`/alunos/:id`), Ver PEI, Ver Desempenho Completo, Modo
+Apresentação/Reunião, nova observação (`/observacoes/nova`) e agenda (`/agenda-atendimentos`) —
+percorridas com os oito objetivos do COGA na mão. Uma linha marcada **[fora das sete]** entra
+porque a evidência é forte e a tela é do mesmo fluxo. Medições de navegador feitas em 23/10/2026 no
+servidor de desenvolvimento, com `localStorage` limpo antes e depois.
+
+| Objetivo | Tela | O que se observa | Evidência | Classe |
+|---|---|---|---|---|
+| 1. Help Users Understand What Things are and How to Use Them | lista de alunos | O selo do nível de suporte aparece sozinho — "Médio", "Alto", "Baixo" — sem rótulo visível dizendo **de que** é o nível | `src/components/StudentCard.tsx:59-61` | **não atende** (4.2.5, 4.4.12) |
+| 1 | todas (menu) | O primeiro item do menu chama-se **"Dashboard"**, palavra em inglês numa interface em português para professores e famílias | `src/components/Header.tsx:34` | **não atende** (4.4.1) |
+| 1 | Modo Apresentação | A tela de configuração diz o que vai acontecer, lista os 8 slides que serão montados e diz o que **não** é gerado ("Vídeo e PDF não são gerados neste protótipo") | medido em `/alunos/1` → "Modo Apresentação/Reunião" | **atende** (4.2.1, 4.6.4) |
+| 1 | — | Se a hierarquia e os ícones são *familiares* para quem usa | — | **não avaliável sem usuário** (4.2.2, 4.2.7) |
+| 2. Help Users Find What They Need | lista de alunos, observações, biblioteca, anexos | Há busca em quatro telas; **não há busca global** no sistema | `src/pages/Students.tsx`, `src/pages/Observations.tsx`, `src/pages/ResourceLibrary.tsx`, `src/components/AnexosDialog.tsx` | **atende em parte** (4.3.6) |
+| 2 | ficha do aluno | "Ações Rápidas" reúne as sete ações principais do estudante num bloco só | medido em `/alunos/1` | **atende** (4.3.4) |
+| 2 | — | Se as pessoas **encontram** o que precisam | — | **não avaliável sem usuário** (4.3.1, 4.3.2) |
+| 3. Use Clear and Understandable Content | todas | **Siglas sem forma extensa e sem glossário.** `PEI` aparece em **46** arquivos e só **3** trazem a forma extensa no mesmo arquivo; `TDAH` em **8**, nenhum; `CID` em **1**, nenhum; `TEA` em **15**, **1**. **Zero** elementos `<abbr>` no projeto e **nenhum glossário** | varredura dos 112 arquivos `.ts`/`.tsx` fora de `src/test` e `src/components/ui`; `grep -rn "<abbr" src` = 0 | **não atende** (4.4.1, 4.4.7, 4.4.12) |
+| 3 | ficha do aluno | "Diagnósticos: **TEA - Nível 1**" é mostrado cru, sem dizer o que é | `src/pages/StudentDetail.tsx:265-266`, medido | **não atende** (4.4.1) |
+| 3 | ficha do aluno | O bloco comparativo abre com **"BENCHMARKING:"** em caixa alta — palavra em inglês numa tela usada em reunião com a família — e a lista de requisitos fala em "coorte", "anonimização verificável", "controle de divulgação estatística" e "LGPD" | medido em `/alunos/1` | **não atende** (4.4.1, 4.4.5) |
+| 3 | Modo Apresentação (slide 4) | O slide mostra **"Autorregulação emocional"** e **"40% · Em progresso"** sem dizer o que o 40% mede | medido, slide 4 de 8 | **não atende** (4.4.13) |
+| 3 | Ver PEI | **O contraexemplo, e é do próprio sistema:** o diálogo abre com "Plano Educacional Individualizado (PEI)" e explica o número — "Média das 4 metas do plano / 50% / Alcançadas: 1 de 4 / Em progresso: 2 de 4 / Não iniciadas: 1 de 4" | medido, diálogo Ver PEI Ativo | **atende** (4.4.13, 4.4.12) |
+| 3 | — | Se o texto é compreendido, e por quem | — | **não avaliável sem usuário** (4.4.1 a 4.4.13) |
+| 4. Help Users Avoid Mistakes and Know How to Correct Them | nova observação, e mais oito telas | **Nove telas marcam campo obrigatório com `*` e exatamente uma diz o que o asterisco significa.** Nova observação tem 14 rótulos assim e não explica nenhum; novo aluno tem 12 e não explica | usam `*`: `NewObservation.tsx` (14), `NewStudent.tsx` (12), `EditarCadastroDialog.tsx` (12), `ContributeResourceDialog.tsx` (7), `NovoAtendimentoDialog.tsx` (6), `NewAssessmentDialog.tsx` (3), `MeuPerfilDialog.tsx` (2), `GenerateReportDialog.tsx` (2), `NovaObservacaoDialog.tsx` (1); explica: só `src/components/EditarCadastroDialog.tsx:152` | **não atende** (4.4.7, 4.5.6) |
+| 4 | nova observação | Das **26** mensagens de validação distintas do projeto, **3** dizem o que fazer — pelo critério de trazer verbo de instrução ou critério explícito ("Selecione um aluno", "Adicione pelo menos uma situação", "Adicione pelo menos uma interação"); as outras dizem só o que falta ("Data é obrigatória") | `src/pages/NewObservation.tsx:35-44` e demais esquemas `zod` | **não atende** (4.5.5) |
+| 4 | nova observação | "Salvar como Rascunho" existe **desabilitado**, com o motivo escrito na tela: "Rascunhos ainda não são gravados" | `src/components/NovaObservacaoDialog.tsx:234-241`, `src/components/NewAssessmentDialog.tsx:436-444` | **não atende** (4.5.9) / **atende** (4.8.3) |
+| 4 | sete diálogos | O erro de formulário é anunciado em região `role="alert"` | `GenerateReportDialog.tsx:188`, `EditarCadastroDialog.tsx:372`, `NovoAtendimentoDialog.tsx:391` e outros quatro | **atende** (4.5.10) |
+| 4 | — | Se os erros são **entendidos** e se a pessoa consegue se recuperar deles | — | **não avaliável sem usuário** (4.5.4, 4.5.5) |
+| 5. Help Users Focus | todas | **Nada se move sozinho.** Zero `setInterval`, zero `autoplay`, zero `requestAnimationFrame` fora de `src/test` e `src/components/ui`; a apresentação só avança por ação da pessoa | `src/components/PresentationPlayer.tsx:38-55`; varredura do projeto | **atende** (4.5.1, 4.9.1) |
+| 5 | todas | **Dois sistemas de confirmação montados ao mesmo tempo**: `Toaster` (use-toast) e `Sonner`. Quatro arquivos usam um, sete usam o outro — a mesma confirmação aparece por mecanismos diferentes conforme a tela | `src/App.tsx:24-25`; sonner em 4 arquivos, use-toast em 7 | **não atende** (4.2.3) |
+| 5 | ficha do aluno | Uma só rota com perfil, saúde, necessidades, contexto familiar, comunicação, observações, avaliações, comparativo ilustrativo, benchmarking, requisitos de LGPD e registros do sistema | `src/pages/StudentDetail.tsx` (494 linhas), medido | **não atende** (4.6.3) |
+| 5 | — | Se a quantidade de conteúdo atrapalha quem usa | — | **não avaliável sem usuário** (4.6.1, 4.6.3) |
+| 6. Ensure Processes Do Not Rely on Memory | todas | **Não há login**: nada para lembrar, e por isso **3.3.8 da WCAG 2.2 não é exercida**. Isso deixa de valer no dia em que o requisito 3 de dado real (autenticação por perfil) for implementado | `src/App.tsx:53-78` (nenhuma rota de autenticação) | **atende por ausência** (4.7.1 a 4.7.3) |
+| 6 | nova observação | O formulário não exige trazer nada de outra tela: o estudante é escolhido ali mesmo | `src/pages/NewObservation.tsx:251` | **atende** (4.7.5; e 3.3.7 da 2.2) |
+| 6 | novo aluno **[fora das sete]** | **22 campos em 5 seções, numa tela só**, sem indicador de etapa e sem rascunho: quem interrompe, recomeça | `src/pages/NewStudent.tsx` (22 `<FormLabel>`, 5 `<CardTitle>`) | **não atende** (4.7.5, 4.5.9, 4.2.4) |
+| 6 | — | Se a pessoa consegue retomar a tarefa depois de interrompida | — | **não avaliável sem usuário** (4.7.5, 4.5.9) |
+| 7. Provide Help and Support | todas | **Não há ajuda nem contato humano em tela nenhuma** — zero ocorrências de "Ajuda", "Suporte", "Fale conosco". Há um "Manual" no menu, que é conteúdo normativo, não ajuda contextual | `src/components/Header.tsx:39`; varredura por rótulo visível = 0 | **não atende** (4.8.1, 4.8.5) |
+| 7 | Ver PEI, Desempenho | As ações desabilitadas dizem por que estão desabilitadas, em vez de simplesmente não responder | medido nos dois diálogos | **atende** (4.8.3) |
+| 7 | — | Se a ajuda que existisse seria suficiente | — | **não avaliável sem usuário** (4.8.1, 4.8.4) |
+| 8. Support Adaptation and Personalization | Configurações → Acessibilidade | Cinco preferências que funcionam: alto contraste, tamanho da fonte, reduzir animações, destacar o foco e aumentar os botões — todas de **percepção e operação** | `pei-a11y-preferences`, README seção "Preferências de acessibilidade" | **atende em parte** (4.9.4) |
+| 8 | todas | **Nenhuma preferência simplifica conteúdo**: não há versão em linguagem simples, nem resumo, nem modo reduzido | varredura do projeto | **não atende** (4.9.3) |
+| 8 | — | Se a personalização disponível é a de que a pessoa precisa | — | **não avaliável sem usuário** (4.9.1 a 4.9.4) |
+
+**A conta das classes, em 32 linhas: 14 "não atende", 10 "atende" (incluindo "atende em parte" e
+"atende por ausência") e 8 "não avaliável sem usuário".** A linha dos rascunhos conta uma vez, como
+"não atende", embora traga também um "atende" de 4.8.3. A terceira classe é grande de propósito, e
+**isso é resultado**: cada um dos oito objetivos tem uma pergunta central que **não se decide lendo
+código**.
+
+**A fronteira da própria medição, e ela é diferente da dos números do axe.** As contagens de sigla,
+mensagem e sistema de aviso saíram de uma varredura de uma vez só, **sem instrumento versionado em
+`scripts/`** — ao contrário do arreio e do axe, não há aqui nada que o CI reexecute. A regra de
+contagem fica escrita (arquivos `.ts`/`.tsx` fora de `src/test` e `src/components/ui`; sigla com
+limite de palavra; forma extensa no mesmo arquivo) para quem quiser refazer, e o varredor rodou com
+controle positivo: uma sigla inexistente devolveu 0 e `PEI` devolveu 46. **Contagem por arquivo não
+é contagem por tela:** a forma extensa estar no mesmo arquivo não garante que ela apareça junto da
+sigla na tela, e o inverso também vale.
+
+**E NÃO foi produzido índice de legibilidade** — nem Flesch adaptado nem equivalente. Um número
+saído de fórmula pareceria medida de compreensão sem ser: é o zero verdadeiro e irrelevante em
+forma de nota.
+
+#### Parte 2 — O que mediria de verdade, e o que isso exige antes
+
+O que mediria acessibilidade cognitiva de verdade são **sessões com usuários reais**: professores e
+famílias de estudantes com deficiência, usando as telas e dizendo o que entendem.
+
+**Isso é pesquisa com seres humanos.** Num contexto acadêmico — e este sistema existe para apoiar
+um artigo —, exige **aprovação de Comitê de Ética em Pesquisa (CEP) antes de começar**, não depois.
+Fica registrado como **pré-requisito**, não como detalhe de execução: sem o parecer, as sessões não
+acontecem, e sem as sessões não há medida de compreensão. O inventário acima não substitui isso em
+nada; ele só diz onde olhar primeiro.
+
+#### Parte 3 — O achado de escopo, e é o que fecha a série
+
+> A auditoria escolheu a pergunta pela norma disponível. Trinta e uma etapas de rigor mediram muito
+> bem conformidade com a WCAG 2.1 AA — e a WCAG AA mede pouco do que um sistema de educação
+> inclusiva mais precisa: que a família de um estudante com deficiência intelectual entenda o plano
+> do próprio filho. É a lição do achado 28 numa escala maior: o rigor estava todo no método, e o
+> objeto foi herdado da norma.
+
+**O que esta pendência NÃO faz:** nada em `src/`. Nenhum dos catorze "não atende" foi corrigido. O
+conserto, quando vier, é decisão de produto — e dois deles (o asterisco sem explicação e os dois
+sistemas de confirmação) são pequenos o bastante para não precisarem de sessão com usuário para
+serem decididos.
+
+---
+
 ## Etapa 0 — Aplicar o patch da auditoria ✅ pré-pronto
 
 Já feito e verificado externamente. Aplicar, não refazer.

@@ -279,6 +279,26 @@ controles seguem sem nome acessível ou com defeito de árvore**, medidos, relat
 consertados**: estão nomeados com arquivo e linha na Pendência 11 do
 [backlog](BACKLOG-CLAUDE-CODE.md).
 
+**A segunda fronteira, e ela é de objeto, não de número: acessibilidade cognitiva não foi
+medida.** Nenhuma etapa deste repositório avaliou **compreensão, linguagem, carga de atenção,
+previsibilidade ou dependência de memória**. O alvo declarado foi a WCAG 2.1 AA, que cobre bem o
+que se **vê**, se **ouve** e se **opera**, e pouco o que se **entende** — e este é um sistema de
+PEI, lido por estudantes neurodivergentes e por suas famílias.
+
+**A referência para isso existe e não foi aplicada:** *Making Content Usable for People with
+Cognitive and Learning Disabilities*, [W3C Working Group Note de 29/04/2021](https://www.w3.org/TR/coga-usable/),
+com 8 objetivos e 57 padrões de design. O primeiro inventário contra ela — 32 linhas, 14 "não
+atende", 10 "atende", 8 "não avaliável sem usuário" — está na Pendência 12 do
+[backlog](BACKLOG-CLAUDE-CODE.md), e **é revisão especializada, não medida de compreensão**: quem
+diz se uma família entende a tela é a família.
+
+**E a WCAG 2.2** ([Recomendação de 05/10/2023](https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/))
+**acrescentou critérios A/AA que tocam cognição e que este projeto também não avaliou**:
+**3.2.6 Consistent Help (A)**, **3.3.7 Redundant Entry (A)** e **3.3.8 Accessible Authentication
+(Minimum) (AA)** — o quarto que a fonte liga a deficiência cognitiva, 3.3.9, é AAA. **O alvo
+declarado continua sendo a 2.1 AA**: trocá-lo mudaria o que todos os números acima querem dizer, e
+é decisão do autor.
+
 A Etapa 3 do backlog foi a etapa dedicada a isso, e estes são os números, medidos nas dezessete
 rotas do sistema antes do primeiro commit da etapa e depois do último:
 
