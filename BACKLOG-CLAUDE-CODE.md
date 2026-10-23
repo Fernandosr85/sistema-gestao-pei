@@ -2542,17 +2542,60 @@ volta a `3bf23b0`, `git branch --contains d8f9b76 --all` não lista branch nenhu
 `git ls-remote origin refs/heads/main` continua em `3bf23b05cdb0feff252ea2ef894468f3844806ee` — o
 servidor nunca recebeu o objeto.
 
-**O que este push exercitou: 2 das 4 regras.** A recusa citou `required_status_checks` e
-`pull_request`. As outras duas não foram exercitadas porque **o push não era nenhuma das duas coisas**
-— não apagava o branch nem reescrevia história. Dizer "a proteção está medida" seria estender o
-resultado para além do que o instrumento tocou; o que está medido é que **um push direto de commit
-novo no `main` é recusado**.
+**O que o push comum exercitou: 2 das 4 regras.** A recusa citou `required_status_checks` e
+`pull_request`. As outras duas não foram exercitadas porque **o push não era nenhuma das duas
+coisas** — não apagava o branch nem reescrevia história. O que ele mede, e só isso, é que **um push
+direto de commit novo no `main` é recusado**.
 
-**E as duas que faltam ficam por decisão, com o motivo dito.** Medir `deletion` é tentar apagar o
-`main`; medir `non_fast_forward` é tentar reescrever a história pública. O pior caso deste controle
-era **um commit de lixo**; o pior caso daqueles dois é **história perdida num repositório público**.
-A assimetria é o motivo de eles não terem sido rodados por iniciativa minha — não é esquecimento, é
-fronteira declarada.
+#### A terceira regra, medida: `non_fast_forward` (23/10/2026, 13:06:18 UTC)
+
+**SHA do `main` remoto anotado antes de tudo:** `ce1e9c79f6c0770db43c0bdd28e08413c4db327b` (o merge
+do PR #35, lido às 13:05:30 UTC).
+
+**Antes de empurrar, duas conferências para o controle não passar pelo motivo errado.** Primeira: o
+alvo precisa ser um **recuo de verdade**. `HEAD~1` é `5265ee7` (o primeiro pai do merge do #35, que é
+o merge do #34), e `git merge-base --is-ancestor HEAD~1 origin/main` sai **0** com os dois SHAs
+diferentes — logo o push **recua** o `main` em um commit, que é exatamente a operação que
+`non_fast_forward` existe para recusar. Segunda: a **garantia do `--force-with-lease` tinha de estar
+fresca**, senão o git recusaria **localmente** por informação velha e nunca chegaria às regras do
+servidor; o rastreio de `origin/main` e o `ls-remote` estavam os dois em `ce1e9c7`.
+
+```
+remote: error: GH013: Repository rule violations found for refs/heads/main.
+remote: Review all repository rules at https://github.com/Fernandosr85/sistema-gestao-pei/rules?ref=refs%2Fheads%2Fmain
+remote:
+remote: - Cannot force-push to this branch
+remote:
+remote: - Changes must be made through a pull request.
+remote:
+To https://github.com/Fernandosr85/sistema-gestao-pei.git
+ ! [remote rejected] HEAD~1 -> main (push declined due to repository rule violations)
+error: failed to push some refs to 'https://github.com/Fernandosr85/sistema-gestao-pei.git'
+```
+
+**REJEITADO**, saída 1, e a recusa veio do **remoto** (`remote: error: GH013`), não da garantia
+local. **A regra está nomeada na mensagem** — *"Cannot force-push to this branch"* é
+`non_fast_forward` — e é isso que faz este controle medir a regra em vez de só medir "qualquer push
+direto é barrado". `git ls-remote origin refs/heads/main` depois: `ce1e9c79f6c…`, **o mesmo SHA
+anotado**. Nada a desfazer.
+
+**E o conjunto de regras citadas mudou entre os dois pushes, o que é informação.** O push comum
+citou `required_status_checks` + `pull_request`; este citou `non_fast_forward` + `pull_request`, **sem
+o status check**. O GitHub relata as violações pertinentes à operação, não a lista inteira do
+ruleset — então a mensagem serve para identificar **qual** regra recusou, e não serve para inventariar
+quais regras existem.
+
+#### A quarta regra não foi medida, e não é "não testada"
+
+> A regra `deletion` não foi medida, e não é "não testada": é **não testável nesta configuração**. O
+> GitHub recusa apagar o branch padrão independentemente de ruleset, então o teste passaria pelo
+> motivo errado — não distinguiria "a regra bloqueou" de "o GitHub sempre bloqueia". O ruleset tem
+> alvo `~DEFAULT_BRANCH` e não cobre nenhum branch em que o teste fosse limpo. Um controle que passa
+> pelo motivo errado é pior que a ausência dele, porque produz confiança sem medida.
+
+**A conta final: das quatro regras, três medidas e uma não testável.** `pull_request` e
+`required_status_checks` pela recusa do push comum; `non_fast_forward` pela recusa do force-push, com
+a regra nomeada na mensagem; `deletion` pela razão acima.
 
 **Uma leitura da configuração que o selo não dá:** com `pull_request` em **0 aprovações** e
 `bypass_actors` vazio, a regra que barra o push direto é a **exigência de PR**, não a de revisão —
@@ -2565,9 +2608,11 @@ vez do parâmetro dela.
 esse estado, porque quando medi o alvo já era `~DEFAULT_BRANCH`; fica registrado como relato, e o
 relato é o achado. É a classe do **zero verdadeiro e irrelevante** (achado 28: a varredura media
 páginas onde o defeito não existia), agora numa **tela de configuração** em vez de numa varredura:
-quatro regras aplicadas a nenhum branch produzem exatamente o mesmo painel verde que quatro regras
-aplicadas ao branch certo. **O que torna a diferença visível não é olhar a configuração — é tentar
-fazer a coisa que ela deve recusar.**
+regras aplicadas a nenhum branch produzem exatamente o mesmo painel verde que as mesmas regras
+aplicadas ao branch certo (eram três naquele momento, são quatro hoje).
+
+> O que mostra a diferença entre uma configuração que protege e uma que não protege não é olhar a
+> configuração — é tentar fazer a coisa que ela deve recusar.
 
 ---
 
