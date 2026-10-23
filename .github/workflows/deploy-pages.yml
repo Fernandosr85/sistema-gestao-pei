@@ -35,9 +35,19 @@ concurrency:
 
 jobs:
   build:
-    # Só publica o que passou pela verificação. No `workflow_dispatch` não há verificação a
-    # consultar, e aí a condição é o próprio ato manual.
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    # Só publica o que passou pela verificação, E só do `main`.
+    #
+    # A CONDIÇÃO TEM OS DOIS, e a primeira versão tinha só um: `conclusion` estava aqui, mas
+    # `head_branch` não — a restrição de branch morava apenas no filtro `branches: [main]` do
+    # gatilho. Para o `workflow_run` isso de fato filtra (o filtro é sobre o branch do fluxo que
+    # disparou), mas para o `workflow_dispatch` **não havia restrição nenhuma**: um disparo manual
+    # de qualquer branch que tivesse este arquivo construiria e tentaria publicar aquele branch.
+    # Agora as duas portas pedem `main`, e `head_branch` está na condição em vez de só no filtro.
+    if: |
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run'
+        && github.event.workflow_run.conclusion == 'success'
+        && github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,11 +64,23 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      # LIGAR O PAGES É UM CLIQUE NAS CONFIGURAÇÕES, E NÃO DÁ PARA FAZER DAQUI.
+      #
+      # A primeira versão passava `enablement: true` com um comentário dizendo que isso ligava o
+      # Pages sozinho "para a publicação não depender de alguém lembrar de mexer nas configurações".
+      # **A afirmação era falsa**, e a própria descrição do parâmetro diz por quê: "This option
+      # requires a token other than `GITHUB_TOKEN` to be provided" — com Personal Access Token
+      # precisa de escopo `repo`, e com GitHub App precisa de `administration:write`. O
+      # `GITHUB_TOKEN` desta execução não serve, e nenhuma permissão declarada aqui o faz servir.
+      #
+      # Medido, na primeira execução de verdade (run 39874042759, 22/10/2026):
+      #   ##[warning]Get Pages site failed. Error: Not Found
+      #   ##[error]Create Pages site failed. Error: Resource not accessible by integration
+      #
+      # Então o parâmetro saiu. Com o Pages JÁ habilitado, este passo só lê a configuração e segue —
+      # é para isso que ele está aqui. Habilitar é uma vez, à mão:
+      #   Settings -> Pages -> Build and deployment -> Source -> **GitHub Actions**
       - uses: actions/configure-pages@v6
-        # Liga o Pages na primeira execução, com a origem em GitHub Actions, para a publicação não
-        # depender de alguém lembrar de mexer nas configurações do repositório.
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist

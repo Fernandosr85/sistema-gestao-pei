@@ -162,6 +162,13 @@ O fluxo `.github/workflows/deploy-pages.yml` publica em push para `main` **depoi
 passar** (gatilho `workflow_run`, não em paralelo), com permissões mínimas por tarefa e uma
 publicação de cada vez. O `ci.yml` não mudou.
 
+> **Habilitar o Pages é um passo manual, uma vez: Settings → Pages → Build and deployment → Source →
+> GitHub Actions.** O fluxo não consegue fazer isso por conta própria: `actions/configure-pages` só
+> habilita o Pages com um token que **não** é o `GITHUB_TOKEN` da execução — com Personal Access
+> Token ou GitHub App —, e a primeira execução real falhou exatamente aí: *"Create Pages site
+> failed. Error: Resource not accessible by integration"*. Com o Pages habilitado, o fluxo publica
+> sozinho a cada push para o `main` que passe pela verificação.
+
 ---
 
 ## Adaptando para sua instituição
